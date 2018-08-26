@@ -1,0 +1,10 @@
+<div class="fieldgroup" [foreach]="controls as control">
+	<label bind="control.prompt"></label>
+	<span class="field">
+		<input class="med" [class]="!empty(required) ? 'required' : ''" bind="control.value" keyboard="native">
+	</span>
+	<label></label>
+	<span class="field">
+	<span class='hint med'></span>
+	</span>
+</div>

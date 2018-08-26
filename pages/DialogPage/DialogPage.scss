@@ -1,0 +1,77 @@
+@import '../../scss/_variables';
+
+.page-DialogPage{
+	transform: translate3d(0,0,0) !important;
+
+	.backdrop {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height:100%;
+		width: 100%;
+		font-size: 1.0em;
+		background-color: rgba(0, 0, 0, 0.5);
+	
+		transition: opacity 0.3s ease;
+		-webkit-transition: opacity 0.3s ease;
+		-moz-transition: opacity 0.3s ease;
+		-ms-transition: opacity 0.3s ease;
+		-o-transition: opacity 0.3s ease;
+		align-items: center;
+		display: flex;
+		overflow-y: scroll;
+	}
+	
+	.title, .prompt{
+		box-sizing: border-box;
+		text-align: center;
+		width: 100%;
+		padding: 1rem 2rem;
+		font-size: 1.6rem;
+		color: #054877;
+	}
+
+	.title{
+		border-bottom: 1px solid #e7e7e7;
+	}
+
+	.popup{
+		background-color: #fff;
+		right: 1rem;
+		left: 1rem;
+		margin-left: auto;
+		margin-right: auto;
+		min-width: 275px;
+	
+			
+		.dialog-buttons{
+			position:relative;
+			
+			background-color: white;
+			border-top: 1px solid $mercury;
+			// color: #ccc;
+			display: flex;
+			font-size: 1em;
+			height: 3.5em;
+			width:100%;
+
+			button{
+				background-color: white;
+				border: 1px solid transparent;
+				color: $viking;
+				display: block;
+				font-size: 1.2em;
+				margin: 0;
+				width:100%;
+				&:first-child {
+					border-right:1px solid $mercury;
+				}
+
+				&:focus{
+					background-color: $mercury;
+				}
+			}
+		}
+	}
+}

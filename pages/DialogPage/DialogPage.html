@@ -1,0 +1,11 @@
+<div class="backdrop">
+	<div class='popup'>
+		<div class = 'title' [if]='this.title'  bind="this.title">Dialog title</div>
+		<div class = 'prompt' [if]='this.prompt' bind="this.prompt">Prompt</div>
+		
+		<div class = 'dialog-content' [directive] = "this.content"></div>
+		<div class = 'dialog-buttons'>
+			<button [foreach]="button_title in this.buttons as button" onclick="this.onButtonClicked(button_title)" bind="button_title"></button>
+		</div>
+	</div>
+</div>

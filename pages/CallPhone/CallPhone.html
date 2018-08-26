@@ -1,0 +1,13 @@
+<div class='items'>
+	<div class = 'number'><span [innerHTML]="this.numberPre ? this.numberPre+': ' : ''"></span> <span bind="this.number"></span></div>
+	<div class = 'call-buttons'>
+		<a class="call" href = "#" bind onclick="this.onCallClicked()" >
+			<span class="icon"><i class="fas fa-phone"></i></span>
+			<span class="text">Call</span>
+		</a>
+		<a class="text" href = "#" [if]='this.useSMS' bind onclick="this.onTextClicked()">
+			<span class="icon"><i class="far fa-comment-alt"></i></span>
+			<span class="text">Text</span>
+		</a>
+	</div>
+</div>

@@ -1,0 +1,40 @@
+$header-background-color: #039be5;
+$header-height: 4em;
+$input-height: 2em;
+$checkbox-height: 2em;
+$select-height: 2em;
+$toggle-height: 2em;
+$button-height: 2em;
+
+$color-bg-error: #F32332;
+$color-border: #77a2c5;
+$color-border-active: #2196F3;
+
+$color-input-bg: #FFF;
+$color-input-fg: #333;
+
+$color-button-fg:#FFF;
+$color-button-bg:#2196F3;
+
+$color-link:#2196F3;
+
+$size-border: 1px;
+$size-border-active: 2px;
+$size-input-h-md: 35px;
+$size-input-i-md: 20px;
+$size-input-i-sm: 10px;
+$size-f-input: 16px;
+$margin-xs: 1px;
+$margin-sm: 3px;
+$margin-md: 6px;
+$margin-lg: 12px;
+$margin-xl: 24px;
+
+@mixin touch-scroll{
+	overflow-y: auto;
+	@supports (-webkit-overflow-scrolling: touch) {
+		/* CSS specific to iOS devices */ 
+		overflow-y:scroll !important;  
+		-webkit-overflow-scrolling:touch !important;
+	}
+}

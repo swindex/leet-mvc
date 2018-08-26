@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"checkJs": true,
+		"module": "commonjs",
+	},
+    "exclude": [
+		"platforms",
+        "node_modules",
+        "**/node_modules/*"
+    ]
+}
