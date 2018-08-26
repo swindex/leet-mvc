@@ -551,16 +551,18 @@ export var Binder = function(context, container){
 				if (v===null)
 					$(elem).find("option[value='']").first().attr('selected',"");
 				else{
-					var sel = $(elem).find("option[value='"+ v +"']").first();
-					if (sel.length){
-						sel.attr('selected',"");
-						elem.value = v; //this is important
-					}else{
-						//select we are trying to set does not have that option!
-						$(elem).find("option[value='']").first().attr('selected',"");
-						//opdate data property to keep it in sync with element; 
-						updateBoundContextProperty(elem);
-					}
+					window.requestAnimationFrame(()=>{
+						var sel = $(elem).find("option[value='"+ v +"']").first();
+						if (sel.length){
+							sel.attr('selected',"");
+							elem.value = v; //this is important
+						}else{
+							//select we are trying to set does not have that option!
+							$(elem).find("option[value='']").first().attr('selected',"");
+							//opdate data property to keep it in sync with element; 
+							updateBoundContextProperty(elem);
+						}
+					});
 					//elem.value = v;		
 				}
 				break;
