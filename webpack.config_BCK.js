@@ -1,3 +1,16 @@
+//Webpack 3.xx config for a cordova app
+//Stack:
+//JavaScript ES6 - > ES2015
+//Literal Templates
+//Babel
+//Polyfill
+//SCSS
+//CSS
+//Autoprefixer
+//Copy Assets
+//UglifyJS
+//HTML Template
+//HTML Loader into the JS bundle
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin'); //installed via npm
@@ -6,9 +19,8 @@ const autoprefixer = require('autoprefixer');
 
 const extractSass = new ExtractTextPlugin({
     filename: "generated.css",
-    //disable: process.env.NODE_ENV === "development"
 });
-const webpack = require('webpack'); //to access built-in plugins
+const webpack = require('webpack');
 
 const path = require('path');
 
@@ -72,26 +84,6 @@ module.exports = env => {
 				},
 				{ test: /\.(jpg|png|gif)$/, loader: "file-loader", options:{name:'[name].[ext]', outputPath: 'img/'} },
 				{ test: /\.(woff|woff2|eot|ttf|svg)$/, loader: 'file-loader', options:{name:'[name].[ext]', outputPath: 'fonts/'} },
-				/*{
-					test: /\.css$/,	
-					loaders: [
-						{
-							loader: "file-loader",
-							options: {
-								name: "[name].[ext]",
-							},
-						},
-						{
-							loader: "extract-loader",
-						},
-						{
-							loader:"css-loader",
-							options: {
-								minimize: true
-							}
-						}
-					],
-				},*/
 				{
 					test: /(\.scss|\.css)$/,
 					use: extractSass.extract({
