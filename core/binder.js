@@ -548,10 +548,10 @@ export var Binder = function(context, container){
 		switch (elem.tagName) {
 			case "SELECT":
 				$(elem).find("option").removeAttr('selected');
-				if (v===null)
-					$(elem).find("option[value='']").first().attr('selected',"");
-				else{
-					window.requestAnimationFrame(()=>{
+				window.requestAnimationFrame(()=>{
+					if (v===null)
+						$(elem).find("option[value='']").first().attr('selected',"");
+					else{
 						var sel = $(elem).find("option[value='"+ v +"']").first();
 						if (sel.length){
 							sel.attr('selected',"");
@@ -562,9 +562,8 @@ export var Binder = function(context, container){
 							//opdate data property to keep it in sync with element; 
 							updateBoundContextProperty(elem);
 						}
-					});
-					//elem.value = v;		
-				}
+					}
+				});
 				break;
 			case "OPTION":
 			case "INPUT":
