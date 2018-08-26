@@ -73,6 +73,10 @@ export function  onChange(object, onChangeCallback){
 			//return objects, instantiated with `new` as-is
 			if (! isArray(value) && isObject(value) && !isObjLiteral(value))
 				return value;
+			
+			//return as-is if its a primitive	
+			if (! isObject(value))
+				return value;
 
 			try {
 				return new Proxy(target[property], handler);
