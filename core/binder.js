@@ -365,7 +365,7 @@ export var Binder = function(context, container){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
 								if (tryCall(self.context,self.eventCallbacks[k], event) !== false && event.target['parentNode'])
-									UI.repaint(event.target['parentNode']);
+									repaint(event.target['parentNode']);
 							});
 						})(k);
 					}
@@ -376,14 +376,14 @@ export var Binder = function(context, container){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
 								if (tryCall(self.context,self.eventCallbacks[k], event) !== false)
-									UI.repaint(event.target['parentNode']);
+									repaint(event.target['parentNode']);
 							});
 						})('change');
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
 								if (tryCall(self.context,self.eventCallbacks[k], event) !== false)
-									UI.repaint(event.target['parentNode']);
+									repaint(event.target['parentNode']);
 							});
 						})('input');
 					}
@@ -818,7 +818,15 @@ export var Binder = function(context, container){
 		return inj;
 	}
 
-	function repaint(elem){
-		
+	function repaint(element){
+		// in plain js
+		var old = element.style.display;
+		element.style.display = 'none';
+		element.style.display = old;
+	}
+	function round(num, decimals) {
+		decimals = decimals || 0;
+	    var scale = Math.pow(10, decimals);
+		return Math.round(num * scale)/scale;
 	}
 }
