@@ -22,7 +22,6 @@ export class Forms extends BaseComponent{
 		this.formClass = formClass;
 		
 		this.attributes = {};
-
 		
 		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes);
 		this.validator.validateVisibility();
