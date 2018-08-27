@@ -1,7 +1,7 @@
-import { BasePage } from "../BasePage/BasePage";
+import { BasePage } from "../BasePage";
 import * as template from './DialogPage.html';
 import './DialogPage.scss';
-import { tryCall } from "../../js/helpers";
+import { tryCall } from "../../core/helpers";
 
 export class DialogPage extends BasePage{
 	constructor(page){
