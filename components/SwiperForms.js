@@ -27,10 +27,13 @@ export class SwiperForms extends Forms{
 			events: null
 		},options);
 
+		/*this html comes from the Forms class*/
+		var formsHTML = this.html;
+
 		this.html = `
 		<div class="swiper-container" id="generatedform">
 			<div class="swiper-wrapper">
-				`+this.html+`
+				`+formsHTML+`
 			</div>
 	
 			<!-- Add Pagination -->
@@ -69,8 +72,6 @@ export class SwiperForms extends Forms{
 		})
 	}
 	
-
-		
 	init(container){
 		var sw = new Swiper($(container).find('#generatedform')[0],{
 			threshold:50,
