@@ -1,5 +1,7 @@
 import { isNumber, isBoolean, isObject,isArray } from "util";
 import { Objects } from "./Objects";
+import { join } from "path";
+import { SSL_OP_NO_TICKET } from "constants";
 
 
 /**
@@ -17,6 +19,40 @@ export function FormValidator(data,template,errors,attributes){
 	var _errors = errors;
 	var _attributes = attributes || null;
 	var _form =null;
+
+	set_names(_template);
+
+	/**
+	 * Set _name properties in the template
+	 * @param {*} obj 
+	 * @param {string[]} [path]
+	 */
+	function set_names(obj, path){
+		if (!path)
+			path = [];
+		if (isArray(obj))
+			Objects.forEach(obj,(el)=>{
+				if (el.name)
+					path.push(el.name);
+
+				set_names(el, path.slice());
+			});
+	
+		if (isObject(obj) && obj.name)
+			obj._name = path.slice().join('.');	
+		
+		if (isObject(obj) && obj.type=='select')
+			path.pop();	
+		
+		if (isObject(obj) && obj.items){
+			//if (obj.type !== 'form' && obj.type !== 'select' )
+			//	path.push('items');
+			set_names(obj.items, path.slice());
+		}
+	
+	}
+
+
 	/**
 	 * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
 	 * @param {{[key:string]:any}} data 
@@ -106,20 +142,24 @@ export function FormValidator(data,template,errors,attributes){
 		if (!isArray(obj) && !isObject(obj))
 			return 0;
 
+		if (!path)
+			path=[];
 
-		if (/*isArray(obj) || obj.type=='form' || !obj.type ||*/ !obj.validateRule){
-			Objects.forEach(obj,(el)=>{
-				var key = null;
-				if (obj.type =='form')
-					key = obj.name;
-				else 
-					key = path;
-				e += validate_object(el,key);
-			});
-		}else{
-			obj._name = path && obj.name.indexOf('.')==-1 ? path + "." + obj.name : obj.name;
+		if (obj.validateRule){
+			//obj._name = path.join('.');
 			e += validate_field(obj);
 		}
+		if (obj.type =="form" && obj.items){
+			if (obj.name)
+				path.push(obj.name);
+			e += validate_object(obj.items,path);
+		}
+		
+		if (isArray(obj))	
+			Objects.forEach(obj,(el)=>{
+				e += validate_object(el, path);
+			});
+			
 		return e;
 	}
 
@@ -135,7 +175,7 @@ export function FormValidator(data,template,errors,attributes){
 		if (!empty(t)){
 			prepField(t._name);
 			var visible = !t.displayRule || empty(is_rule_fails(t._name,t.displayRule));
-
+		
 			if ( t.validateRule && visible){
 				var err = is_rule_fails(t._name,t.validateRule);
 				if (!empty(err)){
@@ -147,6 +187,32 @@ export function FormValidator(data,template,errors,attributes){
 			}else{
 				if (!t.name.match(/\/.*\//))
 					setValue(_errors, t._name, null);
+			}
+
+			//if element is visible and it has items "its a select box"
+			if (visible && isArray(t.items)){
+				var used = [];
+				var un_used = [];
+				
+				Objects.forEach(t.items,(item)=>{
+					if (isArray(item.items) && item.value == Objects.getPropertyByPath(data,t._name)){
+						Objects.forEach(item.items,(item_)=>{
+							prepField(item_._name);
+							used.push(item_._name)
+							e += validate_field(item_);
+						});
+					}else{
+						Objects.forEach(item.items,(item_)=>{
+							un_used.push(item_._name)
+						});
+					}
+					
+				});
+				//delete properties that are not used any more
+				Objects.forEach(un_used, (el)=>{
+					if (used.indexOf(el)<=0)
+						Objects.deletePropertyByPath(data, el);
+				});
 			}
 		}
 		return e;	
@@ -306,11 +372,11 @@ export function FormValidator(data,template,errors,attributes){
 		var c_template = getTemplateValue( tryDefaultForm(c_name,name));
 
 		if (!empty(c_template)){
-			errmsg=errmsg.replace(':other', getTemplateValue( tryDefaultForm(c_name,name)).title);
+			errmsg=errmsg.replace(':other', c_template.title);
 			var c_v = getValue(_data,tryDefaultForm(c_name,name));
 			if (c_template.items && c_template.items.length > 0){
 				var c_vv = Objects.find(c_template.items,(t)=>t.value==c_v)
-				errmsg=errmsg.replace(':value', c_vv ? c_vv.text : "null");
+				errmsg=errmsg.replace(':value', c_vv ? c_vv.title : "null");
 			}else
 				errmsg=errmsg.replace(':value', c_v);
 		}
@@ -528,23 +594,19 @@ export function FormValidator(data,template,errors,attributes){
 	 * @return {FieldTemplate}
 	 */
 	function getTemplateValue(name){
-		var p = parts(name)
-		if (!p.form) {
-			return Objects.find(_template,(obj)=>{
-				if (obj.name === p.name){
-					obj._name = obj.name 
-					return true;
+		var found = null;
+		function f(obj){
+			Objects.forEach(obj,(el)=>{
+				if (el._name === name){
+					found = el;
+					return false;
+				}else if (isObject(el) && el.items){
+					f(el.items);
 				}
 			});
 		}
-		var form = Objects.find(_template,(obj)=>{return obj.name === p.form});	
-		//return Objects.find(form.items,(obj)=>{return obj.name === p.name});
-		return Objects.find(form.items,(obj)=>{
-			if (obj.name === p.name){
-				obj._name = p.form + '.'+obj.name;
-				return true;
-			}
-		});
+		f(_template);
+		return found;
 	}
 	this.setValue = setValue;
 	/**
