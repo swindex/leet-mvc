@@ -141,5 +141,21 @@ export const Objects = {
 			Objects.setPropertyByPath(obj[pathArray.shift()],pathArray, value);
 		else
 			obj[pathArray.shift()] = value;
+	},
+		/**
+	 * Get object property using path
+	 * @param {*} obj 
+	 * @param {string[]|string} pathArray 
+	 * @param {any} value
+	 */
+	deletePropertyByPath(obj, pathArray){
+		if (typeof pathArray == 'string'){
+			pathArray = pathArray.split('.');
+		}
+
+		if (pathArray.length>1)
+			Objects.deletePropertyByPath(obj[pathArray.shift()],pathArray);
+		else
+			delete obj[pathArray.shift()];
 	}
 }
