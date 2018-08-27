@@ -1,6 +1,6 @@
 // @ts-ignore
-import * as template from '../views/Loader.html';
-import "../scss/loader.scss";
+import * as template from './Loader.html';
+import "./Loader.scss";
 /**
  * @constructor {Loader}
  */

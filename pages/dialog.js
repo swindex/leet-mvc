@@ -1,5 +1,5 @@
 import "../scss/dialog.scss";
-import { FormGenerator } from "../js/form_generator";
+import { FormGenerator } from "../core/form_generator";
 // @ts-ignore
 import * as template from "../views/DialogPageGenerator.html";
 import { Injector } from "../js/Injector";
