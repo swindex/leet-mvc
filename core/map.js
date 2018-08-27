@@ -1,14 +1,13 @@
 import  GoogleMapsLoader from 'google-maps';
-import { Config } from './config';
-import { Objects } from './Objects';
-import { Loader } from './loader';
-import { Injector } from './Injector';
-import { InjectTemplate } from './Inject';
-import { Dialog } from '../pages/dialog';
-import { tryCall } from './helpers';
-var Inject = Injector.implement(InjectTemplate)
+import { Loader } from '../pages/Loader/Loader';
+
 /** Wrapper for google Maps API*/
-export var Map = function(){
+/**
+ * Create an instance of map
+ * @param {string} API_KEY 
+ * @param {string} API_VERSION 
+ */
+export var Map = function(API_KEY,API_VERSION){
 	/**@type {Map} */
 	var self = this;
 	/** @type {GoogleMapsLoader.google} */
@@ -44,8 +43,8 @@ export var Map = function(){
 			preserveViewport: true
 	}
 
-	GoogleMapsLoader.KEY = Inject.Config.Google.Maps.KEY;
-	GoogleMapsLoader.VERSION = Inject.Config.Google.Maps.VERSION;
+	GoogleMapsLoader.KEY = API_KEY;
+	GoogleMapsLoader.VERSION = API_VERSION;
 
 	var wait = [];
 
@@ -327,7 +326,7 @@ export var Map = function(){
 		//if (empty(google)) wait.push(v); else v();
 		return this;
 	}
-	this.showMapSettings = function(callback){
+	/*this.showMapSettings = function(callback){
 		var map_settings = options;
 		var directions_settings = generateRouteOptions;
 		
@@ -377,7 +376,7 @@ export var Map = function(){
 			tryCall(null, callback, map_settings, directions_settings);
 			
 		});
-	}
+	}*/
 	/**
 	 * Set Directions container element
 	 * @param {HTMLElement} elem 

@@ -1,4 +1,3 @@
-@import '../../scss/_variables';
 
 .page-DialogPage{
 	transform: translate3d(0,0,0) !important;
@@ -49,7 +48,7 @@
 			position:relative;
 			
 			background-color: white;
-			border-top: 1px solid $mercury;
+			border-top: 1px solid #e7e7e7;
 			// color: #ccc;
 			display: flex;
 			font-size: 1em;
@@ -59,17 +58,17 @@
 			button{
 				background-color: white;
 				border: 1px solid transparent;
-				color: $viking;
+				color: #71BCE1;
 				display: block;
 				font-size: 1.2em;
 				margin: 0;
 				width:100%;
 				&:first-child {
-					border-right:1px solid $mercury;
+					border-right:1px solid #e7e7e7;
 				}
 
 				&:focus{
-					background-color: $mercury;
+					background-color: #e7e7e7;
 				}
 			}
 		}
