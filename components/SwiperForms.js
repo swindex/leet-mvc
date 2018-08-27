@@ -1,9 +1,9 @@
-import { FormGenerator } from "connexions/src/js/form_generator";
-import { Objects } from "connexions/src/js/Objects";
+import { FormGenerator } from "./../core/form_generator";
+import { Objects } from "./../core/Objects";
 import Swiper from 'swiper';
-import { FormValidator } from "connexions/src/js/form_validator";
-import { Text } from "connexions/src/js/text";
-import { BaseComponent } from "connexions/src/js/BaseComponent";
+import { FormValidator } from "./../core/form_validator";
+import { Text } from "./../core/text";
+import { BaseComponent } from "./BaseComponent";
 
 
 /**

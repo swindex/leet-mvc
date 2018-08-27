@@ -1,4 +1,4 @@
-import { BaseComponent } from "connexions/src/js/BaseComponent";
+import { BaseComponent } from "./BaseComponent";
 
 /**
  * Buffered ItemList component

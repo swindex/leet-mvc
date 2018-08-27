@@ -1,8 +1,8 @@
-import { BaseComponent } from "connexions/src/js/BaseComponent";
+import { BaseComponent } from "../BaseComponent";
 import Swiper from 'swiper';
-import { NavController } from "connexions/src/js/NavController";
+import { NavController } from "./../../core/NavController";
 import './SwiperTabs.scss';
-import { BasePage } from "../../pages/BasePage";
+import { BasePage } from "./../../pages/BasePage";
 
 /**
  * @param {{navButtons?: true}} [options]

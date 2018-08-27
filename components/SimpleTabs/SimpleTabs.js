@@ -1,4 +1,4 @@
-import { BaseComponent } from "connexions/src/js/BaseComponent";
+import { BaseComponent } from "./../BaseComponent";
 //import './SwiperTabs.scss';
 /**
  * Simple tabs directive. 
