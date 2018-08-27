@@ -1,0 +1,226 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import '_variables';
+input[type=text], 
+input[type=email], 
+input[type=password], 
+input[type=number], 
+input[type=date], 
+input[type=tel], 
+select{
+    font-family: 'Open Sans', sans-serif;  
+    box-sizing:border-box;
+    font-size: $size-f-input;
+    padding: $margin-md;
+    width:100%;
+    -webkit-border-radius:0; 
+    border-radius:0;
+	border: 1px solid #BBB;
+
+	-webkit-appearance: none;
+	//icon background
+	background-position: 99% 50%;
+	background-repeat: no-repeat;
+	height: $size-input-h-md;
+	background-size: $size-input-i-md;
+	background-color: $color-input-bg;
+	color: $color-input-fg;
+	padding-right: $size-input-i-md; //this used for hiding text under icon	
+}
+input[calendar]{
+    background-image: url('../img/calendar_ico.png');
+}
+input[calendartimepicker]{
+    background-image: url('../img/calendar_ico.png');
+}
+select{
+	background-image: url('../img/angle-down-solid.svg');
+	background-size: $size-input-i-sm;
+}
+
+input[type=button],button{
+	width: auto;
+	color: $color-button-fg;
+	background-color: $color-button-bg;
+	border: none;
+    border-radius: 3px;
+    padding: $margin-lg $margin-lg;
+    font-size: $size-f-input;
+}
+input[type=checkbox]{
+    -webkit-appearance: none;
+    border-radius:0;
+    border: 1px solid #BBB;
+   
+    box-sizing:border-box;
+    height: 25px;
+    width: 25px;
+    margin-left: 0;
+    vertical-align: middle;
+    margin-bottom: 5px;
+}
+input[type=checkbox]:checked{
+    background-image: url('../img/blue_dot.png');
+    background-position: 50% 50%;
+    background-size: cover;
+}
+textarea {
+    resize: none;
+    font-family: OSreg;
+    box-sizing: border-box;
+    font-size: 16px;
+    padding: 6px;
+    width: 100%;
+    height: 80px;
+    -webkit-border-radius:0; 
+    -webkit-appearance: none;
+    border-radius:0;
+    border: 1px solid #BBB;
+}
+.formgroup {
+	padding-left: $margin-lg;
+}
+.fieldgroup {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	//padding-left: $margin-lg;
+	padding-bottom: $margin-lg;
+	input[type=text], 
+	input[type=email], 
+	input[type=password], 
+	input[type=number], 
+	input[type=date],
+	input[type=tel],
+	textarea,
+	select {
+		border-collapse: collapse;
+		padding-left: 0;
+		border: none;
+		border-bottom: $size-border solid $color-border;
+		-webkit-appearance: none;
+		&:focus{
+			outline: none;
+			border-bottom: $size-border-active solid $color-border-active;
+			padding-bottom: $margin-md - $size-border-active + 1;
+		}
+		width: 100%;
+		
+	}
+	
+	label {
+		color: #333;
+		z-index: 5;
+		background-color: transparent;
+		padding-left: 0;
+		font-size: 1.3rem;
+	}
+	&.short {
+		padding-bottom: 2rem;
+		.label {
+			margin-left: 0.5rem;
+		}
+	}
+	.hint {
+		font-size: 12px;
+		// margin-left: 40%;
+		&.error {
+
+			color: white;
+		    position: absolute;
+		    background-color: $color-bg-error;
+		    top: 1px;
+		    right: 0;
+		    padding: .4rem .5rem;
+		    font-weight: bold;
+		    z-index: 10;
+
+		    &::after {
+		    	$size: 10px;
+		    	position: absolute;
+		    	bottom: -8px;
+				right: 0;
+		    	content: "";
+		    	width: 0;
+				height: 0;
+				border-top: $size solid $color-bg-error;
+				border-left: $size solid transparent;
+		    }
+		}
+	}
+	.split-input {
+		display: flex;
+		.short{
+			width:3em,
+		}
+	}
+}
+
+.fieldgroup .label{
+	display:block;
+	width: 100%;
+	label{
+		font-size: 16px;
+		&.link{
+			text-decoration: underline;
+			color: $color-link;
+		}
+	}
+}
+//special case: label contains inpuit chechbox
+.fieldgroup{
+	label.toggle{
+		display:block;
+		width: 100%;
+	
+		font-size: $size-f-input;
+		input[type=checkbox] {
+			display: none;
+			&:checked {
+				&+.slider {
+					background-color: #2196F3;
+					&:before {
+						transform: translateX(35px);
+					}
+				}
+			}
+			&:focus {
+				&+.slider {
+					box-shadow: 0 0 1px #2196F3;
+				}
+			}
+		}
+		.slider {
+			position: absolute;
+			cursor: pointer;
+			top: 0;
+			right: 0;
+			right: 5px;
+			bottom: 0;
+			background-color: #ccc;
+			transition: .4s;
+			width: 58px; // of the slot
+			height: 22px; // of the slot
+			margin-left: .2rem;
+			&:before {
+				position: absolute;
+				content: "";
+				height: 26px;
+				width: 26px;
+				left: -1px;
+				bottom: -1px;
+				top: -2px;
+				background-color: white;
+				// -webkit-transition: .4s;
+				transition: .2s;
+				box-shadow: 0 0px 2px #333;
+			}
+			/* Rounded sliders */
+			&.round {
+				border-radius: 34px;
+				&:before {
+					border-radius: 50%;
+				}
+			}
+		}
+	}
+}
