@@ -3,7 +3,6 @@ import { FormValidator } from "./../core/form_validator";
 import { Text } from "./../core/text";
 import { BaseComponent } from "./BaseComponent";
 
-
 /**
  * Forms Directive. Generate forms from JSON data
  * @param {FieldTemplate[]} formTemplate 
@@ -76,8 +75,6 @@ export class Forms extends BaseComponent{
 	onSubmitClicked(){
 		throw new Error('Override ME!');
 	}
-
-	
 
 	formatPhoneNumber(evt){
 		var el  = evt.target;

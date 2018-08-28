@@ -1,0 +1,38 @@
+#page-calendar{
+	.c-datepicker__back, .c-datepicker__next, .c-datepicker__toggle {
+		font-family: 'Font Awesome 5 Free';
+	}
+	.c-datepicker--show-calendar:after {
+		content: '\f073';
+	}
+	.c-datepicker--show-time:after {
+		content: '\f017';
+	}
+	.c-datepicker__back,.c-datepicker__next {
+		color: black;
+		font-weight: 900;
+	}	 
+	.c-datepicker__back:before {
+		content: '\f104';
+	}
+	.c-datepicker__next:after {
+		content: '\f105';
+	}
+	.c-datepicker__toggle {
+		top: 135px;
+	}
+	.c-datepicker__header-date__day {
+		font-size: 40px;
+	}
+	.c-datepicker__header-date {
+		height: 115px;
+		padding: 10px 0;
+	}
+	.c-datepicker {
+		min-height: 525px;
+	}
+	.c-datepicker__clock::before {
+		left: -24px;
+	}
+
+}
