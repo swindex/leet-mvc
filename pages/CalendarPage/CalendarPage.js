@@ -30,3 +30,4 @@ export class CalendarPage extends BasePage{
 }
 CalendarPage.template='';
 CalendarPage.selector = 'page-calendar';
+CalendarPage.visibleParent = true;
