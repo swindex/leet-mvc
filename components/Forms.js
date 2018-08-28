@@ -242,8 +242,11 @@ export class Forms extends BaseComponent{
 	refactorAttrName(name){
 		var p = name.split('.');
 		p[p.length-1] = "['" + p[p.length-1] + "']"
-
-		return '.'+p.join('.').replace('.[','[');
+		if (p.length==1)
+			return p[p.length-1];
+			
+		var ret =  '.'+p.join('.').replace('.[','[');
+		return ret;
 	}
 	/**
 	 * 

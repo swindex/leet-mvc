@@ -32,10 +32,11 @@ export function FormValidator(data,template,errors,attributes){
 			path = [];
 		if (isArray(obj))
 			Objects.forEach(obj,(el)=>{
-				if (el.name)
-					path.push(el.name);
-
-				set_names(el, path.slice());
+				if (el.name){
+					var npath = path.slice();
+					npath.push(el.name);
+				}
+				set_names(el, npath);
 			});
 	
 		if (isObject(obj) && obj.name)
@@ -45,8 +46,6 @@ export function FormValidator(data,template,errors,attributes){
 			path.pop();	
 		
 		if (isObject(obj) && obj.items){
-			//if (obj.type !== 'form' && obj.type !== 'select' )
-			//	path.push('items');
 			set_names(obj.items, path.slice());
 		}
 	
