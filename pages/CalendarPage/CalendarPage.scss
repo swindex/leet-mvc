@@ -1,6 +1,10 @@
 #page-calendar{
+	*{
+		box-sizing: initial;
+	}
 	.c-datepicker__back, .c-datepicker__next, .c-datepicker__toggle {
 		font-family: 'Font Awesome 5 Free';
+		height: 35px;
 	}
 	.c-datepicker--show-calendar:after {
 		content: '\f073';
@@ -33,6 +37,9 @@
 	}
 	.c-datepicker__clock::before {
 		left: -24px;
+	}
+	.c-datepicker__days {
+		margin: 0px 20px;
 	}
 
 }
