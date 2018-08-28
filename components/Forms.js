@@ -58,6 +58,7 @@ export class Forms extends BaseComponent{
 		this.html = this.render(this.formTemplate, null)
 
 	}
+	
 	/** 
 	 * @param {HTMLInputElementChangeEvent} event
 	 */
@@ -244,7 +245,7 @@ export class Forms extends BaseComponent{
 		p[p.length-1] = "['" + p[p.length-1] + "']"
 		if (p.length==1)
 			return p[p.length-1];
-			
+
 		var ret =  '.'+p.join('.').replace('.[','[');
 		return ret;
 	}

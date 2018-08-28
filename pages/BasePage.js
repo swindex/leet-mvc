@@ -38,6 +38,7 @@ export class BasePage extends ChangeWatcher{
 
 	update(){
 		this.binder.updateElements();
+		this.onUpdated();
 	}
 
 	onChange(obj,prop){
@@ -50,7 +51,9 @@ export class BasePage extends ChangeWatcher{
 				this.update();
 			}
 		})		
-
+	}
+	onUpdated(){
+		
 	}
 
 	onEnter(){
