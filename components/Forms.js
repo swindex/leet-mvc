@@ -96,17 +96,17 @@ export class Forms extends BaseComponent{
 
 		for(var i in formTemplate){
 			var el = formTemplate[i];
-			
-			//el._name = el._name;
-			if (el.type!=='form'){
-				if (formName)
-					el._name = formName + "." + el.name;
-				html.push(`<div class="fieldgroup" [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">`);
+			if (el.type){
+				if (el.type!=='form'){
+					if (formName)
+						el._name = formName + "." + el.name;
+					html.push(`<div class="fieldgroup" [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">`);
+				}
+				html.push(this.render_field(el,formName));
+				
+				if (el.type!=='form')
+					html.push('</div>')
 			}
-			html.push(this.render_field(el,formName));
-			
-			if (el.type!=='form')
-				html.push('</div>')
 		}
 		return html.join('');
 	}
