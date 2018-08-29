@@ -19,15 +19,20 @@ export function empty(value){
 export function tryCall(context, callback){
 	if (typeof callback !== 'function')
 		return false;
-
-	var args =[];
-
-	for (var i=2 ; i< arguments.length ; i++)
-		args.push(arguments[i]);
-		arguments.length
-	callback.apply(context, args);
+	callback.apply(context, argumentsToArray(arguments,2));
 	return true;	
 }
+
+/**
+* Push function arguments into array starting from nStart
+* @param {*} args - arguments
+* @param {number} [nStart] - argument number to start from. 0 by default
+*/
+export function argumentsToArray(args,nStart){
+   nStart = nStart || 0;
+   return Array.prototype.slice.call(args).slice(nStart);
+}
+
 
 /**
  * Override Function or a method 

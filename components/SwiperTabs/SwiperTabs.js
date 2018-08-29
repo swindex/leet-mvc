@@ -3,6 +3,7 @@ import Swiper from 'swiper';
 import { NavController } from "./../../core/NavController";
 import './SwiperTabs.scss';
 import { BasePage } from "./../../pages/BasePage";
+import { argumentsToArray } from "leet-mvc/core/helpers";
 
 /**
  * @param {{navButtons?: true}} [options]
@@ -33,14 +34,15 @@ export class SwiperTabs extends BaseComponent{
 
 	}
 
-	addPage(PageConstructor){
+	addPage(PageConstructor,args){
 		if (!this.container && !this.tempContainer){
 			this.tempContainer = document.createDocumentFragment();
 			this.Nav.setContainer(this.tempContainer);
 		}
 		PageConstructor.className = 'swiper-slide'
 		PageConstructor.visibleParent = true;
-		var inst = this.Nav.push(PageConstructor);
+		var inst = this.Nav.push.apply(this, argumentsToArray(arguments));
+
 		this.pages.push(inst);
 		//cause swiper to reinit after adding a page
 		this.swiper.update();

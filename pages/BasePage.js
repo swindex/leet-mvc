@@ -29,7 +29,6 @@ export class BasePage extends ChangeWatcher{
 		// @ts-ignore
 		this.style = {};
 				
-		//this.style.
 		this.binder = new Binder(this,this.page);
 	}
 

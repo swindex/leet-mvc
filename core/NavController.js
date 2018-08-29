@@ -1,4 +1,4 @@
-import { tryCall, empty } from "./helpers";
+import { tryCall, empty, argumentsToArray } from "./helpers";
 
 export function NavController() {
 	/** @type {NavController} */
@@ -28,7 +28,7 @@ export function NavController() {
 	this.setRoot = function(pageConstructor, parameters){
 		removeAllFrames();
 		self.onPageNavigateTo(pageConstructor.name);
-		return createPage(pageConstructor, argsToArray(arguments,1));
+		return createPage(pageConstructor, argumentsToArray(arguments,1));
 	}
 	/**
 	 * Push a page on top of stack.
@@ -39,7 +39,7 @@ export function NavController() {
 		if (currentFrame())
 			tryCall(currentFrame().page, currentFrame().page.onLeave);		
 		self.onPageNavigateTo(pageConstructor.name);
-		var page = createPage(pageConstructor, argsToArray(arguments,1));
+		var page = createPage(pageConstructor, argumentsToArray(arguments,1));
 		return page;
 	}
 	/**
@@ -146,10 +146,10 @@ export function NavController() {
 	 * @param {any[]} args 
 	 */
 	function createPageInstance(pageConstructor, args){
-		//var page = Object.create(pageConstructor.prototype);
-		//var ret = pageConstructor.apply(page, args);
-		//return ret ? ret : page;/
-		return new pageConstructor(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9]);
+		var page = Object.create(pageConstructor.prototype);
+		var ret = pageConstructor.apply(page, args);
+		return ret ? ret : page;
+		//return new pageConstructor(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9]);
 	}
 
 	function attachEvents(pageObject,p){
@@ -284,20 +284,6 @@ export function NavController() {
 				doHideElem();
 			},500);	
 		}
-	}
-
-	/**
-	 * Push arguments into array strating from nStart
-	 * @param {*} args - arguments
-	 * @param {number} [nStart] - argument number to start from
-	 */
-	function argsToArray(args,nStart){
-		nStart = nStart || 0;
-		args = args || [];
-		var ret =[];
-		for (var i = nStart ; i< args.length ; i++)
-			ret.push(args[i]);
-		return ret;	
 	}
 
 	//add ONE listener that will fire onResize on all pages;
