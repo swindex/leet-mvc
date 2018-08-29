@@ -127,10 +127,17 @@ export var DateTime = {
 		return moment(__date).format(DateTime._humanDateTime);
 	},
 
-	moment(input,format,strict){
+	moment: function(input,format,strict){
 		return moment(input,format,strict);
 	},
 
+	toJSONDate: function(__date){
+		return moment(__date).format(DateTime._JSONDate);
+	},
+
 	_humanDateTime:"LLLL",
-	_humanDate:"LL"
+	_humanDate:"LL",
+	_JSONDate:'YYYY-MM-DD[T]HH:mm:ssZ'
+
+
 }

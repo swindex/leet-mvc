@@ -71,7 +71,15 @@ export class ItemList extends BaseComponent{
 	 */
 	setList(itemsList){
 		this._allItems = itemsList;
-		this._items = itemsList.slice(0,this.displayBufferItems-1);
+		this._items = this._allItems.slice(0,this.displayBufferItems-1);
+		this._renderedItems = this.displayBufferItems-1;
+		if (this.binder)
+			this.binder.updateElements();
+	}
+
+	addItem(item){
+		this._allItems.push(item);
+		this._items = this._allItems.slice(0,this.displayBufferItems-1);
 		this._renderedItems = this.displayBufferItems-1;
 		if (this.binder)
 			this.binder.updateElements();
