@@ -23,6 +23,13 @@ export class BasePage extends ChangeWatcher{
 		this.page = page;
 		/** @type {NavController} */
 		this.Nav;
+		/** @type {CSSStyleDeclaration} */
+		this.style;
+		
+		// @ts-ignore
+		this.style = {};
+				
+		//this.style.
 		this.binder = new Binder(this,this.page);
 	}
 

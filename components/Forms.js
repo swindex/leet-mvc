@@ -39,6 +39,7 @@ export class Forms extends BaseComponent{
 
 		this.events = {
 			change:(ev)=>{
+				//validate element on change
 				if (ev.target.name){
 					/** @type {string} */
 					var p = Objects.getPropertyByPath(this.data,ev.target.name);
@@ -72,12 +73,8 @@ export class Forms extends BaseComponent{
 	onClick(event){
 
 	}
-
-	onSubmitClicked(){
-		throw new Error('Override ME!');
-	}
-
-	formatPhoneNumber(evt){
+	
+	_formatPhoneNumber(evt){
 		var el  = evt.target;
 		var selS = el.selectionStart;
 		var selE = el.selectionStart;
@@ -131,7 +128,7 @@ export class Forms extends BaseComponent{
 			case "password":
 				return this.addInput(el,{type:'password'},formName);
 			case "phone":
-				return this.addInput(el,{type:'tel', oninput:"this.formatPhoneNumber($event)"},formName);
+				return this.addInput(el,{type:'tel', oninput:"this._formatPhoneNumber($event)"},formName);
 			case "checkbox":
 				return this.addCheck(el,null,formName);
 			case "select":

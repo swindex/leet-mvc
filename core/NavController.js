@@ -96,15 +96,24 @@ export function NavController() {
 		//console.time()
 		var selector = typeof pageConstructor.selector !=='undefined' ? pageConstructor.selector : 'page-' + pageConstructor.name.toLowerCase() ;
 		var template = typeof pageConstructor.template !=='undefined' ? pageConstructor.template : null ;
-		var className = typeof pageConstructor.className !=='undefined' ? pageConstructor.className : "" ;
+		var className = pageConstructor.className ? pageConstructor.className : "" ;
 
-		var p = document.createElement('div');
-		p.className = `page ${className}`;
-		p.id=selector;
-		//p.style.display ='none';
-		p.style.zIndex = `${(stack.length + 1)*100}`;
-		p.innerHTML = template;
+		//create page factory
+		var factory = document.createElement('div');
+		factory.innerHTML = `
+		<div
+			class="page ${className}"
+			id="${selector}"
+			[style]="this.style"
+			style="z-index:${(stack.length + 1)*100}"
+		>
+			${template}
+		</div>`;
 
+		//our actual page is the first child pf the factory
+		var p = factory.firstElementChild;
+
+		
 		pageContainer.appendChild(p);
 
 		args.unshift($(p));
