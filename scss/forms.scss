@@ -89,7 +89,7 @@ textarea {
 	position: relative;
 	//padding-left: $margin-lg;
 	padding-bottom: $margin-lg;
-	.fieldgroup{
+	.fieldgroup:first-child{
 		padding-top: $margin-lg;
 	}
 	input[type=text], 
