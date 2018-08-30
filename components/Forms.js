@@ -110,11 +110,18 @@ export class Forms extends BaseComponent{
 		}
 		return html.join('');
 	}
+	/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 * @param {string} formName 
+	 */
 	render_field(el,formName){
 		switch (el.type){
 			case "form":
 				return this.addForm(el,null);
 			case "email":
+				this.assertValidateRuleHas(el,"email");
+				return this.addInput(el,{type:'email'},formName);
 			case "text":
 				return this.addInput(el,null,formName);
 			case "date":
@@ -124,9 +131,10 @@ export class Forms extends BaseComponent{
 			case "time":
 				return this.addInput(el,{time:''},formName);	
 			case "number":
+				this.assertValidateRuleHas(el,"number");
 				return this.addInput(el,{type:'number'},formName);
 			case "password":
-				return this.addInput(el,{type:'password'},formName);
+				return this.addInput(el,{type:'password', autocorrect:"off", autocapitalize:"off"},formName);
 			case "phone":
 				return this.addInput(el,{type:'tel', oninput:"this._formatPhoneNumber($event)"},formName);
 			case "checkbox":
@@ -143,6 +151,13 @@ export class Forms extends BaseComponent{
 				return this.addButtons(el,null,formName);		
 
 		}
+	}
+
+	assertValidateRuleHas(el, mustHave){
+		if (!el.validateRule)
+			el.validateRule=mustHave;
+		else if (el.validateRule.indexOf('email')<0)
+			el.validateRule = el.validateRule+"|"+mustHave;
 	}
 	
 	/**
