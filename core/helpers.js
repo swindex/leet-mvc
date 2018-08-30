@@ -18,9 +18,8 @@ export function empty(value){
  */
 export function tryCall(context, callback){
 	if (typeof callback !== 'function')
-		return false;
-	callback.apply(context, argumentsToArray(arguments,2));
-	return true;	
+		return;
+	return callback.apply(context, argumentsToArray(arguments,2));
 }
 
 /**

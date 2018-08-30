@@ -89,6 +89,9 @@ textarea {
 	position: relative;
 	//padding-left: $margin-lg;
 	padding-bottom: $margin-lg;
+	.fieldgroup{
+		padding-top: $margin-lg;
+	}
 	input[type=text], 
 	input[type=email], 
 	input[type=password], 
@@ -116,6 +119,7 @@ textarea {
 		z-index: 5;
 		background-color: transparent;
 		padding-left: 0;
+		//padding-top: $margin-lg;
 		font-size: 1.3rem;
 	}
 	&.short {

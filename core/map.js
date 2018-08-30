@@ -1,9 +1,7 @@
 import  GoogleMapsLoader from 'google-maps';
 import { Loader } from '../pages/Loader/Loader';
 import { tryCall } from 'leet-mvc/core/helpers';
-import { DialogGeneratorPage } from 'leet-mvc/pages/DialogGeneratorPage/DialogGeneratorPage';
-import { Injector } from 'leet-mvc/core/Injector';
-import { NavController } from 'leet-mvc/core/NavController';
+import { Dialog } from 'leet-mvc/pages/DialogPage/DialogPage';
 
 /** Wrapper for google Maps API*/
 /**
@@ -333,33 +331,32 @@ export var Map = function(API_KEY,API_VERSION){
 	this.showMapSettings = function(callback){
 		var map_settings = options;
 		var directions_settings = generateRouteOptions;
-		/** @type {NavController} */
-		var nav = Injector.Nav;
-		var d = nav.push(DialogGeneratorPage, "Map Settings");
+		
+		var d = Dialog("Map Settings");
 
 		d.addCheck('disableDefaultUI','Show Map Controls',!map_settings.disableDefaultUI);
 		
-		/*if (directionsHtmlElement){
-			d.addSelect('Travel Mode',directions_settings.travelMode, null,[
-				{value:'DRIVING',text:"Driving"},
-				{value:'BICYCLING',text:"Bicycling"},
-				{value:'TRANSIT' ,text:"Transit"},
-				{value:'WALKING' ,text:"Walking"},
-			],{name:"travelMode"});
+		if (directionsHtmlElement){
+			d.addSelect("travelMode", 'Travel Mode',directions_settings.travelMode, null,[
+				{value:'DRIVING',title:"Driving"},
+				{value:'BICYCLING',title:"Bicycling"},
+				{value:'TRANSIT' ,title:"Transit"},
+				{value:'WALKING' ,title:"Walking"},
+			]);
 
-			d.addSelect('Map Units',Number(directions_settings.unitSystem), null,[
-				{value:0, text:"Metric"},
-				{value:1, text:"Imperial"},
-			],{name:"unitSystem"});
+			d.addSelect('unitSystem','Map Units',Number(directions_settings.unitSystem), null,[
+				{value:0, title:"Metric"},
+				{value:1, title:"Imperial"},
+			]);
 
-			d.addCheck('Avoid Tolls',directions_settings.avoidTolls,null,{name:"avoidTolls"});
-			d.addCheck('Avoid Highways',directions_settings.avoidHighways,null,{name:"avoidHighways"});
-			d.addCheck('Avoid Ferries',directions_settings.avoidFerries,null,{name:"avoidFerries"});
-			d.addCheck('Provide route alternatives',directions_settings.provideRouteAlternatives,null,{name:"provideRouteAlternatives"});
+			d.addCheck("avoidTolls", 'Avoid Tolls',directions_settings.avoidTolls);
+			d.addCheck("avoidHighways",'Avoid Highways',directions_settings.avoidHighways);
+			d.addCheck("avoidFerries", 'Avoid Ferries',directions_settings.avoidFerries);
+			d.addCheck("provideRouteAlternatives", 'Provide route alternatives',directions_settings.provideRouteAlternatives);
 		}
 		d.addActionButton("Cancel",function(){});
-		d.addActionButton("Ok",function(formData){
-			var res = formData.data;
+		d.addActionButton("Ok",function(){
+			var res = d.data;
 
 			if (directionsHtmlElement){
 				directions_settings = {
@@ -380,7 +377,7 @@ export var Map = function(API_KEY,API_VERSION){
 
 			tryCall(null, callback, map_settings, directions_settings);
 			
-		});*/
+		});
 	}
 	/**
 	 * Set Directions container element
