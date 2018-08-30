@@ -1,11 +1,11 @@
 
 interface FieldTemplate{
 	name:string;
-	_name: string; //internal
-	title:string;
-	value:string|number;
+	_name?: string; //internal
+	title?:string;
+	value?:string|number;
 	type:string;
-	placeholder:string;
+	placeholder?:string;
 	validateRule?:string;
 	displayRule?:string;
 	items?:FieldTemplate[];

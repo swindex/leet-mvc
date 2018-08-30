@@ -1,5 +1,9 @@
 import  GoogleMapsLoader from 'google-maps';
 import { Loader } from '../pages/Loader/Loader';
+import { tryCall } from 'leet-mvc/core/helpers';
+import { DialogGeneratorPage } from 'leet-mvc/pages/DialogGeneratorPage/DialogGeneratorPage';
+import { Injector } from 'leet-mvc/core/Injector';
+import { NavController } from 'leet-mvc/core/NavController';
 
 /** Wrapper for google Maps API*/
 /**
@@ -326,15 +330,16 @@ export var Map = function(API_KEY,API_VERSION){
 		//if (empty(google)) wait.push(v); else v();
 		return this;
 	}
-	/*this.showMapSettings = function(callback){
+	this.showMapSettings = function(callback){
 		var map_settings = options;
 		var directions_settings = generateRouteOptions;
+		/** @type {NavController} */
+		var nav = Injector.Nav;
+		var d = nav.push(DialogGeneratorPage, "Map Settings");
+
+		d.addCheck('disableDefaultUI','Show Map Controls',!map_settings.disableDefaultUI);
 		
-		var d = Dialog("Map Settings",'popup');
-
-		d.addCheck('Show Map Controls',!map_settings.disableDefaultUI, null, {name:"disableDefaultUI"});
-
-		if (directionsHtmlElement){
+		/*if (directionsHtmlElement){
 			d.addSelect('Travel Mode',directions_settings.travelMode, null,[
 				{value:'DRIVING',text:"Driving"},
 				{value:'BICYCLING',text:"Bicycling"},
@@ -375,8 +380,8 @@ export var Map = function(API_KEY,API_VERSION){
 
 			tryCall(null, callback, map_settings, directions_settings);
 			
-		});
-	}*/
+		});*/
+	}
 	/**
 	 * Set Directions container element
 	 * @param {HTMLElement} elem 
