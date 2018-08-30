@@ -1,7 +1,6 @@
 import "../scss/dialog.scss";
 import { FormGenerator } from "../core/form_generator";
-// @ts-ignore
-import * as template from "../views/DialogPageGenerator.html";
+
 import { Injector } from "../js/Injector";
 import { InjectTemplate } from "../js/Inject";
 var Inject = Injector.implement(InjectTemplate)
@@ -73,5 +72,15 @@ function DialogPageGenerator(Page, title) {
 	}
 }		
 DialogPageGenerator.selector = 'page-dialog';
-DialogPageGenerator.template = template;
+DialogPageGenerator.template = `
+	<div class="dialog popup backdrop visible" id="dialogHTML">
+		<div class="dialogmargin">
+			<div class="dialogwrapper">
+				<div class="dialogheader">Reject Order</div>
+				<div class="dialogmessage"></div>
+				<div class="dialogfooter"></div>
+			</div>
+		</div>
+	</div>
+`;
 DialogPageGenerator.visibleParent = true;
