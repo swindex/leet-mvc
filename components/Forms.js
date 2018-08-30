@@ -137,6 +137,8 @@ export class Forms extends BaseComponent{
 				return this.addInput(el,{type:'password', autocorrect:"off", autocapitalize:"off"},formName);
 			case "phone":
 				return this.addInput(el,{type:'tel', oninput:"this._formatPhoneNumber($event)"},formName);
+			case "hidden":
+				return this.addInput(el,{type:'hidden'},formName);	
 			case "checkbox":
 				return this.addCheck(el,null,formName);
 			case "select":
@@ -190,7 +192,8 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override);
 		//var elem = $('<input />',opt).attr('bind',`this.data.${el._name}`)[0].outerHTML;
 		//var elem = `<input bind="this.data.${el._name}" ${generateAttributes(opt)} />`;
-
+		if (el.value)
+			Objects.setPropertyByPath(this.data, el._name, el.value);
 		return `
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
 			<input bind="this.data.${el._name}" ${this.generateAttributes(opt)} />
