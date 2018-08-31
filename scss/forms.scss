@@ -167,11 +167,15 @@ textarea {
 	display:block;
 	width: 100%;
 	label{
-		font-size: 16px;
+		//font-size: 16px;
 		&.link{
 			text-decoration: underline;
 			color: $color-link;
 		}
+	}
+	div{
+		color: #333;
+		font-size: $size-f-input;
 	}
 }
 //special case: label contains inpuit chechbox

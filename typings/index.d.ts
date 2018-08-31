@@ -10,6 +10,7 @@ interface FieldTemplate{
 	displayRule?:string;
 	items?:FieldTemplate[];
 	dataType?:string;
+	atttributes?:FieldData;
 }
 
 interface GenFormData{

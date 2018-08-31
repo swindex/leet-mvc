@@ -13,15 +13,16 @@ import { BaseComponent } from "./BaseComponent";
  */
 export class Forms extends BaseComponent{
 
-	constructor(formTemplate, data, errors, formClass){
+	constructor(formTemplate, data, errors, attributes, formClass){
 		super()
 		this.formTemplate = formTemplate;
-		this.data = data;
-		this.errors = errors;
+		this.data = data|| {};
+		this.errors = errors ||{};
 		this.formClass = formClass;
 		
-		this.attributes = {};
-		
+		this.attributes = attributes || {};
+		this.attrEvents = {};
+
 		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes);
 		this.validator.validateVisibility();
 		
@@ -116,6 +117,9 @@ export class Forms extends BaseComponent{
 	 * @param {string} formName 
 	 */
 	render_field(el,formName){
+		/** @type {string} */
+		el.type = el.type ? el.type.toLowerCase() : '';
+
 		switch (el.type){
 			case "form":
 				return this.addForm(el,null);
@@ -126,7 +130,7 @@ export class Forms extends BaseComponent{
 				return this.addInput(el,null,formName);
 			case "date":
 				return this.addInput(el,{date:''},formName);	
-			case "dateTime":
+			case "datetime":
 				return this.addInput(el,{dateTime:''},formName);	
 			case "time":
 				return this.addInput(el,{time:''},formName);	
@@ -139,6 +143,8 @@ export class Forms extends BaseComponent{
 				return this.addInput(el,{type:'tel', oninput:"this._formatPhoneNumber($event)"},formName);
 			case "hidden":
 				return this.addInput(el,{type:'hidden'},formName);	
+			case "textarea":
+				return this.addTextArea(el,null,formName);	
 			case "checkbox":
 				return this.addCheck(el,null,formName);
 			case "select":
@@ -189,9 +195,7 @@ export class Forms extends BaseComponent{
 		
 		var opt = { name: el._name, type: "text" };
 		
-		$.extend(opt, override);
-		//var elem = $('<input />',opt).attr('bind',`this.data.${el._name}`)[0].outerHTML;
-		//var elem = `<input bind="this.data.${el._name}" ${generateAttributes(opt)} />`;
+		$.extend(opt, override, el.attributes);
 		if (el.value)
 			Objects.setPropertyByPath(this.data, el._name, el.value);
 		return `
@@ -200,7 +204,26 @@ export class Forms extends BaseComponent{
 			<div class="hint" bind="this.errors.${el._name}" [class]="this.errors.${el._name} ? 'error' : ''"></div>
 		`;
 	}
-	
+	/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 * @param {KeyValuePair} [override]
+	 */
+	addTextArea(el, override,formName){
+		
+		var opt = { name: el._name, type: "text" };
+		
+		$.extend(opt, override, el.attributes);
+		//var elem = $('<input />',opt).attr('bind',`this.data.${el._name}`)[0].outerHTML;
+		//var elem = `<input bind="this.data.${el._name}" ${generateAttributes(opt)} />`;
+		if (el.value)
+			Objects.setPropertyByPath(this.data, el._name, el.value);
+		return `
+			`+(el.title ? `<label>${el.title}</label>` : ``)+`
+			<textarea bind="this.data.${el._name}" ${this.generateAttributes(opt)}></textarea>
+			<div class="hint" bind="this.errors.${el._name}" [class]="this.errors.${el._name} ? 'error' : ''"></div>
+		`;
+	}
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
@@ -210,11 +233,12 @@ export class Forms extends BaseComponent{
 
 
 		var opt = { name: el._name, type: "checkbox" };
-		$.extend(opt, override);
-		var elem = $('<input />',opt).attr('bind',`this.data.${el._name}`)[0].outerHTML;
+		$.extend(opt, override, el.attributes);
+		if (el.value)
+			Objects.setPropertyByPath(this.data, el._name, el.value);
 		return `
 			<label class="toggle">${el.title}
-			${elem}
+			<input bind="this.data.${el._name}" ${this.generateAttributes(opt)} />
 			<span class="slider round"></span>
 			</label>
 			<div class="hint" bind="this.errors.${el._name}" [class]="this.errors.${el._name} ? 'error' : ''"></div>
@@ -228,14 +252,14 @@ export class Forms extends BaseComponent{
 	addSelect(el, override,formName){
 
 		var opt = { name: el._name, type: "select", bind: `this.data.${el._name}`};
-		$.extend(opt, override);
+		$.extend(opt, override, el.attributes);
 		var elem = `<select ${this.generateAttributes(opt)}>`;
 		if (el.placeholder)
 			elem = elem+ `<option value="">${el.placeholder}</option>`;
 
 		var items_items = "";	
 		$.each(el.items,  (index, option)=>{
-			elem = elem+ `<option value="${option.value}">${option.title}</option>`;
+			elem = elem+ `<option value="${ option.value===null ? '' : option.value }">${option.title}</option>`;
 			if (option.items){
 				items_items += `<div [if]="this.data.${el._name} == ${option.value}">` + this.render(option.items,formName) + `</div>`;
 			}
@@ -272,10 +296,11 @@ export class Forms extends BaseComponent{
 	addLabel(el, override,formName){
 
 		var opt = { name: el._name, type: "checkbox" };
-		$.extend(opt, override);
+		$.extend(opt, override, el.attributes);
 		return `
 		<div class="label">
-			<label name="${el._name}">${el.title}</label>
+			`+ (el.title ? `<label>${el.title}</label>` : '')+`
+			<div>${el.value}</div>
 		</div>
 		`;
 	}
@@ -286,7 +311,7 @@ export class Forms extends BaseComponent{
 	 */
 	addLink(el, override,formName){
 		var opt = { name: el._name, type: "checkbox" };
-		$.extend(opt, override);
+		$.extend(opt, override, el.attributes);
 		return `
 		<div class="label" [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">
 			<label class="link" bind name="${el._name}">${el.title}</label>
@@ -326,12 +351,16 @@ export class Forms extends BaseComponent{
 	}		
 	generateAttributes(opt){
 		var strOpts="";
-		$.each(opt, function (key, val) {
-			//if (key !== "input" && key !== "click" && key !== "change") {
+		var name = opt.name;
+		$.each(opt, (key, val)=> {
+			if (key !== "input" && key !== "click" && key !== "change") {
 				if (val !== null)
 					strOpts += key + '="' + val + '" ';
-			//} else
-			//	attEvents[key] = val;
+			} else{
+				!this.attrEvents[name] ? this.attrEvents[name] = {} : null;
+				this.attrEvents[name][key] = val;
+				strOpts += 'on'+key + `="this.attrEvents['${name}']['${key}']()"`;
+			}
 		});
 		return strOpts;
 	}

@@ -1,16 +1,39 @@
 {
-  "name": "leet-mvc",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "_from": "git+https://github.com/swindex/leet-mvc.git",
+  "_id": "leet-mvc@1.0.0",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/leet-mvc",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "https://github.com/swindex/leet-mvc",
+    "rawSpec": "https://github.com/swindex/leet-mvc",
+    "saveSpec": "git+https://github.com/swindex/leet-mvc.git",
+    "fetchSpec": "https://github.com/swindex/leet-mvc.git",
+    "gitCommittish": null
   },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/swindex/leet-mvc.git#25dfb5d083e53c05ee8ac3220a790dd5420308ff",
+  "_spec": "https://github.com/swindex/leet-mvc",
+  "_where": "C:\\Connexions",
   "author": "",
-  "license": "ISC",
+  "bundleDependencies": false,
   "dependencies": {
     "google-maps": "^3.3.0",
     "jquery": "^3.3.1",
-	"material-datetime-picker": "https://github.com/ilueckel/material-datetime-picker"
-  }
+    "material-datetime-picker": "git+https://github.com/ilueckel/material-datetime-picker.git"
+  },
+  "deprecated": false,
+  "description": "",
+  "license": "ISC",
+  "main": "index.js",
+  "name": "leet-mvc",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
 }

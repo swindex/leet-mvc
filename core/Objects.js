@@ -3,21 +3,17 @@ import { isArray } from "util";
 
 export const Objects = {
 	filter : function (data,callback){
-		var table = new Array();
-		var ok=0;
-
+		var ret = isObject(data) ? new data.constructor : new Array();
 		for (var key in data){
 			if (! data.hasOwnProperty(key)) continue;	
 				//check if out row using callback
 			var elem=data[key];
 			if (elem!=null && callback(elem, key)) {
 				//copy all fields into our array
-				table.push(elem);
+				ret.push(elem);
 			}
-
-
 		}
-		return table;
+		return ret;
 	},
 	find : function (data,callback){
 		for (var key in data){
@@ -34,9 +30,6 @@ export const Objects = {
 	 * cycle through objects in an array
 	 */
 	forEach : function (data,callback){
-		var table = new Array();
-		var ok=0;
-
 		for (var key in data){
 			if (! data.hasOwnProperty(key)) continue;	
 				//check if out row using callback
