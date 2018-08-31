@@ -2,6 +2,7 @@ import { isNumber, isBoolean, isObject,isArray } from "util";
 import { Objects } from "./Objects";
 import { join } from "path";
 import { SSL_OP_NO_TICKET } from "constants";
+import { empty } from "leet-mvc/core/helpers";
 
 
 /**
@@ -343,7 +344,7 @@ export function FormValidator(data,template,errors,attributes){
 				}
 
 				//only validate fields that are either required, or not empty
-				if (getValue(_data, name) !=="" || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
+				if (!empty(getValue(_data, name)) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
 					var err = validate_key(name,rr[0],type,condition, errmsg);
 					if (!empty(err)){
 						return err;

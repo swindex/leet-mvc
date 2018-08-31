@@ -67,6 +67,7 @@ export function Override(context, method, callback){
  * @param {function} onChangeCallback 
  */
 export function  onChange(object, onChangeCallback){
+	//var builtin = ['Object','Array','Date'];
 	const handler = {
 		get(target, property, receiver) {
 			const desc = Object.getOwnPropertyDescriptor(target, property)
@@ -74,6 +75,7 @@ export function  onChange(object, onChangeCallback){
 			
 			//return non-modifiable objects as-is
 			if (desc && !desc.writable && !desc.configurable) return value
+
 			//return objects, instantiated with `new` as-is
 			if (! isArray(value) && isObject(value) && !isObjLiteral(value))
 				return value;
@@ -100,7 +102,7 @@ export function  onChange(object, onChangeCallback){
 	return new Proxy(object, handler);
 };
 
-function isObjLiteral(_obj) {
+export function isObjLiteral(_obj) {
 	var _test  = _obj;
 	return (  typeof _obj !== 'object' || _obj === null ?
 				false :  
