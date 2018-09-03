@@ -1,15 +1,25 @@
 import { Binder } from '../core/Binder';
 import { NavController } from '../core/NavController';
-import { onChange } from '../core/helpers';
+import WatchJS from 'melanke-watchjs';
 
 export class ChangeWatcher {
 	constructor(){
-		this.watch = false;
+		this.isWatch = false;
 		this.updateQueue = 0;
-		return onChange(this,(obj,prop)=>{this.onChange(obj,prop)});
+		//return onChange(this,(obj,prop)=>{this.onChange(obj,prop)});
+		WatchJS.watch(this, (prop, action, difference, oldvalue)=>{
+    
+			//alert("prop: "+prop+"\n action: "+action+"\n difference: "+JSON.stringify(difference)+"\n old: "+JSON.stringify(oldvalue)+"\n ... and the context: "+JSON.stringify(this));    
+			this.onChange(this,prop);
+		}, 0, false);
 	}
+	/** 
+	 * Called when change occured Returns true is update is possible
+	 */
 	onChange(obj,prop){
-
+		if (!this.isWatch || prop == 'updateQueue')
+			return false;
+		return true;	
 	}
 }
 
@@ -39,7 +49,7 @@ export class BasePage extends ChangeWatcher{
 	onInit(binderEvent){
 		this.binder.bindElements(binderEvent);
 		//this.update();
-		this.watch = true;
+		this.isWatch = true;
 	}
 
 	update(){
@@ -48,15 +58,16 @@ export class BasePage extends ChangeWatcher{
 	}
 
 	onChange(obj,prop){
-		if (!this.watch || prop == 'updateQueue')
-			return;
+		if (!super.onChange(obj,prop))
+			return false;
 		this.updateQueue++;
 		window.requestAnimationFrame(()=>{
 			this.updateQueue > 0 ? this.updateQueue -- : null;
 			if (this.updateQueue==0){
 				this.update();
 			}
-		})		
+		})	
+		return true;	
 	}
 	onUpdated(){
 		

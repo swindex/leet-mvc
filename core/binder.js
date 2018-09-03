@@ -364,7 +364,7 @@ export var Binder = function(context, container){
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
-								if (tryCall(self.context,self.eventCallbacks[k], event) !== false && event.target['parentNode'])
+								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
 									repaint(event.target['parentNode']);
 							});
 						})(k);
@@ -375,14 +375,14 @@ export var Binder = function(context, container){
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
-								if (tryCall(self.context,self.eventCallbacks[k], event) !== false)
+								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
 									repaint(event.target['parentNode']);
 							});
 						})('change');
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
-								if (tryCall(self.context,self.eventCallbacks[k], event) !== false)
+								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
 									repaint(event.target['parentNode']);
 							});
 						})('input');
