@@ -7,25 +7,27 @@
   "_phantomChildren": {},
   "_requested": {
     "type": "git",
-    "raw": "https://github.com/swindex/leet-mvc",
-    "rawSpec": "https://github.com/swindex/leet-mvc",
+    "raw": "leet-mvc@git+https://github.com/swindex/leet-mvc.git",
+    "name": "leet-mvc",
+    "escapedName": "leet-mvc",
+    "rawSpec": "git+https://github.com/swindex/leet-mvc.git",
     "saveSpec": "git+https://github.com/swindex/leet-mvc.git",
     "fetchSpec": "https://github.com/swindex/leet-mvc.git",
     "gitCommittish": null
   },
   "_requiredBy": [
-    "#USER",
     "/"
   ],
-  "_resolved": "git+https://github.com/swindex/leet-mvc.git#25dfb5d083e53c05ee8ac3220a790dd5420308ff",
-  "_spec": "https://github.com/swindex/leet-mvc",
-  "_where": "C:\\Connexions",
+  "_resolved": "git+https://github.com/swindex/leet-mvc.git#39215bc8bae5de5df1687ff3de5de921e64c1953",
+  "_spec": "leet-mvc@git+https://github.com/swindex/leet-mvc.git",
+  "_where": "C:\\Users\\Eldar\\FSWizard-Lite",
   "author": "",
   "bundleDependencies": false,
   "dependencies": {
     "google-maps": "^3.3.0",
     "jquery": "^3.3.1",
-    "material-datetime-picker": "git+https://github.com/ilueckel/material-datetime-picker.git"
+	"material-datetime-picker": "git+https://github.com/ilueckel/material-datetime-picker.git",
+	"melanke-watchjs": "^1.4.3"
   },
   "deprecated": false,
   "description": "",

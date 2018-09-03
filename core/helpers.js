@@ -1,5 +1,4 @@
 import { isObject, isArray } from "util";
-
 /**
  * Check if object is empty
  * @param {*} value 
