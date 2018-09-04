@@ -86,8 +86,7 @@ export class ItemList extends BaseComponent{
 	}
 
 	init(container){
-		//attach scroll event to the closest parent with touch-scroll class
-		$(container).closest('.touch-scroll').on("scroll", (e)=>{
+		$(container).parent().on("scroll", (e)=>{
 			var el = $(e.target);
 			var top = el.scrollTop();
 			var max = el[0].scrollHeight - el[0].clientHeight;

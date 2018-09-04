@@ -119,7 +119,8 @@ export var Binder = function(context, container){
 			var callbacks=null;
 			if (result instanceof BaseComponent){
 				context = result;
-				html = result.html;
+				if (result.html)
+					html = result.html;
 
 				if (isObject(result.events))
 					callbacks = result.events;
@@ -136,8 +137,7 @@ export var Binder = function(context, container){
 				elem.attributes.removeNamedItem('[directive]');
 			if (elem['TEMPLATE']['STATE'] !== result){
 				elem['TEMPLATE']['STATE'] = result;		
-				if (html !== null)
-					elem.innerHTML = html;
+				elem.innerHTML = html;
 				elem['TEMPLATE']['BINDER'] = (new Binder(context,elem)).setInjectVars(self.injectVars).bindElements(callbacks);
 				if (isObject(result)){
 					result.binder=elem['TEMPLATE']['BINDER'];
@@ -364,7 +364,7 @@ export var Binder = function(context, container){
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
-								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
+								if (tryCall(self.context,self.eventCallbacks[k], event) !== false && event.target['parentNode'])
 									repaint(event.target['parentNode']);
 							});
 						})(k);
@@ -375,14 +375,14 @@ export var Binder = function(context, container){
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
-								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
+								if (tryCall(self.context,self.eventCallbacks[k], event) !== false)
 									repaint(event.target['parentNode']);
 							});
 						})('change');
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
-								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
+								if (tryCall(self.context,self.eventCallbacks[k], event) !== false)
 									repaint(event.target['parentNode']);
 							});
 						})('input');
