@@ -7,14 +7,28 @@ export class ChangeWatcher {
 		this.isWatch = false;
 		this.updateQueue = 0;
 		//return onChange(this,(obj,prop)=>{this.onChange(obj,prop)});
-		WatchJS.watch(this, (prop, action, difference, oldvalue)=>{
-    
-			//alert("prop: "+prop+"\n action: "+action+"\n difference: "+JSON.stringify(difference)+"\n old: "+JSON.stringify(oldvalue)+"\n ... and the context: "+JSON.stringify(this));    
-			this.onChange(this,prop);
-		}, 0, false);
+		//make sure watch turns on AFTER averything is initialized. because we are NOT watching new properties
+		window.requestAnimationFrame(()=>{
+			WatchJS.watch(this, (prop, action, difference, oldvalue)=>{
+		
+				//alert("prop: "+prop+"\n action: "+action+"\n difference: "+JSON.stringify(difference)+"\n old: "+JSON.stringify(oldvalue)+"\n ... and the context: "+JSON.stringify(this));    
+				this.onChange(this,prop);
+			}, 0, false);
+		});
 	}
-	/** 
+	/**
+	 * ***OverrideCallSuper***
+	 * Delete allocated memory
+	*/
+	onDestroy(){
+		console.log(this.constructor.name, 'unwatching');
+		WatchJS.unwatch(this);
+	}
+
+	/**
+	 * ***OverrideCallSuper***
 	 * Called when change occured Returns true is update is possible
+	 * 
 	 */
 	onChange(obj,prop){
 		if (!this.isWatch || prop == 'updateQueue')
@@ -42,10 +56,17 @@ export class BasePage extends ChangeWatcher{
 		this.binder = new Binder(this,this.page);
 	}
 
+	/**
+	 * Command the nav controller to remove this page from the stack
+	 */
 	destroy(){
 		this.Nav.remove(this);
 	}
 
+	/**
+	 * ***OverrideCallSuper****
+	 * Initialize binder
+	 */
 	onInit(binderEvent){
 		this.binder.bindElements(binderEvent);
 		//this.update();
@@ -56,7 +77,10 @@ export class BasePage extends ChangeWatcher{
 		this.binder.updateElements();
 		this.onUpdated();
 	}
-
+	/**
+	 * ***OverrideCallSuper****
+	 * Initialize binder
+	 */
 	onChange(obj,prop){
 		if (!super.onChange(obj,prop))
 			return false;
@@ -69,22 +93,36 @@ export class BasePage extends ChangeWatcher{
 		})	
 		return true;	
 	}
+	/**
+	 * ***Override****
+	 */
 	onUpdated(){
-		
+		console.log(this.constructor.name, 'updated');
 	}
-
+	/**
+	 * ***Override****
+	 */
 	onEnter(){
 
 	}
+	/**
+	 * ***Override****
+	 */
 	onLeave(){
 
 	}
-
+	/**
+	 * ***Override****
+	 */
 	onResize(){
 
 	}
+	/**
+	 * ***OverrideCallSuper****
+	 * Called when NavController is about to delete the page
+	 */
 	onDestroy(){
-
+		super.onDestroy();
 	}
 	
 }
