@@ -119,8 +119,7 @@ export var Binder = function(context, container){
 			var callbacks=null;
 			if (result instanceof BaseComponent){
 				context = result;
-				if (result.html)
-					html = result.html;
+				html = result.html;
 
 				if (isObject(result.events))
 					callbacks = result.events;
@@ -137,7 +136,8 @@ export var Binder = function(context, container){
 				elem.attributes.removeNamedItem('[directive]');
 			if (elem['TEMPLATE']['STATE'] !== result){
 				elem['TEMPLATE']['STATE'] = result;		
-				elem.innerHTML = html;
+				if (html !== null)
+					elem.innerHTML = html;
 				elem['TEMPLATE']['BINDER'] = (new Binder(context,elem)).setInjectVars(self.injectVars).bindElements(callbacks);
 				if (isObject(result)){
 					result.binder=elem['TEMPLATE']['BINDER'];
@@ -364,7 +364,7 @@ export var Binder = function(context, container){
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
-								if (tryCall(self.context,self.eventCallbacks[k], event) !== false && event.target['parentNode'])
+								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
 									repaint(event.target['parentNode']);
 							});
 						})(k);
@@ -375,14 +375,14 @@ export var Binder = function(context, container){
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
-								if (tryCall(self.context,self.eventCallbacks[k], event) !== false)
+								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
 									repaint(event.target['parentNode']);
 							});
 						})('change');
 						(function(k){
 							elem.addEventListener(k, function (event) {
 								updateBoundContextProperty(event.target);
-								if (tryCall(self.context,self.eventCallbacks[k], event) !== false)
+								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
 									repaint(event.target['parentNode']);
 							});
 						})('input');

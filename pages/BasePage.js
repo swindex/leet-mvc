@@ -1,21 +1,38 @@
 import { Binder } from '../core/Binder';
 import { NavController } from '../core/NavController';
-import { onChange } from '../core/helpers';
+import { Watcher } from 'leet-mvc/core/Watcher';
 
 export class ChangeWatcher {
 	constructor(){
-		this.watch = false;
+		this.isWatch = false;
 		this.updateQueue = 0;
-		return onChange(this,(obj,prop)=>{this.onChange(obj,prop)});
+		
+		return Watcher.watch(this,(target,prop)=>{
+			this.onChange(this,prop);
+		});
 	}
-	onChange(obj,prop){
+	/**
+	 * ***OverrideCallSuper***
+	 * Delete allocated memory
+	 */
+	onDestroy(){
+		console.log(this.constructor.name, 'unwatching');
+		Watcher.unWatch(this);
+	}
 
+	/**
+	 * ***OverrideCallSuper***
+	 * Called when change occured Returns true is update is possible
+	 */
+	onChange(obj,prop){
+		if (!this.isWatch || prop == 'updateQueue')
+			return false;
+		return true;	
 	}
 }
 
 export class BasePage extends ChangeWatcher{
 	/**
-	 * 
 	 * @param {JQuery<HTMLElement>} page 
 	 */
 	constructor(page){
@@ -32,48 +49,73 @@ export class BasePage extends ChangeWatcher{
 		this.binder = new Binder(this,this.page);
 	}
 
+	/**
+	 * Command the nav controller to remove this page from the stack
+	 */
 	destroy(){
 		this.Nav.remove(this);
 	}
 
+	/**
+	 * ***OverrideCallSuper****
+	 * Initialize binder
+	 */
 	onInit(binderEvent){
 		this.binder.bindElements(binderEvent);
 		//this.update();
-		this.watch = true;
+		this.isWatch = true;
 	}
 
 	update(){
 		this.binder.updateElements();
 		this.onUpdated();
 	}
-
+	/**
+	 * ***OverrideCallSuper****
+	 * Initialize binder
+	 */
 	onChange(obj,prop){
-		if (!this.watch || prop == 'updateQueue')
-			return;
+		if (!super.onChange(obj,prop))
+			return false;
 		this.updateQueue++;
 		window.requestAnimationFrame(()=>{
 			this.updateQueue > 0 ? this.updateQueue -- : null;
 			if (this.updateQueue==0){
 				this.update();
 			}
-		})		
+		})	
+		return true;	
 	}
+	/**
+	 * ***Override****
+	 */
 	onUpdated(){
-		
+		console.log(this.constructor.name, 'updated');
 	}
-
+	/**
+	 * ***Override****
+	 */
 	onEnter(){
 
 	}
+	/**
+	 * ***Override****
+	 */
 	onLeave(){
 
 	}
-
+	/**
+	 * ***Override****
+	 */
 	onResize(){
 
 	}
+	/**
+	 * ***OverrideCallSuper****
+	 * Called when NavController is about to delete the page
+	 */
 	onDestroy(){
-
+		super.onDestroy();
 	}
 	
 }
