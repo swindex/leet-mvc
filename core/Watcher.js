@@ -7,7 +7,7 @@ import WatchJS from 'melanke-watchjs';
  */
 export var Watcher={
 	watch: function(object, onChangeCallback){
-		if (window['Proxy'] && window['Reflect']){
+		if (Proxy && Reflect){
 			const handler = {
 				get(target, property, receiver) {
 					const desc = Object.getOwnPropertyDescriptor(target, property)
@@ -41,6 +41,9 @@ export var Watcher={
 			};
 			return new Proxy(object, handler);
 		}else{
+			console.warn("Using Watch JS");
+			console.warn(Reflect, Proxy);
+			
 			window.requestAnimationFrame(()=>{
 				WatchJS.watch(object, (prop, action, difference, oldvalue)=>{
 					onChangeCallback(object,prop);
@@ -50,7 +53,11 @@ export var Watcher={
 		}	
 	},
 	unWatch: function( object ){
-		WatchJS.unwatch(object);
+		if (Proxy && Reflect){
+			//can't really do anything here.
+		}else{
+			WatchJS.unwatch(object);
+		}
 	}
 }
 function isObjLiteral(_obj) {
