@@ -2,6 +2,7 @@ import { Objects } from "./../core/Objects";
 import { FormValidator } from "./../core/form_validator";
 import { Text } from "./../core/text";
 import { BaseComponent } from "./BaseComponent";
+import { isNumber } from "util";
 
 /**
  * Forms Directive. Generate forms from JSON data
@@ -261,7 +262,7 @@ export class Forms extends BaseComponent{
 		$.each(el.items,  (index, option)=>{
 			elem = elem+ `<option value="${ option.value===null ? '' : option.value }">${option.title}</option>`;
 			if (option.items){
-				items_items += `<div [if]="this.data.${el._name} == ${option.value}">` + this.render(option.items,formName) + `</div>`;
+				items_items += `<div [if]="this.data.${el._name} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.render(option.items,formName) + `</div>`;
 			}
 		});
 		elem = elem + "</select>";
