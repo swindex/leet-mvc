@@ -210,7 +210,7 @@ export function FormValidator(data,template,errors,attributes){
 				});
 				//delete properties that are not used any more
 				Objects.forEach(un_used, (el)=>{
-					if (used.indexOf(el)<=0)
+					if (used.indexOf(el)<0)
 						Objects.deletePropertyByPath(data, el);
 				});
 			}

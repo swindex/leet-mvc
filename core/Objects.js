@@ -30,12 +30,19 @@ export const Objects = {
 	 * cycle through objects in an array
 	 */
 	forEach : function (data,callback){
-		for (var key in data){
-			if (! data.hasOwnProperty(key)) continue;	
-				//check if out row using callback
-			var ret = callback(data[key], key);	
-			if (ret === false) 
-				return;
+
+		if (isArray(data)){
+			for (var i =0; i < data.length; i ++){
+				if (callback(data[i], i) === false) 
+					return;
+			}
+		}else{
+			for (var key in data){
+				if (! data.hasOwnProperty(key)) continue;	
+					//check if out row using callback
+				if (callback(data[key], key) === false) 
+					return;
+			}
 		}
 	},
 

@@ -21,16 +21,17 @@ export class ItemList extends BaseComponent{
 		itemTemplate = itemTemplate || '<div bind = "item" $iterator></div>';
 
 		//list, that is displayed at the moment
-		this._items= [];
+		this._renderItems= [];
 		//all items
-		this._allItems=[];
+		this._items=[];
 		/**
 		 * Number of Items to display at once with setList method
 		 */
-		this.displayBufferItems = 20;
-		this._renderedItems = 0;
+		this.parPage = 20;
+		this._displayFrom = 0;
+		this._displayTo = 0;
 		this.template = itemTemplate;
-		var iterator = ' [foreach]="index in this._items as item" onclick="this.onItemClicked(item, index)"';
+		var iterator = ' item [foreach]="index in this._renderItems as item" onclick="this.onItemClicked(item, index)"';
 
 		this.html = itemTemplate.replace('$iterator',iterator);
 
@@ -45,7 +46,7 @@ export class ItemList extends BaseComponent{
 	 * Get items array
 	 */
 	get items(){
-		return this._allItems;
+		return this._items;
 	}
 	/**
 	 * Fires when an item is clicked
@@ -66,35 +67,73 @@ export class ItemList extends BaseComponent{
 	};
 
 	/**
-	 * Set items for buffered rendering. Recommended for 
+	 * Set items for buffered rendering. Recommended instead of accessing  
 	 * @param {any[]} itemsList 
 	 */
 	setList(itemsList){
-		this._allItems = itemsList;
-		this._items = this._allItems.slice(0,this.displayBufferItems-1);
-		this._renderedItems = this.displayBufferItems-1;
+		this._items = itemsList;
+		this._displayTo = this.parPage;
+		if (this._displayTo > itemsList.length)
+			this._displayTo = itemsList.length;
+		this._renderItems = this._items.slice(0,this._displayTo);
+		
 		if (this.binder)
 			this.binder.updateElements();
 	}
 
 	addItem(item){
-		this._allItems.push(item);
-		this._items = this._allItems.slice(0,this.displayBufferItems-1);
-		this._renderedItems = this.displayBufferItems-1;
+		this._items.push(item);
+		this._renderItems = this._items.slice(0,++this._displayTo);
 		if (this.binder)
 			this.binder.updateElements();
 	}
 
+	/**
+	 * Add items for buffered rendering. Recommended for 
+	 * @param {any[]} items 
+	 */
+	addItems(items){
+		Array.prototype.push.apply(this._items,items);
+
+		this._displayTo += items.length;
+		if (this._displayTo > this._items.length)
+			this._displayTo = this._items.length;
+
+		this._renderItems = this._items.slice(0,this._displayTo);
+
+		if (this.binder)
+			this.binder.updateElements();
+	}
+	scrollTotop(){
+		this.scollParent.animate({ scrollTop: 0 }, 'ease-in');	
+	}
+	scrollToBottom(){
+
+		var vh = this.scollParent.height();
+		var ch = this.container.height();
+		if(ch > vh){
+			this.scollParent.animate({ scrollTop: ch }, 'ease-in');	
+		}
+	}
+
 	init(container){
 		//attach scroll event to the closest parent with touch-scroll class
-		$(container).closest('.touch-scroll').on("scroll", (e)=>{
+		this.container = $(container);
+		this.scollParent = $($(container).closest('.touch-scroll, .scroll').get(0));
+		this.scollParent.on("scroll", (e)=>{
 			var el = $(e.target);
 			var top = el.scrollTop();
 			var max = el[0].scrollHeight - el[0].clientHeight;
 			this.onScroll(top, max);
-			if (this._allItems && max-top<10 && this._renderedItems < this._allItems.length){
-				this._items.push.apply(this._items,this._allItems.slice(this._renderedItems,this._renderedItems+this.displayBufferItems-1))
-				this._renderedItems += this.displayBufferItems-1;
+			if (this._items && max-top<10 && this._displayTo < this._items.length){
+				
+				this._displayTo += this.parPage;
+				if (this._displayTo > this._items.length)
+					this._displayTo = this._items.length;
+	
+				this._renderItems = this._items.slice(0,this._displayTo);
+		
+				
 				this.binder.updateElements();
 			}
 		});
