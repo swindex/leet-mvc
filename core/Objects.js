@@ -3,17 +3,31 @@ import { isArray } from "util";
 
 export const Objects = {
 	filter : function (data,callback){
-		var ret = isObject(data) ? new data.constructor : new Array();
-		for (var key in data){
-			if (! data.hasOwnProperty(key)) continue;	
-				//check if out row using callback
-			var elem=data[key];
-			if (elem!=null && callback(elem, key)) {
-				//copy all fields into our array
-				ret.push(elem);
+		var ret
+		if(isObject(data) || !isArray(data)){
+			ret = new data.constructor;
+			for (var key in data){
+				if (! data.hasOwnProperty(key)) continue;	
+					//check if out row using callback
+				var elem=data[key];
+				if (elem!=null && callback(elem, key)) {
+					//copy all fields into our array
+					ret[key] = elem;
+				}
+			}
+		}else if(isArray(data)){
+			ret = [];
+			for (var key in data){
+				if (! data.hasOwnProperty(key)) continue;	
+					//check if out row using callback
+				var elem=data[key];
+				if (elem!=null && callback(elem, key)) {
+					//copy all fields into our array
+					ret.push(elem);
+				}
 			}
 		}
-		return ret;
+		return ret;	
 	},
 	find : function (data,callback){
 		for (var key in data){
