@@ -13,8 +13,8 @@ import { Forms } from "./Forms";
  */
 export class SwiperForms extends Forms{
 
-	constructor(formTemplate, data, errors, options){
-		super(formTemplate, data, errors, 'swiper-slide scroll')
+	constructor(formTemplate, data, errors,options){
+		super(formTemplate, data, errors, {}, 'swiper-slide scroll')
 		this.formTemplate = formTemplate;
 		this.options = options;
 				
@@ -65,7 +65,7 @@ export class SwiperForms extends Forms{
 			var errs = Objects.filter(this.errors[v.name],(e)=>{
 				return !empty(e);
 			})
-			if (errs.length > 0){
+			if (Object.keys(errs).length > 0){
 				this.swiper.slideTo(n);
 				return false;		
 			}

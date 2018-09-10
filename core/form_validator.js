@@ -21,6 +21,8 @@ export function FormValidator(data,template,errors,attributes){
 	var _attributes = attributes || null;
 	var _form =null;
 
+	var used = [];
+
 	set_names(_template);
 
 	/**
@@ -100,6 +102,7 @@ export function FormValidator(data,template,errors,attributes){
 	 */
 	this.validate = function(){
 		//return validate_template(_template);
+		used=[];
 		return validate_object(_template)==0;
 	}
 
@@ -108,6 +111,7 @@ export function FormValidator(data,template,errors,attributes){
 	 * @param {*} obj 
 	 */
 	this.clearErrors= function(obj){
+		used=[];
 		Objects.clear(obj);
 	}
 
@@ -116,6 +120,7 @@ export function FormValidator(data,template,errors,attributes){
 	 * @return {boolean}
 	 */
 	this.validateField = function(name){
+		//used=[];
 		var r = validate_field(getTemplateValue(name));
 		validate_visibility(_template);
 		return r==0;
@@ -191,7 +196,6 @@ export function FormValidator(data,template,errors,attributes){
 
 			//if element is visible and it has items "its a select box"
 			if (visible && isArray(t.items)){
-				var used = [];
 				var un_used = [];
 				
 				Objects.forEach(t.items,(item)=>{
@@ -264,27 +268,6 @@ export function FormValidator(data,template,errors,attributes){
 			}
 		}
 		return e;
-
-		//hide elements
-		/*hid.forEach((name)=>{
-			//only reset data and error values if field name is not yet hidden
-			if (!isAttrNull(name)){
-				setValue(_data,name,null);
-				setValue(_errors, name, null);
-			}
-
-			//set hidden attribute
-			setAttrValue( name, {visible:false});
-			setAttrValue( name, {hidden:true});
-				
-			
-		});
-		//show all elements that are in vis array
-		vis.forEach((name)=>{
-			setAttrValue( name, null);
-		});*/
-
-		return e;	
 	}
 
 	function prepField(name){
@@ -424,6 +407,19 @@ export function FormValidator(data,template,errors,attributes){
 			case 'required':
 				return value=="" || value==null;
 				break;
+			case 'different':	
+				var otherKeys = condition.split(',');
+				
+				var foundSame = false;
+				Objects.forEach(otherKeys, (otherKey, i)=>{
+					var otherValue = getValue(_data, tryDefaultForm(otherKey,name));
+						if (otherValue == value)
+							foundSame = true
+				});
+				
+				//in the end just check if the
+				return otherValue !== "" && otherValue !==null && foundSame ? true : false;	
+				break;				
 			case 'required_if':
 				var conditions = condition.split(',');
 				var otherKey = conditions.shift();
