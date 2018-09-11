@@ -16,4 +16,9 @@ export class BaseComponent{
 	init(container){
 
 	}
+
+	update(){
+		if (this.binder)
+			this.binder.updateElements();
+	}
 }
