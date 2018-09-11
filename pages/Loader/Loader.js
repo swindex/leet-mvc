@@ -20,7 +20,7 @@ export function Loader (){
 		 * @returns {Loader}
 		 */
 		this.container= function(container){
-			this._loaderContainer = container
+			self._loaderContainer = container
 			return self;
 		}
 		/**
@@ -39,9 +39,9 @@ export function Loader (){
 		* @returns {Loader}
 		*/
 		this.timeout = function(timeout, onTimeout){
-			this._loaderTimeout = timeout;
+			self._loaderTimeout = timeout;
 			if (typeof onTimeout ==='function')
-				this._loaderTimeoutCallback = onTimeout;
+				self._loaderTimeoutCallback = onTimeout;
 			return self;
 		}
 
@@ -50,20 +50,20 @@ export function Loader (){
 		 * @returns {Loader}
 		 */
 		this.show= function(text){
-			this.hide();
+			self.hide();
 
-			this._loaderContainer = this._loaderContainer || 'body';
-			this._loaderTimeout = this._loaderTimeout || 0;
-			this._loaderIsTimedOut = false;
-			this._loaderSelector = $(template);
+			self._loaderContainer = self._loaderContainer || 'body';
+			self._loaderTimeout = self._loaderTimeout || 0;
+			self._loaderIsTimedOut = false;
+			self._loaderSelector = $(template);
 			if (!empty(text))
-				this._loaderSelector.find('.loader-message').text(text);
+				self._loaderSelector.find('.loader-message').text(text);
 			if (!is_backdrop)	
-				this._loaderSelector.css('background-color','rgba(0,0,0,0)');
+				self._loaderSelector.css('background-color','rgba(0,0,0,0)');
 			//append loader to container
-			$(this._loaderContainer).append(this._loaderSelector);
+			$(self._loaderContainer).append(self._loaderSelector);
 
-			if (this._loaderTimeout > 0){
+			if (self._loaderTimeout > 0){
 				setTimeout(function(){
 						if (!self._loaderSelector)
 							return;
@@ -71,7 +71,7 @@ export function Loader (){
 						self._loaderIsTimedOut = true;
 						if (typeof self._loaderTimeoutCallback ==='function')
 							self._loaderTimeoutCallback(self._loaderTimeout);
-					}, this._loaderTimeout);
+					}, self._loaderTimeout);
 			}	
 			return self;
 		}
@@ -80,10 +80,10 @@ export function Loader (){
 		 * @returns {Loader}
 		 */
 		this.start= function(){
-			this.hide();
+			self.hide();
 
-			this._loaderContainer = this._loaderContainer || 'body';
-			this._loaderTimeout = this._loaderTimeout || 0;
+			self._loaderContainer = self._loaderContainer || 'body';
+			self._loaderTimeout = self._loaderTimeout || 0;
 
 			//this._loaderSelector = $(template);
 			//if (!empty(text))
@@ -91,7 +91,7 @@ export function Loader (){
 			//append loader to container
 			//$(this._loaderContainer).append(this._loaderSelector);
 
-			if (this._loaderTimeout > 0){
+			if (self._loaderTimeout > 0){
 				setTimeout(function(){
 						if (!self._loaderSelector)
 							return;
@@ -99,7 +99,7 @@ export function Loader (){
 						self._loaderIsTimedOut = true;
 						if (typeof self._loaderTimeoutCallback ==='function')
 							self._loaderTimeoutCallback(self._loaderTimeout);
-					}, this._loaderTimeout);
+					}, self._loaderTimeout);
 			}	
 			return self;
 		}
@@ -116,15 +116,15 @@ export function Loader (){
 		 * @returns {boolean}
 		 */
 		this.hide = function(){
-			if (this._loaderIsTimedOut) 
+			if (self._loaderIsTimedOut) 
 				return false;
 
-			if (this._loaderSelector)
-				this._loaderSelector.remove();
-			this._loaderSelector= null;
+			if (self._loaderSelector)
+				self._loaderSelector.remove();
+			self._loaderSelector= null;
 
 
-			this._loaderIsTimedOut = false;
+			self._loaderIsTimedOut = false;
 
 			return true;
 		}
