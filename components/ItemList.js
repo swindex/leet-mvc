@@ -27,7 +27,7 @@ export class ItemList extends BaseComponent{
 		/**
 		 * Number of Items to display at once with setList method
 		 */
-		this.parPage = 20;
+		this.perPage = 20;
 		this._displayFrom = 0;
 		this._displayTo = 0;
 		this.template = itemTemplate;
@@ -72,7 +72,7 @@ export class ItemList extends BaseComponent{
 	 */
 	setList(itemsList){
 		this._items = itemsList;
-		this._displayTo = this.parPage;
+		this._displayTo = this.perPage;
 		if (this._displayTo > itemsList.length)
 			this._displayTo = itemsList.length;
 		this._renderItems = this._items.slice(0,this._displayTo);
@@ -127,7 +127,7 @@ export class ItemList extends BaseComponent{
 			this.onScroll(top, max);
 			if (this._items && max-top<10 && this._displayTo < this._items.length){
 				
-				this._displayTo += this.parPage;
+				this._displayTo += this.perPage;
 				if (this._displayTo > this._items.length)
 					this._displayTo = this._items.length;
 	
