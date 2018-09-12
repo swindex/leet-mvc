@@ -135,6 +135,10 @@ export var DateTime = {
 		return moment(__date).format(DateTime._JSONDate);
 	},
 
+	fromJSONDate: function(__date){
+		return moment(__date,DateTime._JSONDate);
+	},
+
 	_humanDateTime:"LLLL",
 	_humanDate:"LL",
 	_JSONDate:'YYYY-MM-DD[T]HH:mm:ssZ'
