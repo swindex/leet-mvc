@@ -105,14 +105,17 @@ export class DialogPage extends BasePage{
 
 
 	removeField(name){
-		Objects.forEach(this.controls,(el,key)=>{
+		/*Objects.forEach(this.controls,(el,key)=>{
 			if (el.name == name){
 				this.controls.splice(key,1);
 			}
-		})
+		})*/
+
+		this.controls = Objects.filter(this.controls, el => el.name != name );
 
 		if (this.data[name])
 			delete this.data[name];
+
 
 		this.render();
 	}

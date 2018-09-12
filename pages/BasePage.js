@@ -72,7 +72,7 @@ export class BasePage extends ChangeWatcher{
 	}
 	/**
 	 * ***OverrideCallSuper****
-	 * Initialize binder
+	 * Handles change events
 	 */
 	onChange(obj,prop){
 		if (!super.onChange(obj,prop))

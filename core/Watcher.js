@@ -1,6 +1,7 @@
 import { isObject, isArray } from "util";
 import WatchJS from 'melanke-watchjs';
 
+let isProxy = Symbol("isProxy");
 /**
  * The watch function creates proxy from any object and watches its changes. Triggers only when own properties change or properties of its simple properties
  * 
@@ -10,8 +11,15 @@ export var Watcher={
 		if (Proxy && Reflect){
 			const handler = {
 				get(target, property, receiver) {
+
+					if (property == isProxy)
+						return true;
+
 					const desc = Object.getOwnPropertyDescriptor(target, property)
 					const value = Reflect.get(target, property, receiver)
+					
+					if (value && isObject(value) && value[isProxy])
+						return value;
 					
 					//return non-modifiable objects as-is
 					if (desc && !desc.writable && !desc.configurable) return value

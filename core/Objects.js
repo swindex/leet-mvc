@@ -86,45 +86,6 @@ export const Objects = {
 	},
 	
 	/**
-	 * Copy object data 
-	 * @param {object} obj - object to create a copy of
-	 * @param {object} [templateObject] - template object. shape of object that will be used for copying
-	 * @param {boolean} [checkSource] - template object. shape of object that will be used for copying
-	 * @return {object}
-	 */
-	copy: function(obj, templateObject, checkSource,path){
-		path = path || "";
-		checkSource = checkSource || false;
-		templateObject = templateObject || obj;
-		let newObj
-		if (isArray(templateObject)){
-			newObj = [];
-			//fillup the template with its own first element
-			if (isArray(obj))
-				templateObject = Array.apply(null, Array(obj.length)).map(function(){return templateObject[0]});
-			else
-				templateObject=[];
-		}else if (isObject(templateObject)){
-			newObj = {};
-		}else{
-			//if primitive, return as is
-			return obj;
-		}
-		//copy object properties
-		Objects.forEach(templateObject, (tEl,i)=>{
-			if (obj && typeof obj[i] !=='undefined')
-				newObj[i] = Objects.copy(obj[i],tEl,checkSource,path + '.' + i);
-			else{
-				if (checkSource)
-					throw new Error(`A Required Property ${i} of template${path} does not exist in source object${path}`);
-				else
-					//console.log(`A Required Property ${i} of template${path} does not exist in source object${path}`);	
-				newObj[i] = Objects.copy(null,tEl,checkSource,path + '.' + i);
-			}
-		});
-		return newObj;
-	},
-	/**
 	 * Get object property using path
 	 * @param {*} obj 
 	 * @param {string[]|string} pathArray 
@@ -173,3 +134,26 @@ export const Objects = {
 			delete obj[pathArray.shift()];
 	}
 }
+
+//DefType(type, default, mutator)
+/**
+	ServiceFeeIncreases:{
+		data:[
+			{
+				feeIncrease_id: DefType('number',parseInt),
+				dateTime:  DefType('dateTime',parseInt),
+				comment:null,
+				status: null,
+				items:[
+					{
+						feeType:null,
+						title:null,
+						fee:null,
+						currency:null
+					}
+				]
+			}
+		]
+	}
+ */
+//class DefType
