@@ -239,8 +239,8 @@ export function NavController() {
 	 * @param {JQuery<HTMLElement>} element - page element to show
 	 */
 	function showPageElement(element){
-
 		window.requestAnimationFrame(function(){
+			//Show immediately
 			if (element.hasClass('deleting'))
 				return;
 			element.addClass('visible');	
@@ -248,7 +248,18 @@ export function NavController() {
 				element.removeAttr('isHidden');
 				element.css('display','block');
 			}
+			//call show again in 500 ms in case child page closed before the parent is fully hidden
+			setTimeout(function(){
+				if (element.hasClass('deleting'))
+					return;
+				element.addClass('visible');	
+				if (typeof element.attr('isHidden') !=='undefined'){
+					element.removeAttr('isHidden');
+					element.css('display','block');
+				}
+			},500);	
 		});
+		
 	}
 
 	/**

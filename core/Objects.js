@@ -4,7 +4,7 @@ import { isArray } from "util";
 export const Objects = {
 	filter : function (data,callback){
 		var ret
-		if(isObject(data) || !isArray(data)){
+		if(isObject(data) && !isArray(data)){
 			ret = new data.constructor;
 			for (var key in data){
 				if (! data.hasOwnProperty(key)) continue;	
@@ -134,26 +134,3 @@ export const Objects = {
 			delete obj[pathArray.shift()];
 	}
 }
-
-//DefType(type, default, mutator)
-/**
-	ServiceFeeIncreases:{
-		data:[
-			{
-				feeIncrease_id: DefType('number',parseInt),
-				dateTime:  DefType('dateTime',parseInt),
-				comment:null,
-				status: null,
-				items:[
-					{
-						feeType:null,
-						title:null,
-						fee:null,
-						currency:null
-					}
-				]
-			}
-		]
-	}
- */
-//class DefType
