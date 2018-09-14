@@ -17,9 +17,8 @@ export function FormValidator(data,template,errors,attributes){
 	var self = this;
 	var _data = data || null;
 	var _template = template || null;
-	var _errors = errors;
-	var _attributes = attributes || null;
-	var _form =null;
+	var _errors = errors || {};
+	var _attributes = attributes || {};
 
 	var used = [];
 
@@ -106,13 +105,9 @@ export function FormValidator(data,template,errors,attributes){
 		return validate_object(_template)==0;
 	}
 
-	/**
-	 * 
-	 * @param {*} obj 
-	 */
-	this.clearErrors= function(obj){
+	this.clearErrors= function(){
 		used=[];
-		Objects.clear(obj);
+		Objects.clear(_errors);
 	}
 
 	/**
