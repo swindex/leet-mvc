@@ -1,9 +1,7 @@
 import { isNumber, isBoolean, isObject,isArray } from "util";
 import { Objects } from "./Objects";
-import { join } from "path";
-import { SSL_OP_NO_TICKET } from "constants";
 import { empty } from "leet-mvc/core/helpers";
-
+import { Translate } from "leet-mvc/core/Translate";
 
 /**
  * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
@@ -21,6 +19,7 @@ export function FormValidator(data,template,errors,attributes){
 	var _attributes = attributes || {};
 
 	var used = [];
+	var touched = [];
 
 	set_names(_template);
 
@@ -115,8 +114,16 @@ export function FormValidator(data,template,errors,attributes){
 	 * @return {boolean}
 	 */
 	this.validateField = function(name){
-		//used=[];
-		var r = validate_field(getTemplateValue(name));
+
+		if (touched.indexOf(name)<0){
+			touched.push(name);
+		}
+
+		var r = 0;
+		touched.forEach((n)=>{
+			r += validate_field(getTemplateValue(n));
+		} )
+
 		validate_visibility(_template);
 		return r==0;
 	}
@@ -643,72 +650,72 @@ export function FormValidator(data,template,errors,attributes){
 	}
 	//default english messages
 	var _messages ={
-		"accepted": "The :attribute must be accepted.",
-		"active_url": "The :attribute is not a valid URL.",
-		"after": "The :attribute must be a date after :date.",
-		"alpha": "The :attribute may only contain letters.",
-		"alpha_dash": "The :attribute may only contain letters, numbers, and dashes.",
-		"alpha_num": "The :attribute may only contain letters and numbers.",
-		"array": "The :attribute must be an array.",
-		"before": "The :attribute must be a date before :date.",
+		"accepted": Translate("The :attribute must be accepted."),
+		"active_url":Translate("The :attribute is not a valid URL."),
+		"after":Translate("The :attribute must be a date after :date."),
+		"alpha":Translate("The :attribute may only contain letters."),
+		"alpha_dash":Translate("The :attribute may only contain letters, numbers, and dashes."),
+		"alpha_num":Translate("The :attribute may only contain letters and numbers."),
+		"array":Translate("The :attribute must be an array."),
+		"before":Translate("The :attribute must be a date before :date."),
 		"between": {
-			"numeric": "The :attribute must be between :min and :max.",
-			"file": "The :attribute must be between :min and :max kilobytes.",
-			"string": "The :attribute must be between :min and :max characters.",
-			"array": "The :attribute must have between :min and :max items."
+			"numeric":Translate("The :attribute must be between :min and :max."),
+			"file":Translate("The :attribute must be between :min and :max kilobytes."),
+			"string":Translate("The :attribute must be between :min and :max characters."),
+			"array":Translate("The :attribute must have between :min and :max items.")
 		},
-		"boolean": "The :attribute field must be true or false.",
-		"confirmed": "The :attribute confirmation does not match.",
-		"date": "The :attribute is not a valid date.",
-		"date_format": "The :attribute does not match the format :format.",
-		"different": "The :attribute and :other must be different.",
-		"digits": "The :attribute must be :digits digits.",
-		"digits_between": "The :attribute must be between :min and :max digits.",
-		"distinct": "The :attribute field has a duplicate value.",
-		"email": "The :attribute must be a valid email address.",
-		"exists": "The selected :attribute is invalid.",
-		"filled": "The :attribute field is required.",
-		"image": "The :attribute must be an image.",
-		"in": "The selected :attribute is invalid.",
-		"in_array": "The :attribute field does not exist in :other.",
-		"integer": "The :attribute must be an integer.",
-		"ip": "The :attribute must be a valid IP address.",
-		"json": "The :attribute must be a valid JSON string.",
+		"boolean":Translate("The :attribute field must be true or false."),
+		"confirmed":Translate("The :attribute confirmation does not match."),
+		"date":Translate("The :attribute is not a valid date."),
+		"date_format":Translate("The :attribute does not match the format :format."),
+		"different":Translate("The :attribute and :other must be different."),
+		"digits":Translate("The :attribute must be :digits digits."),
+		"digits_between":Translate("The :attribute must be between :min and :max digits."),
+		"distinct":Translate("The :attribute field has a duplicate value."),
+		"email":Translate("The :attribute must be a valid email address."),
+		"exists":Translate("The selected :attribute is invalid."),
+		"filled":Translate("The :attribute field is required."),
+		"image":Translate("The :attribute must be an image."),
+		"in":Translate("The selected :attribute is invalid."),
+		"in_array":Translate("The :attribute field does not exist in :other."),
+		"integer":Translate("The :attribute must be an integer."),
+		"ip":Translate("The :attribute must be a valid IP address."),
+		"json":Translate("The :attribute must be a valid JSON string."),
 		"max": {
-			"numeric": "The :attribute may not be greater than :max.",
-			"file": "The :attribute may not be greater than :max kilobytes.",
-			"string": "The :attribute may not be greater than :max characters.",
-			"array": "The :attribute may not have more than :max items."
+			"numeric":Translate("The :attribute may not be greater than :max."),
+			"file":Translate("The :attribute may not be greater than :max kilobytes."),
+			"string":Translate("The :attribute may not be greater than :max characters."),
+			"array":Translate("The :attribute may not have more than :max items.")
 		},
-		"mimes": "The :attribute must be a file of type: :values.",
+		"mimes":Translate("The :attribute must be a file of type: :values."),
 		"min": {
-			"numeric": "The :attribute must be at least :min.",
-			"file": "The :attribute must be at least :min kilobytes.",
-			"string": "The :attribute must be at least :min characters.",
-			"array": "The :attribute must have at least :min items."
+			"numeric":Translate("The :attribute must be at least :min."),
+			"file":Translate("The :attribute must be at least :min kilobytes."),
+			"string":Translate("The :attribute must be at least :min characters."),
+			"array":Translate("The :attribute must have at least :min items.")
 		},
-		"not_in": "The selected :attribute is invalid.",
-		"numeric": "The :attribute must be a number.",
-		"present": "The :attribute field must be present.",
-		"regex": "The :attribute format is invalid.",
-		"required": "The :attribute field is required.",
-		"required_if": "The :attribute field is required when :other is :value.",
-		"required_unless": "The :attribute field is required unless :other is in :values.",
-		"required_with": "The :attribute field is required when :values is present.",
-		"required_with_all": "The :attribute field is required when :values is present.",
-		"required_without": "The :attribute field is required when :values is not present.",
-		"required_without_all": "The :attribute field is required when none of :values are present.",
-		"same": "The :attribute and :other must match.",
+		"not_in":Translate("The selected :attribute is invalid."),
+		"numeric":Translate("The :attribute must be a number."),
+		"present":Translate("The :attribute field must be present."),
+		"regex":Translate("The :attribute format is invalid."),
+		"required":Translate("The :attribute field is required."),
+		"required_if":Translate("The :attribute field is required when :other is :value."),
+		"required_unless":Translate("The :attribute field is required unless :other is in :values."),
+		"required_with":Translate("The :attribute field is required when :values is present."),
+		"required_with_all":Translate("The :attribute field is required when :values is present."),
+		"required_without":Translate("The :attribute field is required when :values is not present."),
+		"required_without_all":Translate("The :attribute field is required when none of :values are present."),
+		"same":Translate("The :attribute and :other must match."),
 		"size": {
-			"numeric": "The :attribute must be :size.",
-			"file": "The :attribute must be :size kilobytes.",
-			"string": "The :attribute must be :size characters.",
-			"array": "The :attribute must contain :size items."
+			"numeric":Translate("The :attribute must be :size."),
+			"file":Translate("The :attribute must be :size kilobytes."),
+			"string":Translate("The :attribute must be :size characters."),
+			"array":Translate("The :attribute must contain :size items.")
 		},
-		"string": "The :attribute must be a string.",
-		"timezone": "The :attribute must be a valid zone.",
-		"true_if": "The :other must be true",
-		"unique": "The :attribute has already been taken.",
-		"url": "The :attribute format is invalid."
+		"string":Translate("The :attribute must be a string."),
+		"timezone":Translate("The :attribute must be a valid zone."),
+		"true_if":Translate("The :other must be true"),
+		"unique":Translate("The :attribute has already been taken."),
+		"url":Translate("The :attribute format is invalid.")
 	}
 }

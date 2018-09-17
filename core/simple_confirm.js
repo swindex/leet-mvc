@@ -1,8 +1,7 @@
 //This module wraps some simple notifications
-
 import { tryCall } from "./helpers";
-import { FormValidator } from "leet-mvc/core/form_validator";
 import { Dialog } from "leet-mvc/pages/DialogPage/DialogPage";
+import { Text } from "leet-mvc/core/text";
 
 /**
  * Show "Confirm" dialog with custom buttons
@@ -24,12 +23,11 @@ export var ConfirmButtons=function(prompt,title,buttons){
  * @param {string} [title] 
  */
 export var Confirm=function(prompt,onConfirm,title){
-	var buts = ['Yes', 'No'];
-	navigator.notification.confirm(prompt,function(btn){
-		if (btn==1){
-			tryCall(this,onConfirm);
-		}
-	},title,buts);
+	var p = Dialog(title);
+	
+	p.addLabel(null, Text.escapeHTML(prompt, true));
+	p.addActionButton('No',()=>{});
+	p.addActionButton('Yes', onConfirm);
 }
 
 /**
@@ -41,7 +39,7 @@ export var Confirm=function(prompt,onConfirm,title){
  */
 export var Prompt = function(prompt,onConfirm, title, value, validateRule){
 	var p = Dialog(title);
-	p.addLabel(null, prompt);
+	p.addLabel(null, Text.escapeHTML(prompt, true));
 	p.addInput('input', '', 'text', value, validateRule);
 	p.addActionButton('Cancel',()=>{});
 	p.addActionButton('Ok', ()=>{
@@ -60,7 +58,7 @@ export var Prompt = function(prompt,onConfirm, title, value, validateRule){
  * @param {string} [title] 
  */
 export var Alert=function(prompt,onConfirm,title){
-	navigator.notification.alert(prompt,function(){
-		tryCall(this,onConfirm);
-	},title);
+	var p = Dialog(title);
+	p.addLabel(null, Text.escapeHTML(prompt, true));
+	p.addActionButton('Ok', onConfirm);
 }

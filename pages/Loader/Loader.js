@@ -1,6 +1,7 @@
 // @ts-ignore
 import * as template from './Loader.html';
 import "./Loader.scss";
+import { Translate } from 'leet-mvc/core/Translate';
 /**
  * @constructor {Loader}
  */
@@ -51,6 +52,8 @@ export function Loader (){
 		 */
 		this.show= function(text){
 			self.hide();
+
+			text = text || Translate("Loading ...")
 
 			self._loaderContainer = self._loaderContainer || 'body';
 			self._loaderTimeout = self._loaderTimeout || 0;

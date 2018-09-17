@@ -2,6 +2,7 @@ import  GoogleMapsLoader from 'google-maps';
 import { Loader } from '../pages/Loader/Loader';
 import { tryCall } from 'leet-mvc/core/helpers';
 import { Dialog } from 'leet-mvc/pages/DialogPage/DialogPage';
+import { Translate } from 'leet-mvc/core/Translate';
 
 /** Wrapper for google Maps API*/
 /**
@@ -9,7 +10,7 @@ import { Dialog } from 'leet-mvc/pages/DialogPage/DialogPage';
  * @param {string} API_KEY 
  * @param {string} API_VERSION 
  */
-export var Map = function(API_KEY,API_VERSION){
+export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	/**@type {Map} */
 	var self = this;
 	/** @type {GoogleMapsLoader.google} */
@@ -47,7 +48,7 @@ export var Map = function(API_KEY,API_VERSION){
 
 	GoogleMapsLoader.KEY = API_KEY;
 	GoogleMapsLoader.VERSION = API_VERSION;
-
+	GoogleMapsLoader.LANGUAGE = LANGUAGE;
 	var wait = [];
 
 	function getLocation(Latitude, Longitude){
@@ -101,7 +102,7 @@ export var Map = function(API_KEY,API_VERSION){
 	 */
 	this.setStartGps = function(callback){
 		addWorker(function(){
-			var loader = Loader().container(mapHtmlElement.parentElement).timeout(5000).show("Acquiring GPS..");
+			var loader = Loader().container(mapHtmlElement.parentElement).timeout(5000).show(Translate("Acquiring GPS.."));
 			navigator.geolocation.getCurrentPosition(function success(pos){
 				loader.hide();
 				start = new google.maps.LatLng(Number(pos.coords.latitude), Number(pos.coords.longitude));
@@ -332,27 +333,27 @@ export var Map = function(API_KEY,API_VERSION){
 		var map_settings = options;
 		var directions_settings = generateRouteOptions;
 		
-		var d = Dialog("Map Settings");
+		var d = Dialog(Translate("Map Settings"));
 
-		d.addCheck('disableDefaultUI','Show Map Controls',!map_settings.disableDefaultUI);
+		d.addCheck('disableDefaultUI',Translate('Show Map Controls'),!map_settings.disableDefaultUI);
 		
 		if (directionsHtmlElement){
-			d.addSelect("travelMode", 'Travel Mode',directions_settings.travelMode, null,[
-				{value:'DRIVING',title:"Driving"},
-				{value:'BICYCLING',title:"Bicycling"},
-				{value:'TRANSIT' ,title:"Transit"},
-				{value:'WALKING' ,title:"Walking"},
+			d.addSelect("travelMode", Translate('Travel Mode'),directions_settings.travelMode, null,[
+				{value:'DRIVING',title:Translate("Driving")},
+				{value:'BICYCLING',title:Translate("Bicycling")},
+				{value:'TRANSIT' ,title:Translate("Transit")},
+				{value:'WALKING' ,title:Translate("Walking")},
 			]);
 
-			d.addSelect('unitSystem','Map Units',Number(directions_settings.unitSystem), null,[
-				{value:0, title:"Metric"},
-				{value:1, title:"Imperial"},
+			d.addSelect('unitSystem',Translate('Map Units'),Number(directions_settings.unitSystem), null,[
+				{value:0, title:Translate("Metric")},
+				{value:1, title:Translate("Imperial")},
 			]);
 
-			d.addCheck("avoidTolls", 'Avoid Tolls',directions_settings.avoidTolls);
-			d.addCheck("avoidHighways",'Avoid Highways',directions_settings.avoidHighways);
-			d.addCheck("avoidFerries", 'Avoid Ferries',directions_settings.avoidFerries);
-			d.addCheck("provideRouteAlternatives", 'Provide route alternatives',directions_settings.provideRouteAlternatives);
+			d.addCheck("avoidTolls", Translate('Avoid Tolls'),directions_settings.avoidTolls);
+			d.addCheck("avoidHighways",Translate('Avoid Highways'),directions_settings.avoidHighways);
+			d.addCheck("avoidFerries", Translate('Avoid Ferries'),directions_settings.avoidFerries);
+			d.addCheck("provideRouteAlternatives", Translate('Provide route alternatives'),directions_settings.provideRouteAlternatives);
 		}
 		d.addActionButton("Cancel",function(){});
 		d.addActionButton("Ok",function(){
@@ -469,3 +470,18 @@ export var Map = function(API_KEY,API_VERSION){
 		workersAdded = true;
 	}
 }
+//"Acquiring GPS..":"Acquiring GPS..",
+//"Map Settings":"Map Settings",
+//'Show Map Controls':'Show Map Controls',
+//'Travel Mode':'Travel Mode',
+//"Driving":"Driving",
+//"Bicycling":"Bicycling",
+//"Transit":"Transit",
+//"Walking":"Walking",
+//'Map Units':'Map Units',
+//"Metric":"Metric",
+//"Imperial":"Imperial",
+//'Avoid Tolls':'Avoid Tolls',
+//'Avoid Highways':'Avoid Highways',
+//'Avoid Ferries':'Avoid Ferries',
+//'Provide route alternatives':'Provide route alternatives',
