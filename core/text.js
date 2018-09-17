@@ -1,11 +1,13 @@
 export var Text = {
-	escapeHTML:function(unsafe) {
+	escapeHTML:function(unsafe, convertNewlines) {
+		convertNewlines = convertNewlines || false;
 		return unsafe
 			 .replace(/&/g, "&amp;")
 			 .replace(/</g, "&lt;")
 			 .replace(/>/g, "&gt;")
 			 .replace(/"/g, "&quot;")
-			 .replace(/'/g, "&#039;");
+			 .replace(/'/g, "&#039;")
+			 .replace(/\n/g, convertNewlines ? "<br />" : '');
 	},
 	/**
 	 * Format phone number while typing

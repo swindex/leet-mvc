@@ -5,7 +5,7 @@
 		
 		<div class = 'dialog-content' [directive] = "this.content"></div>
 		<div class = 'dialog-buttons'>
-			<button [foreach]="button_title in this.buttons as button" onclick="this.onButtonClicked(button_title)" bind="button_title"></button>
+			<button [foreach]="button_title in this.buttons as button" onclick="this.onButtonClicked(button_title)" bind="this.Translate(button_title)"></button>
 		</div>
 	</div>
 </div>
