@@ -102,7 +102,8 @@ export function NavController() {
 		var factory = document.createElement('div');
 		factory.innerHTML = `
 		<div
-			class="page ${className}"
+			page
+			class="${className}"
 			id="${selector}"
 			[style]="this.style"
 			style="z-index:${(stack.length + 1)*100}"
@@ -220,9 +221,9 @@ export function NavController() {
 		for (var i = stack.length-1 ; i >=0 ; i--){
 			var frame = stack[i];
 			if (i==0)
-				frame.element.addClass('root');
+				frame.element.attr('root','');
 			else	
-				frame.element.removeClass('root');
+				frame.element.removeAttr('root');
 			if (!empty(frame.page.visibleParent))
 				hideAfter++;
 			if (hideAfter > n){
@@ -240,26 +241,30 @@ export function NavController() {
 	 */
 	function showPageElement(element){
 		window.requestAnimationFrame(function(){
-			//Show ALMOST immediately. 1 ms delay is for smooth appearance
-			setTimeout(function(){
-				if (element.hasClass('deleting'))
-					return;
-				element.addClass('visible');	
-				if (typeof element.attr('isHidden') !=='undefined'){
-					element.removeAttr('isHidden');
-					element.css('display','block');
-				}
-			});	
-			//HACK
+			
+			//immediately remove block hidden
+			if (typeof element.attr('hidden') !=='undefined'){
+				element.attr('revealing',"");
+			}
+
+			element.removeAttr('hidden');
+
+			//if page is not yet visible add "creating"
+			if (typeof element.attr('visible') == 'undefined'){
+				//Add creating attribute ALMOST immedaitely for smooth appearance
+				setTimeout(function(){
+					element.attr('creating',"");
+				});
+			}
+						
 			//call show again in 500 ms in case child page closed before the parent is fully hidden
 			setTimeout(function(){
-				if (element.hasClass('deleting'))
+				if (typeof element.attr('deleting') !=='undefined')
 					return;
-				element.addClass('visible');	
-				if (typeof element.attr('isHidden') !=='undefined'){
-					element.removeAttr('isHidden');
-					element.css('display','block');
-				}
+					
+				element.removeAttr('revealing');
+				element.removeAttr('creating');
+				element.attr('visible','');
 			},500);	
 		});
 		
@@ -273,18 +278,19 @@ export function NavController() {
 	 */
 	function hidePageElement(element,callback,isDeleting){
 		isDeleting = isDeleting || false;
-		var isHidden = typeof element.attr('isHidden') !== 'undefined';
+		var isHidden = typeof element.attr('hidden') !== 'undefined';
 
-		if (element.hasClass('deleting'))
+		if (typeof element.attr('deleting') !== 'undefined')
 			return;
 		function doHideElem(){
 			window.requestAnimationFrame(function(){
-				element.attr('isHidden',"");
-				element.removeClass(isDeleting ? 'deleting' : 'hiding');
+				element.removeAttr('deleting');
+				element.removeAttr('hiding');
+				element.attr('hidden','');
 				if (typeof callback=='function')
 					callback(element);
 				else{	
-					element.css('display','none');
+					//element.css('display','none');
 					//console.log("Hide Element",element[0].id);
 				}
 			})
@@ -292,8 +298,11 @@ export function NavController() {
 		if(isHidden){
 			doHideElem();
 		}else{
-			element.removeClass('visible');
-			element.addClass(isDeleting ? 'deleting' : 'hiding');
+			element.removeAttr('visible');
+			if (isDeleting)
+				element.attr('deleting',"");
+			else
+				element.attr('hiding',"");
 			setTimeout(function(){
 				doHideElem();
 			},500);	
