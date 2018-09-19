@@ -44,7 +44,7 @@ export var DataShape = {
 			typeof def =='undefined' ? def = null : null
 			if (typeof val == 'undefined')	return def;
 
-			return typeof val == 'undefined' ? def : val+'';
+			return typeof val == 'undefined' || val == null ? def : val+'';
 		},
 	/** @return {Date} */
 	date:(def) => 
