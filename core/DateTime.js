@@ -127,9 +127,7 @@ export var DateTime = {
 		return moment(__date).format(DateTime._humanDateTime);
 	},
 
-	moment: function(input,format,strict){
-		return moment(input,format,strict);
-	},
+	moment: moment,
 
 	toJSONDate: function(__date){
 		return moment(__date).format(DateTime._JSONDate);
@@ -137,6 +135,10 @@ export var DateTime = {
 
 	fromJSONDate: function(__date){
 		return moment(__date,DateTime._JSONDate);
+	},
+
+	setLocale(lang){
+		moment.locale(lang);
 	},
 
 	_humanDateTime:"LLLL",
