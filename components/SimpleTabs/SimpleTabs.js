@@ -27,7 +27,7 @@ export class SimpleTabs{
 
 	getTab(target){
 		var tab_id = $(target).attr('for');
-		return $(target).closest('.page').find('#'+tab_id);
+		return $(target).closest('div[page]').find('#'+tab_id);
 	}
 
 	select(target){
