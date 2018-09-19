@@ -240,14 +240,17 @@ export function NavController() {
 	 */
 	function showPageElement(element){
 		window.requestAnimationFrame(function(){
-			//Show immediately
-			if (element.hasClass('deleting'))
-				return;
-			element.addClass('visible');	
-			if (typeof element.attr('isHidden') !=='undefined'){
-				element.removeAttr('isHidden');
-				element.css('display','block');
-			}
+			//Show ALMOST immediately. 1 ms delay is for smooth appearance
+			setTimeout(function(){
+				if (element.hasClass('deleting'))
+					return;
+				element.addClass('visible');	
+				if (typeof element.attr('isHidden') !=='undefined'){
+					element.removeAttr('isHidden');
+					element.css('display','block');
+				}
+			});	
+			//HACK
 			//call show again in 500 ms in case child page closed before the parent is fully hidden
 			setTimeout(function(){
 				if (element.hasClass('deleting'))
