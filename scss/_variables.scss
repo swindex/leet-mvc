@@ -23,12 +23,18 @@ $size-border-active: 2px;
 $size-input-h-md: 35px;
 $size-input-i-md: 20px;
 $size-input-i-sm: 10px;
+
+$size-input-h-lg: 55px;
+$size-input-i-lg: 30px;
+
 $size-f-input: 16px;
 $margin-xs: 1px;
 $margin-sm: 3px;
 $margin-md: 6px;
 $margin-lg: 12px;
 $margin-xl: 24px;
+
+
 
 @mixin touch-scroll{
 	overflow-y: auto;
