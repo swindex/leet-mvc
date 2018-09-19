@@ -50,6 +50,13 @@ input[type=button],button{
     padding: $margin-lg $margin-lg;
     font-size: $size-f-input;
 }
+input[type=button]:focus ,button:focus {
+    outline: none;
+}
+input[type=button]:active ,button:active {
+    outline: none;
+    box-shadow: 0px 0px 7px 1px #fbfbfb !important;
+}
 input[type=checkbox]{
     -webkit-appearance: none;
     border-radius:0;
@@ -234,5 +241,39 @@ textarea {
 				}
 			}
 		}
+	}
+}
+
+/*
+floating action button
+<div ion-fab right top>
+	<button><i class="fas fa-language"></i></button>
+</div>
+*/
+div[ion-fab]{
+	position: absolute;
+	width: $size-input-h-lg;
+	height: $size-input-h-lg;
+	
+	&[top]{
+		top: $margin-lg;
+	} 
+	&[right]{
+		right: $margin-lg;
+	}
+	&[bottom]{
+		bottom: $margin-lg;
+	}
+	&[left]{
+		left: $margin-lg;
+	}
+	button{
+		position: relative;
+		border-radius: $size-input-h-lg;
+		width: 100%;
+		height: 100%;
+		font-size: $size-input-i-lg;
+		box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.67);
+		padding: 0;
 	}
 }
