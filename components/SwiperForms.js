@@ -73,6 +73,7 @@ export class SwiperForms extends Forms{
 	}
 	
 	init(container){
+		super.init(container);
 		var sw = new Swiper($(container).find('#generatedform')[0],{
 			threshold:50,
 			noSwiping: true,
@@ -84,9 +85,9 @@ export class SwiperForms extends Forms{
 		});
 		this.swiper = $(container).find('#generatedform')[0].swiper;
 		this.swiper.on('slideChange',(v)=>{
-			this.binder.updateElements();
+			//this.binder.updateElements();
 		})
 		this.swiper.slideTo(0);
-		this.binder.updateElements();
+		//this.binder.updateElements();
 	}
 }

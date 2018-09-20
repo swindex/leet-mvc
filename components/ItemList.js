@@ -77,15 +77,15 @@ export class ItemList extends BaseComponent{
 			this._displayTo = itemsList.length;
 		this._renderItems = this._items.slice(0,this._displayTo);
 		
-		if (this.binder)
-			this.binder.updateElements();
+		//if (this.binder)
+		//	this.binder.updateElements();
 	}
 
 	addItem(item){
 		this._items.push(item);
 		this._renderItems = this._items.slice(0,++this._displayTo);
-		if (this.binder)
-			this.binder.updateElements();
+		//if (this.binder)
+		//	this.binder.updateElements();
 	}
 
 	/**
@@ -101,8 +101,8 @@ export class ItemList extends BaseComponent{
 
 		this._renderItems = this._items.slice(0,this._displayTo);
 
-		if (this.binder)
-			this.binder.updateElements();
+		//if (this.binder)
+		//	this.binder.updateElements();
 	}
 	scrollTotop(){
 		this.scollParent.animate({ scrollTop: 0 }, 'ease-in');	
@@ -117,6 +117,7 @@ export class ItemList extends BaseComponent{
 	}
 
 	init(container){
+		super.init(container);
 		//attach scroll event to the closest parent with touch-scroll class
 		this.container = $(container);
 		this.scollParent = $($(container).closest('.touch-scroll, .scroll').get(0));
@@ -134,7 +135,7 @@ export class ItemList extends BaseComponent{
 				this._renderItems = this._items.slice(0,this._displayTo);
 		
 				
-				this.binder.updateElements();
+				//this.binder.updateElements();
 			}
 		});
 	}

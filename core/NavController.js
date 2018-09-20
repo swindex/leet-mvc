@@ -10,6 +10,8 @@ export function NavController() {
 	var backTimeout = 300;
 	var backTimeoutRunning = false;
 	
+	var transitionTime = 400;
+
 	var pageContainer = document.body;
 
 	/**
@@ -241,31 +243,31 @@ export function NavController() {
 	 */
 	function showPageElement(element){
 		window.requestAnimationFrame(function(){
-			
-			//immediately remove block hidden
+					
 			if (typeof element.attr('hidden') !=='undefined'){
 				element.attr('revealing',"");
-			}
-
-			element.removeAttr('hidden');
-
-			//if page is not yet visible add "creating"
-			if (typeof element.attr('visible') == 'undefined'){
+			} else if (typeof element.attr('hidden') == 'undefined' && typeof element.attr('hiding') == 'undefined'  && typeof element.attr('visible') == 'undefined'){
+				//if page is not yet have any attributes
 				//Add creating attribute ALMOST immedaitely for smooth appearance
 				setTimeout(function(){
 					element.attr('creating',"");
 				});
 			}
+
+			//immediately remove block hidden
+			element.removeAttr('hidden');
+			element.removeAttr('hiding');
 						
-			//call show again in 500 ms in case child page closed before the parent is fully hidden
+			//Set to fully visible after 500ms delay
 			setTimeout(function(){
 				if (typeof element.attr('deleting') !=='undefined')
 					return;
-					
+				element.removeAttr('hidden');
+				element.removeAttr('hiding');	
 				element.removeAttr('revealing');
 				element.removeAttr('creating');
 				element.attr('visible','');
-			},500);	
+			},transitionTime);	
 		});
 		
 	}
@@ -305,7 +307,7 @@ export function NavController() {
 				element.attr('hiding',"");
 			setTimeout(function(){
 				doHideElem();
-			},500);	
+			},isDeleting ? transitionTime : transitionTime + 100);	//hiding takes 100 ms longer than deleting
 		}
 	}
 
