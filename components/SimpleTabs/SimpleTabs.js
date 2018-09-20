@@ -3,8 +3,9 @@ import { BaseComponent } from "./../BaseComponent";
 /**
  * Simple tabs directive. 
  */
-export class SimpleTabs{
+export class SimpleTabs extends BaseComponent{
 	constructor(){
+		super();
 		/** @type {HTMLElement} */
 		this.container = null;
 		/** @type {DocumentFragment} */
@@ -36,7 +37,7 @@ export class SimpleTabs{
 	}
 	
 	init(container){
-
+		super.init(container);
 		this.container = $(container);
 		$(container).find('li').on('click',(ev)=>{
 			var t = ev.currentTarget;

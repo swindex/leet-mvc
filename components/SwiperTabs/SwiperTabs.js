@@ -50,7 +50,7 @@ export class SwiperTabs extends BaseComponent{
 	}
 
 	init(container){
-
+		super.init(container);
 		this.container = container;
 		this.Nav.setContainer($(container).find('.swiper-wrapper')[0]);
 		if (this.tempContainer)
@@ -70,6 +70,6 @@ export class SwiperTabs extends BaseComponent{
 			this.onTabChanged(this.pages[v],v);
 		})
 		this.swiper.slideTo(0);
-		this.binder.updateElements();
+		//this.binder.updateElements();
 	}
 }

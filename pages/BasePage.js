@@ -1,35 +1,7 @@
 import { Binder } from '../core/Binder';
 import { NavController } from '../core/NavController';
-import { Watcher } from 'leet-mvc/core/Watcher';
+import { ChangeWatcher } from '../core/ChangeWatcher';
 
-export class ChangeWatcher {
-	constructor(){
-		this.isWatch = false;
-		this.updateQueue = 0;
-		
-		return Watcher.watch(this,(target,prop)=>{
-			this.onChange(this,prop);
-		});
-	}
-	/**
-	 * ***OverrideCallSuper***
-	 * Delete allocated memory
-	 */
-	onDestroy(){
-		console.log(this.constructor.name, 'unwatching');
-		Watcher.unWatch(this);
-	}
-
-	/**
-	 * ***OverrideCallSuper***
-	 * Called when change occured Returns true is update is possible
-	 */
-	onChange(obj,prop){
-		if (!this.isWatch || prop == 'updateQueue')
-			return false;
-		return true;	
-	}
-}
 
 export class BasePage extends ChangeWatcher{
 	/**
@@ -66,26 +38,14 @@ export class BasePage extends ChangeWatcher{
 		this.isWatch = true;
 	}
 
-	update(){
-		this.binder.updateElements();
-		this.onUpdated();
-	}
 	/**
-	 * ***OverrideCallSuper****
-	 * Handles change events
+	 * @override
 	 */
-	onChange(obj,prop){
-		if (!super.onChange(obj,prop))
-			return false;
-		this.updateQueue++;
-		window.requestAnimationFrame(()=>{
-			this.updateQueue > 0 ? this.updateQueue -- : null;
-			if (this.updateQueue==0){
-				this.update();
-			}
-		})	
-		return true;	
+	update(){
+	 	this.binder.updateElements();
+	 	this.onUpdated();
 	}
+
 	/**
 	 * ***Override****
 	 */
@@ -113,6 +73,7 @@ export class BasePage extends ChangeWatcher{
 	/**
 	 * ***OverrideCallSuper****
 	 * Called when NavController is about to delete the page
+	 * @override
 	 */
 	onDestroy(){
 		super.onDestroy();

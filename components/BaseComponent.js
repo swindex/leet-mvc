@@ -1,7 +1,9 @@
 import { Binder } from "../core/Binder";
+import { ChangeWatcher } from "../core/ChangeWatcher";
 
-export class BaseComponent{
+export class BaseComponent extends ChangeWatcher{
 	constructor(){
+		super()
 		/** @type {Binder} */
 		this.binder = null;
 		/** @type {string} */
@@ -14,7 +16,7 @@ export class BaseComponent{
 	 * @param {HTMLElement} container
 	 */
 	init(container){
-
+		this.isWatch = true;
 	}
 
 	update(){
