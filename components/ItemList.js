@@ -31,7 +31,7 @@ export class ItemList extends BaseComponent{
 		this._displayFrom = 0;
 		this._displayTo = 0;
 		this.template = itemTemplate;
-		var iterator = ' item [foreach]="index in this._renderItems as item" onclick="this.onItemClicked(item, index)"';
+		var iterator = ' item [foreach]="index in component._renderItems as item" onclick="component.onItemClicked(item, index)"';
 
 		this.html = itemTemplate.replace('$iterator',iterator);
 
