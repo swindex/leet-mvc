@@ -39,13 +39,13 @@ export class SwiperForms extends Forms{
 			<!-- Add Pagination -->
 			<div class="swiper-pagination"></div>
 			<!-- Add Nav Buttons -->
-			<div [if]="this.options.navigation" class="swiper-navigation">
-				<button [if]="!this.swiper.isBeginning" 
-					onclick="this.swiper.slidePrev()" name="back">Back</button>
-				<button [if]="!this.swiper.isEnd" 
-					onclick="this.swiper.slideNext()" class="item-right" name="next">Next</button>
-				<button [if]="this.swiper.isEnd && this.options.submitButton" 
-					onclick="this.onSubmitClicked()" class="item-right" name="submit">Submit</button>
+			<div [if]="component.options.navigation" class="swiper-navigation">
+				<button [if]="!component.swiper.isBeginning" 
+					onclick="component.swiper.slidePrev()" name="back">Back</button>
+				<button [if]="!component.swiper.isEnd" 
+					onclick="component.swiper.slideNext()" class="item-right" name="next">Next</button>
+				<button [if]="component.swiper.isEnd && component.options.submitButton" 
+					onclick="component.onSubmitClicked()" class="item-right" name="submit">Submit</button>
 			</div>
 			
 		</div>
@@ -85,7 +85,7 @@ export class SwiperForms extends Forms{
 		});
 		this.swiper = $(container).find('#generatedform')[0].swiper;
 		this.swiper.on('slideChange',(v)=>{
-			//this.binder.updateElements();
+			this.binder.updateElements();
 		})
 		this.swiper.slideTo(0);
 		//this.binder.updateElements();
