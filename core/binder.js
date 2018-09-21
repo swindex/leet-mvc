@@ -115,10 +115,10 @@ export var Binder = function(context, container){
 			var result = createExecuteElemAttrGetter(elem,'[directive]',attrValue);
 			
 			var html = null;
-			var context = null;
+			var component;
 			var callbacks=null;
 			if (result instanceof BaseComponent){
-				context = result;
+				component = result;
 				html = result.html;
 
 				if (isObject(result.events))
@@ -128,7 +128,7 @@ export var Binder = function(context, container){
 	
 			}else{
 				html=result;
-				context = self.context;
+				//component = null;
 				callbacks = self.eventCallbacks;
 			}
 
@@ -138,7 +138,7 @@ export var Binder = function(context, container){
 				elem['TEMPLATE']['STATE'] = result;		
 				if (html !== null)
 					elem.innerHTML = html;
-				elem['TEMPLATE']['BINDER'] = (new Binder(context,elem)).setInjectVars(self.injectVars).bindElements(callbacks);
+				elem['TEMPLATE']['BINDER'] = (new Binder(self.context,elem)).setInjectVars($.extend({component:component},self.injectVars)).bindElements(callbacks);
 				if (isObject(result)){
 					result.binder=elem['TEMPLATE']['BINDER'];
 					tryCall(result,result.init,elem)
@@ -146,7 +146,7 @@ export var Binder = function(context, container){
 				
 
 			}else{
-				elem['TEMPLATE']['BINDER'].setInjectVars(self.injectVars).updateElements();
+				elem['TEMPLATE']['BINDER'].setInjectVars($.extend({component:component},self.injectVars)).updateElements();
 			}	
 		},
 		'[innerHTML]':function (elem,attrValue){

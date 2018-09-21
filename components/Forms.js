@@ -102,7 +102,7 @@ export class Forms extends BaseComponent{
 				if (el.type!=='form'){
 					if (formName)
 						el._name = formName + "." + el.name;
-					html.push(`<div class="fieldgroup" [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">`);
+					html.push(`<div class="fieldgroup" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">`);
 				}
 				html.push(this.render_field(el,formName));
 				
@@ -141,7 +141,7 @@ export class Forms extends BaseComponent{
 			case "password":
 				return this.addInput(el,{type:'password', autocorrect:"off", autocapitalize:"off"},formName);
 			case "phone":
-				return this.addInput(el,{type:'tel', oninput:"this._formatPhoneNumber($event)"},formName);
+				return this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"},formName);
 			case "hidden":
 				return this.addInput(el,{type:'hidden'},formName);	
 			case "textarea":
@@ -201,8 +201,8 @@ export class Forms extends BaseComponent{
 			Objects.setPropertyByPath(this.data, el._name, el.value);
 		return `
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
-			<input bind="this.data.${el._name}" ${this.generateAttributes(opt)} />
-			<div class="hint" bind="this.errors.${el._name}" [class]="this.errors.${el._name} ? 'error' : ''"></div>
+			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
+			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
 		`;
 	}
 	/**
@@ -221,8 +221,8 @@ export class Forms extends BaseComponent{
 			Objects.setPropertyByPath(this.data, el._name, el.value);
 		return `
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
-			<textarea bind="this.data.${el._name}" ${this.generateAttributes(opt)}></textarea>
-			<div class="hint" bind="this.errors.${el._name}" [class]="this.errors.${el._name} ? 'error' : ''"></div>
+			<textarea bind="component.data.${el._name}" ${this.generateAttributes(opt)}></textarea>
+			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
 		`;
 	}
 	/**
@@ -239,10 +239,10 @@ export class Forms extends BaseComponent{
 			Objects.setPropertyByPath(this.data, el._name, el.value);
 		return `
 			<label class="toggle">${el.title}
-			<input bind="this.data.${el._name}" ${this.generateAttributes(opt)} />
+			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
 			<span class="slider round"></span>
 			</label>
-			<div class="hint" bind="this.errors.${el._name}" [class]="this.errors.${el._name} ? 'error' : ''"></div>
+			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
 		`;
 	}
 	/**
@@ -252,7 +252,7 @@ export class Forms extends BaseComponent{
 	 */
 	addSelect(el, override,formName){
 
-		var opt = { name: el._name, type: "select", bind: `this.data.${el._name}`};
+		var opt = { name: el._name, type: "select", bind: `component.data.${el._name}`};
 		$.extend(opt, override, el.attributes);
 		var elem = `<select ${this.generateAttributes(opt)}>`;
 		if (el.placeholder)
@@ -262,7 +262,7 @@ export class Forms extends BaseComponent{
 		$.each(el.items,  (index, option)=>{
 			elem = elem+ `<option value="${ option.value===null ? '' : option.value }">${option.title}</option>`;
 			if (option.items){
-				items_items += `<div [if]="this.data.${el._name} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.render(option.items,formName) + `</div>`;
+				items_items += `<div [if]="component.data.${el._name} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.render(option.items,formName) + `</div>`;
 			}
 		});
 		elem = elem + "</select>";
@@ -272,7 +272,7 @@ export class Forms extends BaseComponent{
 		return `
 			<label>${el.title}</label>
 			${elem}
-			<div class="hint" bind="this.errors.${el._name}" [class]="this.errors.${el._name} ? 'error' : ''"></div>
+			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
 		` + items_items;
 	}
 
@@ -314,7 +314,7 @@ export class Forms extends BaseComponent{
 		var opt = { name: el._name, type: "checkbox" };
 		$.extend(opt, override, el.attributes);
 		return `
-		<div class="label" [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">
+		<div class="label" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">
 			<label class="link" bind name="${el._name}">${el.title}</label>
 		</div>
 		`;
