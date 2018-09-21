@@ -360,7 +360,7 @@ export class Forms extends BaseComponent{
 			} else{
 				!this.attrEvents[name] ? this.attrEvents[name] = {} : null;
 				this.attrEvents[name][key] = val;
-				strOpts += 'on'+key + `="this.attrEvents['${name}']['${key}']()"`;
+				strOpts += 'on'+key + `="component.attrEvents['${name}']['${key}']()"`;
 			}
 		});
 		return strOpts;
