@@ -158,6 +158,8 @@ export class Forms extends BaseComponent{
 				return this.addButton(el,null,formName);
 			case "buttons":
 				return this.addButtons(el,null,formName);		
+			case "html":
+				return this.addHtml(el,null,formName);			
 
 		}
 	}
@@ -304,6 +306,14 @@ export class Forms extends BaseComponent{
 			<div>${el.value}</div>
 		</div>
 		`;
+	}
+	/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 * @param {KeyValuePair} [override]
+	 */
+	addHtml(el, override,formName){
+		return el.value;
 	}
 	/**
 	 * 

@@ -46,6 +46,14 @@ export class DialogPage extends BasePage{
 		super.onInit();
 	}
 
+	onResize(){
+		super.onResize();
+		var c = this.page.find('.dialog-content').eq(0);
+
+		var h = (this.page.height() - 150);
+		c.css('max-height',h +"px")
+	}
+
 	onButtonClicked(button_title){
 		if (tryCall(this, this.buttons[button_title], this) != false)
 			this.destroy();
@@ -127,6 +135,13 @@ export class DialogPage extends BasePage{
 		this.render();
 	}
 	
+	addHtml (value) {
+		this.controls.push({name:"label", type:'html',value:value});
+		this.render();
+		
+		return this;
+	}
+
 	/**
 	 * Add Action Button to the dialog
 	 * @param {string} title
