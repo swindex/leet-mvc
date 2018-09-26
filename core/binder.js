@@ -1,6 +1,6 @@
 import { empty, tryCall } from "./helpers";
 import { BaseComponent } from "../components/BaseComponent";
-import { isObject } from "util";
+import { isObject, isString } from "util";
 
 import * as $ from 'jquery';
 
@@ -625,7 +625,7 @@ export var Binder = function(context, container){
 				return false;
 		}
 	}
-	function updateBoundContextProperty(elem, skipFormat ){
+	function updateBoundContextProperty(elem, skipUpdate ){
 		function formatValue(value, format){
 			var v;
 			if(format != null ){
@@ -661,6 +661,7 @@ export var Binder = function(context, container){
 			}
 			return v;
 		}
+	
 		if (!isElementSetting(elem) || empty(elem['TEMPLATE'].SETTERS.value))
 			return;
 		var bind = elem.getAttribute('bind');
@@ -671,10 +672,11 @@ export var Binder = function(context, container){
 
 		var format = elem.getAttribute('format');
 		var type = elem.getAttribute('type');
+
 		switch (elem.tagName) {
 			case "SELECT":
 				var sel = $(elem).find("option:selected");
-				v = skipFormat ? elem.value : formatValue(sel.val(),format);
+				v = formatValue(sel.val(),format);
 				
 				break;
 			case "OPTION":
@@ -684,7 +686,7 @@ export var Binder = function(context, container){
 						v= elem.checked;
 						break;
 					default:
-						v = skipFormat ? elem.value : formatValue(elem.value,format);
+						v = formatValue(elem.value,format);
 						break;	
 				}
 				break;
@@ -693,8 +695,12 @@ export var Binder = function(context, container){
 		}
 		//SetObjProp(this.context,bind,v);
 		var oldval = elem['TEMPLATE'].GETTERS.value(self);
-		if (oldval !== v)
+		if (oldval !== v){
+			if (skipUpdate && self.context['skipUpdate'] === false)
+				self.context['skipUpdate'] = true;
+
 			elem['TEMPLATE'].SETTERS.value(self, v);
+		}
 	}
 
 	this.addListener= function(eventName, callback){

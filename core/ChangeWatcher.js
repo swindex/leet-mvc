@@ -4,7 +4,7 @@ export class ChangeWatcher {
 	constructor(){
 		this.isWatch = false;
 		this.updateQueue = 0;
-		
+		this.skipUpdate = false;
 		return Watcher.watch(this,(target,prop)=>{
 			this._onChange(this,prop);
 		});
@@ -24,13 +24,16 @@ export class ChangeWatcher {
 	 * Handles change events
 	 */
 	_onChange(obj,prop){
-		if (!this.isWatch || prop == 'updateQueue')
+		if (!this.isWatch || prop == 'isWatch' || prop == 'skipUpdate' || prop == 'updateQueue')
 			return false;
 		this.updateQueue++;
 		window.requestAnimationFrame(()=>{
 			this.updateQueue > 0 ? this.updateQueue -- : null;
 			if (this.updateQueue==0){
-				this.update();
+				if (this.skipUpdate)
+					this.skipUpdate = false;
+				else	
+					this.update();
 			}
 		})	
 		return true;	
