@@ -363,7 +363,7 @@ export var Binder = function(context, container){
 							continue;
 						(function(k){
 							elem.addEventListener(k, function (event) {
-								updateBoundContextProperty(event.target);
+								updateBoundContextProperty(event.target, event.type == "input"); //skip formatting for input event
 								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
 									repaint(event.target['parentNode']);
 							});
@@ -381,7 +381,7 @@ export var Binder = function(context, container){
 						})('change');
 						(function(k){
 							elem.addEventListener(k, function (event) {
-								updateBoundContextProperty(event.target);
+								updateBoundContextProperty(event.target, true); //skip formatting for input event
 								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
 									repaint(event.target['parentNode']);
 							});
@@ -528,13 +528,15 @@ export var Binder = function(context, container){
 		if (format !== null) {
 			var formats = format.split(":");
 			if (formats.length > 0 && formats[0] === "number") {
-				v = v * 1;
-				if (isNaN(v)) v = 0;
-				if (formats.length == 2){
-					var ln = !isNaN(formats[1]) ? formats[1] : createExecuteElemAttrGetter(elem,'format',formats[1]);
+				if (v!==""){	
+					v = v * 1;
+					if (isNaN(v)) v = 0;
+					if (formats.length == 2){
+						var ln = !isNaN(formats[1]) ? formats[1] : createExecuteElemAttrGetter(elem,'format',formats[1]);
 
-					v = round(v, parseInt(ln));
-				}
+						v = round(v, parseInt(ln));
+					}
+				}	
 			}
 			if (formats.length > 0 && formats[0] === "boolean") {
 				if (formats.length === 2) {
@@ -623,18 +625,23 @@ export var Binder = function(context, container){
 				return false;
 		}
 	}
-	function updateBoundContextProperty(elem ){
+	function updateBoundContextProperty(elem, skipFormat ){
 		function formatValue(value, format){
 			var v;
 			if(format != null ){
 				var formats = format.split(":");
 				if (formats.length > 0 && formats[0] === "number") {
-					v = value * 1;
-					if (isNaN(v)) v = 0;
-					if (formats.length == 2){
-						var ln = !isNaN(formats[1]) ? formats[1] : createExecuteElemAttrGetter(elem,'format',formats[1]);
+					if (value==="")
+						v = null;
+					else
+					{
+						v = value * 1;
+						if (isNaN(v)) v = 0;
+						if (formats.length == 2){
+							var ln = !isNaN(formats[1]) ? formats[1] : createExecuteElemAttrGetter(elem,'format',formats[1]);
 
-						v = round(v, parseInt(ln));
+							v = round(v, parseInt(ln));
+						}
 					}
 				}
 				if (formats.length > 0 && formats[0] === "boolean") {
@@ -667,7 +674,7 @@ export var Binder = function(context, container){
 		switch (elem.tagName) {
 			case "SELECT":
 				var sel = $(elem).find("option:selected");
-				v = formatValue(sel.val(),format);
+				v = skipFormat ? elem.value : formatValue(sel.val(),format);
 				
 				break;
 			case "OPTION":
@@ -677,7 +684,7 @@ export var Binder = function(context, container){
 						v= elem.checked;
 						break;
 					default:
-						v = formatValue(elem.value,format);
+						v = skipFormat ? elem.value : formatValue(elem.value,format);
 						break;	
 				}
 				break;
