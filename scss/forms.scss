@@ -26,18 +26,28 @@ select{
 	color: $color-input-fg;
 	padding-right: $size-input-i-md; //this used for hiding text under icon	
 }
+.icon-field{
+	position: relative;
+	i{
+		position: absolute;
+		height: 70%;
+		right: $margin-lg;
+		width: 1em;
+		bottom: 0;
+	}	
+}
 input[date]{
-    background-image: url('../img/calendar_ico.png');
+    background-image: url(../img/calendar_ico.png);
 }
 input[dateTime]{
-    background-image: url('../img/calendar_ico.png');
+    background-image: url(../img/calendar_ico.png);
 }
 input[time]{
-    background-image: url('../img/calendar_ico.png');
+    background-image: url(../img/calendar_ico.png);
 }
 
 select{
-	background-image: url('../img/angle-down-solid.svg');
+	background-image: url(../img/angle-down-solid.svg);
 	background-size: $size-input-i-sm;
 }
 
@@ -70,7 +80,7 @@ input[type=checkbox]{
     margin-bottom: 5px;
 }
 input[type=checkbox]:checked{
-    background-image: url('../img/blue_dot.png');
+    background-image: url(../img/blue_dot.png);
     background-position: 50% 50%;
     background-size: cover;
 }
@@ -106,7 +116,8 @@ textarea {
 	input[type=date],
 	input[type=tel],
 	textarea,
-	select {
+	select,
+	.field {
 		border-collapse: collapse;
 		padding-left: 0;
 		border: none;
@@ -114,6 +125,7 @@ textarea {
 		-webkit-appearance: none;
 		&:focus{
 			outline: none;
+			box-shadow: none;
 			border-bottom: $size-border-active solid $color-border-active;
 			padding-bottom: $margin-md - $size-border-active + 1;
 		}
@@ -126,8 +138,9 @@ textarea {
 		z-index: 5;
 		background-color: transparent;
 		padding-left: 0;
-		//padding-top: $margin-lg;
 		font-size: 1.3rem;
+		width: auto;
+		text-align: left;
 	}
 	&.short {
 		padding-bottom: 2rem;

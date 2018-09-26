@@ -23,6 +23,7 @@ export class Forms extends BaseComponent{
 		
 		this.attributes = attributes || {};
 		this.attrEvents = {};
+		this.types={};
 
 		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes);
 		this.validator.validateVisibility();
@@ -139,7 +140,7 @@ export class Forms extends BaseComponent{
 				this.assertValidateRuleHas(el,"number");
 				return this.addInput(el,{type:'number'},formName);
 			case "password":
-				return this.addInput(el,{type:'password', autocorrect:"off", autocapitalize:"off"},formName);
+				return this.addPassword(el,null,formName);
 			case "phone":
 				return this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"},formName);
 			case "hidden":
@@ -204,6 +205,30 @@ export class Forms extends BaseComponent{
 		return `
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
 			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
+			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
+		`;
+	}
+
+	//{type:'password', autocorrect:"off", autocapitalize:"off"}
+	/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 * @param {KeyValuePair} [override]
+	 */
+	addPassword(el, override,formName){
+		
+		var opt = { name: el._name, autocorrect:"off", autocapitalize:"off" };
+		
+		$.extend(opt, override, el.attributes);
+		if (el.value)
+			Objects.setPropertyByPath(this.data, el._name, el.value);
+		this.types[el._name] = "password";	
+		return `
+			`+(el.title ? `<label>${el.title}</label>` : ``)+`
+			<div class="icon-field">
+				<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>
+				<i class="fas fa-eye" onclick="component.togglePasswordType('${el._name}')"></i>
+			</div>	
 			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
 		`;
 	}
@@ -359,7 +384,13 @@ export class Forms extends BaseComponent{
 			${items.join('')}
 		</div>
 		`;
-	}		
+	}	
+	togglePasswordType(name){
+		if (this.types[name]==="text")
+			this.types[name]="password";
+		else
+			this.types[name]="text";
+	}	
 	generateAttributes(opt){
 		var strOpts="";
 		var name = opt.name;
