@@ -377,10 +377,11 @@ export function FormValidator(data,template,errors,attributes){
 		}
 		errmsg=errmsg.replace(':digits',condition);
 		errmsg=errmsg.replace(':size',condition);
+		
+		var result = validate_isfail(name,key,type,condition)
 
-
-		if (validate_isfail(name,key,type,condition)){
-			return errmsg;
+		if (result){
+			return result===true ? errmsg : errmsg.replace(':result', result);;
 		}
 
 		return null;
@@ -545,7 +546,12 @@ export function FormValidator(data,template,errors,attributes){
 			case 'regex':
 				condition=condition.replace(/^\/|\/$/g, '');
 				var re = new RegExp(condition);
-				return re.test(value)==false;
+				var repl = new RegExp('/'+condition+'/g');
+
+				if (re.test(value)==false){
+					var ret = value.replace(new RegExp(condition.replace(/^\^|\*|\$$/g,''),'g'),'');
+					return ret || true;
+				}
 				break;
 			case 'same':
 				return getValue(_data,  tryDefaultForm(condition, name)) !=value;
@@ -697,7 +703,7 @@ export function FormValidator(data,template,errors,attributes){
 		"not_in":Translate("The selected :attribute is invalid."),
 		"numeric":Translate("The :attribute must be a number."),
 		"present":Translate("The :attribute field must be present."),
-		"regex":Translate("The :attribute format is invalid."),
+		"regex":Translate("The :attribute has invalid characters: :result"),
 		"required":Translate("The :attribute field is required."),
 		"required_if":Translate("The :attribute field is required when :other is :value."),
 		"required_unless":Translate("The :attribute field is required unless :other is in :values."),
