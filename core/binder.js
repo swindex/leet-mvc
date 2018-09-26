@@ -379,13 +379,14 @@ export var Binder = function(context, container){
 									repaint(event.target['parentNode']);
 							});
 						})('change');
-						(function(k){
-							elem.addEventListener(k, function (event) {
-								updateBoundContextProperty(event.target, true); //skip formatting for input event
-								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
-									repaint(event.target['parentNode']);
-							});
-						})('input');
+						if (isElementSettingOnInput(elem))
+							(function(k){
+								elem.addEventListener(k, function (event) {
+									updateBoundContextProperty(event.target, true); //skip formatting for input event
+									if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
+										repaint(event.target['parentNode']);
+								});
+							})('input');
 					}
 					didBind = true;
 				}
