@@ -66,7 +66,14 @@ export var Watcher={
 		}else{
 			WatchJS.unwatch(object);
 		}
-	}
+	},
+	/*noMore:function(){
+		if (Proxy && Reflect){
+			//can't really do anything here.
+		}else{
+			WatchJS.noMore = true;;
+		}
+	}*/
 }
 function isObjLiteral(_obj) {
 	var _test  = _obj;
