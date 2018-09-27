@@ -1,5 +1,8 @@
+import { isString } from "util";
+
 export var Text = {
 	escapeHTML:function(unsafe, convertNewlines) {
+		unsafe = isString(unsafe) ? unsafe : "";
 		convertNewlines = convertNewlines || false;
 		return unsafe
 			 .replace(/&/g, "&amp;")

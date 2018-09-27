@@ -36,23 +36,8 @@ declare namespace ObjectsModule{
 		 * Set Object properties to null, preserving references and structure
 		 * @param {*} obj 
 		 */
-		clear(obj: any):void,
+		clear(obj: any):void;,
 		
-		/**
-		 * Copy Object Data
-		 * @param obj The object to copy.
-		 * @param templateObj The template.
-		 * @return {T}
-		 */
-		copy<T>(obj: T): T;,
-		/**
-		 * Copy Object Data using a template
-		 * @param obj The object to copy.
-		 * @param templateObj The template.
-		 * @return {T}
-		 */
-		copy<T>(obj: A, templateObj?: T, ): T;,
-
 		/**
 		 * Get object property using path
 		 * @param {*} obj 
