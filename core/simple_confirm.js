@@ -2,6 +2,7 @@
 import { tryCall } from "./helpers";
 import { Dialog } from "leet-mvc/pages/DialogPage/DialogPage";
 import { Text } from "leet-mvc/core/text";
+import { Objects } from "leet-mvc/core/Objects";
 
 /**
  * Show "Confirm" dialog with custom buttons
@@ -10,10 +11,12 @@ import { Text } from "leet-mvc/core/text";
  * @param {{[button_name:string]:function()}} buttons 
  */
 export var ConfirmButtons=function(prompt,title,buttons){
-	var buts = Object.keys(buttons);
-	navigator.notification.confirm(prompt,function(btn){
-		tryCall(this,buttons[buts[btn-1]]);
-	},title,buts);
+	var p = Dialog(title);
+	
+	p.addLabel(null, Text.escapeHTML(prompt, true));
+	Objects.forEach(buttons,(button, name)=>{
+		p.addActionButton(name,button);
+	})
 }
 
 /**
