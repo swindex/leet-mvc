@@ -87,6 +87,15 @@ export function NavController() {
 		$.each(stack,function(){ret.push(this.name)});
 		return ret;
 	}
+
+	/**
+	 * Get Pages Stack
+	 * @return {PageFrame[]}
+	 */
+	this.getPages = function(){
+		var ret = [];
+		return stack;
+	}
 	/**
 	 * Create page 
 	 * @param {any} pageConstructor 
