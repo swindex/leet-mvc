@@ -135,6 +135,8 @@ export var Binder = function(context, container){
 			if (elem.attributes.hasOwnProperty('[directive]'))		
 				elem.attributes.removeNamedItem('[directive]');
 			if (elem['TEMPLATE']['STATE'] !== result){
+
+				tryCall(result,result ? result.onInit: null, elem);
 				elem['TEMPLATE']['STATE'] = result;		
 				if (html !== null)
 					elem.innerHTML = html;
