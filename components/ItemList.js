@@ -18,8 +18,7 @@ export class ItemList extends BaseComponent{
  	 */
 	constructor(itemTemplate){
 		super();
-		itemTemplate = itemTemplate || '<div bind = "item" $iterator></div>';
-
+		itemTemplate = itemTemplate || null;
 		//list, that is displayed at the moment
 		this._renderItems= [];
 		//all items
@@ -30,11 +29,15 @@ export class ItemList extends BaseComponent{
 		this.perPage = 20;
 		this._displayFrom = 0;
 		this._displayTo = 0;
-		this.template = itemTemplate;
-		var iterator = ' item [foreach]="index in component._renderItems as item" onclick="component.onItemClicked(item, index)"';
+		this.defaultIterator = ' item [foreach]="index in component._renderItems as item" onclick="component.onItemClicked(item, index)"';
 
-		this.html = itemTemplate.replace('$iterator',iterator);
+		if (itemTemplate)
+			this.html = itemTemplate.replace('$iterator',this.defaultIterator);
+	}
 
+	onInit(container){
+		if (!this.html && container.innerHTML)
+			container.innerHTML = container.innerHTML.replace('$iterator',this.defaultIterator);
 	}
 	/**
 	 * Set Items array
@@ -76,16 +79,11 @@ export class ItemList extends BaseComponent{
 		if (this._displayTo > itemsList.length)
 			this._displayTo = itemsList.length;
 		this._renderItems = this._items.slice(0,this._displayTo);
-		
-		//if (this.binder)
-		//	this.binder.updateElements();
 	}
 
 	addItem(item){
 		this._items.push(item);
 		this._renderItems = this._items.slice(0,++this._displayTo);
-		//if (this.binder)
-		//	this.binder.updateElements();
 	}
 
 	/**
@@ -100,9 +98,6 @@ export class ItemList extends BaseComponent{
 			this._displayTo = this._items.length;
 
 		this._renderItems = this._items.slice(0,this._displayTo);
-
-		//if (this.binder)
-		//	this.binder.updateElements();
 	}
 	scrollTotop(){
 		this.scollParent.animate({ scrollTop: 0 }, 'ease-in');	
@@ -127,15 +122,11 @@ export class ItemList extends BaseComponent{
 			var max = el[0].scrollHeight - el[0].clientHeight;
 			this.onScroll(top, max);
 			if (this._items && max-top<10 && this._displayTo < this._items.length){
-				
 				this._displayTo += this.perPage;
 				if (this._displayTo > this._items.length)
 					this._displayTo = this._items.length;
 	
 				this._renderItems = this._items.slice(0,this._displayTo);
-		
-				
-				//this.binder.updateElements();
 			}
 		});
 	}

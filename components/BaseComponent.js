@@ -12,7 +12,14 @@ export class BaseComponent extends ChangeWatcher{
 	}
 
 	/** 
-	 * This functinon is called once after the contained is loaded
+	 * This functinon is called once BEFORE the container is bound to context
+	 * @param {HTMLElement} container
+	 */
+	onInit(container){
+		
+	}
+	/** 
+	 * This functinon is called once after the container is bound to context
 	 * @param {HTMLElement} container
 	 */
 	init(container){
