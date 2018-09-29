@@ -8,7 +8,7 @@ let isProxy = Symbol("isProxy");
  */
 export var Watcher={
 	watch: function(object, onChangeCallback){
-		if (Proxy && Reflect){
+		if (window['Proxy'] && window['Reflect']){
 			const handler = {
 				get(target, property, receiver) {
 
@@ -49,8 +49,8 @@ export var Watcher={
 			};
 			return new Proxy(object, handler);
 		}else{
-			console.warn("Using Watch JS");
-			console.warn(Reflect, Proxy);
+			//console.warn("Using Watch JS");
+			//console.warn(Reflect, Proxy);
 			
 			window.requestAnimationFrame(()=>{
 				WatchJS.watch(object, (prop, action, difference, oldvalue)=>{
@@ -61,19 +61,12 @@ export var Watcher={
 		}	
 	},
 	unWatch: function( object ){
-		if (Proxy && Reflect){
+		if (window['Proxy'] && window['Reflect']){
 			//can't really do anything here.
 		}else{
 			WatchJS.unwatch(object);
 		}
-	},
-	/*noMore:function(){
-		if (Proxy && Reflect){
-			//can't really do anything here.
-		}else{
-			WatchJS.noMore = true;;
-		}
-	}*/
+	}
 }
 function isObjLiteral(_obj) {
 	var _test  = _obj;
