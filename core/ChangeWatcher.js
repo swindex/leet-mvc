@@ -1,21 +1,34 @@
-import { Watcher } from './Watcher';
+import WatchJS from 'melanke-watchjs';
 
 export class ChangeWatcher {
 	constructor(){
 		this.isWatch = false;
 		this.updateQueue = 0;
 		this.skipUpdate = false;
-		return Watcher.watch(this,(target,prop)=>{
+	}
+
+	/**
+	 * ***OverrideCallSuper***
+	 * Start watching changes
+	 */
+	startWatch(){
+		this.isWatch = true;
+		WatchJS.watch(this, (prop, action, difference, oldvalue)=>{
+			WatchJS.noMore = true;
 			this._onChange(this,prop);
+			WatchJS.noMore = false;
+			
 		});
 	}
+
+	
 	/**
 	 * ***OverrideCallSuper***
 	 * Delete allocated memory
 	 */
 	onDestroy(){
 		console.log(this.constructor.name, 'unwatching');
-		Watcher.unWatch(this);
+		WatchJS.unwatch(this);
 	}
 
 	/**
@@ -24,14 +37,22 @@ export class ChangeWatcher {
 	 * Handles change events
 	 */
 	_onChange(obj,prop){
-		if (!this.isWatch || prop == 'isWatch' || prop == 'skipUpdate' || prop == 'updateQueue')
+		if (!this.isWatch || prop == 'isWatch' || prop == 'skipUpdate' || prop == 'updateQueue' || prop == 'injectVars')
 			return false;
+		WatchJS.noMore = true
 		this.updateQueue++;
+		WatchJS.noMore = false	
 		window.requestAnimationFrame(()=>{
+			WatchJS.noMore = true
 			this.updateQueue > 0 ? this.updateQueue -- : null;
+			WatchJS.noMore = false	
+
 			if (this.updateQueue==0){
-				if (this.skipUpdate)
+				if (this.skipUpdate){
+					WatchJS.noMore = true
 					this.skipUpdate = false;
+					WatchJS.noMore = false	
+				}
 				else	
 					this.update();
 			}

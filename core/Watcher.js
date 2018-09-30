@@ -7,8 +7,15 @@ let isProxy = Symbol("isProxy");
  * 
  */
 export var Watcher={
+	WatchJS_halt:function(){
+		if (false && window['Proxy'] && window['Reflect']){
+			//can't really do anything here.
+		}else{
+			//WatchJS.suspend();
+		}
+	},
 	watch: function(object, onChangeCallback){
-		if (window['Proxy'] && window['Reflect']){
+		if (false && window['Proxy'] && window['Reflect']){
 			const handler = {
 				get(target, property, receiver) {
 
@@ -52,16 +59,17 @@ export var Watcher={
 			//console.warn("Using Watch JS");
 			//console.warn(Reflect, Proxy);
 			
-			window.requestAnimationFrame(()=>{
+			//window.requestAnimationFrame(()=>{
 				WatchJS.watch(object, (prop, action, difference, oldvalue)=>{
+					//WatchJS.noMore = true;
 					onChangeCallback(object,prop);
-				}, 0, false);
-			});
+				});
+			//});
 			return object;
 		}	
 	},
 	unWatch: function( object ){
-		if (window['Proxy'] && window['Reflect']){
+		if (false && window['Proxy'] && window['Reflect']){
 			//can't really do anything here.
 		}else{
 			WatchJS.unwatch(object);
