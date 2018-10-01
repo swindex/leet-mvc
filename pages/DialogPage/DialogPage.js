@@ -30,12 +30,6 @@ export class DialogPage extends BasePage{
 		this.prompt= null;
 		this.content= null;
 
-
-
-		/** @type {FieldTemplate[]} */
-		//this.controls;
-		// @ts-ignore
-		//make them unwatchable
 		this.controls=[];
 		this.data = {};
 		this.errors={};
@@ -120,17 +114,10 @@ export class DialogPage extends BasePage{
 
 
 	removeField(name){
-		/*Objects.forEach(this.controls,(el,key)=>{
-			if (el.name == name){
-				this.controls.splice(key,1);
-			}
-		})*/
-
 		this.controls = Objects.filter(this.controls, el => el.name != name );
 
 		if (this.data[name])
 			delete this.data[name];
-
 
 		this.render();
 	}
@@ -140,6 +127,15 @@ export class DialogPage extends BasePage{
 		this.render();
 		
 		return this;
+	}
+
+	/**
+	 * Validate the content form
+	 */
+	validate(){
+		var ret = this.content.validator.validate();
+		this._onChange();
+		return ret;
 	}
 
 	/**
