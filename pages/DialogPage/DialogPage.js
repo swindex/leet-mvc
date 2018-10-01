@@ -56,6 +56,7 @@ export class DialogPage extends BasePage{
 
 	render(){
 		this.content = new Forms(this.controls,this.data,this.errors);
+		this._onChange();
 	}
 
 	Translate(val){
@@ -103,7 +104,7 @@ export class DialogPage extends BasePage{
 	}
 
 	addLabel (title, value, attrs) {
-		this.controls.push({name:"label", type:'label', title:title,value:value ,attributes:attrs});
+		this.controls.push({name:"label", type:'label', title:title, value:value ,attributes:attrs});
 		this.render();
 		
 		return this;

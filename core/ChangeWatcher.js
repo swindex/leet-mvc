@@ -13,11 +13,12 @@ export class ChangeWatcher {
 	 */
 	startWatch(){
 		this.isWatch = true;
-		
-		WatchJS.watch(this, (prop, action, difference, oldvalue)=>{
-			WatchJS.noMore = true;
+		var props = Object.keys(this).filter(key => ['page','binder','isWatch','skipUpdate','updateQueue','injectVars'].indexOf(key) < 0 );
+
+		WatchJS.watch(this, props, (prop)=>{
+			//WatchJS.noMore = true;
 			this._onChange(this,prop);
-			WatchJS.noMore = false;
+			//WatchJS.noMore = false;
 		});
 	}
 
@@ -39,19 +40,19 @@ export class ChangeWatcher {
 	_onChange(obj,prop){
 		if (!this.isWatch || prop == 'isWatch' || prop == 'skipUpdate' || prop == 'updateQueue' || prop == 'injectVars')
 			return false;
-		WatchJS.noMore = true
+		//WatchJS.noMore = true
 		this.updateQueue++;
-		WatchJS.noMore = false	
+		//WatchJS.noMore = false	
 		window.requestAnimationFrame(()=>{
-			WatchJS.noMore = true
+			//WatchJS.noMore = true
 			this.updateQueue > 0 ? this.updateQueue -- : null;
-			WatchJS.noMore = false	
+			//WatchJS.noMore = false	
 
 			if (this.updateQueue==0){
 				if (this.skipUpdate){
-					WatchJS.noMore = true
+					//WatchJS.noMore = true
 					this.skipUpdate = false;
-					WatchJS.noMore = false	
+					//WatchJS.noMore = false	
 				}
 				else	
 					this.update();
