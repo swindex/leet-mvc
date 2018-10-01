@@ -13,11 +13,11 @@ export class ChangeWatcher {
 	 */
 	startWatch(){
 		this.isWatch = true;
+		
 		WatchJS.watch(this, (prop, action, difference, oldvalue)=>{
 			WatchJS.noMore = true;
 			this._onChange(this,prop);
 			WatchJS.noMore = false;
-			
 		});
 	}
 
