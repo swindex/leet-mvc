@@ -3,11 +3,11 @@ import * as template from './DialogPage.html';
 import './DialogPage.scss';
 import { tryCall } from "../../core/helpers";
 import { isString } from "util";
-import { Forms } from "leet-mvc/components/Forms";
-import { Injector } from "leet-mvc/core/Injector";
-import { NavController } from "leet-mvc/core/NavController";
-import { Objects } from "leet-mvc/core/Objects";
-import { Translate } from "leet-mvc/core/Translate";
+import { Forms } from "../../components/Forms";
+import { Injector } from "../../core/Injector";
+import { NavController } from "../../core/NavController";
+import { Objects } from "../../core/Objects";
+import { Translate } from "../../core/Translate";
 
 /**
  * Create an instance of the dialog page
@@ -33,7 +33,6 @@ export class DialogPage extends BasePage{
 		this.controls=[];
 		this.data = {};
 		this.errors={};
-	
 	}
 
 	onInit(){
@@ -51,6 +50,8 @@ export class DialogPage extends BasePage{
 	onButtonClicked(button_title){
 		if (tryCall(this, this.buttons[button_title], this) != false)
 			this.destroy();
+		else	
+			this._onChange();	
 	}
 
 	render(){
