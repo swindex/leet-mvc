@@ -79,13 +79,11 @@ export class ItemList extends BaseComponent{
 		if (this._displayTo > itemsList.length)
 			this._displayTo = itemsList.length;
 		this._renderItems = this._items.slice(0,this._displayTo);
-		//this._onChange();
 	}
 
 	addItem(item){
 		this._items.push(item);
 		this._renderItems = this._items.slice(0,++this._displayTo);
-		//this._onChange();
 	}
 
 	/**
@@ -100,7 +98,6 @@ export class ItemList extends BaseComponent{
 			this._displayTo = this._items.length;
 
 		this._renderItems = this._items.slice(0,this._displayTo);
-		//this._onChange();
 	}
 	scrollTotop(){
 		this.scollParent.animate({ scrollTop: 0 }, 'ease-in');	

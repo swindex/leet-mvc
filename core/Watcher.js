@@ -13,7 +13,6 @@ export var Watcher={
 		if (window['Proxy'] && window['Reflect']){
 			const handler = {
 				get(target, property, receiver) {
-
 					if (property == isProxy)
 						return true;
 
@@ -40,6 +39,10 @@ export var Watcher={
 						return value
 					}
 				},
+				set(target, property, value) {
+					onChangeCallback(target,property);
+					return Reflect.set(target, property, value);
+				},
 				defineProperty(target, property, descriptor) {
 					onChangeCallback(target,property);
 					return Reflect.defineProperty(target, property, descriptor);
@@ -51,9 +54,6 @@ export var Watcher={
 			};
 			return new Proxy(object, handler);
 		}else{
-			console.warn("Using Dirty Object checking fallback!");
-			//console.warn(Reflect, Proxy);
-			
 			onChange(object ,()=>{
 				onChangeCallback(null,null);
 			});

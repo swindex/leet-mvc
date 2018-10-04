@@ -34,9 +34,6 @@ export class BasePage extends ChangeWatcher{
 	 */
 	onInit(binderEvent){
 		this.binder.bindElements(binderEvent);
-		//this.update();
-		
-		//super.startWatch();
 	}
 
 	/**

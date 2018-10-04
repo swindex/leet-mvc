@@ -50,13 +50,10 @@ export class DialogPage extends BasePage{
 	onButtonClicked(button_title){
 		if (tryCall(this, this.buttons[button_title], this) != false)
 			this.destroy();
-		else	
-			this._onChange();	
 	}
 
 	render(){
 		this.content = new Forms(this.controls,this.data,this.errors);
-		this._onChange();
 	}
 
 	Translate(val){
@@ -135,9 +132,7 @@ export class DialogPage extends BasePage{
 	 * Validate the content form
 	 */
 	validate(){
-		var ret = this.content.validator.validate();
-		this._onChange();
-		return ret;
+		return this.content.validator.validate();
 	}
 
 	/**
