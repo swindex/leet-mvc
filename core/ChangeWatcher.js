@@ -1,35 +1,24 @@
-import WatchJS from 'melanke-watchjs';
+import { Watcher } from './Watcher.js';
 
 export class ChangeWatcher {
 	constructor(){
-		this.isWatch = false;
+		this.isWatch = true;
 		this.updateQueue = 0;
 		this.skipUpdate = false;
+
+		return Watcher.watch(this,(obj,prop)=>{
+			this._onChange(obj,prop);
+		})
+
 	}
 
-	/**
-	 * ***OverrideCallSuper***
-	 * Start watching changes
-	 */
-	startWatch(){
-		this.isWatch = true;
-		var props = Object.keys(this).filter(key => ['page','binder','isWatch','skipUpdate','updateQueue','injectVars'].indexOf(key) < 0 );
-
-		WatchJS.watch(this, props, (prop)=>{
-			//WatchJS.noMore = true;
-			this._onChange(this,prop);
-			//WatchJS.noMore = false;
-		});
-	}
-
-	
 	/**
 	 * ***OverrideCallSuper***
 	 * Delete allocated memory
 	 */
 	onDestroy(){
 		console.log(this.constructor.name, 'unwatching');
-		WatchJS.unwatch(this);
+		Watcher.unWatch(this);
 	}
 
 	/**
@@ -40,19 +29,13 @@ export class ChangeWatcher {
 	_onChange(obj,prop){
 		if (!this.isWatch || prop == 'isWatch' || prop == 'skipUpdate' || prop == 'updateQueue' || prop == 'injectVars')
 			return false;
-		//WatchJS.noMore = true
 		this.updateQueue++;
-		//WatchJS.noMore = false	
 		window.requestAnimationFrame(()=>{
-			//WatchJS.noMore = true
 			this.updateQueue > 0 ? this.updateQueue -- : null;
-			//WatchJS.noMore = false	
 
 			if (this.updateQueue==0){
 				if (this.skipUpdate){
-					//WatchJS.noMore = true
 					this.skipUpdate = false;
-					//WatchJS.noMore = false	
 				}
 				else	
 					this.update();
