@@ -227,7 +227,9 @@ export class Forms extends BaseComponent{
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
 			<div class="icon-field">
 				<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>
-				<i class="fas fa-eye" onclick="component.togglePasswordType('${el._name}')"></i>
+				<div class="icon" onclick="component.togglePasswordType('${el._name}')">
+					<i class="fas fa-eye"></i>
+				</div>	
 			</div>	
 			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
 		`;

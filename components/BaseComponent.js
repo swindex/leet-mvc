@@ -16,7 +16,7 @@ export class BaseComponent extends ChangeWatcher{
 	 * @param {HTMLElement} container
 	 */
 	onInit(container){
-		super.startWatch();
+		//super.startWatch();
 	}
 	/** 
 	 * This functinon is called once after the container is bound to context

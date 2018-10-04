@@ -1,21 +1,16 @@
 import { isObject, isArray } from "util";
-import WatchJS from 'melanke-watchjs';
+import { tryCall } from "./helpers";
+import { Objects } from "./Objects";
 
 let isProxy = Symbol("isProxy");
+let isOnTimer = Symbol("isOnTimer");
 /**
  * The watch function creates proxy from any object and watches its changes. Triggers only when own properties change or properties of its simple properties
  * 
  */
 export var Watcher={
-	WatchJS_halt:function(){
-		if (false && window['Proxy'] && window['Reflect']){
-			//can't really do anything here.
-		}else{
-			//WatchJS.suspend();
-		}
-	},
 	watch: function(object, onChangeCallback){
-		if (false && window['Proxy'] && window['Reflect']){
+		if (window['Proxy'] && window['Reflect']){
 			const handler = {
 				get(target, property, receiver) {
 
@@ -56,23 +51,20 @@ export var Watcher={
 			};
 			return new Proxy(object, handler);
 		}else{
-			//console.warn("Using Watch JS");
+			console.warn("Using Dirty Object checking fallback!");
 			//console.warn(Reflect, Proxy);
 			
-			//window.requestAnimationFrame(()=>{
-				WatchJS.watch(object, (prop, action, difference, oldvalue)=>{
-					//WatchJS.noMore = true;
-					onChangeCallback(object,prop);
-				});
-			//});
+			onChange(object ,()=>{
+				onChangeCallback(null,null);
+			});
 			return object;
 		}	
 	},
 	unWatch: function( object ){
-		if (false && window['Proxy'] && window['Reflect']){
+		if (window['Proxy'] && window['Reflect']){
 			//can't really do anything here.
 		}else{
-			WatchJS.unwatch(object);
+			object[isOnTimer] = false;
 		}
 	}
 }
@@ -92,3 +84,46 @@ function isObjLiteral(_obj) {
 				)
 			);
   }
+
+function onChange(obj, callback){
+	obj[isOnTimer] = true;	
+	var pHash = hashObject(obj);
+	var checkHash = function(){	
+		//throttle the request animation to 50ms
+		setTimeout(function(){
+			var hash = hashObject(obj);
+			if (hash !== pHash){
+				pHash = hash;
+				tryCall(null,callback);
+			}
+			if (obj[isOnTimer])
+				window.requestAnimationFrame(checkHash);
+		},50);
+	}
+	window.requestAnimationFrame(checkHash);
+}
+/**
+ * 
+ * @param {object} obj 
+ */
+function hashObject(obj){
+	var ret = "";
+	if (isObject(obj)){
+		ret = ret +"{";
+		Objects.forEach(obj,(el, i)=>{
+			if (isObject(el)){
+				if (isObjLiteral(el)){
+					ret = ret+ i+":"+ hashObject(el)+",";
+				}else if (isArray(el)){
+					ret = ret+ i+":"+ hashObject(el)+",";
+				}
+			}else{
+				ret = ret+ i +":"+ el+",";
+			}
+		});
+		ret = ret +"}";
+		return ret;
+	}else{
+		return obj;
+	}
+} 

@@ -28,12 +28,15 @@ select{
 }
 .icon-field{
 	position: relative;
-	i{
+	div.icon{
 		position: absolute;
-		height: 70%;
-		right: $margin-lg;
-		width: 1em;
-		bottom: 0;
+		width: 2em;
+		height: 100%;
+		top: 0;
+		right: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}	
 }
 input[date]{
