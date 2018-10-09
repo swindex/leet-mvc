@@ -3,6 +3,7 @@ import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString } from "util";
 
 import * as $ from 'jquery';
+import { isSkipUpdate } from "leet-mvc/core/Watcher";
 
 var getterCashe = {};
 
@@ -634,7 +635,7 @@ export var Binder = function(context, container){
 			if(format != null ){
 				var formats = format.split(":");
 				if (formats.length > 0 && formats[0] === "number") {
-					if (value==="")
+					if (value==="" )
 						v = null;
 					else
 					{
@@ -698,11 +699,14 @@ export var Binder = function(context, container){
 		}
 		//SetObjProp(this.context,bind,v);
 		var oldval = elem['TEMPLATE'].GETTERS.value(self);
-		if (oldval !== v){
-			if (skipUpdate && self.context['skipUpdate'] === false)
-				self.context['skipUpdate'] = true;
-
-			elem['TEMPLATE'].SETTERS.value(self, v);
+		if ( oldval !== v){
+			if (skipUpdate && self.context[isSkipUpdate] === false){
+				self.context[isSkipUpdate] = true;
+				elem['TEMPLATE'].SETTERS.value(self, v);
+				self.context[isSkipUpdate] = false;
+			}else{
+				elem['TEMPLATE'].SETTERS.value(self, v);
+			}
 		}
 	}
 

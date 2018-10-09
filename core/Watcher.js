@@ -4,12 +4,19 @@ import { Objects } from "./Objects";
 
 let isProxy = Symbol("isProxy");
 let isOnTimer = Symbol("isOnTimer");
+export var isSkipUpdate = Symbol("isSkipUpdate");
 /**
  * The watch function creates proxy from any object and watches its changes. Triggers only when own properties change or properties of its simple properties
  * 
  */
 export var Watcher={
-	watch: function(object, onChangeCallback){
+	/**
+	 * @param {object} object
+	 * @param {function()} onChangeCallback
+	 * @param {string[]} [ignoreProperties]
+	 */
+	on: function(object, onChangeCallback, ignoreProperties){
+		ignoreProperties = ignoreProperties || [];
 		if (window['Proxy'] && window['Reflect']){
 			const handler = {
 				get(target, property, receiver) {
@@ -40,58 +47,81 @@ export var Watcher={
 					}
 				},
 				set(target, property, value) {
-					onChangeCallback(target,property);
+					if (property !== isSkipUpdate && !object[isSkipUpdate] && ignoreProperties.indexOf(property)<=0 )
+						scheduleCallback(object, onChangeCallback);
 					return Reflect.set(target, property, value);
 				},
 				defineProperty(target, property, descriptor) {
-					onChangeCallback(target,property);
+					if (property !== isSkipUpdate && !object[isSkipUpdate] && ignoreProperties.indexOf(property)<=0 )
+						scheduleCallback(object, onChangeCallback);
 					return Reflect.defineProperty(target, property, descriptor);
 				},
 				deleteProperty(target, property) {
-					onChangeCallback(target,property);
+					if (property !== isSkipUpdate && !object[isSkipUpdate] && ignoreProperties.indexOf(property)<=0 )
+						scheduleCallback(object, onChangeCallback);
 					return Reflect.deleteProperty(target, property);
 				}
 			};
 			return new Proxy(object, handler);
 		}else{
-			onChange(object ,()=>{
-				onChangeCallback(null,null);
+			onDirtyChange(object ,()=>{
+				onChangeCallback();
 			});
 			return object;
 		}	
 	},
-	unWatch: function( object ){
-		if (window['Proxy'] && window['Reflect']){
+	off: function( object ){
+		if ( window['Proxy'] && window['Reflect']){
 			//can't really do anything here.
 		}else{
 			object[isOnTimer] = false;
 		}
 	}
 }
+
+function scheduleCallback(obj, callback){
+	if (obj[isSkipUpdate])
+		return;
+	obj[isSkipUpdate] = true;
+
+	window.requestAnimationFrame(function(){
+		tryCall(null,callback);
+		obj[isSkipUpdate] = false;
+	});
+}
+
 function isObjLiteral(_obj) {
 	var _test  = _obj;
-	return (  typeof _obj !== 'object' || _obj === null ?
-				false :  
-				(
-				  (function () {
-					while (!false) {
-					  if (  Object.getPrototypeOf( _test = Object.getPrototypeOf(_test)  ) === null) {
-						break;
-					  }      
-					}
-					return Object.getPrototypeOf(_obj) === _test;
-				  })()
-				)
-			);
-  }
+	return (
+		typeof _obj !== 'object' || _obj === null ?
+			false :  
+			(
+				(function () {
+				while (!false) {
+					if (  Object.getPrototypeOf( _test = Object.getPrototypeOf(_test)  ) === null) {
+					break;
+					}      
+				}
+				return Object.getPrototypeOf(_obj) === _test;
+				})()
+			)
+	);
+}
+/**
+ * 
+ * @param {object} obj 
+ * @param {function()} callback 
+ * @param {string[]} [ignoreProperties]
+ */
+function onDirtyChange(obj, callback, ignoreProperties){
+	ignoreProperties = ignoreProperties || [];
 
-function onChange(obj, callback){
 	obj[isOnTimer] = true;	
-	var pHash = hashObject(obj);
+	var pHash = hashObject(obj, ignoreProperties);
 	var checkHash = function(){	
 		//throttle the request animation to 50ms
 		setTimeout(function(){
-			var hash = hashObject(obj);
+			var hash = hashObject(obj, ignoreProperties);
 			if (hash !== pHash){
 				pHash = hash;
 				tryCall(null,callback);
@@ -106,16 +136,19 @@ function onChange(obj, callback){
  * 
  * @param {object} obj 
  */
-function hashObject(obj){
+function hashObject(obj, ignoreProperties){
+	ignoreProperties = ignoreProperties || [];
 	var ret = "";
 	if (isObject(obj)){
 		ret = ret +"{";
 		Objects.forEach(obj,(el, i)=>{
+			if (ignoreProperties.indexOf(i)>=0)
+				return;
 			if (isObject(el)){
 				if (isObjLiteral(el)){
-					ret = ret+ i+":"+ hashObject(el)+",";
+					ret = ret+ i+":"+ hashObject(el, ignoreProperties)+",";
 				}else if (isArray(el)){
-					ret = ret+ i+":"+ hashObject(el)+",";
+					ret = ret+ i+":"+ hashObject(el, ignoreProperties)+",";
 				}
 			}else{
 				ret = ret+ i +":"+ el+",";
