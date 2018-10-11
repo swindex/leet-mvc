@@ -1,7 +1,7 @@
 import { isNumber, isBoolean, isObject,isArray } from "util";
 import { Objects } from "./Objects";
-import { empty } from "leet-mvc/core/helpers";
-import { Translate } from "leet-mvc/core/Translate";
+import { empty } from "./helpers";
+import { Translate } from "./Translate";
 
 /**
  * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 

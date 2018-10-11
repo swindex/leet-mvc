@@ -1,8 +1,8 @@
 //This module wraps some simple notifications
 import { tryCall } from "./helpers";
-import { Dialog } from "leet-mvc/pages/DialogPage/DialogPage";
-import { Text } from "leet-mvc/core/text";
-import { Objects } from "leet-mvc/core/Objects";
+import { Dialog } from "../pages/DialogPage/DialogPage";
+import { Text } from "./text";
+import { Objects } from "./Objects";
 
 /**
  * Show "Confirm" dialog with custom buttons
@@ -28,7 +28,7 @@ export var ConfirmButtons=function(prompt,title,buttons){
 export var Confirm=function(prompt,onConfirm,title){
 	var p = Dialog(title);
 	
-	p.addLabel(null, Text.escapeHTML(prompt, true));
+	p.addHtml('<div class="message">'+Text.escapeHTML(prompt, true)+"</div>");
 	p.addActionButton('No',()=>{});
 	p.addActionButton('Yes', onConfirm);
 }
@@ -38,12 +38,15 @@ export var Confirm=function(prompt,onConfirm,title){
  * @param {string} prompt 
  * @param {function(string|number)} onConfirm 
  * @param {string} [title] - dialog title
+ * @param {string} [value] - dialog initial value
  * @param {true|string} [validateRule] - validate rule like 'required|min:10|max:50|number'
+ * @param {string} [type] - input type. Default - "text"
  */
-export var Prompt = function(prompt,onConfirm, title, value, validateRule){
+export var Prompt = function(prompt, onConfirm, title, value, validateRule, type){
+	type = type || 'text';
 	var p = Dialog(title);
 	p.addLabel(null, Text.escapeHTML(prompt, true));
-	p.addInput('input', '', 'text', value, validateRule);
+	p.addInput('input', '', type, value, validateRule);
 	p.addActionButton('Cancel',()=>{});
 	p.addActionButton('Ok', ()=>{
 		if (p.content.validator.validate()){
@@ -62,6 +65,6 @@ export var Prompt = function(prompt,onConfirm, title, value, validateRule){
  */
 export var Alert=function(prompt,onConfirm,title){
 	var p = Dialog(title);
-	p.addLabel(null, Text.escapeHTML(prompt, true));
+	p.addHtml('<div class="message">'+Text.escapeHTML(prompt, true)+"</div>");
 	p.addActionButton('Ok', onConfirm);
 }

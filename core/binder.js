@@ -3,7 +3,7 @@ import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString } from "util";
 
 import * as $ from 'jquery';
-import { isSkipUpdate } from "leet-mvc/core/Watcher";
+import { isSkipUpdate } from "./Watcher";
 
 var getterCashe = {};
 

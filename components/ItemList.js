@@ -103,12 +103,13 @@ export class ItemList extends BaseComponent{
 		this.scollParent.animate({ scrollTop: 0 }, 'ease-in');	
 	}
 	scrollToBottom(){
-
-		var vh = this.scollParent.height();
-		var ch = this.container.height();
-		if(ch > vh){
-			this.scollParent.animate({ scrollTop: ch }, 'ease-in');	
-		}
+		window.requestAnimationFrame(()=>{
+			var vh = this.scollParent.height();
+			var ch = this.container.height();
+			if(ch > vh){
+				this.scollParent.animate({ scrollTop: ch }, 'ease-in');	
+			}
+		});
 	}
 
 	init(container){

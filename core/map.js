@@ -1,8 +1,8 @@
 import  GoogleMapsLoader from 'google-maps';
 import { Loader } from '../pages/Loader/Loader';
-import { tryCall } from 'leet-mvc/core/helpers';
-import { Dialog } from 'leet-mvc/pages/DialogPage/DialogPage';
-import { Translate } from 'leet-mvc/core/Translate';
+import { tryCall } from './helpers';
+import { Dialog } from './../pages/DialogPage/DialogPage';
+import { Translate } from './Translate';
 
 /** Wrapper for google Maps API*/
 /**
