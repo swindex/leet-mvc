@@ -1,4 +1,4 @@
-import { Injector } from "leet-mvc/core/Injector";
+import { Injector } from "./Injector";
 
 const Inject = Injector;
 

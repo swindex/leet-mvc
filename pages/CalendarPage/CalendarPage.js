@@ -1,6 +1,5 @@
 import MaterialDateTimePicker from 'material-datetime-picker/lib/js/index';
-//import 'material-datetime-picker/dist/material-datetime-picker.css';
-import { BasePage } from 'leet-mvc/pages/BasePage';
+import { BasePage } from './../BasePage';
 import './CalendarPage.scss'
 
 

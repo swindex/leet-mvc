@@ -1,4 +1,5 @@
 import { BasePage } from "../BasePage";
+// @ts-ignore
 import * as template from './DialogPage.html';
 import './DialogPage.scss';
 import { tryCall } from "../../core/helpers";
@@ -28,6 +29,7 @@ export class DialogPage extends BasePage{
 		this.buttons = {};
 		this.title= title;
 		this.prompt= null;
+		/** @type {Forms|string} */
 		this.content= null;
 
 		this.controls=[];
@@ -132,7 +134,8 @@ export class DialogPage extends BasePage{
 	 * Validate the content form
 	 */
 	validate(){
-		return this.content.validator.validate();
+		if (this.content instanceof Forms)
+			return this.content.validator.validate();
 	}
 
 	/**

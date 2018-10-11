@@ -1,7 +1,7 @@
 // @ts-ignore
 import * as template from './Loader.html';
 import "./Loader.scss";
-import { Translate } from 'leet-mvc/core/Translate';
+import { Translate } from './../../core/Translate';
 /**
  * @constructor {Loader}
  */
