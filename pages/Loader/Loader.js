@@ -2,9 +2,6 @@
 import * as template from './Loader.html';
 import "./Loader.scss";
 import { Translate } from './../../core/Translate';
-/**
- * @constructor {Loader}
- */
 export function Loader (){
 	function Loader(){
 		/** @type {Loader} */
@@ -35,10 +32,10 @@ export function Loader (){
 
 		/**
 		 * Set loader timeout
-		* @param {number} [timeout] - timeout ms. Loader will be closed automatically. 60000 (60s) is default
-		* @param {function(number)} [onTimeout] - callback to execute on timeout. the current timeout number is passed as argument
-		* @returns {Loader}
-		*/
+		 * @param {number} [timeout] - timeout ms. Loader will be closed automatically. 60000 (60s) is default
+		 * @param {function(number)} [onTimeout] - callback to execute on timeout. the current timeout number is passed as argument
+		 * @returns {Loader}
+		 */
 		this.timeout = function(timeout, onTimeout){
 			self._loaderTimeout = timeout;
 			if (typeof onTimeout ==='function')
@@ -87,12 +84,6 @@ export function Loader (){
 
 			self._loaderContainer = self._loaderContainer || 'body';
 			self._loaderTimeout = self._loaderTimeout || 0;
-
-			//this._loaderSelector = $(template);
-			//if (!empty(text))
-			//	this._loaderSelector.find('.loader-message').text(text);
-			//append loader to container
-			//$(this._loaderContainer).append(this._loaderSelector);
 
 			if (self._loaderTimeout > 0){
 				setTimeout(function(){

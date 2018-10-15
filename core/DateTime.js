@@ -124,6 +124,8 @@ export var DateTime = {
 	 * @returns {string}
 	 */
 	toHumanDateTime: function(__date) {
+		if (!moment(__date).isValid())
+			return null;	
 		return moment(__date).format(DateTime._humanDateTime);
 	},
 
@@ -144,6 +146,4 @@ export var DateTime = {
 	_humanDateTime:"LLLL",
 	_humanDate:"LL",
 	_JSONDate:'YYYY-MM-DD[T]HH:mm:ssZ'
-
-
 }

@@ -4,6 +4,7 @@ import { isObject, isString } from "util";
 
 import * as $ from 'jquery';
 import { isSkipUpdate } from "./Watcher";
+import { DateTime } from "./DateTime";
 
 var getterCashe = {};
 
@@ -550,6 +551,12 @@ export var Binder = function(context, container){
 						throw Error("Value of " + bind + " is not part of format's boolean options");
 				}
 			}
+			if (formats.length > 0 && formats[0] === "dateTime") {
+				v = DateTime.toHumanDateTime(v);
+			}
+			if (formats.length > 0 && formats[0] === "date") {
+				v = DateTime.toHumanDate(v);
+			}
 		}
 		switch (elem.tagName) {
 			case "SELECT":
@@ -658,7 +665,16 @@ export var Binder = function(context, container){
 					}else {
 						v = parseInt(value) != 0;
 					}
-
+				}
+				if (formats.length > 0 && formats[0] === "dateTime") {
+					if (formats.length == 1) {
+						v = DateTime.fromHumanDateTime(value);
+					}
+				}
+				if (formats.length > 0 && formats[0] == "date") {
+					if (formats.length == 1) {
+						v = DateTime.fromHumanDate(value);
+					}
 				}
 			}else{
 				v = value;

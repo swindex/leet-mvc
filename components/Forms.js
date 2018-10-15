@@ -131,20 +131,20 @@ export class Forms extends BaseComponent{
 			case "text":
 				return this.addInput(el,null,formName);
 			case "date":
-				return this.addInput(el,{date:''},formName);	
+				return this.addInput(el,{date:'', format:'date'}, formName);	
 			case "datetime":
-				return this.addInput(el,{dateTime:''},formName);	
+				return this.addInput(el,{dateTime:'', format:'dateTime'}, formName);	
 			case "time":
-				return this.addInput(el,{time:''},formName);	
+				return this.addInput(el,{time:'', format:'time'},formName);	
 			case "number":
 				this.assertValidateRuleHas(el,"number");
-				return this.addInput(el,{type:'number'},formName);
+				return this.addInput(el,{type:'number'}, formName);
 			case "password":
 				return this.addPassword(el,null,formName);
 			case "phone":
-				return this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"},formName);
+				return this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"}, formName);
 			case "hidden":
-				return this.addInput(el,{type:'hidden'},formName);	
+				return this.addInput(el,{type:'hidden'}, formName);	
 			case "textarea":
 				return this.addTextArea(el,null,formName);	
 			case "checkbox":
@@ -195,7 +195,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
 	 */
-	addInput(el, override,formName){
+	addInput(el, override, formName){
 		
 		var opt = { name: el._name, type: "text" };
 		

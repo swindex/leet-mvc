@@ -1,6 +1,6 @@
 import { isArray, isFunction } from "util";
 import { isObject } from "util";
-import { Objects } from "./Objects";
+import { Objects } from "leet-mvc/core/Objects";
 import { isBoolean } from "util";
 
 export var DataShape = {
