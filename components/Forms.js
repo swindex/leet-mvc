@@ -131,11 +131,11 @@ export class Forms extends BaseComponent{
 			case "text":
 				return this.addInput(el,null,formName);
 			case "date":
-				return this.addInput(el,{date:'', format:'date'}, formName);	
+				return this.addInput(el,{date:'', format:'date', readonly:''}, formName);	
 			case "datetime":
-				return this.addInput(el,{dateTime:'', format:'dateTime'}, formName);	
+				return this.addInput(el,{dateTime:'', format:'dateTime', readonly:''}, formName);	
 			case "time":
-				return this.addInput(el,{time:'', format:'time'},formName);	
+				return this.addInput(el,{time:'', format:'time', readonly:''},formName);	
 			case "number":
 				this.assertValidateRuleHas(el,"number");
 				return this.addInput(el,{type:'number'}, formName);
@@ -325,10 +325,10 @@ export class Forms extends BaseComponent{
 	 */
 	addLabel(el, override,formName){
 
-		var opt = { name: el._name, type: "checkbox" };
+		var opt = { name: el._name, class:"label" };
 		$.extend(opt, override, el.attributes);
 		return `
-		<div class="label">
+		<div ${this.generateAttributes(opt)}>
 			`+ (el.title ? `<label>${el.title}</label>` : '')+`
 			<div>${el.value}</div>
 		</div>
@@ -348,10 +348,10 @@ export class Forms extends BaseComponent{
 	 * @param {KeyValuePair} [override]
 	 */
 	addLink(el, override,formName){
-		var opt = { name: el._name, type: "checkbox" };
+		var opt = { name: el._name,  class:"label"  };
 		$.extend(opt, override, el.attributes);
 		return `
-		<div class="label" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">
+		<div ${this.generateAttributes(opt)} [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">
 			<label class="link" bind name="${el._name}">${el.title}</label>
 		</div>
 		`;
