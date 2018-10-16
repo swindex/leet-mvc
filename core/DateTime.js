@@ -80,6 +80,8 @@ export var DateTime = {
 	 * @returns {string}
 	 */
 	formatLocalDate: function(__date) {
+		if (!moment(__date).isValid())
+			return null;
 		return moment(__date).format('YYYY-MM-DD HH:mm:ss');
 	},
 		/**
@@ -88,6 +90,8 @@ export var DateTime = {
 	 * @returns {string}
 	 */
 	fromLocalDate: function(__date) {
+		if (!moment(__date).isValid())
+			return null;
 		return moment(__date,'YYYY-MM-DD HH:mm:ss').toISOString();
 	},
 	/**
@@ -96,6 +100,9 @@ export var DateTime = {
 	 * @returns {string}
 	 */
 	toHumanDate: function(__date) {
+		if (!moment(__date).isValid())
+			return null;
+		
 		return moment(__date).format('LL');
 	},
 	/**
@@ -132,10 +139,16 @@ export var DateTime = {
 	moment: moment,
 
 	toJSONDate: function(__date){
+		if (!moment(__date).isValid())
+			return null;
+		
 		return moment(__date).format(DateTime._JSONDate);
 	},
 
 	fromJSONDate: function(__date){
+		if (!moment(__date).isValid())
+			return null;
+		
 		return moment(__date,DateTime._JSONDate);
 	},
 
