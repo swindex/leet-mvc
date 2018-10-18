@@ -37,6 +37,11 @@ declare namespace ObjectsModule{
 		 * @param {*} obj 
 		 */
 		clear(obj: any):void;,
+
+		/**
+		 * Assign Sorce Object to Object preserving references and enforcing SOURCE structure
+		 */
+		overwrite<T>(obj: any, src: T): T;,
 		
 		/**
 		 * Get object property using path

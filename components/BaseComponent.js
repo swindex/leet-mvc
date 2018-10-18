@@ -23,7 +23,8 @@ export class BaseComponent extends ChangeWatcher{
 	 * @param {HTMLElement} container
 	 */
 	init(container){
-		this.isWatch = true;
+		//this.isWatch = true;
+		
 	}
 
 	update(){

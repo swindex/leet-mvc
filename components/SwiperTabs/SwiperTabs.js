@@ -3,7 +3,8 @@ import Swiper from 'swiper';
 import { NavController } from "./../../core/NavController";
 import './SwiperTabs.scss';
 import { BasePage } from "./../../pages/BasePage";
-import { argumentsToArray } from "leet-mvc/core/helpers";
+import { argumentsToArray } from "./../../core/helpers";
+import { Objects } from "./../../core/Objects";
 
 /**
  * @param {{navButtons?: true}} [options]
@@ -47,6 +48,33 @@ export class SwiperTabs extends BaseComponent{
 		//cause swiper to reinit after adding a page
 		this.swiper.update();
 		return inst;
+	}
+
+	/**
+	 * Call to destroy container and remove all pages
+	 */
+	destroy(){
+		//remove all pages
+		this.removeAllPages();
+	}
+
+	/**
+	 * Remove all pages
+	 */
+	removeAllPages(){
+		//remove all pages
+		Objects.forEach(this.pages,page =>{
+			this.Nav.remove(page);
+		})
+	}
+
+
+	/**
+	 * Remove a page from internal stack
+	 * @param {*} pageInstance 
+	 */
+	removePage(pageInstance){
+		this.Nav.remove(pageInstance);
 	}
 
 	init(container){
