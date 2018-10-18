@@ -1,15 +1,22 @@
 import { isObject, isArray } from "util";
 import { tryCall } from "./helpers";
 import { Objects } from "./Objects";
+import { isDate } from "moment";
+import { CallbackQueue } from "./CallbackQueue";
 
 let isProxy = Symbol("isProxy");
 let isOnTimer = Symbol("isOnTimer");
+
+var Notify = new CallbackQueue();
+//window['Proxy'] = null; //comment out to test dirty checking
+
 export var isSkipUpdate = Symbol("isSkipUpdate");
 /**
  * The watch function creates proxy from any object and watches its changes. Triggers only when own properties change or properties of its simple properties
  * 
  */
 export var Watcher={
+	skip: isSkipUpdate,
 	/**
 	 * @param {object} object
 	 * @param {function()} onChangeCallback
@@ -62,6 +69,11 @@ export var Watcher={
 					return Reflect.deleteProperty(target, property);
 				}
 			};
+			
+			/*Notify.add(onDirtyChangeEvent(object ,()=>{
+				onChangeCallback();
+			}));*/
+
 			return new Proxy(object, handler);
 		}else{
 			onDirtyChange(object ,()=>{
@@ -72,7 +84,7 @@ export var Watcher={
 	},
 	off: function( object ){
 		if ( window['Proxy'] && window['Reflect']){
-			//can't really do anything here.
+
 		}else{
 			object[isOnTimer] = false;
 		}
@@ -86,8 +98,11 @@ function scheduleCallback(obj, callback){
 
 	window.requestAnimationFrame(function(){
 		tryCall(null,callback);
+		//Notify.call(obj);
 		obj[isSkipUpdate] = false;
 	});
+	
+
 }
 
 function isObjLiteral(_obj) {
@@ -132,6 +147,26 @@ function onDirtyChange(obj, callback, ignoreProperties){
 	}
 	window.requestAnimationFrame(checkHash);
 }
+
+function onDirtyChangeEvent(obj, callback, ignoreProperties){
+	ignoreProperties = ignoreProperties || [];
+
+	obj[isOnTimer] = true;	
+	var pHash = hashObject(obj, ignoreProperties);
+	var start = +new Date();
+	return function(e){	
+		if (e && e.detail && e.detail.object==obj)
+			return;
+
+		window.requestAnimationFrame(function(){	
+			var hash = hashObject(obj, ignoreProperties);
+			if (hash !== pHash){
+				pHash = hash;
+				tryCall(null,callback);
+			}
+		})
+	};
+}
 /**
  * 
  * @param {object} obj 
@@ -141,7 +176,10 @@ function hashObject(obj, ignoreProperties){
 	var ret = "";
 	if (isObject(obj)){
 		ret = ret +"{";
-		Objects.forEach(obj,(el, i)=>{
+		for(var i in obj){
+			if (!obj.hasOwnProperty(i))
+				continue;
+			var el = obj[i];
 			if (ignoreProperties.indexOf(i)>=0)
 				return;
 			if (isObject(el)){
@@ -149,11 +187,13 @@ function hashObject(obj, ignoreProperties){
 					ret = ret+ i+":"+ hashObject(el, ignoreProperties)+",";
 				}else if (isArray(el)){
 					ret = ret+ i+":"+ hashObject(el, ignoreProperties)+",";
+				}else if (isDate(el)){	
+					ret = ret+ i+":"+ el.getTime() + ",";
 				}
 			}else{
 				ret = ret+ i +":"+ el+",";
 			}
-		});
+		};
 		ret = ret +"}";
 		return ret;
 	}else{

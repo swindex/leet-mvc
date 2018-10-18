@@ -12,8 +12,7 @@ import { Objects } from "./Objects";
  */
 export var ConfirmButtons=function(prompt,title,buttons){
 	var p = Dialog(title);
-	
-	p.addLabel(null, Text.escapeHTML(prompt, true));
+	p.addHtml('<div class="message">'+Text.escapeHTML(prompt, true)+"</div>");
 	Objects.forEach(buttons,(button, name)=>{
 		p.addActionButton(name,button);
 	})

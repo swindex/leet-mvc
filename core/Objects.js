@@ -84,6 +84,59 @@ export const Objects = {
 			obj = null;
 		}
 	},
+
+	/**
+	 * owerwrite object, preserving reference 
+	 * @param {*} obj 
+	 */
+	overwrite: function(obj, src){
+		if (!isObject(obj)){
+			return src;
+		}
+		if (isObject(src)){
+			if (!isObject(obj)){
+				obj = src;
+			}else{
+				if (obj instanceof Date){
+					if(src instanceof Date)
+						obj.setTime(src.getTime());
+					else
+						obj = src;
+				}else{
+					if (isArray(src) && isArray(obj)){
+						//if both are arrays: make them the same length
+						obj = obj.slice(0,src.length-1);
+
+					}else if (isArray(src) !== isArray(obj)){
+						//if one or both are not arrays, remove keys from target that are not in source
+						var keys = [];
+						for(var i in src){
+							keys.push(i);
+						}
+						for(var i in obj){
+							if (keys.indexOf(i)<0){
+								delete obj[i];
+							}
+						}
+
+					}
+					for(var i in src){
+						//ONLY assign shallow: that is enough for change detection!
+						//if (!isObject(el))
+						obj[i]=src[i];
+						//else{	
+							//obj[i] = Objects.overwrite(obj[i],el);
+						//}
+					}
+					
+				}
+			}
+
+		}else{
+			obj = src;
+		}
+		return obj;
+	},
 	
 	/**
 	 * Get object property using path
