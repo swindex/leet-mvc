@@ -148,7 +148,6 @@ export var DateTime = {
 	fromJSONDate: function(__date){
 		if (!moment(__date).isValid())
 			return null;
-		
 		return moment(__date,DateTime._JSONDate);
 	},
 

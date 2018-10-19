@@ -173,7 +173,7 @@ export function FormValidator(data,template,errors,attributes){
 
 	/**
 	 * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
-	 * @param {*} t 
+	 * @param {FieldTemplate} t 
 	 * @return {number}
 	 */
 	function validate_field(t){
@@ -181,10 +181,10 @@ export function FormValidator(data,template,errors,attributes){
 		
 		if (!empty(t)){
 			prepField(t._name);
-			var visible = !t.displayRule || empty(is_rule_fails(t._name,t.displayRule));
+			var visible = !t.displayRule || empty( is_field_invalid(t,'displayRule'));
 		
 			if ( t.validateRule && visible){
-				var err = is_rule_fails(t._name,t.validateRule);
+				var err = is_field_invalid(t,'validateRule');
 				if (!empty(err)){
 					setValue(_errors, t._name, err);
 					e++;	
@@ -250,7 +250,7 @@ export function FormValidator(data,template,errors,attributes){
 			obj._name = path && obj.name.indexOf('.')==-1 ? path + "." + obj.name : obj.name;
 			prepField(obj._name);
 			if ( obj.displayRule ){ 
-				var visible = empty(is_rule_fails(obj._name,obj.displayRule));
+				var visible = empty(is_field_invalid(obj,'displayRule'));
 				if (!visible){
 					//hid.push(name);
 					//only reset data and error values if field name is not yet hidden
@@ -284,16 +284,14 @@ export function FormValidator(data,template,errors,attributes){
 		}
 	}
 
-
 	/**
 	 * 
-	 * @param {string} name 
-	 * @param {string} rule 
+	 * @param {FieldTemplate} f 
 	 */
-	function is_rule_fails(name,rule){
+	function is_field_invalid(f, propName){
 
 		//iterate through messages to see if any keys match rule "required|max"
-		var rules=rule.split("|"); //split rules
+		var rules= f[propName].split("|"); //split rules
 		var errmsg="";
 		//iterate through rules
 		for (var r in rules) {
@@ -327,10 +325,45 @@ export function FormValidator(data,template,errors,attributes){
 					//}
 					errmsg=errmsg[type]; //set default value
 				}
-
+				var name = f.name
 				//only validate fields that are either required, or not empty
 				if (!empty(getValue(_data, name)) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
-					var err = validate_key(name,rr[0],type,condition, errmsg);
+					var err = null;
+					//
+					errmsg=errmsg.replace(':attribute',f.title);
+
+					var c_name = condition.split(',')[0];
+			
+					var c_template = getTemplateValue( tryDefaultForm(c_name,name));
+			
+					if (!empty(c_template)){
+						errmsg=errmsg.replace(':other', c_template.title);
+						var c_v = getValue(_data,tryDefaultForm(c_name,name));
+						if (c_template.items && c_template.items.length > 0){
+							var c_vv = Objects.find(c_template.items,(t)=>t.value==c_v)
+							errmsg=errmsg.replace(':value', c_vv ? c_vv.title : "null");
+						}else
+							errmsg=errmsg.replace(':value', c_v);
+					}
+					if (errmsg.indexOf(':max')!=-1 && errmsg.indexOf(':max')!=-1){
+						//min and max both present so split the condition string
+						if (condition.indexOf(',')){
+							errmsg=errmsg.replace(':min',condition.substr(0,condition.indexOf(',')));	
+							errmsg=errmsg.replace(':max',condition.substr(condition.indexOf(',')+1));	
+						}	
+					}else{
+						errmsg=errmsg.replace(':max',condition);
+						errmsg=errmsg.replace(':min',condition);
+					}
+					errmsg=errmsg.replace(':digits',condition);
+					errmsg=errmsg.replace(':size',condition);
+					
+					var result = validate_isfail(name,rr[0],type,condition)
+			
+					if (result){
+						err = result===true ? errmsg : errmsg.replace(':result', result);;
+					}
+					//
 					if (!empty(err)){
 						return err;
 					}
@@ -340,56 +373,10 @@ export function FormValidator(data,template,errors,attributes){
 		//input_removeError(name);
 		return 0;
 	}
-	/**
-	 * 
-	 * @param {*} name 
-	 * @param {*} key 
-	 * @param {*} type 
-	 * @param {*} condition 
-	 * @param {string} errmsg
-	 */
-	function validate_key(name,key,type,condition,errmsg){
-	
-		errmsg=errmsg.replace(':attribute',getTemplateValue( name).title);
-
-		var c_name = condition.split(',')[0];
-
-		var c_template = getTemplateValue( tryDefaultForm(c_name,name));
-
-		if (!empty(c_template)){
-			errmsg=errmsg.replace(':other', c_template.title);
-			var c_v = getValue(_data,tryDefaultForm(c_name,name));
-			if (c_template.items && c_template.items.length > 0){
-				var c_vv = Objects.find(c_template.items,(t)=>t.value==c_v)
-				errmsg=errmsg.replace(':value', c_vv ? c_vv.title : "null");
-			}else
-				errmsg=errmsg.replace(':value', c_v);
-		}
-		if (errmsg.indexOf(':max')!=-1 && errmsg.indexOf(':max')!=-1){
-			//min and max both present so split the condition string
-			if (condition.indexOf(',')){
-				errmsg=errmsg.replace(':min',condition.substr(0,condition.indexOf(',')));	
-				errmsg=errmsg.replace(':max',condition.substr(condition.indexOf(',')+1));	
-			}	
-		}else{
-			errmsg=errmsg.replace(':max',condition);
-			errmsg=errmsg.replace(':min',condition);
-		}
-		errmsg=errmsg.replace(':digits',condition);
-		errmsg=errmsg.replace(':size',condition);
-		
-		var result = validate_isfail(name,key,type,condition)
-
-		if (result){
-			return result===true ? errmsg : errmsg.replace(':result', result);;
-		}
-
-		return null;
-	}
 
 	function isInt(value) {
-	var x = parseFloat(value);
-	return !isNaN(value) && (x | 0) === x;
+		var x = parseFloat(value);
+		return !isNaN(value) && (x | 0) === x;
 	}
 	//return true if fail validation
 	/**

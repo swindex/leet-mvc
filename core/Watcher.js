@@ -1,13 +1,10 @@
 import { isObject, isArray } from "util";
 import { tryCall } from "./helpers";
-import { Objects } from "./Objects";
 import { isDate } from "moment";
-import { CallbackQueue } from "./CallbackQueue";
 
 let isProxy = Symbol("isProxy");
 let isOnTimer = Symbol("isOnTimer");
 
-var Notify = new CallbackQueue();
 //window['Proxy'] = null; //comment out to test dirty checking
 
 export var isSkipUpdate = Symbol("isSkipUpdate");
@@ -84,7 +81,7 @@ export var Watcher={
 	},
 	off: function( object ){
 		if ( window['Proxy'] && window['Reflect']){
-
+			//object.revoke();
 		}else{
 			object[isOnTimer] = false;
 		}

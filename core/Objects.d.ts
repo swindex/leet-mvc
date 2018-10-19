@@ -42,6 +42,11 @@ declare namespace ObjectsModule{
 		 * Assign Sorce Object to Object preserving references and enforcing SOURCE structure
 		 */
 		overwrite<T>(obj: any, src: T): T;,
+
+		/**
+		 * Deep-clone Source Object
+		 */
+		copy<T>(src: T): T;,
 		
 		/**
 		 * Get object property using path

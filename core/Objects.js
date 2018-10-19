@@ -98,10 +98,7 @@ export const Objects = {
 				obj = src;
 			}else{
 				if (obj instanceof Date){
-					if(src instanceof Date)
-						obj.setTime(src.getTime());
-					else
-						obj = src;
+					obj = src;
 				}else{
 					if (isArray(src) && isArray(obj)){
 						//if both are arrays: make them the same length
@@ -122,18 +119,37 @@ export const Objects = {
 					}
 					for(var i in src){
 						//ONLY assign shallow: that is enough for change detection!
-						//if (!isObject(el))
 						obj[i]=src[i];
-						//else{	
-							//obj[i] = Objects.overwrite(obj[i],el);
-						//}
 					}
-					
 				}
 			}
 
 		}else{
 			obj = src;
+		}
+		return obj;
+	},
+
+	/**
+	 * Copy object, breaking reference 
+	 * @param {*} obj 
+	 */
+	copy: function(src){
+		if (!isObject(src)){
+			return src;
+		}
+		var obj;
+		if (src instanceof Date)
+			return new Date(src.getTime())
+		else{
+			if (isArray(src))
+				obj = [];
+			else
+				obj = {}
+
+			for(var i in src){
+				obj[i] = Objects.copy(src[i]);
+			}
 		}
 		return obj;
 	},
