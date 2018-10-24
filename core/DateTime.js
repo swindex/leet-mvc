@@ -151,6 +151,17 @@ export var DateTime = {
 		return moment(__date,DateTime._JSONDate);
 	},
 
+	/**
+	 * Return Device Date-Time
+	 */
+	fromJSONDeviceDate: function(__date){
+		if (!moment(__date).isValid())
+			return null;
+		var v = moment(__date,DateTime._JSONDate).parseZone().format('LLLL');	
+		var v2= moment(v,'LLLL');
+		return v2;
+	},
+
 	setLocale(lang){
 		moment.locale(lang);
 	},
