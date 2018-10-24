@@ -52,10 +52,13 @@ export function Loader (){
 
 			text = text || Translate("Loading ...")
 
+			var pages = $('[page]').length;
+
 			self._loaderContainer = self._loaderContainer || 'body';
 			self._loaderTimeout = self._loaderTimeout || 0;
 			self._loaderIsTimedOut = false;
 			self._loaderSelector = $(template);
+			self._loaderSelector.css('z-index', pages * 100 + 99);
 			if (!empty(text))
 				self._loaderSelector.find('.loader-message').text(text);
 			if (!is_backdrop)	
