@@ -310,6 +310,9 @@ export function FormValidator(data,template,errors,attributes){
 						if (rules.indexOf('array')!=-1){
 							type='array';
 						}
+						if (rules.indexOf('number')!=-1){
+							type='numeric';
+						}
 						if (rules.indexOf('numeric')!=-1){
 							type='numeric';
 						}
@@ -500,7 +503,7 @@ export function FormValidator(data,template,errors,attributes){
 						return false;
 						break;
 					case "numeric":
-						return value > condition;
+						return Number(value) > Number(condition);
 						break;
 					/*case "file":
 						return $('[name="'+name+'"]').files[0].size >condition;
@@ -516,7 +519,7 @@ export function FormValidator(data,template,errors,attributes){
 						return false;
 						break;
 					case "numeric":
-						return value < condition;
+						return Number(value) < Number(condition);
 						break;
 					/*case "file":
 						return $('[name="'+name+'"]').files[0].size < condition;
