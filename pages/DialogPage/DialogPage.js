@@ -37,8 +37,8 @@ export class DialogPage extends BasePage{
 		this.errors={};
 	}
 
-	onInit(){
-		super.onInit();
+	onInit(binderEvents){
+		super.onInit(binderEvents);
 	}
 
 	onResize(){

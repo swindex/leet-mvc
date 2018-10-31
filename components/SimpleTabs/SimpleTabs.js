@@ -17,23 +17,33 @@ export class SimpleTabs extends BaseComponent{
 
 	}
 
-	unSelectAll(){
+	_unSelectAll(){
 		var self = this;
 		$(this.container).find('li').each(function(){
 			var t = $(this);
-			self.getTab(t).removeAttr('selected');
+			self._getTab(t).removeAttr('selected');
 			t.removeAttr('selected')}
 		);
 	}
 
-	getTab(target){
+	_getTab(target){
 		var tab_id = $(target).attr('for');
 		return $(target).closest('div[page]').find('#'+tab_id);
 	}
 
-	select(target){
+	_select(target){
 		$(target).attr('selected','');
-		this.getTab(target).attr('selected','');
+		this._getTab(target).attr('selected','');
+	}
+
+	select(forLabel){
+		if (this.container){
+			var t = this.container.find(`[for='${forLabel}']`);
+			if (t.length==1){
+				this._unSelectAll();
+				this._select(t);
+			}
+		}
 	}
 	
 	init(container){
@@ -41,9 +51,9 @@ export class SimpleTabs extends BaseComponent{
 		this.container = $(container);
 		$(container).find('li').on('click',(ev)=>{
 			var t = ev.currentTarget;
-			if (this.getTab(t).length>0){
-				this.unSelectAll();
-				this.select(t);
+			if (this._getTab(t).length>0){
+				this._unSelectAll();
+				this._select(t);
 			}else{
 				$(t).attr('selected','');
 				setTimeout(()=>{
@@ -53,10 +63,10 @@ export class SimpleTabs extends BaseComponent{
 
 		})	
 		var sel = $(container).find('li[selected]').get(0);
-		this.unSelectAll();
+		this._unSelectAll();
 		if (sel)
-			this.select(sel);
+			this._select(sel);
 		else
-			this.select($(container).find('li').first());
+			this._select($(container).find('li').first());
 	}
 }

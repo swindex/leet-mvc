@@ -1,45 +1,244 @@
-#page-calendar{
-	*{
-		box-sizing: initial;
+#page-CalendarPage{
+	.touch-scroll{
+		overflow: visible !important;
 	}
-	.c-datepicker__back, .c-datepicker__next, .c-datepicker__toggle {
-		font-family: 'Font Awesome 5 Free';
-		height: 35px;
+	.tabs{
+		height: 300px;
+		position: relative;
+		&>div{
+			height: 100%;
+			display:none;
+			
+			&[selected]{
+				display:block;
+			}
+		}
+
 	}
-	.c-datepicker--show-calendar:after {
-		content: '\f073';
+	.tab-buttons li span{
+		font-size: 2rem;
 	}
-	.c-datepicker--show-time:after {
-		content: '\f017';
+	.calendar{
+		table{
+			width:100%;
+			thead td{
+				text-align: center;
+			}
+			tbody td {
+				text-align: center;
+				width: 14.28%;
+				span{
+					display: block;
+					position: relative;
+					height: 2.5em;
+					width: 2.5em;
+					margin-left: auto;
+					margin-right: auto;
+				}
+				b{
+					display: inline-block;
+					padding: 0.5em;
+					border-radius: 2em;
+					width: 100%;
+					height: 100%;
+					position: absolute;
+					left: 0;
+					top: 0;
+
+					&.apt{
+						display: block;
+						content: ' ';
+						background-size: contain;
+						background-position: 50% 50%;
+						background-color: transparent !important;
+						background-image: url(../../img/1hrs_sector_red.png);
+					}
+				}
+				b.has-appt {
+					background-color: #e1e1e1;
+				}
+				&[selected] b {
+					background-color: #00e3ff;
+				}
+			}
+		}
+		
 	}
-	.c-datepicker__back,.c-datepicker__next {
-		color: black;
-		font-weight: 900;
-	}	 
-	.c-datepicker__back:before {
-		content: '\f104';
-	}
-	.c-datepicker__next:after {
-		content: '\f105';
-	}
-	.c-datepicker__toggle {
-		top: 135px;
-	}
-	.c-datepicker__header-date__day {
-		font-size: 40px;
-	}
-	.c-datepicker__header-date {
-		height: 115px;
-		padding: 10px 0;
-	}
-	.c-datepicker {
-		min-height: 525px;
-	}
-	.c-datepicker__clock::before {
-		left: -24px;
-	}
-	.c-datepicker__days {
-		margin: 0px 20px;
+	.month-buttons{
+		display: flex;
+		background-color: aliceblue;
+		&>div{
+			margin:auto;
+			padding:1em;
+			&:first-child{
+				margin-left: 0;
+			}
+			&:last-child{
+				margin-right: 0;
+			}
+		}
 	}
 
+	td b.apt-01{
+		transform: rotateZ(30deg);
+	}
+	td b.apt-02{
+		transform: rotateZ(60deg);
+	}
+	td b.apt-03{
+		transform: rotateZ(90deg);
+	}
+	td b.apt-04{
+		transform: rotateZ(120deg);
+	}
+	td b.apt-05{
+		transform: rotateZ(150deg);
+	}
+	td b.apt-06{
+		transform: rotateZ(180deg);
+	}
+	td b.apt-07{
+		transform: rotateZ(210deg);
+	}
+	td b.apt-08{
+		transform: rotateZ(240deg);
+	}
+	td b.apt-09{
+		transform: rotateZ(270deg);
+	}
+	td b.apt-10{
+		transform: rotateZ(300deg);
+	}
+	td b.apt-11{
+		transform: rotateZ(330deg);
+	}
+	td b.apt-12{
+		transform: rotateZ(360deg);
+	}
+	td b.apt-13{
+		transform: rotateZ(30deg);
+	}
+	td b.apt-14{
+		transform: rotateZ(60deg);
+	}
+	td b.apt-15{
+		transform: rotateZ(90deg);
+	}
+	td b.apt-16{
+		transform: rotateZ(120deg);
+	}
+	td b.apt-17{
+		transform: rotateZ(150deg);
+	}
+	td b.apt-18{
+		transform: rotateZ(180deg);
+	}
+	td b.apt-19{
+		transform: rotateZ(210deg);
+	}
+	td b.apt-20{
+		transform: rotateZ(240deg);
+	}
+	td b.apt-21{
+		transform: rotateZ(270deg);
+	}
+	td b.apt-22{
+		transform: rotateZ(300deg);
+	}
+	td b.apt-23{
+		transform: rotateZ(330deg);
+	}
+	td b.apt-00{
+		transform: rotateZ(360deg);
+	}
+
+	#clock{
+		padding:2em 1em;
+		width:100%;
+		height: 100%;
+		position: relative;
+		margin: auto;
+		.circle{
+			width:100%;
+			height: 100%;
+			border: 2px solid #9f9f9f;
+			border-radius: 50%;
+			position: relative;
+
+			display: flex;
+			align-items: center;
+			.AMPM {
+				margin: auto;
+				z-index: 10;
+				&>*{
+					padding: 5px;
+				}
+				&>[selected]{
+					background-color: #00e3ff;
+				}
+			}
+		}
+		.hours,.minutes{
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top:0;
+			left:0;
+			border-radius: 50%;
+			transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+		}
+		.hours{
+			transform: scale(1.3);
+			opacity: 0.3;	
+			&[selected]{
+				transform: scale(1);	
+				opacity: 1;	
+			}
+		}
+		
+		
+		.minutes{
+			transform: scale(0.75);
+			opacity: 0.3;	
+			&[selected]{
+				transform: scale(1);	
+				opacity: 1;	
+			}
+		}
+		
+		.hour{
+			position: absolute;
+			width: 2em;
+			height: 2em;
+			//background-color: gray;
+			border-radius: 5em;
+			display: flex;
+			justify-items: center;
+			align-items: center;
+			font-size: 1.5em;
+			span{
+				margin: auto;
+			}
+			&[selected]{
+				background-color: #00e3ff;
+			}
+		}
+		.minute{
+			position: absolute;
+			width: 2em;
+			height: 2em;
+			//background-color: gray;
+			border-radius: 5em;
+			display: flex;
+			justify-items: center;
+			align-items: center;
+			font-size: 1.5em;
+			span{
+				margin: auto;
+			}
+			&[selected]{
+				background-color: #00e3ff;
+			}
+		}
+	}
 }
