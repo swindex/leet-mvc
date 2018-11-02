@@ -209,7 +209,7 @@ textarea {
 //special case: label contains inpuit chechbox
 .fieldgroup{
 	label.toggle{
-		display:block;
+		display:flex;
 		width: 100%;
 	
 		font-size: $size-f-input;
@@ -230,7 +230,7 @@ textarea {
 			}
 		}
 		.slider {
-			position: absolute;
+			position: relative;
 			cursor: pointer;
 			top: 0;
 			right: 0;
@@ -239,6 +239,7 @@ textarea {
 			background-color: #ccc;
 			transition: .4s;
 			width: 58px; // of the slot
+			min-width: 58px;
 			height: 22px; // of the slot
 			margin-left: .2rem;
 			&:before {

@@ -200,8 +200,6 @@ export class Forms extends BaseComponent{
 		var opt = { name: el._name, type: "text" };
 		
 		$.extend(opt, override, el.attributes);
-		if (el.value)
-			Objects.setPropertyByPath(this.data, el._name, el.value);
 		return `
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
 			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
@@ -220,8 +218,6 @@ export class Forms extends BaseComponent{
 		var opt = { name: el._name, autocorrect:"off", autocapitalize:"off" };
 		
 		$.extend(opt, override, el.attributes);
-		if (el.value)
-			Objects.setPropertyByPath(this.data, el._name, el.value);
 		this.types[el._name] = "password";	
 		return `
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
@@ -244,10 +240,6 @@ export class Forms extends BaseComponent{
 		var opt = { name: el._name, type: "text" };
 		
 		$.extend(opt, override, el.attributes);
-		//var elem = $('<input />',opt).attr('bind',`this.data.${el._name}`)[0].outerHTML;
-		//var elem = `<input bind="this.data.${el._name}" ${generateAttributes(opt)} />`;
-		if (el.value)
-			Objects.setPropertyByPath(this.data, el._name, el.value);
 		return `
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
 			<textarea bind="component.data.${el._name}" ${this.generateAttributes(opt)}></textarea>
@@ -264,8 +256,6 @@ export class Forms extends BaseComponent{
 
 		var opt = { name: el._name, type: "checkbox" };
 		$.extend(opt, override, el.attributes);
-		if (el.value)
-			Objects.setPropertyByPath(this.data, el._name, el.value);
 		return `
 			<label class="toggle">${el.title}
 			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />

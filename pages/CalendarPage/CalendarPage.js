@@ -191,7 +191,7 @@ export class CalendarPage extends DialogPage{
 		this.setDate(date);
 		setTimeout(()=>{
 			this._tabs.select("clock");
-		},500);
+		},10);
 	}
 	setAM(isAM){
 		if (this.isAM != isAM){
