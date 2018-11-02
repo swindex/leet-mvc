@@ -1,7 +1,8 @@
-import { isNumber, isBoolean, isObject,isArray } from "util";
+import { isNumber, isBoolean, isObject,isArray, isString } from "util";
 import { Objects } from "./Objects";
 import { empty } from "./helpers";
 import { Translate } from "./Translate";
+import { Parser } from 'expr-eval';
 
 /**
  * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
@@ -125,6 +126,7 @@ export function FormValidator(data,template,errors,attributes){
 		} )
 
 		validate_visibility(_template);
+		execute_field_action(getTemplateValue(name),'setField');
 		return r==0;
 	}
 
@@ -216,12 +218,36 @@ export function FormValidator(data,template,errors,attributes){
 				});
 				//delete properties that are not used any more
 				Objects.forEach(un_used, (el)=>{
-					if (used.indexOf(el)<0)
+					if (used.indexOf(el)<0){
 						Objects.deletePropertyByPath(data, el);
+						touched = touched.filter(el2 => el2 !== el)
+					}
 				});
 			}
 		}
 		return e;	
+	}
+	/**
+	 * Execute rule 
+	 * @param {FieldTemplate} t 
+	 * @param {string} propname
+	 */
+	function execute_field_action(t,propname){
+		var wholerule = t[propname];
+		if (empty(wholerule) || !isString(wholerule))
+			return;
+
+		var parts = wholerule.split('|');
+		if (parts.length!=2)
+			return
+		try{
+			var  p = new Parser();
+			var res = p.evaluate(parts[1], _data);
+			setValue(_data, parts[0],res);
+		}catch(ex){
+			console.log("Error evaluating "+wholerule,ex);
+		}
+		
 	}
 	/**
 	 * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
@@ -655,6 +681,7 @@ export function FormValidator(data,template,errors,attributes){
 		"array":Translate("The :attribute must be an array."),
 		"before":Translate("The :attribute must be a date before :date."),
 		"between": {
+			"number":Translate("The :attribute must be between :min and :max."),
 			"numeric":Translate("The :attribute must be between :min and :max."),
 			"file":Translate("The :attribute must be between :min and :max kilobytes."),
 			"string":Translate("The :attribute must be between :min and :max characters."),
@@ -678,6 +705,7 @@ export function FormValidator(data,template,errors,attributes){
 		"ip":Translate("The :attribute must be a valid IP address."),
 		"json":Translate("The :attribute must be a valid JSON string."),
 		"max": {
+			"number":Translate("The :attribute may not be greater than :max."),
 			"numeric":Translate("The :attribute may not be greater than :max."),
 			"file":Translate("The :attribute may not be greater than :max kilobytes."),
 			"string":Translate("The :attribute may not be greater than :max characters."),
@@ -685,12 +713,14 @@ export function FormValidator(data,template,errors,attributes){
 		},
 		"mimes":Translate("The :attribute must be a file of type: :values."),
 		"min": {
+			"number":Translate("The :attribute must be at least :min."),
 			"numeric":Translate("The :attribute must be at least :min."),
 			"file":Translate("The :attribute must be at least :min kilobytes."),
 			"string":Translate("The :attribute must be at least :min characters."),
 			"array":Translate("The :attribute must have at least :min items.")
 		},
 		"not_in":Translate("The selected :attribute is invalid."),
+		"number":Translate("The :attribute must be a number."),
 		"numeric":Translate("The :attribute must be a number."),
 		"present":Translate("The :attribute field must be present."),
 		"regex":Translate("The :attribute has invalid characters: :result"),
@@ -703,6 +733,7 @@ export function FormValidator(data,template,errors,attributes){
 		"required_without_all":Translate("The :attribute field is required when none of :values are present."),
 		"same":Translate("The :attribute and :other must match."),
 		"size": {
+			"number":Translate("The :attribute must be :size."),
 			"numeric":Translate("The :attribute must be :size."),
 			"file":Translate("The :attribute must be :size kilobytes."),
 			"string":Translate("The :attribute must be :size characters."),
