@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "google-maps": "^3.3.0",
-    "jquery": "^3.3.1",
-    "material-datetime-picker": "git+https://github.com/ilueckel/material-datetime-picker.git"
+	"jquery": "^3.3.1",
+	"expr-eval": "^1.2.2"
   }
 }

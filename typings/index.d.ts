@@ -8,6 +8,7 @@ interface FieldTemplate{
 	placeholder?:string;
 	validateRule?:string;
 	displayRule?:string;
+	setField?:string;
 	items?:FieldTemplate[];
 	dataType?:string;
 	atttributes?:FieldData;
