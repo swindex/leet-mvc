@@ -7,10 +7,15 @@
 		position: relative;
 		&>div{
 			height: 100%;
-			display:none;
-			
+			width: 100%;
+			opacity: 0;
+			position: absolute;
+			transform: scale(0.25);
+			transition: transform 0.3s ease-in, opacity 0.3s ease-in;
 			&[selected]{
-				display:block;
+				opacity: 1;
+				z-index: 100;
+				transform: scale(1);
 			}
 		}
 
@@ -61,6 +66,78 @@
 					background-color: #00e3ff;
 				}
 			}
+			td b.apt-01{
+				transform: rotateZ(30deg);
+			}
+			td b.apt-02{
+				transform: rotateZ(60deg);
+			}
+			td b.apt-03{
+				transform: rotateZ(90deg);
+			}
+			td b.apt-04{
+				transform: rotateZ(120deg);
+			}
+			td b.apt-05{
+				transform: rotateZ(150deg);
+			}
+			td b.apt-06{
+				transform: rotateZ(180deg);
+			}
+			td b.apt-07{
+				transform: rotateZ(210deg);
+			}
+			td b.apt-08{
+				transform: rotateZ(240deg);
+			}
+			td b.apt-09{
+				transform: rotateZ(270deg);
+			}
+			td b.apt-10{
+				transform: rotateZ(300deg);
+			}
+			td b.apt-11{
+				transform: rotateZ(330deg);
+			}
+			td b.apt-12{
+				transform: rotateZ(360deg);
+			}
+			td b.apt-13{
+				transform: rotateZ(30deg);
+			}
+			td b.apt-14{
+				transform: rotateZ(60deg);
+			}
+			td b.apt-15{
+				transform: rotateZ(90deg);
+			}
+			td b.apt-16{
+				transform: rotateZ(120deg);
+			}
+			td b.apt-17{
+				transform: rotateZ(150deg);
+			}
+			td b.apt-18{
+				transform: rotateZ(180deg);
+			}
+			td b.apt-19{
+				transform: rotateZ(210deg);
+			}
+			td b.apt-20{
+				transform: rotateZ(240deg);
+			}
+			td b.apt-21{
+				transform: rotateZ(270deg);
+			}
+			td b.apt-22{
+				transform: rotateZ(300deg);
+			}
+			td b.apt-23{
+				transform: rotateZ(330deg);
+			}
+			td b.apt-00{
+				transform: rotateZ(360deg);
+			}
 		}
 		
 	}
@@ -79,85 +156,19 @@
 		}
 	}
 
-	td b.apt-01{
-		transform: rotateZ(30deg);
-	}
-	td b.apt-02{
-		transform: rotateZ(60deg);
-	}
-	td b.apt-03{
-		transform: rotateZ(90deg);
-	}
-	td b.apt-04{
-		transform: rotateZ(120deg);
-	}
-	td b.apt-05{
-		transform: rotateZ(150deg);
-	}
-	td b.apt-06{
-		transform: rotateZ(180deg);
-	}
-	td b.apt-07{
-		transform: rotateZ(210deg);
-	}
-	td b.apt-08{
-		transform: rotateZ(240deg);
-	}
-	td b.apt-09{
-		transform: rotateZ(270deg);
-	}
-	td b.apt-10{
-		transform: rotateZ(300deg);
-	}
-	td b.apt-11{
-		transform: rotateZ(330deg);
-	}
-	td b.apt-12{
-		transform: rotateZ(360deg);
-	}
-	td b.apt-13{
-		transform: rotateZ(30deg);
-	}
-	td b.apt-14{
-		transform: rotateZ(60deg);
-	}
-	td b.apt-15{
-		transform: rotateZ(90deg);
-	}
-	td b.apt-16{
-		transform: rotateZ(120deg);
-	}
-	td b.apt-17{
-		transform: rotateZ(150deg);
-	}
-	td b.apt-18{
-		transform: rotateZ(180deg);
-	}
-	td b.apt-19{
-		transform: rotateZ(210deg);
-	}
-	td b.apt-20{
-		transform: rotateZ(240deg);
-	}
-	td b.apt-21{
-		transform: rotateZ(270deg);
-	}
-	td b.apt-22{
-		transform: rotateZ(300deg);
-	}
-	td b.apt-23{
-		transform: rotateZ(330deg);
-	}
-	td b.apt-00{
-		transform: rotateZ(360deg);
-	}
-
 	#clock{
+
 		padding:2em 1em;
 		width:100%;
 		height: 100%;
 		position: relative;
 		margin: auto;
+		// transform: scale(0.25);
+		// transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+		// &[selected]{
+		// 	transform: scale(1);
+		// }
+
 		.circle{
 			width:100%;
 			height: 100%;

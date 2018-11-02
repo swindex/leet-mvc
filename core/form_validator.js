@@ -155,15 +155,29 @@ export function FormValidator(data,template,errors,attributes){
 			path=[];
 
 		if (obj.validateRule){
-			//obj._name = path.join('.');
 			e += validate_field(obj);
 		}
+		//items of a form
 		if (obj.type =="form" && obj.items){
 			if (obj.name)
 				path.push(obj.name);
 			e += validate_object(obj.items,path);
 		}
-		
+
+		//items of the select box
+		if (obj.type == "select" && obj.items){
+			var v = Objects.getPropertyByPath(_data, obj.name);
+			Objects.forEach(obj.items,(el)=>{
+				//only validate items of the selected item!
+				if (el.value == v)
+					e += validate_object(el, path);
+			});
+		}
+		//items of the selected item
+		if (obj.type == undefined && obj.items){
+			e += validate_object(obj.items,path);
+		}
+
 		if (isArray(obj))	
 			Objects.forEach(obj,(el)=>{
 				e += validate_object(el, path);
@@ -200,29 +214,32 @@ export function FormValidator(data,template,errors,attributes){
 
 			//if element is visible and it has items "its a select box"
 			if (visible && isArray(t.items)){
-				var un_used = [];
-				
-				Objects.forEach(t.items,(item)=>{
-					if (isArray(item.items) && item.value == Objects.getPropertyByPath(data,t._name)){
-						Objects.forEach(item.items,(item_)=>{
-							prepField(item_._name);
-							used.push(item_._name)
-							e += validate_field(item_);
-						});
-					}else{
-						Objects.forEach(item.items,(item_)=>{
-							un_used.push(item_._name)
-						});
-					}
-					
-				});
-				//delete properties that are not used any more
-				Objects.forEach(un_used, (el)=>{
-					if (used.indexOf(el)<0){
-						Objects.deletePropertyByPath(data, el);
-						touched = touched.filter(el2 => el2 !== el)
-					}
-				});
+				var newOnes = [];
+				var value =  Objects.getPropertyByPath(data,t._name);
+				if (t.value_old != undefined && t.value_old != value){
+					//if value of the select has changed, then delete all properties that it could have produced
+					Objects.forEach(t.items,(item)=>{
+						if (isArray(item.items) && item.value == value){
+							Objects.forEach(item.items,(el)=>{
+								newOnes.push(el);
+							});
+						}else if (isArray(item.items)){
+							Objects.forEach(item.items,(el)=>{
+								Objects.deletePropertyByPath(data, el.name);
+								Objects.deletePropertyByPath(errors, el.name);
+								touched = touched.filter(el2 => el2 !== el.name)
+							});
+						}
+					});
+					//initialize newly-shown fields
+					newOnes.forEach((el)=>{
+						if (el.value && !Objects.getPropertyByPath(data, el.name)){
+							setValue(_data,el.name,el.value);
+						}
+					})
+				}		
+				//remember the old value of the select box
+				t.value_old = Objects.getPropertyByPath(data,t._name);
 			}
 		}
 		return e;	
@@ -272,25 +289,19 @@ export function FormValidator(data,template,errors,attributes){
 				e += validate_visibility(el,key);
 			});
 		}else{
-			//e += validate_field(obj);
 			obj._name = path && obj.name.indexOf('.')==-1 ? path + "." + obj.name : obj.name;
 			prepField(obj._name);
 			if ( obj.displayRule ){ 
 				var visible = empty(is_field_invalid(obj,'displayRule'));
 				if (!visible){
-					//hid.push(name);
 					//only reset data and error values if field name is not yet hidden
 					if (isAttrNull(obj._name)){
-						//reset data ONLY is it is a part of same-name optional
-						//if( obj._name.match(/\/[^\/]*\//,''))
-						//	setValue(_data,obj._name,null);
 						setValue(_errors, obj._name, null);
 					}
 
 					//set hidden attribute
 					setAttrValue( obj._name, {hidden:true});
 				}else{
-					//vis.push(name);
 					setAttrValue( obj._name, null);
 				}
 			}
@@ -315,7 +326,6 @@ export function FormValidator(data,template,errors,attributes){
 	 * @param {FieldTemplate} f 
 	 */
 	function is_field_invalid(f, propName){
-
 		//iterate through messages to see if any keys match rule "required|max"
 		var rules= f[propName].split("|"); //split rules
 		var errmsg="";
@@ -359,7 +369,10 @@ export function FormValidator(data,template,errors,attributes){
 				if (!empty(getValue(_data, name)) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
 					var err = null;
 					//
-					errmsg=errmsg.replace(':attribute',f.title);
+					var title = f.title;
+					if (isString(title) && title.length > 25)
+						title = ""
+					errmsg=errmsg.replace(':attribute', title);
 
 					var c_name = condition.split(',')[0];
 			
@@ -399,7 +412,6 @@ export function FormValidator(data,template,errors,attributes){
 				}
 			}
 		}
-		//input_removeError(name);
 		return 0;
 	}
 
