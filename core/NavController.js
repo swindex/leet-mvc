@@ -142,11 +142,13 @@ export function NavController() {
 		tryCall(pageObject, pageObject.onInit);
 		tryCall(pageObject, pageObject.init);
 		
-		//p.style.display = 'block';
-	
-		tryCall(pageObject,pageObject.onEnter);
-
 		recalcContentHeight($(p));
+		
+		//p.style.display = 'block';
+		//enter done on next free frame
+		window.requestAnimationFrame(()=>{
+			tryCall(pageObject,pageObject.onEnter);
+		});
 		attachEvents(pageObject,p);
 
 		//console.timeEnd()
@@ -238,7 +240,7 @@ export function NavController() {
 			if (!empty(frame.page.visibleParent))
 				hideAfter++;
 			if (hideAfter > n){
-				showPageElement(frame.element);
+				showPageElement(frame.element, frame.page);
 			}else{	
 				hidePageElement(frame.element);				
 			}
@@ -250,7 +252,7 @@ export function NavController() {
 	 * Show particular page DOM element
 	 * @param {JQuery<HTMLElement>} element - page element to show
 	 */
-	function showPageElement(element){
+	function showPageElement(element, pageObject){
 		window.requestAnimationFrame(function(){
 					
 			if (typeof element.attr('hidden') !=='undefined'){
@@ -275,7 +277,13 @@ export function NavController() {
 				element.removeAttr('hiding');	
 				element.removeAttr('revealing');
 				element.removeAttr('creating');
+
+				if (typeof element.attr('visible') == 'undefined'){
+					tryCall(pageObject,pageObject.onVisible);
+				}
 				element.attr('visible','');
+
+				
 			},transitionTime);	
 		});
 		

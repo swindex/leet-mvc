@@ -28,7 +28,8 @@ export class CalendarPage extends DialogPage{
 
 		this._minutesSelected = false;
 
-		this._weeks = [0,1,2,3,4,5];
+		//start with empty weeks.
+		this._weeks = [];
 		this._weekDayNames = Array.apply(null, Array(7)).map(function (_, i) {
 			return moment(i, 'e').startOf('week').isoWeekday(i + 1).format('ddd');
 		});
@@ -44,20 +45,27 @@ export class CalendarPage extends DialogPage{
 		this._setProps();
 	}
 
+	//initial calendar binding takes time. Do it after the dialog is displayed and other items are drawn.
+	onVisible(){
+		if (this._weeks.length==0)
+			this._weeks = [0,1,2,3,4,5];
+	}
+
 	_weekDays(weekNumber){
 		var _weekDays = [];
 		var cMonth= this._currMonth.month();
-
+		var cDayF = this._currDate.format('YYY-MM-DD');
 		for (var i = 1; i<=7 ; i++){
 			var day = this._currMonth.clone().startOf('month').isoWeekday(i).add(weekNumber,'week');
-
+			
 			var D = day.format('DD');
-
+			var dayF = day.format('YYY-MM-DD');
 			
 			var apts = [];
 			this.appointments.forEach((el)=>{
-				if (moment(el.dateTime).format('YYY-MM-DD')==day.format('YYY-MM-DD')){
-					apts.push("apt-"+ moment(el.dateTime).format('HH'));
+				var mEl = moment(el.dateTime);
+				if (mEl.format('YYY-MM-DD')== dayF){
+					apts.push("apt-"+ mEl.format('HH'));
 				}
 			});
 
@@ -66,7 +74,7 @@ export class CalendarPage extends DialogPage{
 			if (day.month() !== cMonth)
 				_weekDays.push({day: "",dayNum:0, date:null, selected:false,apts:[]});
 			else{
-				var selected = day.format('YYY-MM-DD') == this._currDate.format('YYY-MM-DD');
+				var selected = dayF == cDayF;
 				_weekDays.push({day: D, dayNum: Number(D), date: day.toDate(), selected:selected,apts:apts});
 			}
 		};
@@ -188,6 +196,8 @@ export class CalendarPage extends DialogPage{
 		this._setProps();
 	}
 	onSetDateClicked(date){
+		if (!date)
+			return;
 		this.setDate(date);
 		setTimeout(()=>{
 			this._tabs.select("clock");

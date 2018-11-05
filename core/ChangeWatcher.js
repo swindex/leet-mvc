@@ -2,9 +2,14 @@ import { Watcher } from './Watcher.js';
 
 export class ChangeWatcher {
 	constructor(){
+		this[Watcher.skip] = true;
 		return Watcher.on(this,()=>{
 			this.update();
 		},['injectVars']);
+	}
+
+	startWatch(){
+		this[Watcher.skip] = false;
 	}
 
 	/**

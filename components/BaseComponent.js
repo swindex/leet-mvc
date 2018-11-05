@@ -9,14 +9,16 @@ export class BaseComponent extends ChangeWatcher{
 		/** @type {string} */
 		this.html = null;
 		this.events = null;
+		
 	}
 
 	/** 
+	 * ***OverrideCallSuper***
 	 * This functinon is called once BEFORE the container is bound to context
 	 * @param {HTMLElement} container
 	 */
 	onInit(container){
-		//super.startWatch();
+		super.startWatch();
 	}
 	/** 
 	 * This functinon is called once after the container is bound to context

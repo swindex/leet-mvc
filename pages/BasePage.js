@@ -34,6 +34,7 @@ export class BasePage extends ChangeWatcher{
 	 */
 	onInit(binderEvent){
 		this.binder.bindElements(binderEvent);
+		super.startWatch();
 	}
 
 	/**
@@ -52,8 +53,17 @@ export class BasePage extends ChangeWatcher{
 	}
 	/**
 	 * ***Override****
+	 * * Called every time the page becomes active but before transitions
 	 */
 	onEnter(){
+
+	}
+
+	/**
+	 * ***Override***
+	 * Called every time the transitions have ended and the page is fully visible.
+	 */
+	onVisible(){
 
 	}
 	/**
