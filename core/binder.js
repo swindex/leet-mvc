@@ -454,13 +454,17 @@ export var Binder = function(context, container){
 	function bindEventsToContext(elem){
 		Array.prototype.slice.call(elem.attributes).forEach(function(attr) {
 			if (attr.name.substr(0,2)=='on' && typeof elem[attr.name] =='function'){
-				elem[attr.name] = (function(evt){
-					//setTimeout(()=>{
+				/*elem[attr.name] = function(evt){
 					updateBoundContextProperty(evt.target);
 					self.injectVars['$event'] = evt;
 					var c = createCaller(attr.value);
 					c(self);
-					//},1);
+				};*/
+				elem[attr.name] = (function(evt){
+					updateBoundContextProperty(evt.target);
+					self.injectVars['$event'] = evt;
+					var c = createCaller(attr.value);
+					c(self);
 				}).bind(self);
 			}	
 		});

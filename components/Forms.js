@@ -46,8 +46,8 @@ export class Forms extends BaseComponent{
 				if (ev.target.name){
 					/** @type {string} */
 					var p = Objects.getPropertyByPath(this.data,ev.target.name);
-					if (typeof p == 'string')
-						Objects.setPropertyByPath(this.data, ev.target.name, p.trim());
+					//if (typeof p == 'string')
+					//	Objects.setPropertyByPath(this.data, ev.target.name, p.trim());
 					this.validator.validateField(ev.target.name);
 					this.binder.updateElements();
 				}
