@@ -65,13 +65,12 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 * @param {number} Longitude 
 	 */
 	this.setEndLocation = function(Latitude, Longitude){
-		if (isNaN(Latitude) || isNaN(Longitude))
+		if (!Latitude || !Longitude || isNaN(Latitude) || isNaN(Longitude))
 			return false;
 		addWorker(function(){
-				end = new google.maps.LatLng(Number(Latitude), Number(Longitude));
+			end = new google.maps.LatLng(Number(Latitude), Number(Longitude));
 			nextWorker();
 		});
-		//if (empty(google)) wait.push(v); else v();
 		return this;
 	}
 	var positionTimer = null;
@@ -83,7 +82,6 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 						if (empty(start) || start.lat().toFixed(4)!= position.coords.latitude.toFixed(4) || start.lng().toFixed(4) != position.coords.longitude.toFixed(4)){
 							self.setStartLocation(position.coords.latitude,position.coords.longitude);
 							startMarker.setPosition(getLocation(position.coords.latitude,position.coords.longitude));
-							//self.centerStart();
 							self.generateRoute(null, true);
 						}
 					},
@@ -93,7 +91,6 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 			}
 			nextWorker();
 		});
-		//if (empty(google)) wait.push(v); else v();	
 	}
 	this.destroy=function(){
 		if ( positionTimer!==null )
@@ -112,16 +109,12 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 				tryCall(null,resolve,start);
 				nextWorker();
 			}, function fail(err){
-				//alert(JSON.stringify(err));
 				loader.hide();
 				console.log("unable to acquire GPS", err);
 				tryCall(null,reject, err);
 				nextWorker();
 			}, {maximumAge:3000, timeout:5000, enableHighAccuracy:true});
 		});
-		//if (empty(google)) wait.push(v); else v();
-		
-		
 		return this;
 	}
 	/**
@@ -156,42 +149,33 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 * Center on End location
 	 */
 	this.centerEnd = function(){
-		
 		addWorker(function(){
 			if (!empty(end))
 				map.setCenter(end);
 			nextWorker();
 		});
-		//if (empty(google)) wait.push(v); else v();
-
 		return this;
 	}
 	/**
 	 * Center on Start location
 	 */
 	this.centerStart = function(){
-		
 		addWorker(function(){
 			if (!empty(start))
 				map.setCenter(start);
 			nextWorker();
 		});
-		//if (empty(google)) wait.push(v); else v();
-
 		return this;
 	}
 	/**
 	 * Center on location
 	 */
 	this.centerOn = function(location){
-		
 		addWorker(function(){
 			if (!empty(location))
 				map.setCenter(location);
 			nextWorker();
 		});
-		//if (empty(google)) wait.push(v); else v();
-
 		return this;
 	}
 	/**
@@ -212,11 +196,9 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 								if (typeof callback ==='function')
 									callback(end);
 							}else{
-								//end = null;
 								console.log('Error: No results found!');
 							}
 						} else{
-							//end = null;
 							console.log('Geocode was not successful for the following reason: '+status);
 						}
 						nextWorker();
@@ -224,7 +206,6 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 			}else
 				nextWorker();
 		});
-		//if (empty(google)) wait.push(v); else v();
 		return this;
 	}
 
@@ -237,7 +218,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		addWorker(function(){
 			if (!empty(endMarker))
 				endMarker.setMap(null);
-			endMarker = self.setMarker(end,imageURI);
+			endMarker = setMarker(end,imageURI);
 			nextWorker();
 		});
 		//if (empty(google)) wait.push(v); else v();
@@ -254,7 +235,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		addWorker(function(){
 			if (!empty(startMarker))
 				startMarker.setMap(null);
-			startMarker = setMarker(start,imageURI);
+			startMarker = setMarker(start, imageURI);
 			nextWorker();
 		});
 		//if (empty(google)) wait.push(v); else v();
