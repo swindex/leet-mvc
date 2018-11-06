@@ -30,6 +30,8 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	/**@type {google.maps.Marker} */
 	var startMarker=null;
 
+	var markers = [];
+
 	/** @type {google.maps.DirectionsRenderer} */
 	var directionsDisplay = null;
 	/** @type {google.maps.DirectionsService} */
@@ -51,6 +53,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	GoogleMapsLoader.LANGUAGE = LANGUAGE;
 	var wait = [];
 
+	this.getLocation = getLocation;
 	function getLocation(Latitude, Longitude){
 		return new google.maps.LatLng(Number(Latitude), Number(Longitude));
 	}
@@ -100,19 +103,19 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	/**
 	 * Set start to current GPS location
 	 */
-	this.setStartGps = function(callback){
+	this.setStartGps = function(resolve, reject){
 		addWorker(function(){
 			var loader = Loader().container(mapHtmlElement.parentElement).timeout(5000).show(Translate("Acquiring GPS.."));
 			navigator.geolocation.getCurrentPosition(function success(pos){
 				loader.hide();
 				start = new google.maps.LatLng(Number(pos.coords.latitude), Number(pos.coords.longitude));
-				if (typeof callback ==='function')
-					callback();
+				tryCall(null,resolve,start);
 				nextWorker();
 			}, function fail(err){
 				//alert(JSON.stringify(err));
 				loader.hide();
 				console.log("unable to acquire GPS", err);
+				tryCall(null,reject, err);
 				nextWorker();
 			}, {maximumAge:3000, timeout:5000, enableHighAccuracy:true});
 		});
@@ -127,7 +130,10 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 * @param {number} Longitude
 	 */
 	this.setStartLocation = function(Latitude, Longitude){
-		start = new google.maps.LatLng(Number(Latitude), Number(Longitude));
+		addWorker(function(){
+			start = new google.maps.LatLng(Number(Latitude), Number(Longitude));
+			nextWorker();
+		});	
 		return this;
 	}
 	/**
@@ -248,7 +254,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		addWorker(function(){
 			if (!empty(startMarker))
 				startMarker.setMap(null);
-			startMarker = self.setMarker(start,imageURI);
+			startMarker = setMarker(start,imageURI);
 			nextWorker();
 		});
 		//if (empty(google)) wait.push(v); else v();
@@ -262,17 +268,38 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 * @param {string} imageURI 
 	 * @param {string} label 
 	 */
-	this.setMarker = function(location,imageURI){
+	function setMarker(location,imageURI){
 		//imageURI = imageURI || 'img/marker.png';
 		if (empty(location))
 			return null;
-		return new google.maps.Marker({
-				position: location,
+		var marker = new google.maps.Marker({
+			position: location,
+			map: map, 
+			//title: getDetailAddress(),
+			icon: imageURI
+		});
+		return marker;
+	}
+
+	/**
+	 * Create marker on map within worker
+	 * @param {number} lat 
+	 * @param {number} lng 
+	 * @param {string} imageURI 
+	 * @param {function(google.maps.Marker)} [onClick] 
+	 */
+	this.setMarker = function(lat, lng, imageURI, onClick){
+		addWorker(function(){
+			var marker = new google.maps.Marker({
+				position: getLocation(lat, lng),
 				map: map, 
-				//title: getDetailAddress(),
 				icon: imageURI
 			});
-
+			marker.addListener('click', function(e){event.preventDefault(); onClick(this);});
+			markers.push(marker);
+			nextWorker();
+		});
+		return this;
 	}
 
 	/**
@@ -438,6 +465,9 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	this.startWorkers= function(){
 		nextWorker(true);
 	}
+	this.onWorkersFinished = function(){
+
+	}
 	var workerFinished = false;
 	var workerStarted = false;
 	var workersAdded = false;
@@ -450,11 +480,13 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		if (start===true)
 			workerStarted = true;
 		
-		if (workerStarted===true && wait.length>0)
+		if (workerStarted===true && wait.length>0){
 			wait.shift()();
-
-		if (wait.length==0)
+		} else if (workerStarted===true){
+			self.onWorkersFinished();
 			workerFinished = true;	
+		}
+		
 	}
 	/**
 	 * Add worker to queue.
