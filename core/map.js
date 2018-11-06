@@ -58,7 +58,6 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		return new google.maps.LatLng(Number(Latitude), Number(Longitude));
 	}
 
-
 	/**
 	 * Set End Address
 	 * @param {number} Latitude 
@@ -221,8 +220,6 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 			endMarker = setMarker(end,imageURI);
 			nextWorker();
 		});
-		//if (empty(google)) wait.push(v); else v();
-
 		return this;
 	}
 	/**
@@ -231,15 +228,12 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 */
 	this.showStartMarker = function(imageURI){
 		directionsRendererOptions.suppressMarkers = true;
-
 		addWorker(function(){
 			if (!empty(startMarker))
 				startMarker.setMap(null);
 			startMarker = setMarker(start, imageURI);
 			nextWorker();
 		});
-		//if (empty(google)) wait.push(v); else v();
-
 		return this;
 	}
 
@@ -250,13 +244,11 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 * @param {string} label 
 	 */
 	function setMarker(location,imageURI){
-		//imageURI = imageURI || 'img/marker.png';
 		if (empty(location))
 			return null;
 		var marker = new google.maps.Marker({
 			position: location,
 			map: map, 
-			//title: getDetailAddress(),
 			icon: imageURI
 		});
 		return marker;
@@ -334,7 +326,6 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 				});
 			}
 		});
-		//if (empty(google)) wait.push(v); else v();
 		return this;
 	}
 	this.showMapSettings = function(callback){
@@ -381,11 +372,8 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 			map_settings = {
 				disableDefaultUI:  !res.disableDefaultUI,
 			}
-
 			self.setOptions(map_settings);
-
 			tryCall(null, callback, map_settings, directions_settings);
-			
 		});
 	}
 	/**
@@ -399,7 +387,6 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 			nextWorker();
 		}
 		addWorker(setDirections);
-		//if (empty(google)) wait.push(v); else v();
 		return this;
 	}
 
@@ -410,11 +397,8 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 * @returns {Map}
 	 */
 	this.init = function(element, opts){
-
 		opts ? options = opts : null;
-
 		mapHtmlElement = element;
-
 		addWorker(function(){
 			var loader = Loader().container(element.parentElement).timeout(5000).show();
 			
@@ -429,14 +413,10 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 				},options);
 
 				map = new google.maps.Map(element, options); 
-				
 				directionsDisplay = new google.maps.DirectionsRenderer(directionsRendererOptions);
 				directionsService = new google.maps.DirectionsService;
-		
 				directionsDisplay.setMap(map);
-				
 				loader.hide();
-
 				google.maps.event.trigger(map, 'resize');
 				nextWorker();
 			}); //end GoogleMapsLoader
@@ -467,7 +447,6 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 			self.onWorkersFinished();
 			workerFinished = true;	
 		}
-		
 	}
 	/**
 	 * Add worker to queue.
