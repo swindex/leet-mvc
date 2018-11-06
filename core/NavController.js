@@ -140,8 +140,8 @@ export function NavController() {
 		resetPagesVisibility();
 
 		tryCall(pageObject, pageObject.onInit);
-		tryCall(pageObject, pageObject.init);
-		
+		tryCall(pageObject, pageObject.init);		
+
 		recalcContentHeight($(p));
 		
 		//p.style.display = 'block';
@@ -273,14 +273,20 @@ export function NavController() {
 			setTimeout(function(){
 				if (typeof element.attr('deleting') !=='undefined')
 					return;
+				
+				
+				if (typeof element.attr('creating') != 'undefined'){
+					tryCall(pageObject,pageObject.onLoaded);
+				}
+				if (typeof element.attr('visible') == 'undefined'){
+					tryCall(pageObject,pageObject.onVisible);
+				}
+				
 				element.removeAttr('hidden');
 				element.removeAttr('hiding');	
 				element.removeAttr('revealing');
 				element.removeAttr('creating');
 
-				if (typeof element.attr('visible') == 'undefined'){
-					tryCall(pageObject,pageObject.onVisible);
-				}
 				element.attr('visible','');
 
 				

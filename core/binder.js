@@ -137,18 +137,22 @@ export var Binder = function(context, container){
 			if (elem.attributes.hasOwnProperty('[directive]'))		
 				elem.attributes.removeNamedItem('[directive]');
 			if (elem['TEMPLATE']['STATE'] !== result){
-
-				tryCall(result,result ? result.onInit: null, elem);
 				elem['TEMPLATE']['STATE'] = result;		
-				if (html !== null)
+
+				if (html !== null){
 					elem.innerHTML = html;
-				elem['TEMPLATE']['BINDER'] = (new Binder(self.context,elem)).setInjectVars($.extend({component:component},self.injectVars)).bindElements(callbacks);
-				if (isObject(result)){
-					result.binder=elem['TEMPLATE']['BINDER'];
-					tryCall(result,result.init,elem)
 				}
 				
-
+				if (component){
+					tryCall(component,component.onInit, elem);
+				}
+				
+				elem['TEMPLATE']['BINDER'] = (new Binder(self.context,elem)).setInjectVars($.extend({component:component},self.injectVars)).bindElements(callbacks);
+				
+				if (component){
+					component.binder = elem['TEMPLATE']['BINDER']
+					tryCall(component,component.init, elem);
+				}
 			}else{
 				elem['TEMPLATE']['BINDER'].setInjectVars($.extend({component:component},self.injectVars)).updateElements();
 			}	

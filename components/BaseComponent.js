@@ -13,7 +13,7 @@ export class BaseComponent extends ChangeWatcher{
 	}
 
 	/** 
-	 * ***OverrideCallSuper***
+	 * 
 	 * This functinon is called once BEFORE the container is bound to context
 	 * @param {HTMLElement} container
 	 */

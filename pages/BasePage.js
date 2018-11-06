@@ -22,14 +22,23 @@ export class BasePage extends ChangeWatcher{
 	}
 
 	/**
+	 * Force Page update
+	 */
+	update(){
+		this.binder.updateElements();
+		this.onUpdated();
+	}
+
+	/**
 	 * Command the nav controller to remove this page from the stack
 	 */
 	destroy(){
 		this.Nav.remove(this);
 	}
 
+	//Implementation of Lifecycle callbacks that are called by NavController
 	/**
-	 * ***OverrideCallSuper****
+	 * ***OverrideCallSuper***
 	 * Initialize binder
 	 */
 	onInit(binderEvent){
@@ -38,19 +47,28 @@ export class BasePage extends ChangeWatcher{
 	}
 
 	/**
-	 * @override
+	 * ***Override***
+	 * Called after page is created but before it is rendered
 	 */
-	update(){
-	 	this.binder.updateElements();
-	 	this.onUpdated();
+	init(){
+		
+	}
+	/**
+	 * ***Override***
+	 * * Called after the page is created and fully rendered
+	 */
+	onLoaded(){
+
 	}
 
 	/**
 	 * ***Override****
+	 * Called after page is updated either manually, or by watcher
 	 */
 	onUpdated(){
-		console.log(this.constructor.name, 'updated');
+		//console.log(this.constructor.name, 'updated');
 	}
+
 	/**
 	 * ***Override****
 	 * * Called every time the page becomes active but before transitions
