@@ -216,7 +216,7 @@ export function FormValidator(data,template,errors,attributes){
 			if (visible && isArray(t.items)){
 				var newOnes = [];
 				var value =  Objects.getPropertyByPath(data,t._name);
-				if (t.value_old != undefined && t.value_old != value){
+				if (/*t.value_old != undefined && */t.value_old != value){
 					//if value of the select has changed, then delete all properties that it could have produced
 					Objects.forEach(t.items,(item)=>{
 						if (isArray(item.items) && item.value == value){
@@ -235,6 +235,9 @@ export function FormValidator(data,template,errors,attributes){
 					newOnes.forEach((el)=>{
 						if (el.value && !Objects.getPropertyByPath(data, el.name)){
 							setValue(_data,el.name,el.value);
+						}
+						if (isArray(el.items) && el.items.length>0 && !el.placeholder && !Objects.getPropertyByPath(data, el.name)){
+							Objects.setPropertyByPath(data,el.name,el.items[0].value);
 						}
 					})
 				}		
@@ -329,6 +332,34 @@ export function FormValidator(data,template,errors,attributes){
 		//iterate through messages to see if any keys match rule "required|max"
 		var rules= f[propName].split("|"); //split rules
 		var errmsg="";
+
+		//check if errmsg is an array and then assign a proper errormsg
+		var type="string";
+		if (typeof(errmsg) != "string"){
+			if (rules.indexOf('array')!=-1){
+				type='array';
+			}
+			if (rules.indexOf('number')!=-1){
+				type='numeric';
+			}
+			if (rules.indexOf('numeric')!=-1){
+				type='numeric';
+			}
+			if (rules.indexOf('integer')!=-1){
+				type='numeric';
+			}
+			if (rules.indexOf('string')!=-1){
+				type='string';
+			}
+			if (rules.indexOf('digits')!=-1){
+				type='string';
+			}
+		}
+
+		if (type == 'string' && f.type =="select"){
+			type='select';
+		}
+
 		//iterate through rules
 		for (var r in rules) {
 			var rr=rules[r].split(":");
@@ -337,38 +368,12 @@ export function FormValidator(data,template,errors,attributes){
 				errmsg=_messages[rr[0]];
 				if (rr[1] != undefined ) condition=rr[1];
 				
-				//check if errmsg is an array and then assign a proper errormsg
-				var type="string";
-				if (typeof(errmsg) != "string"){
-					/*if ($('[name="'+name+'"]').is('file')){
-						type='file';
-					}else{*/
-						if (rules.indexOf('array')!=-1){
-							type='array';
-						}
-						if (rules.indexOf('number')!=-1){
-							type='numeric';
-						}
-						if (rules.indexOf('numeric')!=-1){
-							type='numeric';
-						}
-						if (rules.indexOf('integer')!=-1){
-							type='numeric';
-						}
-						if (rules.indexOf('string')!=-1){
-							type='string';
-						}
-						if (rules.indexOf('digits')!=-1){
-							type='string';
-						}
-					//}
-					errmsg=errmsg[type]; //set default value
-				}
+				errmsg= errmsg[type] || errmsg; //set default value
 				var name = f.name
+				var dValue = getValue(_data, name);
 				//only validate fields that are either required, or not empty
-				if (!empty(getValue(_data, name)) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
+				if (!empty(dValue) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
 					var err = null;
-					//
 					var title = f.title;
 					if (isString(title) && title.length > 25)
 						title = ""
@@ -400,6 +405,7 @@ export function FormValidator(data,template,errors,attributes){
 					errmsg=errmsg.replace(':digits',condition);
 					errmsg=errmsg.replace(':size',condition);
 					
+
 					var result = validate_isfail(name,rr[0],type,condition)
 			
 					if (result){
@@ -436,8 +442,12 @@ export function FormValidator(data,template,errors,attributes){
 				return false;
 				break;
 			case 'required':
-				return value=="" || value==null;
-				break;
+				switch (type){
+					case "select":
+						return value===null;
+					default :
+						return value==="" || value===null;
+				}
 			case 'different':	
 				var otherKeys = condition.split(',');
 				
