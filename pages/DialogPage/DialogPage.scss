@@ -3,7 +3,7 @@
 	transform: translate3d(0,0,0) !important;
 
 	.dialog-content{
-		padding: $margin-lg;
+		padding: $margin-lg $margin-lg 0 $margin-lg;
 	}
 	.backdrop {
 		position: absolute;
