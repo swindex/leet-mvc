@@ -36,8 +36,13 @@ export class ItemList extends BaseComponent{
 	}
 
 	onInit(container){
-		if (!this.html && container.innerHTML)
+		super.onInit(container);
+		if (!this.html && container.innerHTML){
+			//chrome sometimes add garbage =""
+			container.innerHTML = container.innerHTML.replace('$iterator=""','$iterator');
+			//replace $iterator with default iterator
 			container.innerHTML = container.innerHTML.replace('$iterator',this.defaultIterator);
+		}
 	}
 	/**
 	 * Set Items array
