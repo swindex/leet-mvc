@@ -534,8 +534,8 @@ export var Binder = function(context, container){
 
 			return null;
 		}
-		if (typeof v == "undefined")
-			v = "";
+		//if (typeof v == "undefined")
+		//	v = "";
 
 		var format = elem.getAttribute('format');
 		if (format !== null) {
@@ -570,8 +570,8 @@ export var Binder = function(context, container){
 			case "SELECT":
 				$(elem).find("option").removeAttr('selected');
 				window.requestAnimationFrame(()=>{
-					if (v===null)
-						$(elem).find("option[value='']").first().attr('selected',"");
+					if (v===null || v === undefined)
+						$(elem).find("option").first().attr('selected',"");
 					else{
 						var sel = $(elem).find("option[value='"+ v +"']").first();
 						if (sel.length){
@@ -596,19 +596,24 @@ export var Binder = function(context, container){
 						elem.checked = v;
 						break;
 					default:
-						elem.value = v;
+						elem.value = toInputValue(v);
 						break;
 				}
 				break;
 			case "IMG":
 				if (elem.src !== v)
-					elem.src = v;
+					elem.src = toInputValue(v);
 				break;
 			default:
 				if (elem.innerText !== v )
-					elem.innerText = v;
+					elem.innerText = toInputValue(v);
 				break;	
 		}
+	}
+	function toInputValue(val){
+		if (typeof val == 'undefined' || val === null)
+			return "";
+		return val;	
 	}
 	function isElementSetting(elem){
 		switch (elem.tagName) {
@@ -704,8 +709,8 @@ export var Binder = function(context, container){
 		switch (elem.tagName) {
 			case "SELECT":
 				var sel = $(elem).find("option:selected");
-				v = formatValue(sel.val(),format);
-				
+				v = formatValue(sel[0].getAttribute('value'),format);
+				console.log(v);
 				break;
 			case "OPTION":
 			case "INPUT":

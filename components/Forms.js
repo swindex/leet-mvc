@@ -53,9 +53,9 @@ export class Forms extends BaseComponent{
 				}
 				this.onChange(ev);
 			},
-			click:(ev)=>{
+			/*click:(ev)=>{
 				this.onClick(ev);
-			},
+			},*/
 
 		}
 
@@ -73,7 +73,7 @@ export class Forms extends BaseComponent{
 	/** 
 	 * @param {HTMLElementMouseEvent} event
 	 */
-	onClick(event){
+	onButtonClick(event){
 
 	}
 	
@@ -275,7 +275,7 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		var elem = `<select ${this.generateAttributes(opt)}>`;
 		if (el.placeholder)
-			elem = elem+ `<option value="">${el.placeholder}</option>`;
+			elem = elem+ `<option>${el.placeholder}</option>`;
 
 		var items_items = "";	
 		$.each(el.items,  (index, option)=>{
@@ -354,7 +354,7 @@ export class Forms extends BaseComponent{
 	addButton(el, override,formName){
 
 		return `
-			<button class="link" bind name="${el._name}">${el.title}</button>
+			<button class="link" bind name="${el._name}" onclick="component.onButtonClick($event);">${el.title}</button>
 		`;
 	}	
 	/**
