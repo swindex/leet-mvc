@@ -320,7 +320,7 @@ export class Forms extends BaseComponent{
 		return `
 		<div ${this.generateAttributes(opt)}>
 			`+ (el.title ? `<label>${el.title}</label>` : '')+`
-			<div>${el.value}</div>
+			<div>${(el.value != null ? el.value : "")}</div>
 		</div>
 		`;
 	}

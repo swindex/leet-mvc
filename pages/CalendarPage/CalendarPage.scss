@@ -5,6 +5,7 @@
 	.tabs{
 		height: 22em;
 		position: relative;
+		overflow: hidden;
 		&>div{
 			height: 100%;
 			width: 100%;

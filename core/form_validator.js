@@ -22,6 +22,12 @@ export function FormValidator(data,template,errors,attributes){
 	var used = [];
 	var touched = [];
 
+	var _messages=null;
+
+	if (Translate('form_validator')!=='form_validator' && isObject(Translate('form_validator'))){
+		_messages = Translate('form_validator');
+	}
+
 	set_names(_template);
 
 	/**
@@ -146,42 +152,55 @@ export function FormValidator(data,template,errors,attributes){
 		validate_visibility(_template);
 	}
 
+	/**
+	 * 
+	 * @param {FieldTemplate|FieldTemplate[]} obj - FieldTemplate or array to validate
+	 * @param {string[]} [path]
+	 */
 	function validate_object(obj, path){
 		var e = 0;
-		if (!isArray(obj) && !isObject(obj))
+		if (!isArray(obj) && !isObject(obj)){
 			return 0;
+		}	
 
-		if (!path)
+		if (!path){
 			path=[];
-
-		if (obj.validateRule){
-			e += validate_field(obj);
-		}
-		//items of a form
-		if (obj.type =="form" && obj.items){
-			if (obj.name)
-				path.push(obj.name);
-			e += validate_object(obj.items,path);
 		}
 
-		//items of the select box
-		if (obj.type == "select" && obj.items){
-			var v = Objects.getPropertyByPath(_data, obj.name);
-			Objects.forEach(obj.items,(el)=>{
-				//only validate items of the selected item!
-				if (el.value == v)
-					e += validate_object(el, path);
-			});
-		}
-		//items of the selected item
-		if (obj.type == undefined && obj.items){
-			e += validate_object(obj.items,path);
-		}
+		//object is FieldTemplate
+		if (isObject(obj) && !isArray(obj)){	
+			if (obj.validateRule){
+				e += validate_field(obj);
+			}
+			//items of a form
+			if (obj.type =="form" && obj.items){
+				if (obj.name){
+					path.push(obj.name);
+				}	
+				e += validate_object(obj.items,path);
+			}
 
-		if (isArray(obj))	
+			//items of the select box
+			if (obj.type == "select" && obj.items){
+				var v = Objects.getPropertyByPath(_data, obj.name);
+				Objects.forEach(obj.items,(el)=>{
+					//only validate items of the selected item!
+					if (el.value == v){
+						e += validate_object(el.items, path);
+					}
+				});
+			}
+			//items of the selected item
+			if (obj.type == undefined && obj.items){
+				e += validate_object(obj.items,path);
+			}
+		}
+		//Object is an array FieldTemplate[]
+		if (isArray(obj)){	
 			Objects.forEach(obj,(el)=>{
 				e += validate_object(el, path);
 			});
+		}	
 			
 		return e;
 	}
@@ -208,15 +227,16 @@ export function FormValidator(data,template,errors,attributes){
 					setValue(_errors, t._name, null);
 				}
 			}else{
-				if (!t.name.match(/\/.*\//))
+				if (!t.name.match(/\/.*\//)){
 					setValue(_errors, t._name, null);
+				}
 			}
 
 			//if element is visible and it has items "its a select box"
 			if (visible && isArray(t.items)){
 				var newOnes = [];
 				var value =  Objects.getPropertyByPath(data,t._name);
-				if (/*t.value_old != undefined && */t.value_old != value){
+				if (t.value_old != value){
 					//if value of the select has changed, then delete all properties that it could have produced
 					Objects.forEach(t.items,(item)=>{
 						if (isArray(item.items) && item.value == value){
@@ -225,19 +245,19 @@ export function FormValidator(data,template,errors,attributes){
 							});
 						}else if (isArray(item.items)){
 							Objects.forEach(item.items,(el)=>{
-								Objects.deletePropertyByPath(data, el.name);
-								Objects.deletePropertyByPath(errors, el.name);
-								touched = touched.filter(el2 => el2 !== el.name)
+								Objects.deletePropertyByPath(data, el._name);
+								Objects.deletePropertyByPath(errors, el._name);
+								touched = touched.filter(el2 => el2 !== el._name)
 							});
 						}
 					});
 					//initialize newly-shown fields
 					newOnes.forEach((el)=>{
-						if (el.value && !Objects.getPropertyByPath(data, el.name)){
-							setValue(_data,el.name,el.value);
+						if (el.value && !Objects.getPropertyByPath(data, el._name)){
+							setValue(_data,el._name,el.value);
 						}
-						if (isArray(el.items) && el.items.length>0 && !el.placeholder && !Objects.getPropertyByPath(data, el.name)){
-							Objects.setPropertyByPath(data,el.name,el.items[0].value);
+						if (isArray(el.items) && el.items.length>0 && !el.placeholder && !Objects.getPropertyByPath(data, el._name)){
+							Objects.setPropertyByPath(data,el._name,el.items[0].value);
 						}
 					})
 				}		
@@ -265,7 +285,7 @@ export function FormValidator(data,template,errors,attributes){
 			var res = p.evaluate(parts[1], _data);
 			setValue(_data, parts[0],res);
 		}catch(ex){
-			console.log("Error evaluating "+wholerule,ex);
+			console.log("Error evaluating "+wholerule, ex);
 		}
 		
 	}
@@ -274,11 +294,6 @@ export function FormValidator(data,template,errors,attributes){
 	 */
 	function validate_visibility(obj,path){
 		var e =0;
-		var vis = [];
-		var hid = [];
-		
-		var e = 0;
-
 		if (!isArray(obj) && !isObject(obj))
 			return 0;
 
@@ -301,7 +316,6 @@ export function FormValidator(data,template,errors,attributes){
 					if (isAttrNull(obj._name)){
 						setValue(_errors, obj._name, null);
 					}
-
 					//set hidden attribute
 					setAttrValue( obj._name, {hidden:true});
 				}else{
@@ -359,7 +373,7 @@ export function FormValidator(data,template,errors,attributes){
 		if (type == 'string' && f.type =="select"){
 			type='select';
 		}
-
+		
 		//iterate through rules
 		for (var r in rules) {
 			var rr=rules[r].split(":");
@@ -369,7 +383,10 @@ export function FormValidator(data,template,errors,attributes){
 				if (rr[1] != undefined ) condition=rr[1];
 				
 				errmsg= errmsg[type] || errmsg; //set default value
-				var name = f.name
+				if (isObject(errmsg) || errmsg['string']){
+					errmsg = errmsg['string'];
+				}
+				var name = f._name
 				var dValue = getValue(_data, name);
 				//only validate fields that are either required, or not empty
 				if (!empty(dValue) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
@@ -404,15 +421,11 @@ export function FormValidator(data,template,errors,attributes){
 					}
 					errmsg=errmsg.replace(':digits',condition);
 					errmsg=errmsg.replace(':size',condition);
-					
-
+				
 					var result = validate_isfail(name,rr[0],type,condition)
 			
 					if (result){
-						err = result===true ? errmsg : errmsg.replace(':result', result);;
-					}
-					//
-					if (!empty(err)){
+						err = result===true ? errmsg : errmsg.replace(':result', result);
 						return err;
 					}
 				}
@@ -436,17 +449,16 @@ export function FormValidator(data,template,errors,attributes){
 	function validate_isfail(name,key,type,condition){
 		var value = getValue(_data,name);
 		var o_val = value;
-		if (typeof(value)=='undefined')value="";
+		if (typeof(value)=='undefined') value = null;
 		switch (key){
 			case 'unique':
 				return false;
-				break;
 			case 'required':
 				switch (type){
 					case "select":
 						return value===null;
 					default :
-						return value==="" || value===null;
+						return value === "" || value === null || value === false;
 				}
 			case 'different':	
 				var otherKeys = condition.split(',');
@@ -454,13 +466,12 @@ export function FormValidator(data,template,errors,attributes){
 				var foundSame = false;
 				Objects.forEach(otherKeys, (otherKey, i)=>{
 					var otherValue = getValue(_data, tryDefaultForm(otherKey,name));
-						if (otherValue == value)
-							foundSame = true
+					if (otherValue == value)
+						foundSame = true
 				});
 				
 				//in the end just check if the
 				return otherValue !== "" && otherValue !==null && foundSame ? true : false;	
-				break;				
 			case 'required_if':
 				var conditions = condition.split(',');
 				var otherKey = conditions.shift();
@@ -476,8 +487,6 @@ export function FormValidator(data,template,errors,attributes){
 				}
 
 				if (conditions.indexOf(otherValue)>=0){
-					//if otherValue matches any conditions, then check if this value is not null
-					//return false;
 					return value==="" || value===null;
 				}
 				if (conditions.length>0)
@@ -486,7 +495,6 @@ export function FormValidator(data,template,errors,attributes){
 				
 				//in the end just check if the
 				return otherValue !== "" && otherValue !==null && (value==="" || value===null) ? true : false;	
-				break;
 			case 'true_if':
 				var conditions = condition.split(',');
 				var otherKey = conditions.shift();
@@ -511,20 +519,16 @@ export function FormValidator(data,template,errors,attributes){
 				
 				//in the end just check if the
 				return otherValue == "" || otherValue == null;	
-				break;			
 			case 'digits':
 				var re = new RegExp('^[0-9]{'+condition+'}$');
 				return re.test(value)==false;
-				break;
 			case 'digits_between':
 				var re = new RegExp('^[0-9]{'+condition+'}$');
 				return re.test(value)==false;
-				break;	
 			case 'in':
 				condition=condition.replace(/,/g,'|');
 				var re = new RegExp('^'+condition+'*$');
 				return re.test(value)==false;
-				break;			
 			case 'integer' :
 				return !isInt(value);	
 			case 'string' :
@@ -549,10 +553,8 @@ export function FormValidator(data,template,errors,attributes){
 				switch (type){
 					case "array":
 						return false;
-						break;
 					case "numeric":
 						return Number(value) > Number(condition);
-						break;
 					/*case "file":
 						return $('[name="'+name+'"]').files[0].size >condition;
 						break;*/
@@ -560,15 +562,12 @@ export function FormValidator(data,template,errors,attributes){
 					default:
 						return !empty(value) && value.length > condition;
 				} 
-				break;
 			case 'min':
 				switch (type){
 					case "array":
 						return false;
-						break;
 					case "numeric":
 						return Number(value) < Number(condition);
-						break;
 					/*case "file":
 						return $('[name="'+name+'"]').files[0].size < condition;
 						break;*/
@@ -580,7 +579,6 @@ export function FormValidator(data,template,errors,attributes){
 			case 'email':
 				var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 				return re.test(value)==false;
-				break;
 			case 'regex':
 				condition=condition.replace(/^\/|\/$/g, '');
 				var re = new RegExp(condition);
@@ -593,8 +591,6 @@ export function FormValidator(data,template,errors,attributes){
 				break;
 			case 'same':
 				return getValue(_data,  tryDefaultForm(condition, name)) !=value;
-					
-				break;
 			default:
 				return false;	
 
@@ -692,79 +688,80 @@ export function FormValidator(data,template,errors,attributes){
 		}
 		return _attributes[p.form][p.name] ? true : false ;
 	}
-	//default english messages
-	var _messages ={
-		"accepted": Translate("The :attribute must be accepted."),
-		"active_url":Translate("The :attribute is not a valid URL."),
-		"after":Translate("The :attribute must be a date after :date."),
-		"alpha":Translate("The :attribute may only contain letters."),
-		"alpha_dash":Translate("The :attribute may only contain letters, numbers, and dashes."),
-		"alpha_num":Translate("The :attribute may only contain letters and numbers."),
-		"array":Translate("The :attribute must be an array."),
-		"before":Translate("The :attribute must be a date before :date."),
+
+	//apply default english messages, if net set
+	_messages ? null : _messages = {
+		"accepted":"The :attribute must be accepted.",
+		"active_url":"The :attribute is not a valid URL.",
+		"after":"The :attribute must be a date after :date.",
+		"alpha":"The :attribute may only contain letters.",
+		"alpha_dash":"The :attribute may only contain letters, numbers, and dashes.",
+		"alpha_num":"The :attribute may only contain letters and numbers.",
+		"array":"The :attribute must be an array.",
+		"before":"The :attribute must be a date before :date.",
 		"between": {
-			"number":Translate("The :attribute must be between :min and :max."),
-			"numeric":Translate("The :attribute must be between :min and :max."),
-			"file":Translate("The :attribute must be between :min and :max kilobytes."),
-			"string":Translate("The :attribute must be between :min and :max characters."),
-			"array":Translate("The :attribute must have between :min and :max items.")
+			"number":"The :attribute must be between :min and :max.",
+			"numeric":"The :attribute must be between :min and :max.",
+			"file":"The :attribute must be between :min and :max kilobytes.",
+			"string":"The :attribute must be between :min and :max characters.",
+			"array":"The :attribute must have between :min and :max items."
 		},
-		"boolean":Translate("The :attribute field must be true or false."),
-		"confirmed":Translate("The :attribute confirmation does not match."),
-		"date":Translate("The :attribute is not a valid date."),
-		"date_format":Translate("The :attribute does not match the format :format."),
-		"different":Translate("The :attribute and :other must be different."),
-		"digits":Translate("The :attribute must be :digits digits."),
-		"digits_between":Translate("The :attribute must be between :min and :max digits."),
-		"distinct":Translate("The :attribute field has a duplicate value."),
-		"email":Translate("The :attribute must be a valid email address."),
-		"exists":Translate("The selected :attribute is invalid."),
-		"filled":Translate("The :attribute field is required."),
-		"image":Translate("The :attribute must be an image."),
-		"in":Translate("The selected :attribute is invalid."),
-		"in_array":Translate("The :attribute field does not exist in :other."),
-		"integer":Translate("The :attribute must be an integer."),
-		"ip":Translate("The :attribute must be a valid IP address."),
-		"json":Translate("The :attribute must be a valid JSON string."),
+		"boolean":"The :attribute field must be true or false.",
+		"confirmed":"The :attribute confirmation does not match.",
+		"date":"The :attribute is not a valid date.",
+		"date_format":"The :attribute does not match the format :format.",
+		"different":"The :attribute and :other must be different.",
+		"digits":"The :attribute must be :digits digits.",
+		"digits_between":"The :attribute must be between :min and :max digits.",
+		"distinct":"The :attribute field has a duplicate value.",
+		"email":"The :attribute must be a valid email address.",
+		"exists":"The selected :attribute is invalid.",
+		"filled":"The :attribute field is required.",
+		"image":"The :attribute must be an image.",
+		"in":"The selected :attribute is invalid.",
+		"in_array":"The :attribute field does not exist in :other.",
+		"integer":"The :attribute must be an integer.",
+		"ip":"The :attribute must be a valid IP address.",
+		"json":"The :attribute must be a valid JSON string.",
 		"max": {
-			"number":Translate("The :attribute may not be greater than :max."),
-			"numeric":Translate("The :attribute may not be greater than :max."),
-			"file":Translate("The :attribute may not be greater than :max kilobytes."),
-			"string":Translate("The :attribute may not be greater than :max characters."),
-			"array":Translate("The :attribute may not have more than :max items.")
+			"number":"The :attribute may not be greater than :max.",
+			"numeric":"The :attribute may not be greater than :max.",
+			"file":"The :attribute may not be greater than :max kilobytes.",
+			"string":"The :attribute may not be greater than :max characters.",
+			"array":"The :attribute may not have more than :max items."
 		},
-		"mimes":Translate("The :attribute must be a file of type: :values."),
+		"mimes":"The :attribute must be a file of type: :values.",
 		"min": {
-			"number":Translate("The :attribute must be at least :min."),
-			"numeric":Translate("The :attribute must be at least :min."),
-			"file":Translate("The :attribute must be at least :min kilobytes."),
-			"string":Translate("The :attribute must be at least :min characters."),
-			"array":Translate("The :attribute must have at least :min items.")
+			"number":"The :attribute must be at least :min.",
+			"numeric":"The :attribute must be at least :min.",
+			"file":"The :attribute must be at least :min kilobytes.",
+			"string":"The :attribute must be at least :min characters.",
+			"array":"The :attribute must have at least :min items."
 		},
-		"not_in":Translate("The selected :attribute is invalid."),
-		"number":Translate("The :attribute must be a number."),
-		"numeric":Translate("The :attribute must be a number."),
-		"present":Translate("The :attribute field must be present."),
-		"regex":Translate("The :attribute has invalid characters: :result"),
-		"required":Translate("The :attribute field is required."),
-		"required_if":Translate("The :attribute field is required when :other is :value."),
-		"required_unless":Translate("The :attribute field is required unless :other is in :values."),
-		"required_with":Translate("The :attribute field is required when :values is present."),
-		"required_with_all":Translate("The :attribute field is required when :values is present."),
-		"required_without":Translate("The :attribute field is required when :values is not present."),
-		"required_without_all":Translate("The :attribute field is required when none of :values are present."),
-		"same":Translate("The :attribute and :other must match."),
+		"not_in":"The selected :attribute is invalid.",
+		"number":"The :attribute must be a number.",
+		"numeric":"The :attribute must be a number.",
+		"present":"The :attribute field must be present.",
+		"regex":"The :attribute has invalid characters: :result",
+		"required":"The :attribute field is required.",
+		"required_if":"The :attribute field is required when :other is :value.",
+		"required_unless":"The :attribute field is required unless :other is in :values.",
+		"required_with":"The :attribute field is required when :values is present.",
+		"required_with_all":"The :attribute field is required when :values is present.",
+		"required_without":"The :attribute field is required when :values is not present.",
+		"required_without_all":"The :attribute field is required when none of :values are present.",
+		"same":"The :attribute and :other must match.",
 		"size": {
-			"number":Translate("The :attribute must be :size."),
-			"numeric":Translate("The :attribute must be :size."),
-			"file":Translate("The :attribute must be :size kilobytes."),
-			"string":Translate("The :attribute must be :size characters."),
-			"array":Translate("The :attribute must contain :size items.")
+			"number":"The :attribute must be :size.",
+			"numeric":"The :attribute must be :size.",
+			"file":"The :attribute must be :size kilobytes.",
+			"string":"The :attribute must be :size characters.",
+			"array":"The :attribute must contain :size items."
 		},
-		"string":Translate("The :attribute must be a string."),
-		"timezone":Translate("The :attribute must be a valid zone."),
-		"true_if":Translate("The :other must be true"),
-		"unique":Translate("The :attribute has already been taken."),
-		"url":Translate("The :attribute format is invalid.")
+		"string":"The :attribute must be a string.",
+		"timezone":"The :attribute must be a valid zone.",
+		"true_if":"The :other must be true",
+		"unique":"The :attribute has already been taken.",
+		"url":"The :attribute format is invalid."
 	}
 }

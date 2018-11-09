@@ -295,3 +295,16 @@ div[ion-fab]{
 		padding: 0;
 	}
 }
+
+button{
+	&[text-only]{
+		background-color: transparent !important;
+		border: none !important;
+		box-shadow: none !important;
+	}
+	&[outline]{
+		background-color: transparent !important;
+		border: $size-border solid $color-border !important;
+		box-shadow: none !important;
+	}
+}
