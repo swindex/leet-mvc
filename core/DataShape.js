@@ -92,7 +92,7 @@ export var DataShape = {
 				throw new Error(`A Required Property ${i} of template${path} does not exist in source object${path}`);
 			else{
 				var e;
-				if (typeof obj=='undefined'){
+				if (!isObject(obj)){
 					//console.log(`A Required Property ${i} of template${path} does not exist in source object${path}`,new Error().stack);
 				}else{
 					e = obj[i];
