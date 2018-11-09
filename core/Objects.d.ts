@@ -39,9 +39,9 @@ declare namespace ObjectsModule{
 		clear(obj: any):void;,
 
 		/**
-		 * Assign Sorce Object to Object preserving references and enforcing SOURCE structure
+		 * Shallow - Assign Source Object properties to Destination Object preserving Destination references while enforcing SOURCE structure
 		 */
-		overwrite<T>(obj: any, src: T): T;,
+		overwrite<T>(dest: any, src: T): T;,
 
 		/**
 		 * Deep-clone Source Object

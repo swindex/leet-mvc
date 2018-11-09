@@ -4,6 +4,12 @@ export function NavController() {
 	/** @type {NavController} */
     var self = this;
 
+	/**
+	 * @typedef PageFrame
+	 * @prop {string} name
+	 * @prop {JQuery<HTMLElement>} element
+	 * @prop {object} page
+	 */
 	/** @type {PageFrame[]} */
 	var stack = [];
 

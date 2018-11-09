@@ -17,7 +17,7 @@ export class ChangeWatcher {
 	 * Delete allocated memory
 	 */
 	onDestroy(){
-		console.log(this.constructor.name, 'unwatching');
+		//console.log(this.constructor.name, 'unwatching');
 		Watcher.off(this);
 	}
 
