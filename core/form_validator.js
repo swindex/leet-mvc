@@ -278,12 +278,32 @@ export function FormValidator(data,template,errors,attributes){
 			return;
 
 		var parts = wholerule.split('|');
-		if (parts.length!=2)
-			return
+		
 		try{
-			var  p = new Parser();
-			var res = p.evaluate(parts[1], _data);
-			setValue(_data, parts[0],res);
+			if (parts.length==2){
+				var action = 'set'
+				var fieldName = parts[0];
+				var expr = parts[1];
+			}else if (parts.length==3){
+				var action = parts[0];
+				var fieldName = parts[1];
+				var expr = parts[2];
+			}else{
+				return;
+			}
+
+			var action = parts[0];
+			var fieldName = parts[1];
+			switch (action){
+				case 'math':
+					var p = new Parser();
+					var res = p.evaluate(expr, _data);
+					setValue(_data, fieldName ,res);
+					break;
+				default:
+					setValue(_data, fieldName, expr);
+					
+			}
 		}catch(ex){
 			console.log("Error evaluating "+wholerule, ex);
 		}

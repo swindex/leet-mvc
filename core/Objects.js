@@ -104,7 +104,7 @@ export const Objects = {
 						//if both are arrays: make them the same length
 						obj = obj.slice(0,src.length-1);
 
-					}else if (isArray(src) !== isArray(obj)){
+					}else {
 						//if one or both are not arrays, remove keys from target that are not in source
 						var keys = [];
 						for(var i in src){
@@ -113,6 +113,7 @@ export const Objects = {
 						for(var i in obj){
 							if (keys.indexOf(i)<0){
 								delete obj[i];
+								//console.log("delete key", i);
 							}
 						}
 
