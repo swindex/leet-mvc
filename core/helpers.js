@@ -25,6 +25,7 @@ export function tryCall(context, callback){
 * Push function arguments into array starting from nStart
 * @param {*} args - arguments
 * @param {number} [nStart] - argument number to start from. 0 by default
+* @return {any[]}
 */
 export function argumentsToArray(args,nStart){
    nStart = nStart || 0;

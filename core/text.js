@@ -1,4 +1,5 @@
 import { isString } from "util";
+import { argumentsToArray } from "leet-mvc/core/helpers";
 
 export var Text = {
 	escapeHTML:function(unsafe, convertNewlines) {
@@ -38,5 +39,21 @@ export var Text = {
 		if (li < 0 || li >= fName.length)
 			return "";
 		return fName.substr(li+1);
+	},
+
+	/**
+	 * Join file path bits making sure there is / between them and no duplicates
+	 * @param {string[]} args
+	 */
+	joinPath: function(...args){
+		var path = "";
+		args.forEach((el)=>{
+			if (path.split('').pop()=='/' && el.split('').shift()=='/')
+				path = path + el.substr(1);
+			else	
+				path = path + el;
+			
+		});
+		return path;
 	}
 }
