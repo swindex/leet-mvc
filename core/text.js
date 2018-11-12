@@ -25,5 +25,18 @@ export var Text = {
 			text += (mask[i] || '') + numbers[i];
 		}
 		return text;
+	},
+
+	/**
+	 * Get File Extension (without DOT)
+	 * @param {string} fName
+	 * @return {string}
+	 */
+	fileExtension: function(fName){
+		fName = fName || "";
+		var li = fName.lastIndexOf('.');
+		if (li < 0 || li >= fName.length)
+			return "";
+		return fName.substr(li+1);
 	}
 }
