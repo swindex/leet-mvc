@@ -22,20 +22,7 @@ export class Analytics {
 		SETTINGS_SAVED:"Save User Settings",
 		FCM_START: null
 	}};
-	static get Page() {return {
-		App :"Open App",
-		DashboardPage :"Dashboard",
-		OrdersPage :"Orders List",
-		WelcomePage : null,
-		
-		LoginPage:"Login Page",
-		RequestPage :"Order Details",
-		DialogPageGenerator: null,
-		SearchPage:'Search Results',
-		Notes :"Notes Page",
-		CallPhone :null,
-		SettingsPage : "Settings Page",
-	}};
+	
 	//User properties that do not change during visit. Used for Segmenting users
 	static get UserProperty() {return{
 		USER_TYPE: "User_Type",
@@ -89,17 +76,6 @@ export class Analytics {
 	 * @param {string} optionalUrl
 	 */
 	setScreenName (name, optionalUrl=null){
-
-		//use page mapping to get the proper name for analytics
-		if (Analytics.Page[name] === null){
-			//if mapping is set to null then dont track
-			return;
-		}else{
-			//else get a new name
-			name = Analytics.Page[name];
-		}
-			
-
 		this.Tracker.setScreenName(name);
 		
 		var url = optionalUrl ? optionalUrl : name;
