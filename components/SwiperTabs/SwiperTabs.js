@@ -3,8 +3,9 @@ import Swiper from 'swiper';
 import { NavController } from "./../../core/NavController";
 import './SwiperTabs.scss';
 import { BasePage } from "./../../pages/BasePage";
-import { argumentsToArray } from "./../../core/helpers";
+import { argumentsToArray, debounce } from "./../../core/helpers";
 import { Objects } from "./../../core/Objects";
+import { DeBouncer } from "leet-mvc/core/DeBouncer";
 
 /**
  * @param {{navButtons?: true}} [options]
@@ -28,7 +29,8 @@ export class SwiperTabs extends BaseComponent{
 			</div>	
 		`;
 		this.Nav=new NavController();
-		
+		this.debounceUpdate = DeBouncer.frameLast();
+
 	}
 
 	onTabChanged(page,index){
@@ -45,8 +47,10 @@ export class SwiperTabs extends BaseComponent{
 		var inst = this.Nav.push.apply(this, argumentsToArray(arguments));
 
 		this.pages.push(inst);
-		//cause swiper to reinit after adding a page
-		this.swiper.update();
+		//cause swiper to reinit after adding all pages in this animation frame
+		this.debounceUpdate(()=>{
+			this.swiper.update();
+		});
 		return inst;
 	}
 
