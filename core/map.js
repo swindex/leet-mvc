@@ -178,6 +178,17 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		return this;
 	}
 	/**
+	 * Move to location
+	 */
+	this.panToStart = function(){
+		addWorker(function(){
+			if (!empty(start))
+				map.panTo(start);
+			nextWorker();
+		});
+		return this;
+	}
+	/**
 	 * Set Destination location by its string address
 	 * @param {string} address 
 	 * @param {function(google.maps.LatLng)} [callback]
@@ -270,6 +281,17 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 			});
 			marker.addListener('click', function(e){event.preventDefault(); onClick(this);});
 			markers.push(marker);
+			nextWorker();
+		});
+		return this;
+	}
+
+	this.clearMarkers = function(){
+		addWorker(function(){
+			markers.forEach((marker)=>{
+				marker.setMap(null)
+			})
+			markers = [];
 			nextWorker();
 		});
 		return this;
