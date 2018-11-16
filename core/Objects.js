@@ -5,7 +5,7 @@ export const Objects = {
 	filter : function (data,callback){
 		var ret
 		if(isObject(data) && !isArray(data)){
-			ret = new data.constructor;
+			ret = {} //new data.constructor;
 			for (var key in data){
 				if (! data.hasOwnProperty(key)) continue;	
 					//check if out row using callback

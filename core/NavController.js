@@ -145,6 +145,7 @@ export function NavController() {
 		stack.push({name:pageConstructor.name, element: $(p), page: pageObject});
 		resetPagesVisibility();
 
+		
 		tryCall(pageObject, pageObject.onInit);
 		tryCall(pageObject, pageObject.init);		
 
