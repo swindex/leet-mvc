@@ -197,12 +197,18 @@ export class Forms extends BaseComponent{
 	 */
 	addInput(el, override, formName){
 		
-		var opt = { name: el._name, type: "text" };
+		var opt = { name: el._name, type: "text", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
 		return `
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
-			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
+			<div class="icon-field">
+				<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
+				<div class="icon">
+					${el.unit ? el.unit :''}
+					${el.icon ? `<i class="${el.icon}"></i>` :''}
+				</div>	
+			</div>	
 			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
 		`;
 	}
