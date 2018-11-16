@@ -38,6 +38,8 @@ select{
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		font-size: $size-f-input;
+		font-weight: bold;
 	}	
 }
 input[date]{

@@ -106,7 +106,7 @@ export var Binder = function(context, container){
 					delete elem['TEMPLATE']['BINDERS'][index];
 				}
 
-				insertAfter(fragment, elem['TEMPLATE']['PLACEHOLDER']);
+				//insertAfter(fragment, elem['TEMPLATE']['PLACEHOLDER']);
 
 				elem['TEMPLATE']['STATE'] = keys.length;
 				insertAfter(fragment, elem['TEMPLATE']['PLACEHOLDER']);
@@ -204,10 +204,10 @@ export var Binder = function(context, container){
 				})
 			}
 		},
-		/*'[onload]': function (elem,attrValue){ 
-			var r = createExecuteElemAttrGetter(elem,'[onload]',attrValue);
-		},	*/	
-		
+		'[onload]':function(elem,attrValue){
+			var r = createExecuteElemAttrGetter(elem,'[onload]',attrValue);	
+			elem.removeAttribute("[onload]");
+		}
 	};
 
 	this.beforeBindAttributes = {
@@ -221,24 +221,31 @@ export var Binder = function(context, container){
 			return true;
 		 },
 		'[if]': function (/** @type {HTMLElement}*/elem, attrValue){ 
+			//console.time("if");
 			elem['TEMPLATE']['PLACEHOLDER'] = document.createComment("[if]:"+attrValue);
 			//insert placeholder
 			if (!elem.parentElement){
 				console.log("AAAA");
 			}
 			insertBefore(elem['TEMPLATE']['PLACEHOLDER'],elem);
+		
 			$(elem).remove();
+			//console.timeEnd("if");
+			
 			return true;
 		},
 		'[foreach]': function (/** @type {HTMLElement}*/elem, attrValue){
 			elem['TEMPLATE']['PLACEHOLDER'] = document.createComment("[foreach]:"+attrValue);
 			//insert placeholder
 			insertBefore(elem['TEMPLATE']['PLACEHOLDER'],elem);
+			//console.time('FOREACH');
 			$(elem).remove();
+			//console.timeEnd('FOREACH');
 			return true;
 		},	
 	
 	};
+	
 	function insertBefore(newNode, referenceNode) {
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	}
@@ -304,8 +311,6 @@ export var Binder = function(context, container){
 			throw new Error("Already bound!. bindElements can only be called ONCE!")
 		
 		bindElement(self.container);
-
-		fireOnLoadEvents(self.container);
 		return self;
 	}
 
@@ -320,15 +325,6 @@ export var Binder = function(context, container){
 			console.log("Error evaluating: "+ thingToEval);
 			throw ex;
 		}      
-	}
-
-	function fireOnLoadEvents (elem){
-		//fire onload event
-		var ol = elem.getAttribute('[onload]');
-		if (ol){
-			var r = createExecuteElemAttrGetter(elem,'[onload]',ol);	
-			elem.removeAttribute("[onload]");
-		}	
 	}
 
 	/**
@@ -420,7 +416,7 @@ export var Binder = function(context, container){
 			if (!wasRemoved){
 				bindElementChildren(elem);
 				
-				fireOnLoadEvents(elem);
+				//fireOnLoadEvents(elem);
 			}
 		}
 	}

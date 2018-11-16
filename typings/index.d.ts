@@ -12,6 +12,8 @@ interface FieldTemplate{
 	items?:FieldTemplate[];
 	dataType?:string;
 	atttributes?:FieldData;
+	unit?:string;
+	icon?:string;
 }
 
 interface GenFormData{
