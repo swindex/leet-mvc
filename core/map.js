@@ -38,9 +38,9 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	var directionsService = null;
 
 	/** @type {HTMLElement} */
-	var mapHtmlElement = null;
+	this.mapHtmlElement = null;
 	/** @type {HTMLElement} */
-	var directionsHtmlElement = null;
+	this.directionsHtmlElement = null;
 
 	/** @type {google.maps.DirectionsRendererOptions} */
 	var directionsRendererOptions ={
@@ -101,7 +101,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 */
 	this.setStartGps = function(resolve, reject){
 		addWorker(function(){
-			var loader = Loader().container(mapHtmlElement.parentElement).timeout(5000).show(Translate("Acquiring GPS.."));
+			var loader = Loader().container(self.mapHtmlElement.parentElement).timeout(5000).show(Translate("Acquiring GPS.."));
 			navigator.geolocation.getCurrentPosition(function success(pos){
 				loader.hide();
 				start = new google.maps.LatLng(Number(pos.coords.latitude), Number(pos.coords.longitude));
@@ -197,7 +197,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		addWorker(function(){
 			var geocoder = new google.maps.Geocoder();
 			if (geocoder) {
-					var loader = Loader().container(mapHtmlElement.parentElement).timeout(5000).show();
+					var loader = Loader().container(self.mapHtmlElement.parentElement).timeout(5000).show();
 					geocoder.geocode( { 'address': address}, function(results, status) {
 						loader.hide();
 						if (status == google.maps.GeocoderStatus.OK) {
@@ -325,14 +325,14 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		generateRouteOptions = opts;
 		addWorker(function(){
 			if (empty(start)){
-				directionsHtmlElement.innerHTML=`<div class="error">Unable to get directions: Your loaction is missing</div>`;
+				self.directionsHtmlElement.innerHTML=`<div class="error">Unable to get directions: Your loaction is missing</div>`;
 				nextWorker();
 			}else if (empty(end)){
-				directionsHtmlElement.innerHTML=`<div class="error">Unable to get directions: Destination loaction is missing</div>`;
+				self.directionsHtmlElement.innerHTML=`<div class="error">Unable to get directions: Destination loaction is missing</div>`;
 				nextWorker();
 			}else{
 				if (!noLoader)
-					var loader = Loader().container(directionsHtmlElement.parentElement).timeout(5000).show();
+					var loader = Loader().container(self.directionsHtmlElement.parentElement).timeout(5000).show();
 				directionsService.route($.extend({
 						origin: start,
 						destination: end,
@@ -350,6 +350,13 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		});
 		return this;
 	}
+	this.clearRoute = function(){
+		addWorker(function(){
+			directionsDisplay.setDirections({routes: []});
+			nextWorker();
+		});
+		return this;
+	}
 	this.showMapSettings = function(callback){
 		var map_settings = options;
 		var directions_settings = generateRouteOptions;
@@ -358,7 +365,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 
 		d.addCheck('disableDefaultUI',Translate('Show Map Controls'),!map_settings.disableDefaultUI);
 		
-		if (directionsHtmlElement){
+		if (self.directionsHtmlElement){
 			d.addSelect("travelMode", Translate('Travel Mode'),directions_settings.travelMode, null,[
 				{value:'DRIVING',title:Translate("Driving")},
 				{value:'BICYCLING',title:Translate("Bicycling")},
@@ -380,7 +387,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		d.addActionButton("Ok",function(){
 			var res = d.data;
 
-			if (directionsHtmlElement){
+			if (self.directionsHtmlElement){
 				directions_settings = {
 					travelMode: res.travelMode,
 					unitSystem: Number(res.unitSystem),
@@ -404,7 +411,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 */
 	this.setDirections = function(elem){
 		var setDirections = function(){
-			directionsHtmlElement = elem;
+			self.directionsHtmlElement = elem;
 			directionsDisplay.setPanel(elem);
 			nextWorker();
 		}
@@ -420,7 +427,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 */
 	this.init = function(element, opts){
 		opts ? options = opts : null;
-		mapHtmlElement = element;
+		self.mapHtmlElement = element;
 		addWorker(function(){
 			var loader = Loader().container(element.parentElement).timeout(5000).show();
 			
