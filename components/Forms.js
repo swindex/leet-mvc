@@ -197,6 +197,7 @@ export class Forms extends BaseComponent{
 	 */
 	addInput(el, override, formName){
 		
+		
 		var opt = { name: el._name, type: "text", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
@@ -393,6 +394,10 @@ export class Forms extends BaseComponent{
 		var strOpts="";
 		var name = opt.name;
 		$.each(opt, (key, val)=> {
+			if (val === undefined){
+				val = ""
+			}
+
 			if (key !== "input" && key !== "click" && key !== "change") {
 				if (val !== null)
 					strOpts += key + '="' + val + '" ';
