@@ -236,6 +236,7 @@ export var Binder = function(context, container){
 		},
 		'[foreach]': function (/** @type {HTMLElement}*/elem, attrValue){
 			elem['TEMPLATE']['PLACEHOLDER'] = document.createComment("[foreach]:"+attrValue);
+			//elem['TEMPLATE']['SOURCE'] = parseElement(elem);
 			//insert placeholder
 			insertBefore(elem['TEMPLATE']['PLACEHOLDER'],elem);
 			//console.time('FOREACH');
@@ -245,7 +246,7 @@ export var Binder = function(context, container){
 		},	
 	
 	};
-	
+		
 	function insertBefore(newNode, referenceNode) {
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	}
@@ -334,10 +335,11 @@ export var Binder = function(context, container){
 		//if already bound continue
 		if (self.bindings.indexOf(elem)<0){
 				
-			assertElemTemplate(elem);
+			
 			var didBind = false;
 			var wasRemoved = false;
-			
+			assertElemTemplate(elem);
+
 			for(var attr in self.beforeBindAttributes){
 				var atv =  elem.getAttribute(attr)
 				if (atv){
@@ -452,14 +454,9 @@ export var Binder = function(context, container){
 	 * @param {HTMLElement|Element} elem
 	 */
 	function bindEventsToContext(elem){
-		Array.prototype.slice.call(elem.attributes).forEach(function(attr) {
-			if (attr.name.substr(0,2)=='on' && typeof elem[attr.name] =='function'){
-				/*elem[attr.name] = function(evt){
-					updateBoundContextProperty(evt.target);
-					self.injectVars['$event'] = evt;
-					var c = createCaller(attr.value);
-					c(self);
-				};*/
+		for (var i=0; i< elem.attributes.length; i++ ){
+			var attr = elem.attributes[i];
+			if ( typeof elem[attr.name] =='function'){
 				elem[attr.name] = (function(evt){
 					updateBoundContextProperty(evt.target);
 					self.injectVars['$event'] = evt;
@@ -467,7 +464,7 @@ export var Binder = function(context, container){
 					c(self);
 				}).bind(self);
 			}	
-		});
+		}
 	}
 
 	/**
