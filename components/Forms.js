@@ -394,12 +394,8 @@ export class Forms extends BaseComponent{
 		var strOpts="";
 		var name = opt.name;
 		$.each(opt, (key, val)=> {
-			if (val === undefined){
-				val = ""
-			}
-
 			if (key !== "input" && key !== "click" && key !== "change") {
-				if (val !== null)
+				if (val !== null && val !== undefined)
 					strOpts += key + '="' + val + '" ';
 			} else{
 				!this.attrEvents[name] ? this.attrEvents[name] = {} : null;
