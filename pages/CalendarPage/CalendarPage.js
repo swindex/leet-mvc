@@ -18,6 +18,9 @@ export class CalendarPage extends DialogPage{
 			Ok: ()=>{ return this.onDateTimeSelected(this._currDate.toDate())},
 		};
 
+		this._showCalendar = true;
+		this._showClock = true;
+
 		this.isAM = true;
 
 		this._currDate = moment(startDate || new Date());
@@ -43,6 +46,23 @@ export class CalendarPage extends DialogPage{
 		});
 
 		this._setProps();
+	}
+	/**
+	 * @param {boolean} val
+	 */
+
+	set showCalendar(val){
+		this._showCalendar = val;
+		if (!val)
+			this._tabs.select("clock")
+	}
+	/**
+	 * @param {boolean} val
+	 */
+	set showClock(val){
+		this._showClock = val;
+		if (!val)
+			this._tabs.select("calendar")
 	}
 
 	//initial calendar binding takes time. Do it after the dialog is displayed and other items are drawn.
@@ -221,17 +241,17 @@ CalendarPage.selector = "page-CalendarPage";
 CalendarPage.content = `
 	<div [directive] = "this._tabs">
 		<ul class="tab-buttons">
-			<li for="calendar">
+			<li for="calendar" [if]="this._showCalendar">
 				<span bind="this._d_date"></span>
 				<i class="far fa-calendar-alt"></i>
 			</li>
-			<li for="clock">
+			<li for="clock" [if]="this._showClock">
 				<span bind="this._d_time"></span>
 				<i class="far fa-clock"></i>
 			</li>
 		</ul>
 		<div class="tabs">
-			<div id="calendar">
+			<div id="calendar" [if]="this._showCalendar">
 				<div class="month-buttons">
 					<div onclick="this.onPrevMonthClicked()">
 						<i class="fas fa-chevron-left"></i>
@@ -265,7 +285,7 @@ CalendarPage.content = `
 					</table>
 				</div>
 			</div>	
-			<div id="clock">
+			<div id="clock" [if]="this._showClock">
 				<div class="circle">
 					<div class="hours"  [selected]="!this._minutesSelected" onclick="this.onSelectHoursClicked()">
 						<div class="hour h-12" [foreach]="this._hours as hours" onclick="this.onSetHourClicked(hours.value)" [selected]="this._d_hour==hours.title" [class]="'h-' + hours.value"><span bind="hours.title">12</span></div>

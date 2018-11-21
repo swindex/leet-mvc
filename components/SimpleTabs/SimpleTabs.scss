@@ -1,0 +1,59 @@
+@import './../../scss/variables';
+
+/*Tabs*/
+.tabs{
+	position: relative;
+	background-color: #fff;
+	.tab{
+		height:100%;
+		width: 100%;
+		display:none;
+	}
+	.tab.active,.tab[selected]{
+		display:block;
+	}
+}
+
+.tab-buttons {
+	display: flex;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	justify-content: space-evenly;
+	li {
+		margin: 5px 0px; 
+		font-size: 14px;
+	
+		// width: 30rem;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		align-items: center;
+		position: relative;
+
+		i {
+			color: $color-tabbutton-fg;
+			font-size: 2rem;
+			width: auto;
+		}
+		span {
+			color: $color-tabbutton-fg;
+			font-size: 1rem;
+		}
+		div.counter{
+			background-color: red;
+			border-radius: 2px;
+			padding: 0 2px;
+			position: absolute;
+			top: 3px;
+			right: 11px;
+		}
+		&.active, &[selected] {
+			border-bottom: $size-tabbutton-border-active solid $color-tabbutton-border-active;
+			border-bottom-color: $color-tabbutton-fg-active;
+			i, span {
+				color: $color-tabbutton-fg-active !important;
+			}
+		}
+	}
+}
