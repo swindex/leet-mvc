@@ -27,23 +27,23 @@ export var Watcher={
 					if (property == isProxy)
 						return true;
 
-					const desc = Object.getOwnPropertyDescriptor(target, property)
 					const value = Reflect.get(target, property, receiver)
-					
+
+					//return as-is if its a primitive	
+					if (! isObject(value))
+						return value;
 					if (value && isObject(value) && value[isProxy])
 						return value;
 					
+
 					//return non-modifiable objects as-is
+					const desc = Object.getOwnPropertyDescriptor(target, property)
 					if (desc && !desc.writable && !desc.configurable) return value
 
 					//return objects, instantiated with `new` as-is
 					if (! isArray(value) && isObject(value) && !isObjLiteral(value))
 						return value;
 					
-					//return as-is if its a primitive	
-					if (! isObject(value))
-						return value;
-
 					try {
 						return new Proxy(target[property], handler);
 					} catch (error) {
