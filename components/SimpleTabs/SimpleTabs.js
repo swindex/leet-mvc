@@ -1,5 +1,5 @@
 import { BaseComponent } from "./../BaseComponent";
-//import './SwiperTabs.scss';
+import './SimpleTabs.scss';
 /**
  * Simple tabs directive. 
  */
