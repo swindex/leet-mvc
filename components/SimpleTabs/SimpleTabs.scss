@@ -49,8 +49,8 @@
 			right: 11px;
 		}
 		&.active, &[selected] {
-			border-bottom: $size-tabbutton-border-active solid $color-tabbutton-border-active;
-			border-bottom-color: $color-tabbutton-fg-active;
+			//border-bottom: $size-tabbutton-border-active solid $color-tabbutton-border-active;
+			//border-bottom-color: $color-tabbutton-fg-active;
 			i, span {
 				color: $color-tabbutton-fg-active !important;
 			}
