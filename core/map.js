@@ -410,8 +410,8 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 * @param {HTMLElement} elem 
 	 */
 	this.setDirections = function(elem){
+		self.directionsHtmlElement = elem;
 		var setDirections = function(){
-			self.directionsHtmlElement = elem;
 			directionsDisplay.setPanel(elem);
 			nextWorker();
 		}
