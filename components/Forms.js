@@ -278,7 +278,7 @@ export class Forms extends BaseComponent{
 	 */
 	addSelect(el, override,formName){
 
-		var opt = { name: el._name, type: "select", bind: `component.data.${el._name}`};
+		var opt = { name: el._name, type: "select", bind: `component.data.${el._name}`, placeholder:el.placeholder};
 		$.extend(opt, override, el.attributes);
 		var elem = `<select ${this.generateAttributes(opt)}>`;
 		if (el.placeholder)
