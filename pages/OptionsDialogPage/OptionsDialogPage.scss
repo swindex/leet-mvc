@@ -1,7 +1,7 @@
 @import '../../scss/variables';
 #page-OptionsDialogPage{
 	.dialog-content.touch-scroll {
-		padding: 0 12px;
+		padding: $margin-lg;
 	}
 	ul {
 		padding: 0;
