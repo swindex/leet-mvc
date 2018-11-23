@@ -282,9 +282,9 @@ export function NavController() {
 					return;
 				
 				
-				if (typeof element.attr('creating') != 'undefined'){
+				/*if (typeof element.attr('creating') != 'undefined'){
 					tryCall(pageObject,pageObject.onLoaded);
-				}
+				}*/
 				if (typeof element.attr('visible') == 'undefined'){
 					tryCall(pageObject,pageObject.onVisible);
 				}

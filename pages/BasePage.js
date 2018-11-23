@@ -27,6 +27,9 @@ export class BasePage extends ChangeWatcher{
 	update(){
 		this.binder.updateElements();
 		this.onUpdated();
+		if (!this.isLoaded && (this.isLoaded=true)){
+			this.onLoaded();
+		}
 	}
 
 	/**
