@@ -41,7 +41,9 @@ export class OptionsDialogPage extends DialogPage{
 		if (value==true){
 			this.buttons['Ok'] = ()=>{this._onOkClicked()}
 		}else{
-			this.buttons['Ok'] = undefined;
+			if (this.buttons['Ok']){
+				delete this.buttons['Ok'];
+			}
 		}
 	}
 
