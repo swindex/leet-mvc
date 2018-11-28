@@ -231,7 +231,8 @@ export class Forms extends BaseComponent{
 			<div class="icon-field">
 				<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>
 				<div class="icon" onclick="component.togglePasswordType('${el._name}')">
-					<i class="fas fa-eye"></i>
+					<i class="fas fa-eye" [if]="component.types['${el._name}']=='password'"></i>
+					<i class="fas fa-eye-slash" [if]="component.types['${el._name}']=='text'"></i>
 				</div>	
 			</div>	
 			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
@@ -389,7 +390,8 @@ export class Forms extends BaseComponent{
 			this.types[name]="password";
 		else
 			this.types[name]="text";
-	}	
+	}
+	
 	generateAttributes(opt){
 		var strOpts="";
 		var name = opt.name;
