@@ -144,7 +144,7 @@ textarea {
 		z-index: 5;
 		background-color: transparent;
 		padding-left: 0;
-		font-size: 1.3rem;
+		font-size: $size-f-input;
 		width: auto;
 		text-align: left;
 	}
@@ -221,7 +221,7 @@ textarea {
 				&+.slider {
 					background-color: #2196F3;
 					&:before {
-						transform: translateX(35px);
+						transform: translateX(30px);
 					}
 				}
 			}
@@ -236,8 +236,8 @@ textarea {
 			cursor: pointer;
 			background-color: #ccc;
 			transition: .4s;
-			width: 58px; // of the slot
-			min-width: 58px;
+			width: 55px; // of the slot
+			min-width: 55px;
 			height: 22px; // of the slot
 			margin-left: auto;
 			&:before {
