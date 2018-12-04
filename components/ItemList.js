@@ -137,3 +137,5 @@ export class ItemList extends BaseComponent{
 		});
 	}
 }
+
+ItemList.iterator = ' item [foreach]="index in component._renderItems as item" onclick="component.onItemClicked(item, index)"';
