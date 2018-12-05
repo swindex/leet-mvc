@@ -81,38 +81,44 @@ export var DeBouncer = {
 	 * Run debounced function FIRST only ONCE per TIMOUT
 	 */
 	timeoutFirst: function(timeoutMs, func){
-		var timeout;
-		return function(){
-			var context = this;
+			var timeout;
+			return function(){
+				var context = this;
 
-			if (timeout){
-				clearTimeout(timeout);
-			}else{
-				if (typeof func !== 'function')
-					arguments[0].apply(context);
-				else
-					func.apply(context, arguments);
+				if (timeout){
+					clearTimeout(timeout);
+				}else{
+					if (typeof func !== 'function')
+						arguments[0].apply(context);
+					else
+						func.apply(context, arguments);
+				}
+				timeout = setTimeout(function(){
+					clearTimeout(timeout)
+					timeout= null;
+				},timeoutMs);
 			}
-			timeout = setTimeout(function(){clearTimeout(timeout)},timeoutMs);
-		}
 	},
 	/**
 	 * Run debounced function LAST only ONCE per TIMOUT
 	 */
 	timeoutLast: function(timeoutMs, func){
-		var timeout;
-		return function(){
-			var context = this;
-			var args = arguments;
-			if (timeout){
-				clearTimeout(timeout);
+		return (function(){
+			var timeout;
+			return function(){
+				var context = this;
+				var args = arguments;
+				if (timeout){
+					clearTimeout(timeout);
+					timeout = null;
+				}
+				timeout = setTimeout(function(){
+					if (typeof func !== 'function')
+						args[0].apply(context);
+					else
+						func.apply(context, args);
+				},timeoutMs);
 			}
-			timeout = setTimeout(function(){
-				if (typeof func !== 'function')
-					args[0].apply(context);
-				else
-					func.apply(context, args);
-			},timeoutMs);
-		}
+		})();
 	}
 }
