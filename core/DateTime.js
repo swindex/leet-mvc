@@ -135,6 +135,20 @@ export var DateTime = {
 			return null;	
 		return moment(__date).format(DateTime._humanDateTime);
 	},
+	
+	/**
+	 * Return date in specified format
+	 * @param {string|Date} __date a Date object or parseable string, 
+	 * @param {string} [format] - defaults to MM/DD/YYYY
+	 * @returns {string}
+	 */
+	toFormat(__date, format){
+		format = format || DateTime._humanMMDDYYYY;
+		if (!moment(__date).isValid())
+			return null;
+		return moment(__date).format(format);
+	},
+
 
 	moment: moment,
 
@@ -168,5 +182,6 @@ export var DateTime = {
 
 	_humanDateTime:"LLLL",
 	_humanDate:"LL",
-	_JSONDate:'YYYY-MM-DD[T]HH:mm:ssZ'
+	_JSONDate:'YYYY-MM-DD[T]HH:mm:ssZ',
+	_humanMMDDYYYY:"M/D/YYYY",
 }

@@ -59,6 +59,29 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	}
 
 	/**
+	 * Get MAP object
+	 * @param {function(google.maps.Map)} callback 
+	 */
+	this.getMap = function(callback){
+		addWorker(function(){
+			tryCall(null,callback, map);
+			nextWorker();
+		});
+	}
+
+	/**
+	 * Get Map Markers object
+	 * @param {function(any[])} callback 
+	 */
+	this.getMarkers = function(callback){
+		addWorker(function(){
+			tryCall(null,callback, markers);
+			nextWorker();
+		});
+	}
+
+
+	/**
 	 * Set End Address
 	 * @param {number} Latitude 
 	 * @param {number} Longitude 
@@ -270,14 +293,16 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	 * @param {number} lat 
 	 * @param {number} lng 
 	 * @param {string} imageURI 
-	 * @param {function(google.maps.Marker)} [onClick] 
+	 * @param {function(google.maps.Marker)} [onClick]
+	 * @param {string|{text:string,color:string}} [label] 
 	 */
-	this.setMarker = function(lat, lng, imageURI, onClick){
+	this.setMarker = function(lat, lng, imageURI, onClick, label){
 		addWorker(function(){
 			var marker = new google.maps.Marker({
 				position: getLocation(lat, lng),
 				map: map, 
-				icon: imageURI
+				icon: imageURI,
+				label: label
 			});
 			marker.addListener('click', function(e){event.preventDefault(); onClick(this);});
 			markers.push(marker);

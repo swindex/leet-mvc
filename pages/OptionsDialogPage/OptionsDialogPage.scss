@@ -19,7 +19,6 @@
 			color: $color-list-item-active-fg;
 		}
 		i{
-			margin-right: $margin-lg;
 			padding-top: 3px; //nudge to the v-center
 		}
 		img{
@@ -31,9 +30,10 @@
 			border-bottom: 1px solid #b8b8b8;
 			display: block;
 			margin-right: 0;
-			margin-left: 0;
+			margin-left: $margin-lg;
 			padding: $margin-lg 0;
 			width: 100%;
+
 		}
 		&:last-child {
 			span{
