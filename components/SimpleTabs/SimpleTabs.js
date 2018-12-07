@@ -38,10 +38,22 @@ export class SimpleTabs extends BaseComponent{
 
 	select(forLabel){
 		if (this.container){
-			var t = this.container.find(`[for='${forLabel}']`);
+			var t = this.container.find("[for='"+ forLabel+"']");
 			if (t.length==1){
 				this._unSelectAll();
 				this._select(t);
+			}
+		}
+	}
+
+	setTabVisibility(forLabel, isVisible){
+		if (this.container){
+			var t = this.container.find("[for='"+ forLabel+"']");
+			if (t.length==1){
+				if (!isVisible)
+					t.hide();
+				else
+					t.show();
 			}
 		}
 	}

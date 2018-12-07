@@ -8,6 +8,7 @@ declare namespace SwiperTabsModule{
 		removeAllPages():void;
 		init(container: HTMLElement): void;
 		onTabChanged(page: object,index: index): void;
+		destroy():void;
 		swiper: Swiper;
 	};
 	

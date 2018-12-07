@@ -7,6 +7,7 @@ declare namespace NavControllerModule{
 
 	class NavController  {
 		remove(PageInstance: any);
+		removeAll(): void;
 		back():void;
 		setContainer(container: HTMLElement): void;
 		setRoot<T>(PageClass: { new (x, ...args): T }, ...args): T;
@@ -14,6 +15,7 @@ declare namespace NavControllerModule{
 		onPageNavigateTo(pageName: string): void;
 		onRootPageBackPressed(): void;
 		getPages(): PageFrame[];
+		destroy():void;
 	};
 	
 }
