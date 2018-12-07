@@ -1,4 +1,4 @@
-import { tryCall, empty, argumentsToArray } from "./helpers";
+import { tryCall, empty, argumentsToArray, GUID } from "./helpers";
 
 export function NavController() {
 	/** @type {NavController} */
@@ -38,6 +38,10 @@ export function NavController() {
 		self.onPageNavigateTo(pageConstructor.name);
 		return createPage(pageConstructor, argumentsToArray(arguments,1));
 	}
+	/**
+	 * Remove All Pages
+	 */
+	this.removeAll = removeAllFrames;
 	/**
 	 * Push a page on top of stack.
 	 * @param {object} pageConstructor 
@@ -341,20 +345,31 @@ export function NavController() {
 		}
 	}
 
+	var guid = GUID();
+
 	//add ONE listener that will fire onResize on all pages;
-	$(window).on('resize', function(ev){
+	$(window).on('resize', windowResizeHandler);
+	function windowResizeHandler (ev){ 
 		for(var i=0 ; i<stack.length;i++){
 			recalcContentHeight(stack[i].element);
 			tryCall(stack[i].page, stack[i].page.onResize);
 		}
-	});
+	}
 
-	$(document).on("backbutton", function(e) {
-		//move back or notify about last page
-		if (self.back()===null){
+	$(document).on("backbutton", documentBackButtonHandler);
+	function documentBackButtonHandler(e) {
+		var cf = currentFrame();
+		if (self.back()===null && cf){
 			self.onRootPageBackPressed(currentFrame().name);
 		}
-	});
+	}
+	/**
+	 * Delete Event handlers that were created by the Nav instance
+	 */
+	this.destroy = function(){
+		$(window).off('resize',windowResizeHandler);
+		$(document).off('backbutton',documentBackButtonHandler);
+	}
 
 	/**
 	 * Callback fired when Back button is clicked on LAST page of the app 

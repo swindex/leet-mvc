@@ -59,6 +59,7 @@ export class SwiperTabs extends BaseComponent{
 	 */
 	destroy(){
 		//remove all pages
+		this.Nav.destroy();
 		this.removeAllPages();
 	}
 
@@ -67,9 +68,7 @@ export class SwiperTabs extends BaseComponent{
 	 */
 	removeAllPages(){
 		//remove all pages
-		Objects.forEach(this.pages,page =>{
-			this.Nav.remove(page);
-		})
+		this.Nav.removeAll();
 	}
 
 
