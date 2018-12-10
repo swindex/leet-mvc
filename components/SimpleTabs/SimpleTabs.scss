@@ -39,6 +39,9 @@
 		span {
 			color: $color-tabbutton-fg;
 			font-size: 1rem;
+			height: 50%;
+			line-height: 1rem;
+			padding-top: 0.2rem;
 		}
 		div.counter{
 			background-color: red;
@@ -53,6 +56,16 @@
 			//border-bottom-color: $color-tabbutton-fg-active;
 			i, span {
 				color: $color-tabbutton-fg-active !important;
+			}
+		}
+		.icon-wrapper{
+			position: relative;
+			height: 50%;
+			display: flex;
+			align-items: flex-end;
+			.counter{
+				top: 3px;
+				right: -15px;
 			}
 		}
 	}

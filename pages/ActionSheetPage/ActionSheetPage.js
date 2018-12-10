@@ -54,7 +54,7 @@ ActionSheetPage.visibleParent = true;
 ActionSheetPage.className = "page-ActionSheetPage";
 ActionSheetPage.template = `
 <div class="backdrop" onclick="this.onBackdropClicked()"></div>
-<div class="menu-body">
+<div class="menu-body" onclick="this.onBackdropClicked()">
 	<ul class="menu-tree">
 		<li [foreach]="index in this.items as item" onclick="this.onItemClicked(item); this._onItemClicked(item)" [selected] = "this.isSelectedItem(item)">
 			<i [class] = "item.icon" [if]="item.icon"></i>
