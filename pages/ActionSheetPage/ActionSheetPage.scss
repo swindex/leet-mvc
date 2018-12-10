@@ -12,7 +12,11 @@ div[page].page-ActionSheetPage{
 		position:absolute;
 		overflow-x: hidden;
 		overflow-y: hidden;
-
+		
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		
 	.backdrop{
 		position: absolute;
 		//top: $header-height;
@@ -27,12 +31,13 @@ div[page].page-ActionSheetPage{
 	}
 	//Initial CSS for when the page has just been created
 	.menu-body{
-		position: absolute;
-		left: 0;
+		//position: absolute;
+		//left: 0;
 		bottom:0;
 		
 		width: 100%;
 		transform: translate3d(0,100%,0);
+
 		ul {
 			//@include touch-scroll;
 			
