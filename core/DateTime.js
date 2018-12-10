@@ -183,5 +183,5 @@ export var DateTime = {
 	_humanDateTime:"LLLL",
 	_humanDate:"LL",
 	_JSONDate:'YYYY-MM-DD[T]HH:mm:ssZ',
-	_humanMMDDYYYY:"M/D/YYYY",
+	_humanMMDDYYYY:"MM/DD/YYYY",
 }
