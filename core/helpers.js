@@ -63,7 +63,7 @@ export function Override(context, method, callback){
  * @param {*} parentConstructor 
  * @param {*} childConstructor 
  */
-function Extend( parentConstructor, childConstructor ){
+export function Extend( parentConstructor, childConstructor ){
 	childConstructor.prototype = Object.create( parentConstructor.prototype );
 	childConstructor.prototype.constructor = childConstructor;
 	childConstructor.prototype.super = function(){return parentConstructor.apply(this,arguments);};
