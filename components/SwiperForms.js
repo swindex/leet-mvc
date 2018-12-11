@@ -1,6 +1,7 @@
 import { Objects } from "./../core/Objects";
 import Swiper from 'swiper';
 import { Forms } from "./Forms";
+import 'swiper/dist/css/swiper.css';
 
 
 /**

@@ -6,6 +6,7 @@ import { BasePage } from "./../../pages/BasePage";
 import { argumentsToArray, debounce } from "./../../core/helpers";
 import { Objects } from "./../../core/Objects";
 import { DeBouncer } from "leet-mvc/core/DeBouncer";
+import 'swiper/dist/css/swiper.css';
 
 /**
  * @param {{navButtons?: true}} [options]
