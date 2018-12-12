@@ -131,11 +131,11 @@ export class Forms extends BaseComponent{
 			case "text":
 				return this.addInput(el,null,formName);
 			case "date":
-				return this.addInput(el,{date:'', format:'date', readonly:''}, formName);	
+				return this.addInput(el,{date:'', format:'date', /*readonly:''*/}, formName);	
 			case "datetime":
-				return this.addInput(el,{dateTime:'', format:'dateTime', readonly:''}, formName);	
+				return this.addInput(el,{dateTime:'', format:'dateTime', /*readonly:''*/}, formName);	
 			case "time":
-				return this.addInput(el,{time:'', format:'time', readonly:''},formName);	
+				return this.addInput(el,{time:'', format:'time', /*readonly:''*/},formName);	
 			case "number":
 				this.assertValidateRuleHas(el,"number");
 				return this.addInput(el,{type:'number'}, formName);
