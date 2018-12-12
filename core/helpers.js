@@ -54,6 +54,22 @@ export function Override(context, method, callback){
 	return f;
 }
 
+/**	
+ * Extend Child Class With the Parent   	
+ * ***usage***:   	
+ *  - class ChildClasss extends BaseClass {} ***SAME AS*** var ChildClass = extend( BaseClass, function ChildClass(params){});  	
+ *  - super(Page); ***SAME AS*** this.super(Page);  	
+ * 	
+ * @param {*} parentConstructor 	
+ * @param {*} childConstructor 	
+ */	
+export function Extend( parentConstructor, childConstructor ){	
+	childConstructor.prototype = Object.create( parentConstructor.prototype );	
+	childConstructor.prototype.constructor = childConstructor;	
+	childConstructor.prototype.super = function(){return parentConstructor.apply(this,arguments);};	
+	return childConstructor;	
+}
+
 export function GUID() {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 		var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
