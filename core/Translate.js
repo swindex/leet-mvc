@@ -1,4 +1,6 @@
 import { Injector } from "./Injector";
+import { isString } from "util";
+import { argumentsToArray } from "./helpers";
 
 const Inject = Injector;
 
@@ -19,11 +21,19 @@ export var ReplaceValues = function(LangConstText, replaceValues){
 /**
  * 
  * @param {string} keyOrText 
+ * @param {...string|number} [replaceValues] text items that replace {1},{2},{3} placeholders in the translated text.
  * @return {string}
  */
-export function Translate(keyOrText){
+export function Translate(keyOrText, replaceValues){
 	if (!Inject['LNG'])
 		return keyOrText;
 
-	return Inject['LNG'][keyOrText] ? Inject['LNG'][keyOrText] : keyOrText;
+	var ret = Inject['LNG'][keyOrText] ? Inject['LNG'][keyOrText] : keyOrText;
+	if (replaceValues && isString(ret)){
+		var args = argumentsToArray(arguments);
+		args[0] = ret;
+		return ReplaceValues.apply(null,args);
+		
+	}
+	return ret;
 }
