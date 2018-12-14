@@ -9,7 +9,8 @@ export var DateTime = {
 	 */
 	smartFormat(value, outputOffset ) {
 		outputOffset = outputOffset || false;
-		value = value || new Date();
+		if (empty(value))
+			return null;
 		//moment.locale(this.GUser.settings.language);
 		
 		var now = moment();
