@@ -25,6 +25,10 @@ export function NavController() {
 	 */
 	this.setContainer = function(container){
 		pageContainer = container
+		//if container is not document, remove the back button handler
+		if (pageContainer != document.body){
+			$(document).off('backbutton',documentBackButtonHandler);
+		}
 	}
 
 	/**
@@ -363,6 +367,7 @@ export function NavController() {
 			self.onRootPageBackPressed(currentFrame().name);
 		}
 	}
+	
 	/**
 	 * Delete Event handlers that were created by the Nav instance
 	 */
