@@ -3,6 +3,8 @@
  */
 declare namespace DataShapeModule{
 	const DataShape = {
+		/** To be used as a placeholder for a dynamic key name. */
+		ANY_KEY: Symbol(), 
 		integer (def?: null|number): number;, 
 		float (def?: null|number): number;, 
 		boolean (def?: nul|boolean): boolean;, 

@@ -1,9 +1,11 @@
 import { isArray, isFunction } from "util";
 import { isObject } from "util";
-import { Objects } from "leet-mvc/core/Objects";
+import { Objects } from "./Objects";
 import { isBoolean } from "util";
 
+var ANY_KEY = Symbol("__KEY__");
 export var DataShape = {
+	ANY_KEY: ANY_KEY,
 	/** @return {number} */
 	integer: (def) => 
 		/** @return {null|number} */
@@ -64,7 +66,6 @@ export var DataShape = {
 	 * @return {object}
 	 */
 	copy: function(obj, templateObject, checkSource,path){
-		var undefined;
 		path = path || "";
 		checkSource = checkSource || false;
 		templateObject = templateObject || obj;
@@ -78,6 +79,16 @@ export var DataShape = {
 				templateObject=[];
 		}else if (isObject(templateObject)){
 			newObj = {};
+			//if the template object contains ANY_KEY property, implement the template value to each key of the correspointing source object property
+			if (templateObject.hasOwnProperty(ANY_KEY)){
+				Object.keys(obj).forEach(function(key){
+					//Only assign dynamic key template if the template object does not yet have the same key present
+					if (!templateObject.hasOwnProperty(key)){
+						templateObject[key] = templateObject[ANY_KEY];
+					}
+				});
+				delete templateObject[ANY_KEY];
+			}
 		}else if (isFunction(templateObject)){
 			return templateObject(obj);
 		}else{				
