@@ -1,11 +1,10 @@
 import { BaseComponent } from "../BaseComponent";
 import Swiper from 'swiper';
 import { NavController } from "./../../core/NavController";
-import './SwiperTabs.scss';
 import { BasePage } from "./../../pages/BasePage";
-import { argumentsToArray, debounce } from "./../../core/helpers";
-import { Objects } from "./../../core/Objects";
-import { DeBouncer } from "leet-mvc/core/DeBouncer";
+import { argumentsToArray, Override } from "./../../core/helpers";
+import { DeBouncer } from "./../../core/DeBouncer";
+import './SwiperTabs.scss';
 import 'swiper/dist/css/swiper.css';
 
 /**
@@ -34,23 +33,38 @@ export class SwiperTabs extends BaseComponent{
 
 	}
 
+	/**
+	 * ***Override*** called when page is changed 
+	 * @param {BasePage} page - page opject
+	 * @param {number} index - page index
+	 */
 	onTabChanged(page,index){
 
 	}
 
-	addPage(PageConstructor,args){
+	addPage(PageConstructor, args){
 		if (!this.container && !this.tempContainer){
 			this.tempContainer = document.createDocumentFragment();
 			this.Nav.setContainer(this.tempContainer);
 		}
+		
 		PageConstructor.className = 'swiper-slide'
 		PageConstructor.visibleParent = true;
 		var inst = this.Nav.push.apply(this, argumentsToArray(arguments));
-
+		//Override the onEnter method because onEnter must be called by this swiper only and not by the Nav controler
+		inst.onEnter = Override(inst,inst.onEnter, function(){/*console.log("OnEnter Overridden!")*/})
+		
 		this.pages.push(inst);
 		//cause swiper to reinit after adding all pages in this animation frame
 		this.debounceUpdate(()=>{
 			this.swiper.update();
+			this.swiper.realIndex
+			//notify tabchange with the tab that is active
+			if (this.swiper.realIndex >= 0){
+				var v = this.swiper.realIndex;
+				this.pages[v].onEnter.super();
+				this.onTabChanged(this.pages[v],v);
+			}
 		});
 		return inst;
 	}
@@ -88,20 +102,20 @@ export class SwiperTabs extends BaseComponent{
 		if (this.tempContainer)
 			$(container).find('.swiper-wrapper').append(this.tempContainer);
 		
-
-
 		var sw = new Swiper($(container).find('#generatedpage')[0],{
 			threshold:50,
 			noSwiping: true,
 			iOSEdgeSwipeDetection: true,
 		});
-		this.swiper = $(container).find('#generatedpage')[0].swiper;
+		this.swiper = sw;// $(container).find('#generatedpage')[0].swiper;
 		this.swiper.on('slideChange',()=>{
 			var v = this.swiper.activeIndex;
 			this.binder.updateElements();
+			//call the overridden onEnter call
+			this.pages[v].onEnter.super();
+			//Notify listener that the page has changed
 			this.onTabChanged(this.pages[v],v);
 		})
 		this.swiper.slideTo(0);
-		//this.binder.updateElements();
 	}
 }
