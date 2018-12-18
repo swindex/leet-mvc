@@ -20,7 +20,7 @@ export class MenuPage extends BasePage {
 
 		this._items = [];
 		this.List = new ItemList()
-		this.items = [];
+		//this.items = [];
 		this.List.onItemClicked = (item,index)=>{
 			this.onItemClicked(item,index)
 		};
@@ -40,10 +40,18 @@ export class MenuPage extends BasePage {
 	};
 
 	/**
+	 * Get/Set Menu Items
 	 * @param {{action:Page|string,label:string}[]} items
 	 */
 	set items (items){
 		this.List.items = items;
+	}
+
+	/**
+	 * @return {{action:Page|string,label:string}[]}
+	 */
+	get items (){
+		return this.List.items;
 	}
 
 	/**
