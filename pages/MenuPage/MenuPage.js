@@ -1,8 +1,8 @@
 import './MenuPage.scss';
-import { BasePage } from "leet-mvc/pages/BasePage";
-import { ItemList } from 'leet-mvc/components/ItemList';
+import { BasePage } from "./../BasePage"; 
+import { ItemList } from './../../components/ItemList';
 import { isFunction } from 'util';
-import { Injector } from 'leet-mvc/core/Injector';
+import { Injector } from './../../core/Injector';
 
 
 /**
