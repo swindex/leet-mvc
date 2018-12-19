@@ -1,4 +1,4 @@
-import { isObject } from "util";
+import { isObject, isString } from "util";
 import { isArray } from "util";
 
 export const Objects = {
@@ -60,10 +60,24 @@ export const Objects = {
 		}
 	},
 
-	keyBy: function(array, columnName){
+	keyBy: function(array, columnName, columnNames){
 		var ret = {};
 		for (var k in array){
-			ret[array[k][columnName]] = array[k];
+			if (!array.hasOwnProperty(k)) continue;
+			if (!columnNames)
+				ret[array[k][columnName]] = array[k];
+			else{
+				if (isString(columnNames)){
+					ret[array[k][columnName]] = array[k][columnNames];
+				}else if (isArray(columnNames)){
+					var r = {};
+					columnNames.forEach(function(cn){
+						r[cn]=array[k][cn];
+					})
+					ret[array[k][columnName]] = r;
+				}
+
+			}	
 		}
 		return ret;
 	},
