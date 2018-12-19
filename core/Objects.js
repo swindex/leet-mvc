@@ -71,9 +71,9 @@ export const Objects = {
 					ret[array[k][columnName]] = array[k][columnNames];
 				}else if (isArray(columnNames)){
 					var r = {};
-					columnNames.forEach(function(cn){
+					Objects.forEach(columnNames,function(cn){
 						r[cn]=array[k][cn];
-					})
+					});
 					ret[array[k][columnName]] = r;
 				}
 
