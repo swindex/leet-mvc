@@ -29,13 +29,28 @@ declare namespace ObjectsModule{
 		forEach<T, K extends keyof T>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | any): void;,
 
 		/**
-		 * 
-		 * @param obj array of objects
-		 * @param column name of the column to become the new key
-		 * @param columns name of the column or array of column names to include in to the value. if string name is supplied, the value will the value of the column, if aray, the value will be an object
+		 * Convert array of objects to key-value pair collection
+		 * @param arr array of objects
+		 * @param keyColumn name of the column to become the new key
 		 */
-		keyBy<T, K extends keyof T>(obj: T, column: string, columns?: string|string[]):{[key:string]: T[K]};, 
+		keyBy<T, K extends keyof T>(arr: T, keyColumn: string):{[key:string]: T[K]};, 
 		
+		/**
+		 * Convert array of objects to key-value pair collection
+		 * @param arr array of objects
+		 * @param keyColumn name of the column to become the new key
+		 * @param valueColumn name of the column to use as the value
+		 */
+		keyBy<T, K extends keyof T>(arr: T, keyColumn: string, valueColumn?: string):{[key:string]: T[K]};, 
+		
+		/**
+		 * 
+		 * @param arr array of objects
+		 * @param keyColumn name of the column to become the new key
+		 * @param valueColumns array of column names to include in to the value.
+		 */
+		keyBy<T, K extends keyof T>(arr: T, keyColumn: string, valueColumns:string[]):{[key:string]: T[K]};, 
+	
 		/**
 		 * Set Object properties to null, preserving references and structure
 		 * @param {*} obj 
