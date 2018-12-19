@@ -41,7 +41,7 @@ declare namespace ObjectsModule{
 		 * @param keyColumn name of the column to become the new key
 		 * @param valueColumn name of the column to use as the value
 		 */
-		keyBy<T, K extends keyof T>(arr: T, keyColumn: string, valueColumn?: string):{[key:string]: T[K]};, 
+		keyBy<T, K extends keyof T>(arr: T, keyColumn: string, valueColumn: string):{[key:string]: any};, 
 		
 		/**
 		 * 
