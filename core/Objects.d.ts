@@ -1,5 +1,3 @@
-declare function empty( obj:any ): boolean;
-
 declare namespace ObjectsModule{
 	const Objects = {
 		/**
@@ -30,7 +28,13 @@ declare namespace ObjectsModule{
 		 */
 		forEach<T, K extends keyof T>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | any): void;,
 
-		keyBy<T, K extends keyof T>(obj: T, column: string):{[key:string]: T[K]};, 
+		/**
+		 * 
+		 * @param obj array of objects
+		 * @param column name of the column to become the new key
+		 * @param columns name of the column or array of column names to include in to the value. if string name is supplied, the value will the value of the column, if aray, the value will be an object
+		 */
+		keyBy<T, K extends keyof T>(obj: T, column: string, columns?: string|string[]):{[key:string]: T[K]};, 
 		
 		/**
 		 * Set Object properties to null, preserving references and structure

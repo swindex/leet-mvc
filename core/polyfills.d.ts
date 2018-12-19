@@ -1,0 +1,1 @@
+declare function empty( obj:any ): boolean;
