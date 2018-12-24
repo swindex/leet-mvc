@@ -34,3 +34,13 @@ interface HTMLElementMouseEvent extends MouseEvent{
 interface HTMLInputElementChangeEvent extends Event{
 	target: HTMLInputElement;
 }
+
+interface vDom {
+	values:{},
+	valuesD:{},
+	getters: {},
+	setters: {},
+	elem: HTMLElement,
+	items:vDom[],
+	itemBuilder:function
+};

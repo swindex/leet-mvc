@@ -6,6 +6,7 @@ import { argumentsToArray, Override } from "./../../core/helpers";
 import { DeBouncer } from "./../../core/DeBouncer";
 import './SwiperTabs.scss';
 import 'swiper/dist/css/swiper.css';
+import { Objects } from "leet-mvc/core/Objects";
 
 /**
  * @param {{navButtons?: true}} [options]
@@ -84,6 +85,7 @@ export class SwiperTabs extends BaseComponent{
 	removeAllPages(){
 		//remove all pages
 		this.Nav.removeAll();
+		this.pages = [];
 	}
 
 
@@ -92,6 +94,8 @@ export class SwiperTabs extends BaseComponent{
 	 * @param {*} pageInstance 
 	 */
 	removePage(pageInstance){
+		this.pages = Objects.filter(this.pages, el => el != pageInstance);
+
 		this.Nav.remove(pageInstance);
 	}
 

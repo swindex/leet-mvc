@@ -168,7 +168,7 @@ function onDirtyChangeEvent(obj, callback, ignoreProperties){
  * 
  * @param {object} obj 
  */
-function hashObject(obj, ignoreProperties){
+export function hashObject(obj, ignoreProperties){
 	ignoreProperties = ignoreProperties || [];
 	var ret = "";
 	if (isObject(obj)){
