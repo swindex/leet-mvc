@@ -18,12 +18,13 @@ export class MenuPage extends BasePage {
 
 		this.currPage = st[st.length-1].page;
 
-		this._items = [];
-		this.List = new ItemList()
+		/** @type {{action:Page|string,label:string}[]}*/
+		this.items = [];
+		//this.List = new ItemList()
 		//this.items = [];
-		this.List.onItemClicked = (item,index)=>{
-			this.onItemClicked(item,index)
-		};
+		//this.List.onItemClicked = (item,index)=>{
+		//	this.onItemClicked(item,index)
+		//};
 		/**
 		 * HTML text to put in logo
 		 */
@@ -40,21 +41,6 @@ export class MenuPage extends BasePage {
 	};
 
 	/**
-	 * Get/Set Menu Items
-	 * @param {{action:Page|string,label:string}[]} items
-	 */
-	set items (items){
-		this.List.items = items;
-	}
-
-	/**
-	 * @return {{action:Page|string,label:string}[]}
-	 */
-	get items (){
-		return this.List.items;
-	}
-
-	/**
 	 * Check if the item is selected
 	 * @param {{action:any,label:string}} item
 	 * @return {boolean}
@@ -66,6 +52,7 @@ export class MenuPage extends BasePage {
 	init() {
 		$('body').addClass('menu-shown');
 	};
+
 	onBackdropClicked() {
 		this.destroy();
 	}
@@ -79,8 +66,8 @@ MenuPage.template = `
 	<div class="menu-head">
 		<div id="logo" [innerHTML] = "this.logo"></div>
 	</div>
-	<ul class="menu-tree" [directive]="this.List">
-		<li $iterator [selected]="this.isSelected(item)">
+	<ul class="menu-tree">
+		<li [foreach]="index in this.items as item" onclick="this.onItemClicked(item, index)" [selected]="this.isSelected(item)">
 			<span [innerHTML] = "item.label"></span>
 		</li>
 	</ul>
