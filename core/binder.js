@@ -3,8 +3,12 @@ import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString } from "util";
 
 import * as $ from 'jquery';
-import { isSkipUpdate } from "./Watcher";
+import { isSkipUpdate, hashObject } from "./Watcher";
 import { DateTime } from "./DateTime";
+import { isArray } from "util";
+import { Objects } from "leet-mvc/core/Objects";
+import { isFunction } from "util";
+
 
 var getterCashe = {};
 
@@ -33,218 +37,6 @@ export var Binder = function(context, container){
 	//bindings array contains only elements with bound attributes
 	/**@type {Element[]} */
 	this.bindings=[];
-
-	this.bindAttributes = {
-		'[if]': function (/** @type {HTMLElement}*/elem,attrValue){ 
-			var result = createExecuteElemAttrGetter(elem,'[if]',attrValue);
-			var div;
-			if (result){
-				if(elem['TEMPLATE']['STATE'] !== result){
-					if (elem['TEMPLATE']['BINDER'] && elem['TEMPLATE']['BINDER'].container){
-						removeElement(elem['TEMPLATE']['BINDER'].container);
-					}
-
-					div = elem.cloneNode(true) ;
-					// @ts-ignore //attributes exists on Node. 
-					div.attributes.removeNamedItem('[if]');
-					elem['TEMPLATE']['BINDER'] = (new Binder(self.context,div)).setInjectVars(self.injectVars).bindElements(self.eventCallbacks);//.updateElements();
-					insertAfter(div, elem['TEMPLATE']['PLACEHOLDER']);
-				}else
-					elem['TEMPLATE']['BINDER'].setInjectVars(self.injectVars).updateElements();
-			}else{
-				if (elem['TEMPLATE']['BINDER'] && elem['TEMPLATE']['BINDER'].container){
-					removeElement(elem['TEMPLATE']['BINDER'].container);
-				}
-			}
-			elem['TEMPLATE']['STATE'] = result;
-		},		
-		'[foreach]': function (/** @type {HTMLElement}*/elem,attrValue){ 
-				var index = null;
-				
-				var p = getForeachAttrParts(attrValue);				
-			
-				var data = createExecuteElemAttrGetter(elem,'[foreach]',p.data);
-				if (empty(data))
-					data = [];
-
-				var keys = Object.keys(data);
-				if (!elem['TEMPLATE']['BINDERS'])
-					elem['TEMPLATE']['BINDERS']={}
-				var fragment = document.createDocumentFragment();
-				var touchedKeys = {};
-				for (index in data){
-					if (! data.hasOwnProperty(index)) continue;	
-					//remember indexes that were added/updated
-					touchedKeys[index]=null;
-					//build up injectable values
-					var inj = $.extend({},self.injectVars);
-					inj[p.index] = index;
-					inj[p.item] = data[index];
-
-					if (elem['TEMPLATE']['BINDERS'].hasOwnProperty(index)){
-						//index already exists in binders. update it
-						removeElement(elem['TEMPLATE']['BINDERS'][index].container);
-						elem['TEMPLATE']['BINDERS'][index].setInjectVars(inj).updateElements();
-						fragment.appendChild(elem['TEMPLATE']['BINDERS'][index].container);
-					}else{
-						//index does not exist. create it
-						var div = elem.cloneNode(true) ;
-						// @ts-ignore //attributes exists on Node. 
-						div.attributes.removeNamedItem('[foreach]');
-						fragment.appendChild(div);
-				
-						elem['TEMPLATE']['BINDERS'][index] = (new Binder(self.context,div)).setInjectVars(inj).bindElements(self.eventCallbacks);//.updateElements();
-					}
-				}
-				//delete indexes thet were not in the data object
-				for (index in elem['TEMPLATE']['BINDERS']){
-					if (!elem['TEMPLATE']['BINDERS'].hasOwnProperty(index))
-						continue;	
-					if (touchedKeys.hasOwnProperty(index))
-						continue;
-					removeElement(elem['TEMPLATE']['BINDERS'][index].container);
-					delete elem['TEMPLATE']['BINDERS'][index];
-				}
-
-				//insertAfter(fragment, elem['TEMPLATE']['PLACEHOLDER']);
-
-				elem['TEMPLATE']['STATE'] = keys.length;
-				insertAfter(fragment, elem['TEMPLATE']['PLACEHOLDER']);
-
-			},	
-
-		'[directive]': function (/** @type {HTMLElement}*/elem, attrValue){ 
-			var result = createExecuteElemAttrGetter(elem,'[directive]',attrValue);
-			
-			var html = null;
-			var component;
-			var callbacks=null;
-			if (result instanceof BaseComponent){
-				component = result;
-				html = result.html;
-
-				if (isObject(result.events))
-					callbacks = result.events;
-				else
-					callbacks = self.eventCallbacks;
-	
-			}else{
-				html=result;
-				//component = null;
-				callbacks = self.eventCallbacks;
-			}
-
-			if (elem.attributes.hasOwnProperty('[directive]'))		
-				elem.attributes.removeNamedItem('[directive]');
-			if (elem['TEMPLATE']['STATE'] !== result){
-				elem['TEMPLATE']['STATE'] = result;		
-
-				if (html !== null){
-					elem.innerHTML = html;
-				}
-				
-				if (component){
-					tryCall(component,component.onInit, elem);
-				}
-				
-				elem['TEMPLATE']['BINDER'] = (new Binder(self.context,elem)).setInjectVars($.extend({component:component},self.injectVars)).bindElements(callbacks);
-				
-				if (component){
-					component.binder = elem['TEMPLATE']['BINDER']
-					tryCall(component,component.init, elem);
-				}
-			}else{
-				elem['TEMPLATE']['BINDER'].setInjectVars($.extend({component:component},self.injectVars)).updateElements();
-			}	
-		},
-		'[innerHTML]':function (elem,attrValue){
-				var result = createExecuteElemAttrGetter(elem,'[innerHTML]',attrValue);
-				if (elem.innerHTML!==result)
-					elem.innerHTML = result;
-			},
-		'[display]': function (elem,attrValue){ 
-				elem.style.display = createExecuteElemAttrGetter(elem,'[display]',attrValue);
-			},
-		'[style]': function (/** @type {HTMLElement}*/elem,attrValue){ 
-				var r = createExecuteElemAttrGetter(elem,'[style]',attrValue);
-				if (typeof r =='object'){
-					$.each(r,function(i,prop){
-						if (prop!==null)
-							elem.style[i]=prop;
-						else
-							elem.style[i] = 'auto';	
-					})
-				}
-			},
-		'[class]': function (/** @type {HTMLElement}*/elem,attrValue){ 
-				if (typeof elem['TEMPLATE']['className_original'] ==='undefined')
-					elem['TEMPLATE']['className_original'] = elem.className;
-				
-				var result = createExecuteElemAttrGetter(elem,'[class]',attrValue);
-				if (!empty(result) && elem.className.indexOf(result) < 0)
-					elem.className += " "+ result;
-				else if (empty(result))
-					elem.className = elem['TEMPLATE']['className_original']	
-			},
-		'[selected]': function (elem,attrValue){ 
-			var r = createExecuteElemAttrGetter(elem,'[selected]',attrValue);
-			if (r){
-				elem.setAttribute('selected',"");
-			}else
-				elem.removeAttribute('selected');
-		},
-		'[attribute]': function (elem,attrValue){ 
-			var r = createExecuteElemAttrGetter(elem,'[attribute]',attrValue);
-			if (typeof r =='object'){
-				$.each(r,function(i,prop){
-					if (prop!==null)
-						elem.setAttribute(i,prop);
-					else
-						elem.removeAttribute(i);	
-				})
-			}
-		},
-		'[onload]':function(elem,attrValue){
-			var r = createExecuteElemAttrGetter(elem,'[onload]',attrValue);	
-			elem.removeAttribute("[onload]");
-		}
-	};
-
-	this.beforeBindAttributes = {
-		'[directive]': function (/** @type {HTMLElement}*/elem, attrValue){
-			elem['TEMPLATE']['PLACEHOLDER'] = document.createComment("[directive]:"+attrValue);
-			//insert placeholder
-			if (!elem.parentElement){
-				console.log("AAAA");
-			}
-			insertBefore(elem['TEMPLATE']['PLACEHOLDER'],elem);
-			return true;
-		 },
-		'[if]': function (/** @type {HTMLElement}*/elem, attrValue){ 
-			//console.time("if");
-			elem['TEMPLATE']['PLACEHOLDER'] = document.createComment("[if]:"+attrValue);
-			//insert placeholder
-			if (!elem.parentElement){
-				console.log("AAAA");
-			}
-			insertBefore(elem['TEMPLATE']['PLACEHOLDER'],elem);
-		
-			$(elem).remove();
-			//console.timeEnd("if");
-			
-			return true;
-		},
-		'[foreach]': function (/** @type {HTMLElement}*/elem, attrValue){
-			elem['TEMPLATE']['PLACEHOLDER'] = document.createComment("[foreach]:"+attrValue);
-			//insert placeholder
-			insertBefore(elem['TEMPLATE']['PLACEHOLDER'],elem);
-			//console.time('FOREACH');
-			$(elem).remove();
-			//console.timeEnd('FOREACH');
-			return true;
-		},	
-	
-	};
 	
 	function insertBefore(newNode, referenceNode) {
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
@@ -253,21 +45,16 @@ export var Binder = function(context, container){
 	function insertAfter(newNode, referenceNode) {
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	}
-	//
-	function createExecuteElemAttrGetter(elem,attrName,attrValue ){
 	
-		try{
-			if (empty(elem.TEMPLATE.GETTERS[attrName]))
-				elem.TEMPLATE.GETTERS[attrName] = createGetter(attrValue);
-			var result = elem.TEMPLATE.GETTERS[attrName](self);
-		}catch(ex){
-			var result = null;
-		}
-		return result;
-	}
 	function removeElement(elem){
-		if (elem.parentElement)
-			elem.parentElement.removeChild(elem);
+		$(elem).remove();
+		//if (elem.parentElement)
+		//	elem.parentElement.removeChild(elem);
+	}
+
+	function replaceElement(newNode, oldNode){
+		insertBefore(newNode, oldNode);
+		removeElement(oldNode);
 	}
 
 	this.setContainer = function(container){
@@ -310,7 +97,22 @@ export var Binder = function(context, container){
 		if ( self.bindings && self.bindings.length>0)	
 			throw new Error("Already bound!. bindElements can only be called ONCE!")
 		
-		bindElement(self.container);
+		//bindElement(self.container);
+		if (!self.context.injectVars){
+			context.injectVars = {};
+		}
+		self.source = parseElement(self.container);
+		//console.log(self.source);
+		var vdom = executeSource(self.source, self.injectVars);
+		var newContainer = vdom.fragment || vdom.elem;
+		self.vdom = vdom; 
+		
+		
+		$(self.container).empty();
+		$(self.container).append(newContainer.childNodes);
+		
+		//self.updateElements();
+
 		return self;
 	}
 
@@ -327,204 +129,662 @@ export var Binder = function(context, container){
 		}      
 	}
 
+	
+	this.source = "";
 	/**
+	 * Bind element's events to context
 	 * @param {HTMLElement|Element} elem
+	 * @return {string}
 	 */
-	function bindElement(elem){
-		//if already bound continue
-		if (self.bindings.indexOf(elem)<0){
-				
-			assertElemTemplate(elem);
-			var didBind = false;
-			var wasRemoved = false;
-			
-			for(var attr in self.beforeBindAttributes){
-				var atv =  elem.getAttribute(attr)
-				if (atv){
-					self.beforeBindAttributes[attr](elem, atv);
-					elem['TEMPLATE']['BOUND_ATTR'].push({name:attr,value:atv});
-					wasRemoved = true;	
-					didBind = true;
-				}
+	function parseElement(elem){
+		var wrapIf = "";
+		var wrapForEach = "";
+		var thisSorurce = "";
+		var wrapDirective = "";
+		if (elem.nodeName=='#text'){
+			var escaped = elem.textContent.replace(/\n/g,'\\n');
+			thisSorurce = `createElement(null,{},"${escaped}")`;
+		}else if (elem.nodeName=='#comment'){
+			//var escaped = elem.textContent.replace(/\n/g,'\\n');
+			thisSorurce = null;
+		}else{	
+			thisSorurce = "createElement(";
+			var tag= elem.tagName
+			var attrText = "{";
+			if (elem.attributes){
+				Array.prototype.slice.call(elem.attributes).forEach(function(attr) {
+					switch (attr.name){
+						case '[foreach]':
+							wrapForEach = `"${attr.name}":"${attr.value}"`
+							break;	
+						case '[directive]':
+							wrapDirective = `"${attr.name}":"${attr.value}"`
+							break;	
+						case '[if]':
+							wrapDirective = `"${attr.name}":"${attr.value}"`
+							break;			
+						default:
+							attrText += `"${attr.name}":"${attr.value}",`	
+					}
+					
+				});
+			}
+			attrText +="}"
+			thisSorurce += "'"+tag +"',"+ attrText;	
+			thisSorurce += ",[";
+			if (elem.childNodes && elem.childNodes.length>0){
+				Array.prototype.slice.call(elem.childNodes).forEach(function(child) {
+					thisSorurce += parseElement(child);
+					thisSorurce += ",";
+				});
+			}
+			thisSorurce += "], inject)";
+
+			if (!empty(wrapForEach)){
+				thisSorurce = "createForEachElement('"+tag+"',{"+wrapForEach+"}, function(inject){ return [ " + thisSorurce + "]},inject)";
+			}
+			if (!empty(wrapDirective)){
+				thisSorurce = "createDirectiveElement('"+tag+"',{"+wrapDirective+"}, function(inject){ return [ " + thisSorurce + "]},inject)";
 			}	
-			if (!wasRemoved){	
+		}
+		
+		return thisSorurce; 
+	}
+	this.vdom = null;
+	/**
+	 * @return {vDom}
+	 */
+	function executeSource(parsedSource, inj){
+		
+		//var vdom = [];
+		var scope = {
+			createDirectiveElement: function(tag, attributes, createElements, inject){
+				var frag = document.createDocumentFragment();
+				var elem = document.createComment('DirectiveElement');
+				frag.appendChild(elem);
+				var attrKeys = Object.keys(attributes);
+				var getters = {};
+				var setters = {};
+				var renderImmediately = [];
+				for (var i in attrKeys){
+					var bindExpression = null;
+					var getter = null;
+					var setter = null;
+					var key = attrKeys[i]
+					bindExpression = attributes[key];	
+										
+					switch (key){
+						case '[if]':
+							renderImmediately.push(key);
+						case '[directive]':
+							if (bindExpression){
+								getter = createGetter(bindExpression,inject);
+								renderImmediately.push(key);
+							}
+							break;
+					}
+					if (getter){
+						getters[key] = getter; 
+					}
+					if (setter){
+						setters[key] = setter; 
+					}
+				}
+				var itemBuilder = function(inject){
+					var ii = createElements(inject);
+					return ii;
+				};
+				var vdom ={ values:{}, getters: getters, setters:setters, fragment:frag, elem:elem, items:[], itemBuilder:itemBuilder};
+				for (var ii =0; ii < renderImmediately.length; ii++){
+					directives[renderImmediately[ii]](vdom ,inject);
+				}
+				return vdom;	
+			},
+			createForEachElement: function(tag, attributes, createElements, inject){
+				var frag = document.createDocumentFragment();
+				var elem = document.createComment(attributes['[foreach]']);
+				frag.appendChild(elem);
 				
-				//bind 'this' inside event's handler to the context and inject vars
-				bindEventsToContext(elem);
+				var getters = {};
+				var setters = {};
+
+				getters['[foreach]'] = getForeachAttrParts(attributes['[foreach]']);
+				var itemBuilder = function(inject){
+					var ii = createElements(inject);
+					return ii;
+				};
+				var vdom ={ values:{}, getters: getters, setters:setters,fragment:frag, elem:elem, items:[], itemBuilder:itemBuilder};
 				
-				//bind the element to context data if needed
-				var bexpression = elem.getAttribute('bind');
-				if (bexpression !== null){
-					if (!empty(bexpression)){
-						elem['TEMPLATE'].GETTERS['value'] = createGetter( bexpression);
-						if (isElementSetting(elem))
-						elem['TEMPLATE'].SETTERS['value'] = createSetter( bexpression);
+				//render
+				directives['[foreach]'](vdom,inject);
+				 
+				return vdom;	
+			},
+			/**
+			 * Create element
+			 * @param {string} tag
+			 * @param {string[]} attributes
+			 * @param {string|vDom[]} createElements
+			 * @param {any} inject
+			 */
+			createElement: function(tag, attributes, createElements, inject){
+				var vdomItems = [];
+				if (isString(createElements) && tag == null){
+					return {vdom:null, elem: document.createTextNode(createElements)};
+				}else
+				var elem = document.createElement(tag);
+				var attrKeys = Object.keys(attributes);
+				var getters = {};
+				var setters = {};
+				var renderImmediately = [];
+				for (var i in attrKeys){
+					var bindExpression = null;
+					var value = null;
+					var getter = null;
+					var setter = null;
+					var key = attrKeys[i]
+					bindExpression = attributes[key];	
+					
+					switch (key){
+						//case '[if]':
+						case '[class]':
+						case '[attribute]':
+						case '[style]':
+						case '[display]':
+						case '[show]':
+						case '[selected]':
+						//case '[directive]':
+						case '[innerhtml]':
+							if (bindExpression){
+								getter = createGetter(bindExpression,inject);
+								renderImmediately.push(key);
+							}
+							break;
+						//case '[foreach]':
+						//	renderImmediately.push(key);
+						//	break;	
+						case 'bind':
+							if (bindExpression){
+								getter = createGetter(bindExpression,inject);
+
+								for (var k in self.eventCallbacks){
+									if (empty(self.eventCallbacks[k]) || k=='change')
+										continue;
+									(function(k){
+										elem.addEventListener(k, function (event) {
+											updateBoundContextProperty(event.target, event.type == "input"); //skip formatting for input event
+											if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
+												repaint(event.target['parentNode']);
+										});
+									})(k);
+								}
+								
+								if (isElementSetting(elem)){
+									setter = createSetter(bindExpression,inject);
+
+									(function(k){
+										elem.addEventListener(k, function (event) {
+											updateBoundContextProperty(event.target);
+											if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
+												repaint(event.target['parentNode']);
+										});
+									})('change');
+									if (isElementSettingOnInput(elem))
+										(function(k){
+											elem.addEventListener(k, function (event) {
+												updateBoundContextProperty(event.target, true); //skip formatting for input event
+												if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
+													repaint(event.target['parentNode']);
+											});
+										})('input');
+								}
+								renderImmediately.push(key);
+							}
+					
+							break;
+						default:
+							elem.setAttribute(key,attributes[key]);
 					}
 
-					//if element is bound add events from the eventCallbacks array
-					for (var k in self.eventCallbacks){
-						if (empty(self.eventCallbacks[k]) || k=='change')
-							continue;
-						(function(k){
-							elem.addEventListener(k, function (event) {
-								updateBoundContextProperty(event.target, event.type == "input"); //skip formatting for input event
-								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
-									repaint(event.target['parentNode']);
-							});
-						})(k);
+					if (getter){
+						getters[key] = getter; 
 					}
-
-					//Add change handlers to all form elements regardless whether there are eventCallbacks
-					if (isElementSetting(elem)){
-						(function(k){
-							elem.addEventListener(k, function (event) {
-								updateBoundContextProperty(event.target);
-								if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
-									repaint(event.target['parentNode']);
-							});
-						})('change');
-						if (isElementSettingOnInput(elem))
-							(function(k){
-								elem.addEventListener(k, function (event) {
-									updateBoundContextProperty(event.target, true); //skip formatting for input event
-									if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
-										repaint(event.target['parentNode']);
+					if (setter){
+						setters[key] = setter; 
+					}
+				}
+				
+				for (var ii =0; ii < createElements.length; ii++){
+					if (isObject(createElements[ii])){
+						if (isArray(createElements[ii])){
+							if (createElements[ii].length > 0 )
+								createElements[ii].map(function(el){
+									if (el.vdom)
+										vdomItems.push(el.vdom);	
+									elem.appendChild(el.fragment || el.elem);
 								});
-							})('input');
-					}
-					didBind = true;
-				}
-
-				//if contains bindable attributes, add them to elem BOUND_ATTR array, so it can be used fast
-				for(var attr in self.bindAttributes){
-					var atv =  elem.getAttribute(attr)
-					if (atv){
-						didBind = true;
-						//if (elem['TEMPLATE']['BOUND_ATTR'].indexOf(attr)==-1)	
-						elem['TEMPLATE']['BOUND_ATTR'].push({name:attr,value:atv});
-						if (!wasRemoved){
-							elem.attributes.removeNamedItem(attr);
+						}else{
+							if (createElements[ii])
+								vdomItems.push(createElements[ii]);	
+							elem.appendChild(createElements[ii].fragment || createElements[ii].elem);
 						}
+					}else if (isFunction(createElements[ii])){
+						throw new Error("Item must be an vDom object")
 					}
 				}
-			}
 
-			if (didBind){
-				self.bindings.push (elem);
-				updateElement(elem);
-			}
-			if (!wasRemoved){
-				bindElementChildren(elem);
+				var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
+				elem['VDOM'] = vdom;
 				
-				//fireOnLoadEvents(elem);
+				for (var ii =0; ii < renderImmediately.length; ii++){
+					directives[renderImmediately[ii]](vdom,inject);
+				}
+
+				bindEventsToContext(elem,inject);
+				return vdom;	
 			}
 		}
+
+		var exec = new Function('createElement','createForEachElement','createDirectiveElement','context','inject',
+	`return (function(createElement,context,inject){
+		return ${parsedSource}
+	}).call(context,createElement,context, inject);`);
+		var ret =exec(scope.createElement,scope.createForEachElement,scope.createDirectiveElement, self.context, inj);
+		//console.log(ret);
+		
+		return ret;
 	}
 
-	/** @param {HTMLElement|Element} element */
-	function bindElementChildren(element){
-		var inputs = element.children;
-		var inputs_length = inputs.length;
-		for(var i =0; i< inputs.length; i++){
-			var elem = inputs[i];
-
-			bindElement(elem);
-			//if binding of the element caused the length to change, backstep the index 
-			if (inputs_length != inputs.length){
-				i -= inputs_length - inputs.length
-				inputs_length = inputs.length
-			}
-		}
-	}
-
-	function assertElemTemplate(elem){
-		if (empty(elem['TEMPLATE']))	
-			elem['TEMPLATE'] = {
-				innerHTML:"",
-				GETTERS:{},
-				SETTERS:{},
-				BOUND_ATTR:[]
-			};	
+	/**
+	 * 
+	 * @param {vDom} on 
+	 */
+	function vDomCreateItems(on, inj){
+		var f = document.createDocumentFragment()
+		var ret = on.itemBuilder(inj);
+		ret.map(function(vdom){
+			f.appendChild(vdom.elem);
+			on.items.push(vdom);
+		}); 
+		insertAfter(f,on.elem);
 	}
 
 	/**
 	 * Bind element's events to context
 	 * @param {HTMLElement|Element} elem
 	 */
-	function bindEventsToContext(elem){
+	function bindEventsToContext(elem,inject){
 		Array.prototype.slice.call(elem.attributes).forEach(function(attr) {
-			if (attr.name.substr(0,2)=='on' && typeof elem[attr.name] =='function'){
+			if (typeof elem[attr.name] == 'function'){
+				//var inject = self.injectVars;
 				elem[attr.name] = (function(evt){
 					updateBoundContextProperty(evt.target);
-					self.injectVars['$event'] = evt;
-					var c = createCaller(attr.value);
-					c(self);
+					var inj = $.extend({}, self.injectVars,{'$event':evt},inject, findElemInject(elem));
+					var c = createCaller(attr.value, inj);
+					c(self,inj);
 				}).bind(self);
 			}	
 		});
 	}
-
+	/**
+	 * Find closest element with INJECT
+	 * @param {HTMLElement|Element|Node} elem
+	 */
+	
+	function findElemInject(elem){
+		if (elem['INJECT']){
+			return elem['INJECT'];
+		}
+		if (elem.parentNode){
+			return findElemInject(elem.parentNode);
+		}
+		return null;
+	}
+	
 	/**
 	 * Update DOM elements according to bindings
 	 */
 	this.updateElements = function(){
-		//this.context.injectVars = $.extend(true,{}, this.injectVars);
-		for (var i in this.bindings){
-			if (this.bindings[i]!= null)
-				updateElement(this.bindings[i]);
-		}
+		//console.log("update started");
+		checkVDomNode(self.vdom, self.injectVars); 
+		//console.log("update ended");
 		return self;
-	}
+	} 
 
-	function updateElement(elem){
-		
-		if (!empty(elem['TEMPLATE']) && !empty(elem['TEMPLATE']['BOUND_ATTR'])){
-
-			for(var i in elem['TEMPLATE']['BOUND_ATTR']){
-				var tag = elem['TEMPLATE']['BOUND_ATTR'][i].name;
-				var arrtValue = elem['TEMPLATE']['BOUND_ATTR'][i].value
-				self.bindAttributes[tag](elem,arrtValue);
-			}
-		}
-		updateBoundElement(elem)
-
-		if (elem.getAttribute("once")!== null){
-			elem.removeAttribute("bind");
-			var ii = self.bindings.indexOf(elem);
-			if (ii>=0){
-				self.bindings[ii] = null;
-			}
-			self.bindings.push.apply(self.bindings,elem['TEMPLATE']['BINDER'].bindings);
-		}
-	}
-
-	function updateBoundElement(elem){
-
-		var bind = elem.getAttribute('bind');
-
-		if (empty(bind))
-			return null;
-		
-		try{
-			if (!elem['TEMPLATE'].GETTERS.value)
-				return null;
-			var v= elem['TEMPLATE'].GETTERS.value(self);
-		}catch (ex){
-			console.log(ex.message,bind);
-			if (self._capturePropOfUndefined){
-				var m = bind.match(self._capturePropOfUndefined.pattern);
-				if(m){
-					var ml = m[0].length;
-					var prop = bind.substr(ml);
-					if (!self._capturePropOfUndefined.object[prop]){
-						self._capturePropOfUndefined.object[prop] = elem.innerHTML;
-					}
+	/** 
+	 * @param {vDom} on  
+	 */
+	function checkVDomNode(on, inject){
+		//console.log(on);
+		if (on && on.getters){
+			for (var key in on.getters){
+				if (!on.getters.hasOwnProperty(key))
+					continue;
+										
+				if (directives[key] && directives[key](on, inject)===false){
+					//if directives[key](on, inject) returns false, means return right away
+					return false;
 				}
-			}
-
-			return null;
+			};
+		
+			for( var i in  on.items){
+				if (!on.items.hasOwnProperty(i))
+					continue;
+				checkVDomNode(on.items[i], inject);
+			};
+		}else if (!on){
+			console.log("AAAA");
 		}
+	}
 
+	var directives = {
+		'bind':function(on, inject){
+			var key = "bind";
+			var getter = on.getters[key];
+			try{
+				var newValue = getter(self, inject);  
+			}catch(ex){
+				var newValue = undefined;
+			}	
+			if (on.values[key] !== newValue){
+				on.values[key] = newValue;
+				updateBoundElement(on.elem, newValue);
+			}
+		},
+		'[selected]':function(on, inject){
+			var key = "[selected]";
+			var getter = on.getters[key];
+			var newValue = getter(self, inject); 
+			if (newValue){
+				on.elem.setAttribute('selected',"");
+			}else
+				on.elem.removeAttribute('selected');
+		},
+		'[style]':function(on, inject){
+			var key = "[style]";
+			var getter = on.getters[key];
+			var newValue = getter(self, inject); 
+			if (typeof newValue =='object'){
+				$.each(newValue,function(i,prop){
+					if (prop!==null)
+						on.elem.style[i] = prop;
+					else
+						on.elem.style[i] = 'auto';
+				})
+			}
+		},
+		'[attribute]':function(on, inject){
+			var key = "[attribute]";
+			var getter = on.getters[key];
+			var newValue = getter(self, inject); 
+			if (typeof newValue =='object'){
+				$.each(newValue,function(i,prop){
+					if (prop!==null)
+						on.elem.setAttribute(i,prop);
+					else
+						on.elem.removeAttribute(i);	
+				})
+			}
+		},
+		'[display]':function(on, inject){
+			var key = "[display]";
+			var getter = on.getters[key];
+			var newValue = getter(self, inject); 
+			if (on.values[key] !== newValue){
+				on.values[key] = newValue;
+				//on.elem.className = newValue;
+				if (!on.valuesD.hasOwnProperty(key)){
+					on.valuesD[key] = on.elem.style.display;
+				}
+
+				on.elem.style.display = newValue;
+									
+			}
+		},
+		'[show]':function(on, inject){
+			var key = "[show]";
+			var getter = on.getters[key];
+			var newValue = getter(self, inject); 
+			if (on.values[key] !== newValue){
+				on.values[key] = newValue;
+				//on.elem.className = newValue;
+				if (!on.valuesD.hasOwnProperty(key)){
+					on.valuesD[key] = on.elem.style.display;
+				}
+
+				if (newValue){
+					on.elem.style.display = on.valuesD[key];
+				}else{
+					on.elem.style.display = 'none';
+				}					
+			}
+		},
+		'[class]':function(on, inject){
+			var key = "[class]";
+			var getter = on.getters[key];
+			var newValue = getter(self, inject); 
+			if (on.values[key] !== newValue){
+				on.values[key] = newValue;
+				//on.elem.className = newValue;
+				if (!on.valuesD.hasOwnProperty(key)){
+					on.valuesD[key] = on.elem.className;
+				}
+
+				if (!empty(newValue) && on.elem.className.indexOf(newValue) < 0)
+					on.elem.className += " "+ newValue;
+				else if (empty(newValue))
+					on.elem.className = on.valuesD[key]
+			}
+		},
+		'[innerhtml]':function(on, inject){
+			var key = "[innerhtml]";
+			var getter = on.getters[key];
+			var newValue = getter(self, inject); 
+			if (on.values[key] !== newValue){
+				on.values[key] = newValue;
+				on.elem.innerHTML = newValue;
+			}
+		},
+		'[if]':function(on, inject){
+			var key = "[if]";
+			var getter = on.getters[key];
+			var isTrue;
+			try{
+				isTrue = getter(self,inject);
+			}catch(ex){
+				isTrue = false;
+			}
+			if (on.values[key] !== isTrue){
+				on.values[key] = isTrue;
+				if (isTrue){
+					if ( on.items.length ==0){
+						//if if directive does not have any children, create them
+						vDomCreateItems(on,inject)
+					}else{
+						insertAfter(on.items[0].elem, on.elem);
+					}
+
+				}else{
+					if ( on.items.length > 0 && on.items[0].elem.parentElement){
+						removeElement(on.items[0].elem);
+					}
+					return false;
+				}
+				
+			}
+		},
+		'[foreach]':function(on, inject){
+			var key = "[foreach]";
+			var getter = on.getters[key];
+			/** @type {{data:string,index:string,item:string}}*/
+			var parts = getter;
+			var data = createGetter(parts.data,inject)(self, inject) || [];
+			
+			var f = document.createDocumentFragment();
+
+			var touchedKeys = {};
+			var keys = Object.keys(data);
+
+			//if ( on.values[key] != hashObject(data)){
+			//	on.values[key] = hashObject(data);
+
+				//remove all items temporarely
+				for (var index in on.items){
+					if (!on.items.hasOwnProperty(index))
+						continue;	
+					f.appendChild(on.items[index].elem);
+				}
+				removeElement(f);
+
+				//create a new fragment for new/updated items
+				f = document.createDocumentFragment();
+				for (var index in data){
+					if (!data.hasOwnProperty(index))
+						continue;		
+					var item = data[index];	
+					touchedKeys[index]=null;
+					var inj = {}
+					inj[parts.index] = index;
+					inj[parts.item] = item;
+					inj = $.extend({},inject,inj);
+					if (!on.items.hasOwnProperty(index)){
+						var ret = on.itemBuilder(inj);
+						on.items[index] = ret[0];
+					}else{
+						checkVDomNode(on.items[index], inj);
+					}
+					on.items[index].elem['INJECT'] = inj;
+					f.appendChild(on.items[index].fragment || on.items[index].elem); 
+					
+				};
+				//delete vdom.items thet were not in the data object
+				for (var index in on.items){
+					if (!on.items.hasOwnProperty(index))
+						continue;	
+					if (touchedKeys.hasOwnProperty(index))
+						continue;
+					//removeElement(on.items[index].elem);
+					delete on.items[index];
+				}
+
+				if (on.elem.parentNode)
+					insertAfter(f, on.elem);
+				else
+					console.warn("[ForEach]: element does not have a parent!",on.elem)
+			/*}else{
+				//only check items
+				for (var index in data){
+					if (!data.hasOwnProperty(index))
+						continue;		
+					var item = data[index];	
+					var inj = {}
+					inj[parts.index] = index;
+					inj[parts.item] = item;
+					inj = $.extend({},inject,inj);
+					checkVDomNode(on.items[index], inj);
+				}
+			
+			}*/
+			return false;
+		},
+		'[directive]':function(on, inject){
+			var key = "[directive]";
+			var getter = on.getters[key];
+			var result = getter(self,inject);
+			var html = null;
+			var component;
+			var callbacks=null; 
+			if (result instanceof BaseComponent){
+				component = result;
+				html = result.html;
+
+				if (isObject(result.events))
+					callbacks = result.events;
+				else
+					callbacks = self.eventCallbacks;
+				
+			}else{ 
+				html=result;
+				callbacks = self.eventCallbacks;
+			}
+			if (on.values[key] !== result){
+				on.values[key] = result;
+				if (component){
+					tryCall(component,component.onInit, on.elem);
+				}
+				
+				var inj = $.extend({},{component:component},inject);
+
+				var f = document.createDocumentFragment()
+
+				//remove existing element, if it is already there
+				if (on.items[0])
+					$(on.items[0].elem).remove();
+				on.items = [];
+
+				//build directive conttnents
+				var ret = on.itemBuilder(inj);
+				ret.map(function(vdom){
+					f.appendChild(vdom.elem);
+					vdom.elem['INJECT'] = inj;
+
+					on.items.push(vdom);
+				});
+				 
+				//if html is supplied, overwrite the first childs contents
+				if (on.items.length==1 && html){
+					var ff = document.createElement('div');
+					ff.innerHTML = html;
+					var parsed = parseElement(ff);
+					var vdom = executeSource(parsed, inj);
+					
+					$(on.items[0].elem).append(vdom.elem.childNodes)
+					on.items[0].items = vdom.items;
+				}
+				insertAfter(f,on.elem);
+
+				for( var i in  on.items){
+					if (!on.items.hasOwnProperty(i))
+						continue;
+					checkVDomNode(on.items[i], inj);
+				};
+				
+				if (component){
+					component.binder = self;
+					tryCall(component,component.init, on.items[0].elem);
+				}
+			}else if (isObject(on.values[key])){
+				var inj = $.extend({},{component:on.values[key]},inject);
+				for( var i in  on.items){
+					if (!on.items.hasOwnProperty(i))
+						continue;
+					checkVDomNode(on.items[i], inj);
+				};
+			}else if (isString(on.values[key])){
+				for( var i in  on.items){
+					if (!on.items.hasOwnProperty(i))
+						continue;
+					checkVDomNode(on.items[i], inj);
+				};
+			}
+			
+			return false;
+		}
+	}
+
+	function createExecuteElemAttrGetter(elem,attrName,attrValue ){
+	
+		try{
+			var inj = findElemInject(elem);
+			if (empty(elem.VNODE.getters[attrName]))
+				elem.VNODE.getters[attrName] = createGetter(attrValue, inj);
+			var result = elem.VNODE.getters[attrName](self, inj);
+		}catch(ex){
+			var result = null;
+		}
+		return result;
+	}
+	function updateBoundElement(elem, v){
 		var format = elem.getAttribute('format');
 		if (format !== null) {
 			var formats = format.split(":");
@@ -544,7 +804,7 @@ export var Binder = function(context, container){
 					var titles = formats[1].split(",");
 					v = titles[(v === true ? 0 : 1 )];
 					if (v === undefined)
-						throw Error("Value of " + bind + " is not part of format's boolean options");
+						throw Error("Value of bind is not part of format's boolean options");
 				}
 			}
 			if (formats.length > 0 && formats[0] === "dateTime") {
@@ -683,11 +943,11 @@ export var Binder = function(context, container){
 			return v;
 		}
 	
-		if (!isElementSetting(elem) || empty(elem['TEMPLATE'].SETTERS.value))
+		if (!isElementSetting(elem) || empty(elem['VDOM'].setters.bind))
 			return;
-		var bind = elem.getAttribute('bind');
-		if (empty(bind))
-			return;
+		//var bind = elem.getAttribute('bind');
+		//if (empty(bind))
+		//	return;
 
 		var v;
 
@@ -696,10 +956,9 @@ export var Binder = function(context, container){
 
 		switch (elem.tagName) {
 			case "SELECT":
-				var sel = $(elem).find("option:selected")[0];
-				if (sel)
-					v = formatValue(sel.getAttribute('value'),format);
-				//console.log(v);
+				var sel = $(elem).find("option:selected");
+				v = formatValue(sel[0].getAttribute('value'),format);
+				console.log(v);
 				break;
 			case "OPTION":
 			case "INPUT":
@@ -716,14 +975,17 @@ export var Binder = function(context, container){
 				v = elem.value;
 		}
 		//SetObjProp(this.context,bind,v);
-		var oldval = elem['TEMPLATE'].GETTERS.value(self);
+		var inj = $.extend({}, self.injectVars, findElemInject(elem));
+
+		var oldval = elem['VDOM'].getters.bind(self, inj);
 		if ( oldval !== v){
+			
 			if (skipUpdate && self.context[isSkipUpdate] === false){
 				self.context[isSkipUpdate] = true;
-				elem['TEMPLATE'].SETTERS.value(self, v);
+				elem['VDOM'].setters.bind(self, inj, v);
 				self.context[isSkipUpdate] = false;
 			}else{
-				elem['TEMPLATE'].SETTERS.value(self, v);
+				elem['VDOM'].setters.bind(self, inj, v);
 			}
 		}
 	}
@@ -778,17 +1040,22 @@ export var Binder = function(context, container){
 	/**
 	 * 
 	 * @param {string} expression 
-	 * @return {Function} callback
+	 * @return {function(*,*)} callback
 	 */
-	function createGetter(expression){
-		var inj = createInjectVarText(self.injectVars);
+	function createGetter(expression, inject){
+		var inj = createInjectVarText(inject);
 		try{
 			var cashe = inj+expression;
 			if ( getterCashe.hasOwnProperty(cashe))
 				return getterCashe[cashe];
-			var getter = new Function('context', `${inj};return (function(){return ${expression};}).call(context.context);`
-			);
-			 
+			var getter = eval.call(this, 
+						`(function (context,inject){
+							${inj}
+							return (function(){
+								return ${expression};
+							}).call(context.context);
+						})`
+ 			);       
 			getterCashe[cashe] = getter;
 			return getter;
 		}catch(ex){
@@ -798,15 +1065,23 @@ export var Binder = function(context, container){
 	/**
 	 * 
 	 * @param {string} expression 
-	 * @return {function(*)} callback
+	 * @param {object} inject
+	 * @return {function(*,*)} callback
 	 */
-	function createCaller(expression){
-		var inj = createInjectVarText(self.injectVars);
+	function createCaller(expression, inject){
+		var inj = createInjectVarText(inject);
 		try{
 			var cashe = inj+expression;
 			if ( getterCashe.hasOwnProperty(cashe))
 				return getterCashe[cashe];
-			var getter = new Function('context',`${inj};(function(){${expression};}).apply(context.context);`);
+			var getter = eval( 
+						`(function (context,inject){
+							${inj}
+							(function(){
+								${expression};
+							}).apply(context.context)
+						})`
+			 );
 			getterCashe[cashe] = getter;
 			return getter;
 		}catch(ex){
@@ -817,13 +1092,14 @@ export var Binder = function(context, container){
 	/**
 	 * 
 	 * @param {string} expression 
-	 * @return {function(*,*)} callback
+	 * @param {object} inject
+	 * @return {function(*,*,*)} callback
 	 */	
-	function createSetter(expression){
-		var inj = createInjectVarText(self.injectVars);
+	function createSetter(expression, inject){
+		var inj =  createInjectVarText(inject);
 		
 		try{
-			return eval.call(self.context, `(function (context, value){
+			return eval.call(self.context, `(function (context,inject, value){
 				${inj}
 				return (function(value){
 					return ${expression} = value;
@@ -839,7 +1115,7 @@ export var Binder = function(context, container){
 		if (!empty(vars)){
 			for(var i in vars){
 				if (!vars.hasOwnProperty(i)) continue;
-				inj +="var " + i + "= context.injectVars['"+i+"'];\n";
+				inj +="var " + i + "= inject['"+i+"'];\n";
 			}
 		}
 		return inj;

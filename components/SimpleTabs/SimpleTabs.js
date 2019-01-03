@@ -28,7 +28,7 @@ export class SimpleTabs extends BaseComponent{
 
 	_getTab(target){
 		var tab_id = $(target).attr('for');
-		return $(target).closest('div[page]').find('#'+tab_id);
+		return this.container.find('#'+tab_id);
 	}
 
 	_select(target){
