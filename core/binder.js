@@ -268,6 +268,7 @@ export var Binder = function(context, container){
 			 * @param {any} inject
 			 */
 			createElement: function(tag, attributes, createElements, inject){
+				inject = inject || {};
 				var vdomItems = [];
 				if (isString(createElements) && tag == null){
 					return {vdom:null, elem: document.createTextNode(createElements)};
@@ -306,38 +307,38 @@ export var Binder = function(context, container){
 						case 'bind':
 							if (bindExpression){
 								getter = createGetter(bindExpression,inject);
-
-								for (var k in self.eventCallbacks){
-									if (empty(self.eventCallbacks[k]) || k=='change')
-										continue;
-									(function(k){
-										elem.addEventListener(k, function (event) {
-											updateBoundContextProperty(event.target, event.type == "input"); //skip formatting for input event
-											if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
-												repaint(event.target['parentNode']);
-										});
-									})(k);
-								}
-								
 								if (isElementSetting(elem)){
 									setter = createSetter(bindExpression,inject);
-
-									(function(k){
-										elem.addEventListener(k, function (event) {
-											updateBoundContextProperty(event.target);
-											if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
-												repaint(event.target['parentNode']);
-										});
-									})('change');
-									if (isElementSettingOnInput(elem))
-										(function(k){
-											elem.addEventListener(k, function (event) {
-												updateBoundContextProperty(event.target, true); //skip formatting for input event
-												if ( self.eventCallbacks[k] && tryCall(self.context,self.eventCallbacks[k], event) && event.target['parentNode'])
-													repaint(event.target['parentNode']);
-											});
-										})('input');
 								}
+								
+								function applyCallBack(context, evName, callback, cancelUIUpdate){
+									elem.addEventListener(evName, function (event) {
+										updateBoundContextProperty(event.target, cancelUIUpdate); //skip formatting for input event
+										if ( callback && tryCall(context, callback, event) && event.target['parentNode'])
+											repaint(event.target['parentNode']);
+									});
+								}
+
+								function applyCallbacks(context, callbacks){
+									for (var k in callbacks){
+										//skip if custom callback is empty or input or change
+										if (empty(callbacks[k]) || k =='change' || k =='input')
+											continue;
+										applyCallBack(context, k, callbacks[k]);	
+									}
+									//change or input are added separately if element is setting
+									if (isElementSetting(elem)){
+										applyCallBack(context, 'change', callbacks['change']);	
+										applyCallBack(context, 'input', callbacks['input'], true);	
+									}
+								}
+								
+								applyCallbacks(self.context, self.eventCallbacks);
+
+								if (inject.component && inject.component.events){
+									applyCallbacks(inject.component, inject.component.events);
+								}
+
 								renderImmediately.push(key);
 							}
 					
@@ -648,6 +649,7 @@ export var Binder = function(context, container){
 					inj[parts.item] = item;
 					inj = $.extend({},inject,inj);
 					if (!on.items.hasOwnProperty(index)){
+						//a new item appeared
 						var ret = on.itemBuilder(inj);
 						on.items[index] = ret[0];
 					}else{
