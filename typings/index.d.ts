@@ -42,5 +42,7 @@ interface vDom {
 	setters: {},
 	elem: HTMLElement,
 	items:vDom[],
-	itemBuilder:function
+	itemBuilder:function,
+	inject:{},
+	fragment: DocumentFragment
 };
