@@ -371,7 +371,7 @@ export var Binder = function(context, container){
 
 								renderImmediately.push(key);
 							}
-					
+							elem.setAttribute(key,attributes[key]);
 							break;
 						default:
 							elem.setAttribute(key,attributes[key]);
