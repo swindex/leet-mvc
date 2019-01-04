@@ -351,6 +351,8 @@ class Matomo {
 	send(){
 		if (!this._enabled)
 			return;
+		if (!this._URL)	
+			return;
 		//set up visit vars	
 		this.options._cvar = this._createCVAR(this.UserVar);
 		

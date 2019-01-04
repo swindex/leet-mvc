@@ -97,7 +97,6 @@ export var Binder = function(context, container){
 		if ( self.bindings && self.bindings.length>0)	
 			throw new Error("Already bound!. bindElements can only be called ONCE!")
 		
-		//bindElement(self.container);
 		if (!self.context.injectVars){
 			context.injectVars = {};
 		}
@@ -111,8 +110,6 @@ export var Binder = function(context, container){
 		$(self.container).empty();
 		$(self.container).append(newContainer.childNodes);
 		
-		//self.updateElements();
-
 		return self;
 	}
 
@@ -129,6 +126,10 @@ export var Binder = function(context, container){
 		}      
 	}
 
+	function escapeAttribute(attrValue){
+		return attrValue.replace(/\n/g,'\\n').
+							replace(/"/g,'\\"');
+	}
 	
 	this.source = "";
 	/**
@@ -142,10 +143,23 @@ export var Binder = function(context, container){
 		var thisSorurce = "";
 		var wrapDirective = "";
 		if (elem.nodeName=='#text'){
-			var escaped = elem.textContent.replace(/\n/g,'\\n');
-			thisSorurce = `createElement(null,{},"${escaped}")`;
+			var escaped = escapeAttribute(elem.textContent);
+
+			//parse {{moustache}} template within the text node
+			var bits = escaped.split(/({{[^{}]*}})/gmi);
+			var splitNodes = [];
+			bits.forEach(function(el){
+				var ret = null;
+				el.replace(/{{([^{}]+)}}|(.*)/,function(a,p1,p2,d){
+					if (p1){
+						splitNodes.push('createElement("#text",{bind:"'+p1+'"},[], inject)');
+					}else if (p2){
+						splitNodes.push('createElement("#text",{},"'+p2+'", inject)');
+					}
+				});
+			});
+			thisSorurce = splitNodes.join(',');
 		}else if (elem.nodeName=='#comment'){
-			//var escaped = elem.textContent.replace(/\n/g,'\\n');
 			thisSorurce = null;
 		}else{	
 			thisSorurce = "createElement(";
@@ -153,6 +167,7 @@ export var Binder = function(context, container){
 			var attrText = "{";
 			if (elem.attributes){
 				Array.prototype.slice.call(elem.attributes).forEach(function(attr) {
+					attr.value = escapeAttribute(attr.value);
 					switch (attr.name){
 						case '[foreach]':
 							wrapForEach = `"${attr.name}":"${attr.value}"`
@@ -172,6 +187,7 @@ export var Binder = function(context, container){
 			attrText +="}"
 			thisSorurce += "'"+tag +"',"+ attrText;	
 			thisSorurce += ",[";
+
 			if (elem.childNodes && elem.childNodes.length>0){
 				Array.prototype.slice.call(elem.childNodes).forEach(function(child) {
 					thisSorurce += parseElement(child);
@@ -270,14 +286,28 @@ export var Binder = function(context, container){
 			createElement: function(tag, attributes, createElements, inject){
 				inject = inject || {};
 				var vdomItems = [];
-				if (isString(createElements) && tag == null){
-					return {vdom:null, elem: document.createTextNode(createElements)};
-				}else
-				var elem = document.createElement(tag);
+				var elem;
 				var attrKeys = Object.keys(attributes);
 				var getters = {};
 				var setters = {};
 				var renderImmediately = [];
+
+				if (tag == "#text"){
+					if (isString(createElements)){
+						elem = document.createTextNode(createElements);
+						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
+
+					}else{
+						elem = document.createTextNode("");
+						getters = {'bind':createGetter(attributes['bind'],inject)}
+						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
+						directives['bind'](vdom,inject);
+					}
+									
+					return vdom;
+				}else{
+					elem = document.createElement(tag);
+				}
 				for (var i in attrKeys){
 					var bindExpression = null;
 					var value = null;
@@ -387,14 +417,13 @@ export var Binder = function(context, container){
 		}
 
 		var exec = new Function('createElement','createForEachElement','createDirectiveElement','context','inject',
-	`return (function(createElement,context,inject){
-		return ${parsedSource}
-	}).call(context,createElement,context, inject);`);
+			`return (function(createElement,context,inject){return ${parsedSource}}).call(context,createElement,context, inject);`
+		);
 		var ret =exec(scope.createElement,scope.createForEachElement,scope.createDirectiveElement, self.context, inj);
 		//console.log(ret);
 		
 		return ret;
-	}
+	} 
 
 	/**
 	 * 
@@ -446,9 +475,7 @@ export var Binder = function(context, container){
 	 * Update DOM elements according to bindings
 	 */
 	this.updateElements = function(){
-		//console.log("update started");
 		checkVDomNode(self.vdom, self.injectVars); 
-		//console.log("update ended");
 		return self;
 	} 
 
@@ -533,7 +560,6 @@ export var Binder = function(context, container){
 			var newValue = getter(self, inject); 
 			if (on.values[key] !== newValue){
 				on.values[key] = newValue;
-				//on.elem.className = newValue;
 				if (!on.valuesD.hasOwnProperty(key)){
 					on.valuesD[key] = on.elem.style.display;
 				}
@@ -548,7 +574,6 @@ export var Binder = function(context, container){
 			var newValue = getter(self, inject); 
 			if (on.values[key] !== newValue){
 				on.values[key] = newValue;
-				//on.elem.className = newValue;
 				if (!on.valuesD.hasOwnProperty(key)){
 					on.valuesD[key] = on.elem.style.display;
 				}
@@ -566,7 +591,6 @@ export var Binder = function(context, container){
 			var newValue = getter(self, inject); 
 			if (on.values[key] !== newValue){
 				on.values[key] = newValue;
-				//on.elem.className = newValue;
 				if (!on.valuesD.hasOwnProperty(key)){
 					on.valuesD[key] = on.elem.className;
 				}
@@ -626,67 +650,51 @@ export var Binder = function(context, container){
 			var touchedKeys = {};
 			var keys = Object.keys(data);
 
-			//if ( on.values[key] != hashObject(data)){
-			//	on.values[key] = hashObject(data);
+			//remove all items temporarely
+			for (var index in on.items){
+				if (!on.items.hasOwnProperty(index))
+					continue;	
+				f.appendChild(on.items[index].elem);
+			}
+			removeElement(f);
 
-				//remove all items temporarely
-				for (var index in on.items){
-					if (!on.items.hasOwnProperty(index))
-						continue;	
-					f.appendChild(on.items[index].elem);
-				}
-				removeElement(f);
-
-				//create a new fragment for new/updated items
-				f = document.createDocumentFragment();
-				for (var index in data){
-					if (!data.hasOwnProperty(index))
-						continue;		
-					var item = data[index];	
-					touchedKeys[index]=null;
-					var inj = {}
-					inj[parts.index] = index;
-					inj[parts.item] = item;
-					inj = $.extend({},inject,inj);
-					if (!on.items.hasOwnProperty(index)){
-						//a new item appeared
-						var ret = on.itemBuilder(inj);
-						on.items[index] = ret[0];
-					}else{
-						checkVDomNode(on.items[index], inj);
-					}
-					on.items[index].elem['INJECT'] = inj;
-					f.appendChild(on.items[index].fragment || on.items[index].elem); 
-					
-				};
-				//delete vdom.items thet were not in the data object
-				for (var index in on.items){
-					if (!on.items.hasOwnProperty(index))
-						continue;	
-					if (touchedKeys.hasOwnProperty(index))
-						continue;
-					//removeElement(on.items[index].elem);
-					delete on.items[index];
-				}
-
-				if (on.elem.parentNode)
-					insertAfter(f, on.elem);
-				else
-					console.warn("[ForEach]: element does not have a parent!",on.elem)
-			/*}else{
-				//only check items
-				for (var index in data){
-					if (!data.hasOwnProperty(index))
-						continue;		
-					var item = data[index];	
-					var inj = {}
-					inj[parts.index] = index;
-					inj[parts.item] = item;
-					inj = $.extend({},inject,inj);
+			//create a new fragment for new/updated items
+			f = document.createDocumentFragment();
+			for (var index in data){
+				if (!data.hasOwnProperty(index))
+					continue;		
+				var item = data[index];	
+				touchedKeys[index]=null;
+				var inj = {}
+				inj[parts.index] = index;
+				inj[parts.item] = item;
+				inj = $.extend({},inject,inj);
+				if (!on.items.hasOwnProperty(index)){
+					//a new item appeared
+					var ret = on.itemBuilder(inj);
+					on.items[index] = ret[0];
+				}else{
 					checkVDomNode(on.items[index], inj);
 				}
-			
-			}*/
+				on.items[index].elem['INJECT'] = inj;
+				f.appendChild(on.items[index].fragment || on.items[index].elem); 
+				
+			};
+			//delete vdom.items that were not in the data object
+			for (var index in on.items){
+				if (!on.items.hasOwnProperty(index))
+					continue;	
+				if (touchedKeys.hasOwnProperty(index))
+					continue;
+				delete on.items[index];
+			}
+
+			if (on.elem.parentNode){
+				insertAfter(f, on.elem);
+			}else{
+				console.warn("[ForEach]: element does not have a parent!",on.elem)
+			}
+
 			return false;
 		},
 		'[directive]':function(on, inject){
@@ -787,7 +795,7 @@ export var Binder = function(context, container){
 		return result;
 	}
 	function updateBoundElement(elem, v){
-		var format = elem.getAttribute('format');
+		var format =  elem.getAttribute ? elem.getAttribute('format') : null;
 		if (format !== null) {
 			var formats = format.split(":");
 			if (formats.length > 0 && formats[0] === "number") {
@@ -854,6 +862,10 @@ export var Binder = function(context, container){
 				if (elem.src !== v)
 					elem.src = toInputValue(v);
 				break;
+			case undefined: //for text nodes
+				if (elem.nodeValue !== v )
+					elem.nodeValue = toInputValue(v);
+				break;	
 			default:
 				if (elem.innerText !== v )
 					elem.innerText = toInputValue(v);
@@ -947,10 +959,6 @@ export var Binder = function(context, container){
 	
 		if (!isElementSetting(elem) || empty(elem['VDOM'].setters.bind))
 			return;
-		//var bind = elem.getAttribute('bind');
-		//if (empty(bind))
-		//	return;
-
 		var v;
 
 		var format = elem.getAttribute('format');
@@ -976,7 +984,6 @@ export var Binder = function(context, container){
 			default:
 				v = elem.value;
 		}
-		//SetObjProp(this.context,bind,v);
 		var inj = $.extend({}, self.injectVars, findElemInject(elem));
 
 		var oldval = elem['VDOM'].getters.bind(self, inj);
@@ -1050,14 +1057,12 @@ export var Binder = function(context, container){
 			var cashe = inj+expression;
 			if ( getterCashe.hasOwnProperty(cashe))
 				return getterCashe[cashe];
-			var getter = eval.call(this, 
-						`(function (context,inject){
-							${inj}
-							return (function(){
-								return ${expression};
-							}).call(context.context);
-						})`
- 			);       
+			var getter = new Function('context', 'inject', 'expression',
+					`${inj}
+					return (function(){
+						return ${expression};
+					}).call(context.context);`
+	 		);       
 			getterCashe[cashe] = getter;
 			return getter;
 		}catch(ex){
@@ -1076,14 +1081,12 @@ export var Binder = function(context, container){
 			var cashe = inj+expression;
 			if ( getterCashe.hasOwnProperty(cashe))
 				return getterCashe[cashe];
-			var getter = eval( 
-						`(function (context,inject){
-							${inj}
-							(function(){
-								${expression};
-							}).apply(context.context)
-						})`
-			 );
+			var getter = new Function('context','inject',
+				`${inj}
+				(function(){
+					${expression};
+				}).apply(context.context);`
+			);
 			getterCashe[cashe] = getter;
 			return getter;
 		}catch(ex){
@@ -1101,12 +1104,12 @@ export var Binder = function(context, container){
 		var inj =  createInjectVarText(inject);
 		
 		try{
-			return eval.call(self.context, `(function (context,inject, value){
-				${inj}
+			return new Function('context','inject', 'value',
+				`${inj}
 				return (function(value){
 					return ${expression} = value;
-				}).call(context.context, value);
-			})`)
+				}).call(context.context, value);`
+			);
 		}catch(ex){
 			return null;
 		}
