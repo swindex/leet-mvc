@@ -6,7 +6,6 @@ import * as $ from 'jquery';
 import { isSkipUpdate, hashObject } from "./Watcher";
 import { DateTime } from "./DateTime";
 import { isArray } from "util";
-import { Objects } from "leet-mvc/core/Objects";
 import { isFunction } from "util";
 
 
@@ -252,7 +251,7 @@ export var Binder = function(context, container){
 				};
 				var vdom ={ values:{}, getters: getters, setters:setters, fragment:frag, elem:elem, items:[], itemBuilder:itemBuilder};
 				for (var ii =0; ii < renderImmediately.length; ii++){
-					directives[renderImmediately[ii]](vdom ,inject);
+					executeAttribute(renderImmediately[ii], vdom ,inject);
 				}
 				return vdom;	
 			},
@@ -272,7 +271,7 @@ export var Binder = function(context, container){
 				var vdom ={ values:{}, getters: getters, setters:setters,fragment:frag, elem:elem, items:[], itemBuilder:itemBuilder};
 				
 				//render
-				directives['[foreach]'](vdom,inject);
+				executeAttribute('[foreach]', vdom, inject);
 				 
 				return vdom;	
 			},
@@ -301,7 +300,7 @@ export var Binder = function(context, container){
 						elem = document.createTextNode("");
 						getters = {'bind':createGetter(attributes['bind'],inject)}
 						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
-						directives['bind'](vdom,inject);
+						executeAttribute('bind', vdom,inject);
 					}
 									
 					return vdom;
@@ -358,8 +357,10 @@ export var Binder = function(context, container){
 									}
 									//change or input are added separately if element is setting
 									if (isElementSetting(elem)){
+										if (isElementSettingOnInput(elem)){
+											applyCallBack(context, 'input', callbacks['input'], true);	
+										}
 										applyCallBack(context, 'change', callbacks['change']);	
-										applyCallBack(context, 'input', callbacks['input'], true);	
 									}
 								}
 								
@@ -408,7 +409,7 @@ export var Binder = function(context, container){
 				elem['VDOM'] = vdom;
 				
 				for (var ii =0; ii < renderImmediately.length; ii++){
-					directives[renderImmediately[ii]](vdom,inject);
+					executeAttribute(renderImmediately[ii], vdom,inject);
 				}
 
 				bindEventsToContext(elem,inject);
@@ -484,28 +485,51 @@ export var Binder = function(context, container){
 	 */
 	function checkVDomNode(on, inject){
 		//console.log(on);
+		var nodeChanged = false;
 		if (on && on.getters){
 			for (var key in on.getters){
 				if (!on.getters.hasOwnProperty(key))
 					continue;
 										
-				if (directives[key] && directives[key](on, inject)===false){
+				if (attributes[key]){
+					
+					var dirResult =executeAttribute(key, on, inject);
 					//if directives[key](on, inject) returns false, means return right away
-					return false;
+					if (dirResult === true)
+						nodeChanged = true;
+					if (dirResult === false)
+						return false;
 				}
 			};
 		
 			for( var i in  on.items){
 				if (!on.items.hasOwnProperty(i))
 					continue;
-				checkVDomNode(on.items[i], inject);
+				if (checkVDomNode(on.items[i], inject) === true){
+					nodeChanged = true;
+				}
 			};
 		}else if (!on){
 			console.log("AAAA");
 		}
+		return nodeChanged;
 	}
 
-	var directives = {
+	function executeAttribute(attribute, on, inject){
+		var old = on.values[attribute];
+		try{
+			var ret = attributes[attribute](on,inject)
+		}catch(ex){
+			//this may cause an error
+			console.warn(ex);
+		}
+		if (old !== on.values[attribute] && ret !== false){
+			ret = true;
+		}
+		return ret;
+	}
+
+	var attributes = {
 		'bind':function(on, inject){
 			var key = "bind";
 			var getter = on.getters[key];
@@ -514,10 +538,9 @@ export var Binder = function(context, container){
 			}catch(ex){
 				var newValue = undefined;
 			}	
-			if (on.values[key] !== newValue){
-				on.values[key] = newValue;
-				updateBoundElement(on.elem, newValue);
-			}
+			on.values[key] = newValue;
+			updateBoundElement(on.elem, newValue);
+			
 		},
 		'[selected]':function(on, inject){
 			var key = "[selected]";
@@ -645,6 +668,8 @@ export var Binder = function(context, container){
 			var parts = getter;
 			var data = createGetter(parts.data,inject)(self, inject) || [];
 			
+			var fo = document.createDocumentFragment();
+
 			var f = document.createDocumentFragment();
 
 			var touchedKeys = {};
@@ -654,16 +679,22 @@ export var Binder = function(context, container){
 			for (var index in on.items){
 				if (!on.items.hasOwnProperty(index))
 					continue;	
-				f.appendChild(on.items[index].elem);
+				fo.appendChild(on.items[index].elem);
 			}
-			removeElement(f);
+			
 
 			//create a new fragment for new/updated items
 			f = document.createDocumentFragment();
+			var hasNew = false;
+			var hasDeleted = false;
+			var hasChanges = false;
+
 			for (var index in data){
 				if (!data.hasOwnProperty(index))
 					continue;		
 				var item = data[index];	
+				if (item === undefined)
+					continue;
 				touchedKeys[index]=null;
 				var inj = {}
 				inj[parts.index] = index;
@@ -671,10 +702,13 @@ export var Binder = function(context, container){
 				inj = $.extend({},inject,inj);
 				if (!on.items.hasOwnProperty(index)){
 					//a new item appeared
+					hasNew = true;
 					var ret = on.itemBuilder(inj);
 					on.items[index] = ret[0];
 				}else{
-					checkVDomNode(on.items[index], inj);
+					if (checkVDomNode(on.items[index], inj)===true){
+						hasChanges = true;
+					}
 				}
 				on.items[index].elem['INJECT'] = inj;
 				f.appendChild(on.items[index].fragment || on.items[index].elem); 
@@ -686,11 +720,20 @@ export var Binder = function(context, container){
 					continue;	
 				if (touchedKeys.hasOwnProperty(index))
 					continue;
+				hasDeleted = true;	
 				delete on.items[index];
 			}
 
 			if (on.elem.parentNode){
-				insertAfter(f, on.elem);
+				//if (hasNew || hasDeleted){
+					//if new or deleted elements, remove the old frag and insert the new one
+					removeElement(fo);
+					insertAfter(f, on.elem);
+				/*}else{
+					//else simply remove the new frag
+					//insertAfter(fo, on.elem);
+					removeElement(f);
+				}*/
 			}else{
 				console.warn("[ForEach]: element does not have a parent!",on.elem)
 			}
@@ -1057,7 +1100,7 @@ export var Binder = function(context, container){
 			var cashe = inj+expression;
 			if ( getterCashe.hasOwnProperty(cashe))
 				return getterCashe[cashe];
-			var getter = new Function('context', 'inject', 'expression',
+			var getter = new Function('context', 'inject',
 					`${inj}
 					return (function(){
 						return ${expression};
