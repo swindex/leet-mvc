@@ -144,6 +144,7 @@ export class DialogPage extends BasePage{
 	 * @param {function(DialogPage)} callback - fired when button is clicked. Return false to stop dialog from closing
 	 */
 	addActionButton(title, callback) {
+		callback = callback || null;
 		this.buttons[title] = callback;
 		return this;
 	}

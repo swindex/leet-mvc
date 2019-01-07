@@ -5,9 +5,14 @@ export function NavController() {
     var self = this;
 
 	/**
+	 * @typedef Page
+	 * @prop name
+	 */
+
+	/**
 	 * @typedef PageFrame
 	 * @prop {string} name
-	 * @prop {JQuery<HTMLElement>} element
+	 * @prop {JQuery<Element>} element
 	 * @prop {object} page
 	 */
 	/** @type {PageFrame[]} */
@@ -189,7 +194,7 @@ export function NavController() {
 	
 	/**
 	 * recalculate height of the standard elements
-	 * @param {JQuery<HTMLElement>} p - page
+	 * @param {JQuery<Element>} p - page
 	 */
 	function recalcContentHeight(p){
 		var h = $(window).height();
@@ -211,9 +216,7 @@ export function NavController() {
 	
 		//immediately disable drop all events for the page being removed
 		//$(frame.element).off();
-		hidePageElement(frame.element, function(element){
-			$(element).remove();
-		},true);
+		hidePageElement(frame, true);
 		
 		frame = null;
 		return true;
@@ -241,6 +244,20 @@ export function NavController() {
 		
 	}
 	/**
+	 * Set Page instance UI state value
+	 * @param {object} page 
+	 * @param {'isDeleting'|'isCreating'|'isHiding'|'isShowing'|'isVisible'} state 
+	 */
+	function setPageState(page, state){
+		page.isDeleting = false;
+		page.isCreating = false;
+		page.isHiding = false;
+		page.isShowing = false;
+		page.isVisible = false;
+		
+		page[state] = true;
+	}
+	/**
 	 * Recalculate pages' visibility
 	 */
 	function resetPagesVisibility(){
@@ -255,9 +272,9 @@ export function NavController() {
 			if (!empty(frame.page.visibleParent))
 				hideAfter++;
 			if (hideAfter > n){
-				showPageElement(frame.element, frame.page);
+				showPageElement(frame);
 			}else{	
-				hidePageElement(frame.element);				
+				hidePageElement(frame);				
 			}
 			n++;
 		}
@@ -265,9 +282,11 @@ export function NavController() {
 
 	/**
 	 * Show particular page DOM element
-	 * @param {JQuery<HTMLElement>} element - page element to show
+	 * @param {PageFrame} frame - page to show
 	 */
-	function showPageElement(element, pageObject){
+	function showPageElement(frame){
+		var element = frame.element;
+
 		window.requestAnimationFrame(function(){
 					
 			if (typeof element.attr('hidden') !=='undefined'){
@@ -277,6 +296,7 @@ export function NavController() {
 				//Add creating attribute ALMOST immedaitely for smooth appearance
 				setTimeout(function(){
 					element.attr('creating',"");
+					setPageState(frame.page,'isCreating');
 				});
 			}
 
@@ -294,7 +314,7 @@ export function NavController() {
 					tryCall(pageObject,pageObject.onLoaded);
 				}*/
 				if (typeof element.attr('visible') == 'undefined'){
-					tryCall(pageObject,pageObject.onVisible);
+					tryCall(frame.page,frame.page.onVisible);
 				}
 				
 				element.removeAttr('hidden');
@@ -303,6 +323,7 @@ export function NavController() {
 				element.removeAttr('creating');
 
 				element.attr('visible','');
+				setPageState(frame.page,'isVisible');
 
 				
 			},transitionTime);	
@@ -312,23 +333,23 @@ export function NavController() {
 
 	/**
 	 * Hide particular page DOM element
-	 * @param {JQuery<HTMLElement>} element - page element to hide
-	 * @param {function(JQuery<HTMLElement>)} [callback] - fired when hiding is complete
+	 * @param {PageFrame} frame - page to show
 	 * @param {boolean} [isDeleting] - true if page is being deleted
 	 */
-	function hidePageElement(element,callback,isDeleting){
+	function hidePageElement(frame, isDeleting){
+		var element = frame.element;
 		isDeleting = isDeleting || false;
 		var isHidden = typeof element.attr('hidden') !== 'undefined';
 
 		if (typeof element.attr('deleting') !== 'undefined')
 			return;
-		function doHideElem(){
+		function doHideElem(isDeleting){
 			window.requestAnimationFrame(function(){
 				element.removeAttr('deleting');
 				element.removeAttr('hiding');
 				element.attr('hidden','');
-				if (typeof callback=='function')
-					callback(element);
+				if (isDeleting)
+					$(element).remove();
 				else{	
 					//element.css('display','none');
 					//console.log("Hide Element",element[0].id);
@@ -339,12 +360,15 @@ export function NavController() {
 			doHideElem();
 		}else{
 			element.removeAttr('visible');
-			if (isDeleting)
+			if (isDeleting){
 				element.attr('deleting',"");
-			else
+				setPageState(frame.page,'isDeleting');
+			}else{
 				element.attr('hiding',"");
+				setPageState(frame.page,'isHiding');
+			}
 			setTimeout(function(){
-				doHideElem();
+				doHideElem(isDeleting);
 			},isDeleting ? transitionTime : transitionTime + 100);	//hiding takes 100 ms longer than deleting
 		}
 	}

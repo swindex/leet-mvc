@@ -13,7 +13,7 @@ export function empty(value){
  * Try calling a function under context.
  * Same as Function.call but with check if callback exists
  * @param {function(*)} callback 
- * @return {boolean}
+ * @return {any}
  */
 export function tryCall(context, callback){
 	if (typeof callback !== 'function')
