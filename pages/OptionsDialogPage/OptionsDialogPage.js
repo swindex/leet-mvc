@@ -15,7 +15,7 @@ export class OptionsDialogPage extends DialogPage{
 			<ul>
 				<li [foreach]="index in this.items as item" onclick="this._onItemClicked(item, index)" [selected] = "this.isSelectedItem(item)" [attribute]="{disabled:this.isDisabledItem(item) ? '' : null}">
 					<i [class] = "this.getIcon(item)" [if]="this.getIcon(item)"></i>
-					<img bind = "item.image" [if]="item.image" />
+					<img bind = "this.getImage(item)" [if]="this.getImage(item)" />
 					<span [innerHTML] = "item.title"></span>
 				</li>
 			</ul>
@@ -73,7 +73,7 @@ export class OptionsDialogPage extends DialogPage{
 
 	/** ***Private*** Item click handler*/
 	_onItemClicked(item, index){
-		if (item.disabled){
+		if (item.disabled || this.isDeleting || this.isHiding){
 			return;
 		}
 		
@@ -142,7 +142,14 @@ export class OptionsDialogPage extends DialogPage{
 				); 
 		}
 	}
-
+	/**
+	 * Callback Returns true if the passed item is to be marker 'selected' in the list
+	 * @param {{[x: string]: any,image?:string,icon?:string,title:string}} item 
+	 * @return {string}
+	 */
+	getImage(item){
+		return item.image;
+	}
 	/**
 	 * Callback Returns true if the passed item is to be marker 'selected' in the list
 	 * @param {{[x: string]: any,image?:string,icon?:string,title:string}} item 

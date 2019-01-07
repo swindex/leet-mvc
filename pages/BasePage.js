@@ -19,6 +19,12 @@ export class BasePage extends ChangeWatcher{
 		this.style = {};
 				
 		this.binder = new Binder(this,this.page);
+
+		this.isDeleting = false;
+		this.isCreating = false;
+		this.isHiding = false;
+		this.isShowing = false;
+		this.isVisible = false;
 	}
 
 	/**

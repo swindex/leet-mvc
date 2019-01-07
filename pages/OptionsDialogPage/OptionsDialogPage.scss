@@ -2,6 +2,7 @@
 #page-OptionsDialogPage{
 	.dialog-content.touch-scroll {
 		padding: $margin-lg;
+		padding-top: 0;
 	}
 	ul {
 		padding: 0;
@@ -22,7 +23,7 @@
 			padding-top: 3px; //nudge to the v-center
 		}
 		img{
-			margin-right: $margin-lg;
+			//margin-right: $margin-lg;
 			max-width: 2em;	
 			max-height:2em;	
 		}
