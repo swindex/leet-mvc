@@ -2,6 +2,8 @@ import { DialogPage } from "../DialogPage/DialogPage";
 import { SimpleTabs } from "../../components/SimpleTabs/SimpleTabs";
 import * as moment from "moment";
 import './CalendarPage.scss';
+import { OptionsDialogPage } from "leet-mvc/pages/OptionsDialogPage/OptionsDialogPage";
+import { Objects } from "leet-mvc/core/Objects";
 
 
 export class CalendarPage extends DialogPage{
@@ -43,6 +45,15 @@ export class CalendarPage extends DialogPage{
 
 		this._minutes = Array.apply(null, Array(12)).map(function (_, i) {
 			return { value: i*5, title: moment(i*5, 'm').startOf('hour').minute(i*5).format('mm')};
+		});
+
+		this._months = Array.apply(null, Array(12)).map(function (_, i) {
+			return { value: i+1, title: moment(i+1, 'MM').format('MMMM')};
+		});
+
+		this._years = Array.apply(null, Array(10)).map(function (_, i) {
+			var v = moment().add(i-5,"years").format('YYYY');
+			return { value: v, title: v};
 		});
 
 		this._setProps();
@@ -111,7 +122,7 @@ export class CalendarPage extends DialogPage{
 		this._d_date = this._currDate.format('MMM DD, YYYY');
 		this._d_time = this._currDate.format('LT');
 		this._d_day = this._currDate.format('D');
-		this._d_year = this._currDate.format('YY');
+		this._d_year = this._currMonth.format('YYYY');
 
 		this._d_hour = this._currDate.format('h');
 		this._d_minute = this._currDate.format('mm');
@@ -174,6 +185,14 @@ export class CalendarPage extends DialogPage{
 	onSelectMinutesClicked(){
 		this._minutesSelected = true;	
 	}
+	setYear(y){
+		this._currMonth.set('year',y);		
+		this._setProps();
+	}
+	setMonth(m){
+		this._currMonth.set('month',m-1);		
+		this._setProps();
+	}
 	setHour(h){
 		this._currDate.set('hour',h);
 		if (!this.isAM)
@@ -235,6 +254,31 @@ export class CalendarPage extends DialogPage{
 	onSetAMClicked(isAM){
 		this.setAM(isAM)
 	}
+	onMonthClicked(){
+		var p = this.Nav.push(OptionsDialogPage);
+		p.icons=null;
+		p.items= Objects.copy(this._months);
+		p.buttons=null;
+		p.isSelectedItem = (item)=>{
+			return item.value == this._currMonth.format('M'); 
+		}
+		p.onItemClicked=(item)=>{
+			this.setMonth(item.value);
+		}
+	}
+	onYearClicked(){
+		var p = this.Nav.push(OptionsDialogPage);
+		p.icons=null;
+		p.items= Objects.copy(this._years);
+		p.buttons=null;
+		p.isSelectedItem = (item)=>{
+			return item.value == this._currMonth.format('YYYY'); 
+		}
+		p.onItemClicked=(item)=>{
+			this.setYear(item.value);
+		}
+
+	}
 
 }
 CalendarPage.selector = "page-CalendarPage";
@@ -257,7 +301,8 @@ CalendarPage.content = `
 						<i class="fas fa-chevron-left"></i>
 					</div>
 					<div>
-						<b bind="this._d_monthName"></b>
+						<b bind="this._d_monthName" onclick="this.onMonthClicked()"></b>
+						<b bind="this._d_year" onclick="this.onYearClicked()"></b>
 					</div>	
 					<div onclick="this.onNextMonthClicked()">
 						<i class="fas fa-chevron-right"></i>
