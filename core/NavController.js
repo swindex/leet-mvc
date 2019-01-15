@@ -387,8 +387,8 @@ export function NavController() {
 	$(document).on("backbutton", documentBackButtonHandler);
 	function documentBackButtonHandler(e) {
 		var cf = currentFrame();
-		if (self.back()===null && cf){
-			self.onRootPageBackPressed(currentFrame().name);
+		if (cf && tryCall(cf.page, cf.page.onBackNavigate)!== false && self.back()===null){
+			self.onRootPageBackPressed(cf.name);
 		}
 	}
 	
