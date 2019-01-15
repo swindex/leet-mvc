@@ -17,3 +17,4 @@ import { Analytics } from "./core/analytics_matomo";
 import { OptionsDialogPage } from "./pages/OptionsDialogPage/OptionsDialogPage";
 import { Extend, GUID, Override, tryCall } from "./core/helpers";
 
+import { Toast, ToastPage } from "./pages/Toast/Toast"; 

@@ -1,0 +1,16 @@
+div#page-ToastPage {
+	height: auto;
+	bottom: 0;
+	
+	.backdrop {
+		display: flex;
+	}
+	.toast-box {
+		background-color: rgba(0, 0, 0, 0.5);
+		color: white;
+		padding: 12px;
+		border-radius: 12px;
+		display: inline-block;
+		margin: 12px auto;
+	}
+}

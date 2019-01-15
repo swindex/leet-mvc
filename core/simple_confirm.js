@@ -16,6 +16,7 @@ export var ConfirmButtons=function(prompt,title,buttons){
 	Objects.forEach(buttons,(button, name)=>{
 		p.addActionButton(name,button);
 	})
+	p.onBackNavigate = () => false
 }
 
 /**
@@ -66,4 +67,7 @@ export var Alert=function(prompt,onConfirm,title){
 	var p = Dialog(title);
 	p.addHtml('<div class="message">'+Text.escapeHTML(prompt, true)+"</div>");
 	p.addActionButton('Ok', onConfirm);
+	//back navigation also means confirm!
+	p.onBackNavigate = onConfirm
+		
 }

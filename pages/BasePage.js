@@ -114,6 +114,15 @@ export class BasePage extends ChangeWatcher{
 		super.onDestroy();
 	}
 	
+	/**
+	 * ***Override***
+	 * Called just before navigating back from the page.
+	 * return false to cancel the back page navigation
+	 * @returns {boolean}
+	 */
+	onBackNavigate(){
+		return true;
+	}
 }
 BasePage.visibleParent = null;
 BasePage.selector = null;
