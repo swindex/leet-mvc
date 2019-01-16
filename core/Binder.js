@@ -616,12 +616,13 @@ export var Binder = function(context, container){
 				on.values[key] = newValue;
 				if (!on.valuesD.hasOwnProperty(key)){
 					on.valuesD[key] = on.elem.className;
+				}else{
+					on.elem.className = on.valuesD[key];
 				}
 
-				if (!empty(newValue) && on.elem.className.indexOf(newValue) < 0)
-					on.elem.className += " "+ newValue;
-				else if (empty(newValue))
-					on.elem.className = on.valuesD[key]
+				if (!empty(newValue) && on.elem.className.indexOf(newValue) < 0){
+					on.elem.className += (on.elem.className ? " " : "" )+ newValue;
+				}
 			}
 		},
 		'[innerhtml]':function(on, inject){
