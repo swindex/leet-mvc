@@ -18,3 +18,9 @@ import { OptionsDialogPage } from "./pages/OptionsDialogPage/OptionsDialogPage";
 import { Extend, GUID, Override, tryCall } from "./core/helpers";
 
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
+
+import './core/polyfills';
+
+//Make jQuery available globally
+// @ts-ignore
+window.$ = window.jQuery = require("jquery");
