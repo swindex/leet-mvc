@@ -121,8 +121,11 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 
 	/**
 	 * Set start to current GPS location
+	 * @param {function():any} resolve
+	 * @param {function():any} reject
+	 * @param {{maximumAge: number, timeout: number, enableHighAccuracy:boolean}} [options]
 	 */
-	this.setStartGps = function(resolve, reject){
+	this.setStartGps = function(resolve, reject, options){
 		addWorker(function(){
 			var loader = Loader().container(self.mapHtmlElement.parentElement).timeout(5000).show(Translate("Acquiring GPS.."));
 			navigator.geolocation.getCurrentPosition(function success(pos){
@@ -135,7 +138,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 				console.log("unable to acquire GPS", err);
 				tryCall(null,reject, err);
 				nextWorker();
-			}, {maximumAge:3000, timeout:5000, enableHighAccuracy:true});
+			}, options || {maximumAge: 500000, timeout: 10000, enableHighAccuracy:true});
 		});
 		return this;
 	}
