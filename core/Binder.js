@@ -1030,8 +1030,9 @@ export var Binder = function(context, container){
 		}
 		var inj = $.extend({}, self.injectVars, findElemInject(elem));
 
-		var oldval = elem['VDOM'].getters.bind(self, inj);
-		if ( oldval !== v){
+		var domElVal = elem['VDOM'].getters.bind(self, inj);
+		var vDomdomElVal = elem['VDOM'].values.bind;
+		if ( domElVal !== v || v !== vDomdomElVal){
 			
 			if (skipUpdate && self.context[isSkipUpdate] === false){
 				self.context[isSkipUpdate] = true;
