@@ -275,7 +275,7 @@ div[ion-fab]{
 
 	position: absolute;
 	
-	>[round]{
+	&[round]{
 		width: $size-input-h-lg;
 		height: $size-input-h-lg;
 		button{
