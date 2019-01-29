@@ -31,10 +31,6 @@ export var Binder = function(context, container){
 
 	this.eventCallbacks = {change:null, focus:null, input:null,click:null};
 
-	//bindings array contains only elements with bound attributes
-	/**@type {Element[]} */
-	this.bindings=[];
-	
 	function insertBefore(newNode, referenceNode) {
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	}
@@ -71,14 +67,6 @@ export var Binder = function(context, container){
 		self.injectVars = vars;
 		return self;
 	}
-	/**
-	 * Inject Variables into the scope of the binder
-	 * 	@param {Element[]} bindings
-	 */
-	this.setBindings = function(bindings){
-		self.bindings = bindings;
-		return self;
-	}
 
 	/**
 	 * Bind DOM elements that have "bind" attribute with model
@@ -106,21 +94,8 @@ export var Binder = function(context, container){
 		
 		$(self.container).empty();
 		$(self.container).append(newContainer.childNodes);
-		
+		self.vdom.elem = self.container;
 		return self;
-	}
-
-	/**
-	 * 
-	 * @param {*} thingToEval 
-	 */
-	function evalInContext(thingToEval) {
-		try{
-			return eval(thingToEval);
-		}catch(ex){
-			console.log("Error evaluating: "+ thingToEval);
-			throw ex;
-		}      
 	}
 
 	function escapeAttribute(attrValue){
