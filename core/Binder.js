@@ -30,8 +30,6 @@ export var Binder = function(context, container){
 		this.container = (container || this.container) || document;
 
 	this.eventCallbacks = {change:null, focus:null, input:null,click:null};
-	/** @type {{pattern: RegExp|string, object: {}}} */
-	this._capturePropOfUndefined = null;
 
 	//bindings array contains only elements with bound attributes
 	/**@type {Element[]} */
@@ -340,34 +338,11 @@ export var Binder = function(context, container){
 									setter = createSetter(bindExpression,inject);
 								}
 								
-								function applyCallBack(context, evName, callback, cancelUIUpdate){
-									elem.addEventListener(evName, function (event) {
-										updateBoundContextProperty(event.target, cancelUIUpdate); //skip formatting for input event
-										if ( callback && tryCall(context, callback, event) && event.target['parentNode'])
-											repaint(event.target['parentNode']);
-									});
-								}
 
-								function applyCallbacks(context, callbacks){
-									for (var k in callbacks){
-										//skip if custom callback is empty or input or change
-										if (empty(callbacks[k]) || k =='change' || k =='input')
-											continue;
-										applyCallBack(context, k, callbacks[k]);	
-									}
-									//change or input are added separately if element is setting
-									if (isElementSetting(elem)){
-										if (isElementSettingOnInput(elem)){
-											applyCallBack(context, 'input', callbacks['input'], true);	
-										}
-										applyCallBack(context, 'change', callbacks['change']);	
-									}
-								}
-								
-								applyCallbacks(self.context, self.eventCallbacks);
+								applyCallbacks(elem, self.context, self.eventCallbacks);
 
 								if (inject.component && inject.component.events){
-									applyCallbacks(inject.component, inject.component.events);
+									applyCallbacks(elem, inject.component, inject.component.events);
 								}
 
 								renderImmediately.push(key);
@@ -533,11 +508,10 @@ export var Binder = function(context, container){
 		'bind':function(on, inject){
 			var key = "bind";
 			var getter = on.getters[key];
+			var newValue = undefined;
 			try{
-				var newValue = getter(self, inject);  
-			}catch(ex){
-				var newValue = undefined;
-			}	
+				newValue = getter(self, inject);  
+			}catch(ex){}	
 			on.values[key] = newValue;
 			updateBoundElement(on.elem, newValue);
 			
@@ -548,8 +522,9 @@ export var Binder = function(context, container){
 			var newValue = getter(self, inject); 
 			if (newValue){
 				on.elem.setAttribute('selected',"");
-			}else
+			}else{
 				on.elem.removeAttribute('selected');
+			}
 		},
 		'[style]':function(on, inject){
 			var key = "[style]";
@@ -805,7 +780,10 @@ export var Binder = function(context, container){
 				
 				if (component){
 					component.binder = self;
-					tryCall(component,component.init, on.items[0].elem);
+					//wait for container to be attached to its parent
+					setTimeout(function(){
+						tryCall(component,component.init, on.items[0].elem);
+					},0);
 				}
 			}else if (isObject(on.values[key])){
 				var inj = $.extend({},{component:on.values[key]},inject);
@@ -826,6 +804,29 @@ export var Binder = function(context, container){
 		}
 	}
 
+	function applyCallBack(elem, context, evName, callback, cancelUIUpdate){
+		elem.addEventListener(evName, function (event) {
+			updateBoundContextProperty(event.target, cancelUIUpdate); //skip formatting for input event
+			if ( callback && tryCall(context, callback, event) && event.target['parentNode'])
+				repaint(event.target['parentNode']);
+		});
+	}
+
+	function applyCallbacks(elem, context, callbacks){
+		for (var k in callbacks){
+			//skip if custom callback is empty or input or change
+			if (empty(callbacks[k]) || k =='change' || k =='input')
+				continue;
+			applyCallBack(elem, context, k, callbacks[k]);	
+		}
+		//change or input are added separately if element is setting
+		if (isElementSetting(elem)){
+			if (isElementSettingOnInput(elem)){
+				applyCallBack(elem, context, 'input', callbacks['input'], true);	
+			}
+			applyCallBack(elem, context, 'change', callbacks['change']);	
+		}
+	}
 	function createExecuteElemAttrGetter(elem,attrName,attrValue ){
 	
 		try{
@@ -1012,7 +1013,7 @@ export var Binder = function(context, container){
 			case "SELECT":
 				var sel = $(elem).find("option:selected");
 				v = formatValue(sel[0].getAttribute('value'),format);
-				console.log(v);
+				//console.log(v);
 				break;
 			case "OPTION":
 			case "INPUT":
@@ -1044,23 +1045,6 @@ export var Binder = function(context, container){
 		}
 	}
 
-	this.addListener= function(eventName, callback){
-		this.events[eventName] = callback;
-	}
-
-	this.capturePropOfUndefinedInto = function(pattern,object){
-		self._capturePropOfUndefined = {pattern: pattern, object: object};
-	}
-
-	//local helper functions
-	function GetObjProp(obj,property){
-		try{
-			return evalInContext.call(obj,property);
-		}catch(ex){
-			console.log("Unable to set " + property);
-		}
-		return null;
-	}
 	function getForeachAttrParts(attrValue){
 		if (empty(attrValue))
 			return null;
