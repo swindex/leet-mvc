@@ -4,22 +4,24 @@ import { Text } from "./../core/text";
 import { BaseComponent } from "./BaseComponent";
 import { isNumber } from "util";
 
-/**
- * Forms Directive. Generate forms from JSON data
- * @param {FieldTemplate[]} formTemplate 
- * @param {*} [dataName]
- * @param {*} [errorsName]
- * @param {{navButtons?: true,submitButton?:boolean,pagination?:true, navigation?:boolean}} [options]
- * @return {{html: string, swiper: Swiper, validator: FormValidator,methods:{init:function(),slideToInvalid: function()}}}
- */
 export class Forms extends BaseComponent{
-
-	constructor(formTemplate, data, errors, attributes, formClass){
+	/**
+	 * Forms Directive. Generate forms from JSON data
+	 * @param {FieldTemplate[]} formTemplate 
+	 * @param {*} [data]
+	 * @param {*} [errors]
+	 * @param {*} [attributes]
+	 * @param {{nestedData?:boolean, formClass?:string, fieldClass?:string}} [options]
+	 */
+	constructor(formTemplate, data, errors, attributes, options){
 		super()
 		this.formTemplate = formTemplate;
 		this.data = data|| {};
 		this.errors = errors ||{};
-		this.formClass = formClass;
+
+		this.options =  {nestedData:false, formClass:'formgroup', fieldClass:'fieldgroup'};
+		$.extend(this.options, options);
+
 		
 		this.attributes = attributes || {};
 		this.attrEvents = {};
@@ -28,7 +30,7 @@ export class Forms extends BaseComponent{
 		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes);
 		this.validator.validateVisibility();
 		
-		if (Objects.filter(formTemplate,(el)=>{return el.type =='form' }).length>0){
+		/*if (Objects.filter(formTemplate,(el)=>{return el.type =='form' }).length>0){
 
 			Objects.forEach(formTemplate,(form)=>{
 				if (!this.data[form.name])
@@ -38,7 +40,7 @@ export class Forms extends BaseComponent{
 				if (!this.attributes[form.name])
 					this.attributes[form.name]={};
 			})
-		}
+		}*/
 
 		this.events = {
 			change:(ev)=>{
@@ -59,7 +61,7 @@ export class Forms extends BaseComponent{
 
 		}
 
-		this.html = this.render(this.formTemplate, null)
+		this.html = this.renderArray(this.formTemplate, null)
 
 	}
 	
@@ -94,73 +96,97 @@ export class Forms extends BaseComponent{
 	 * 
 	 * @param {FieldTemplate[]} formTemplate 
 	 */
-	render(formTemplate, formName){
+	renderArray(formTemplate, parentPath){
 		var html = [];
 
 		for(var i in formTemplate){
 			var el = formTemplate[i];
 			if (el.type){
-				el._name = formName ? formName + "." + el.name : el.name;
-				
-				var ret = this.render_field(el,formName);
-				
+				if (el.name == null || el.name==undefined){
+					//throw new Error('Form Element '+ JSON.stringify(el)+' can not have empty name!')
+					el.name = i;
+				}
+				//do we support nested data?
+				if (!this.options.nestedData){
+					parentPath = null;
+				}
+	
+				if(parentPath){
+					this.createDataPath(parentPath,{})
+					el._name = parentPath + "." + el.name ;
+				}else{
+					el._name = el.name;
+				}
+				this.createDataPath(el._name,null);
+				var ret = this.render_field(el,parentPath);
 				if (ret){
-					html.push(`<div class="fieldgroup" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">`);
 					html.push(ret);
-					html.push('</div>');
 				}
 			}
 		}
 		return html.join('');
 	}
+
+	createDataPath(path, value){
+		if ( ! Objects.getPropertyByPath(this.data, path)){
+			Objects.setPropertyByPath(this.data, path, value);
+		}
+		if ( ! Objects.getPropertyByPath(this.errors, path)){
+			Objects.setPropertyByPath(this.errors, path, value);
+		}
+		if ( ! Objects.getPropertyByPath(this.attributes, path)){
+			Objects.setPropertyByPath(this.attributes, path, value);
+		}
+	}
+
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
-	 * @param {string} formName 
+	 * @param {string} parentPath 
 	 */
-	render_field(el,formName){
+	render_field(el,parentPath){
 		/** @type {string} */
 		el.type = el.type ? el.type.toLowerCase() : '';
 
 		switch (el.type){
 			case "form":
-				return this.addForm(el,null);
+				return this.addForm(el,parentPath ? parentPath +'.' +el.name : el.name );
 			case "email":
 				this.assertValidateRuleHas(el,"email");
-				return this.addInput(el,{type:'email'},formName);
+				return this.addInput(el,{type:'email'});
 			case "text":
-				return this.addInput(el,null,formName);
+				return this.addInput(el,null);
 			case "date":
-				return this.addInput(el,{date:'', format:'date', /*readonly:''*/}, formName);	
+				return this.addInput(el,{date:'', format:'date', /*readonly:''*/});	
 			case "datetime":
-				return this.addInput(el,{dateTime:'', format:'dateTime', /*readonly:''*/}, formName);	
+				return this.addInput(el,{dateTime:'', format:'dateTime', /*readonly:''*/});	
 			case "time":
-				return this.addInput(el,{time:'', format:'time', /*readonly:''*/},formName);	
+				return this.addInput(el,{time:'', format:'time', /*readonly:''*/});	
 			case "number":
 				this.assertValidateRuleHas(el,"number");
-				return this.addInput(el,{type:'number'}, formName);
+				return this.addInput(el,{type:'number'});
 			case "password":
-				return this.addPassword(el,null,formName);
+				return this.addPassword(el,null);
 			case "phone":
-				return this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"}, formName);
+				return this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"});
 			case "hidden":
-				return "";//this.addInput(el,{type:'hidden'}, formName);	
+				return "";
 			case "textarea":
-				return this.addTextArea(el,null,formName);	
+				return this.addTextArea(el,null);	
 			case "checkbox":
-				return this.addCheck(el,null,formName);
+				return this.addCheck(el,null);
 			case "select":
-				return this.addSelect(el,null,formName);
+				return this.addSelect(el,null,parentPath);
 			case "label":
-				return this.addLabel(el,null,formName);
+				return this.addLabel(el,null);
 			case "link":
-				return this.addLink(el,null,formName);
+				return this.addLink(el,null);
 			case "button":
-				return this.addButton(el,null,formName);
+				return this.addButton(el);
 			case "buttons":
-				return this.addButtons(el,null,formName);		
+				return this.addButtons(el);		
 			case "html":
-				return this.addHtml(el,null,formName);			
+				return this.addHtml(el);			
 
 		}
 	}
@@ -175,33 +201,38 @@ export class Forms extends BaseComponent{
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
-	 * @param {KeyValuePair} [override]
+	 * @param {string} [parentPath]
 	 */
-	addForm(el, override){
+	addForm(el, parentPath){
 		//var opt = { type: "text", required: false, value: empty(value) ? "" : value, placeholder: "" };
 		//$.extend(opt, inputOptions);
-		var elem = this.render(el.items, el.name);
+		var elem = this.renderArray(el.items, parentPath);
 		return `
-		<div class="${this.formClass} formgroup">
-			<h1>${el.title}</h1>
+		<div class="${this.options.formClass}">
+			<label>${el.title}</label>
 			<div>
 			${elem}
 			</div>
 		</div>
 		`;
 	}
+
+	wrapInFieldGroup(el, elHTML, fieldGroupClass){
+		return `<div class="${this.options.fieldClass} ${fieldGroupClass}" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">${elHTML}</div>`; 
+	}
+
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
 	 */
-	addInput(el, override, formName){
+	addInput(el, override){
 		
 		
 		var opt = { name: el._name, type: "text", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
-		return `
+		return this.wrapInFieldGroup(el, `
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
 			<div class="icon-field">
 				<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
@@ -211,7 +242,7 @@ export class Forms extends BaseComponent{
 				</div>	
 			</div>	
 			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
-		`;
+		`);
 	}
 
 	//{type:'password', autocorrect:"off", autocapitalize:"off"}
@@ -220,13 +251,13 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
 	 */
-	addPassword(el, override,formName){
+	addPassword(el, override){
 		
 		var opt = { name: el._name, autocorrect:"off", autocapitalize:"off" };
 		
 		$.extend(opt, override, el.attributes);
 		this.types[el._name] = "password";	
-		return `
+		return this.wrapInFieldGroup(el,`
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
 			<div class="icon-field">
 				<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>
@@ -236,48 +267,48 @@ export class Forms extends BaseComponent{
 				</div>	
 			</div>	
 			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
-		`;
+		`);
 	}
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
 	 */
-	addTextArea(el, override,formName){
+	addTextArea(el, override){
 		
 		var opt = { name: el._name, type: "text" };
 		
 		$.extend(opt, override, el.attributes);
-		return `
+		return this.wrapInFieldGroup(el,`
 			`+(el.title ? `<label>${el.title}</label>` : ``)+`
 			<textarea bind="component.data.${el._name}" ${this.generateAttributes(opt)}></textarea>
 			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
-		`;
+		`);
 	}
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
 	 */
-	addCheck(el, override,formName){
+	addCheck(el, override){
 
 
 		var opt = { name: el._name, type: "checkbox" };
 		$.extend(opt, override, el.attributes);
-		return `
+		return this.wrapInFieldGroup(el,`
 			<label class="toggle">${el.title}
 			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
 			<span class="slider round"></span>
 			</label>
 			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
-		`;
+		`);
 	}
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
 	 */
-	addSelect(el, override,formName){
+	addSelect(el, override,parentPath){
 
 		var opt = { name: el._name, type: "select", bind: `component.data.${el._name}`, placeholder:el.placeholder};
 		$.extend(opt, override, el.attributes);
@@ -289,18 +320,18 @@ export class Forms extends BaseComponent{
 		$.each(el.items,  (index, option)=>{
 			elem = elem+ `<option value="${ option.value===null ? '' : option.value }">${option.title}</option>`;
 			if (option.items){
-				items_items += `<div [if]="component.data.${el._name} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.render(option.items,formName) + `</div>`;
+				items_items += `<div [if]="component.data.${el._name} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.renderArray(option.items,parentPath) + `</div>`;
 			}
 		});
 		elem = elem + "</select>";
 
 		
 
-		return `
+		return this.wrapInFieldGroup(el,`
 			<label>${el.title}</label>
 			${elem}
 			<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>
-		` + items_items;
+		`) + items_items;
 	}
 
 	/**
@@ -321,23 +352,20 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
 	 */
-	addLabel(el, override,formName){
+	addLabel(el, override){
 
 		var opt = { name: el._name, class:"label" };
 		$.extend(opt, override, el.attributes);
-		return `
-		<div ${this.generateAttributes(opt)}>
-			`+ (el.title ? `<label>${el.title}</label>` : '')+`
+		return this.wrapInFieldGroup(el,
+			(el.title ? `<label>${el.title}</label>` : '')+`
 			<div>${(el.value != null ? el.value : "")}</div>
-		</div>
-		`;
+		`,'label');
 	}
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
-	 * @param {KeyValuePair} [override]
 	 */
-	addHtml(el, override,formName){
+	addHtml(el){
 		return el.value;
 	}
 	/**
@@ -345,45 +373,37 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
 	 */
-	addLink(el, override,formName){
+	addLink(el, override){
 		var opt = { name: el._name,  class:"label"  };
 		$.extend(opt, override, el.attributes);
-		return `
-		<div ${this.generateAttributes(opt)} [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">
+		return this.wrapInFieldGroup(el,`
 			<label class="link" bind name="${el._name}">${el.title}</label>
-		</div>
-		`;
+		`,'label');
 	}
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
-	 * @param {KeyValuePair} [override]
 	 */
-	addButton(el, override,formName){
+	addButton(el){
 
-		return `
+		return this.wrapInFieldGroup(el,`
 			<button class="link" bind name="${el._name}" onclick="component.onButtonClick($event);">${el.title}</button>
-		`;
+		`);
 	}	
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
-	 * @param {KeyValuePair} [override]
 	 */
-	addButtons(el, override,formName){
-		if (formName)
-			el._name = formName + "." + el._name;
-
-
+	addButtons(el){
 		var items = el.items.map(function(btn){
 			return `<button class="link" bind name="${btn.name}">${btn.title}</button>`
 		});	
 			
-		return `
-		<div class="buttons">
-			${items.join('')}
-		</div>
-		`;
+		return this.wrapInFieldGroup(el,`
+			<div class="buttons">
+				${items.join('')}
+			</div>
+		`);
 	}	
 	togglePasswordType(name){
 		if (this.types[name]==="text")
