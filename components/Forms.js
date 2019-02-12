@@ -100,15 +100,15 @@ export class Forms extends BaseComponent{
 		for(var i in formTemplate){
 			var el = formTemplate[i];
 			if (el.type){
-				if (el.type!=='form'){
-					if (formName)
-						el._name = formName + "." + el.name;
-					html.push(`<div class="fieldgroup" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">`);
-				}
-				html.push(this.render_field(el,formName));
+				el._name = formName ? formName + "." + el.name : el.name;
 				
-				if (el.type!=='form')
-					html.push('</div>')
+				var ret = this.render_field(el,formName);
+				
+				if (ret){
+					html.push(`<div class="fieldgroup" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">`);
+					html.push(ret);
+					html.push('</div>');
+				}
 			}
 		}
 		return html.join('');
@@ -144,7 +144,7 @@ export class Forms extends BaseComponent{
 			case "phone":
 				return this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"}, formName);
 			case "hidden":
-				return this.addInput(el,{type:'hidden'}, formName);	
+				return "";//this.addInput(el,{type:'hidden'}, formName);	
 			case "textarea":
 				return this.addTextArea(el,null,formName);	
 			case "checkbox":
