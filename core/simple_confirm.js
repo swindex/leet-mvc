@@ -8,11 +8,11 @@ import { Objects } from "./Objects";
  * Show "Confirm" dialog with custom buttons
  * @param {string} prompt 
  * @param {string} [title] 
- * @param {{[button_name:string]:function()}} buttons 
+ * @param {{[button_name:string]:function():boolean}} buttons 
  */
 export var ConfirmButtons=function(prompt,title,buttons){
 	var p = Dialog(title);
-	p.addHtml('<div class="message">'+Text.escapeHTML(prompt, true)+"</div>");
+	p.addLabel(null,Text.escapeHTML(prompt, true));
 	Objects.forEach(buttons,(button, name)=>{
 		p.addActionButton(name,button);
 	})
@@ -22,13 +22,13 @@ export var ConfirmButtons=function(prompt,title,buttons){
 /**
  * Show simple Confirm Box 
  * @param {string} prompt 
- * @param {function()} onConfirm 
+ * @param {function():void} onConfirm 
  * @param {string} [title] 
  */
 export var Confirm=function(prompt,onConfirm,title){
 	var p = Dialog(title);
 	
-	p.addHtml('<div class="message">'+Text.escapeHTML(prompt, true)+"</div>");
+	p.addLabel(null,Text.escapeHTML(prompt, true));
 	p.addActionButton('No',()=>{});
 	p.addActionButton('Yes', onConfirm);
 }
@@ -36,7 +36,7 @@ export var Confirm=function(prompt,onConfirm,title){
 /**
  * Show simple Prompt Box 
  * @param {string} prompt 
- * @param {function(string|number)} onConfirm 
+ * @param {function(string|number):void} onConfirm 
  * @param {string} [title] - dialog title
  * @param {string} [value] - dialog initial value
  * @param {true|string} [validateRule] - validate rule like 'required|min:10|max:50|number'
@@ -60,12 +60,12 @@ export var Prompt = function(prompt, onConfirm, title, value, validateRule, type
 /**
  * Show simple Alert box
  * @param {string} prompt 
- * @param {function()} [onConfirm]
+ * @param {function():boolean} [onConfirm]
  * @param {string} [title] 
  */
 export var Alert=function(prompt,onConfirm,title){
 	var p = Dialog(title);
-	p.addHtml('<div class="message">'+Text.escapeHTML(prompt, true)+"</div>");
+	p.addLabel(null,Text.escapeHTML(prompt, true));
 	p.addActionButton('Ok', onConfirm);
 	//back navigation also means confirm!
 	p.onBackNavigate = onConfirm
