@@ -11,7 +11,7 @@ interface FieldTemplate{
 	setField?:string;
 	items?:FieldTemplate[];
 	dataType?:string;
-	atttributes?:FieldData;
+	attributes?:FieldData;
 	unit?:string;
 	icon?:string;
 }
