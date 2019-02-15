@@ -192,20 +192,20 @@ textarea {
 		}
 	}
 }
-
-.fieldgroup.label{
-	display:block;
-	width: 100%;
-	label{
-		//font-size: 16px;
+//fildgroup with label in it
+.fieldgroup{
+	div.label{
+		color: #333;
+		font-size: $size-f-input;
 		&.link{
 			text-decoration: underline;
 			color: $color-link;
 		}
 	}
-	div{
-		color: #333;
+	div.link{
 		font-size: $size-f-input;
+		text-decoration: underline;
+		color: $color-link;
 	}
 }
 //special case: label contains inpuit chechbox
