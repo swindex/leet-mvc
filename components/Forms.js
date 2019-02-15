@@ -88,6 +88,7 @@ export class Forms extends BaseComponent{
 		var html = [];
 
 		for(var i in formTemplate){
+			if (!formTemplate.hasOwnProperty(i)) continue;
 			var el = formTemplate[i];
 			if (el.type){
 				if (el.type == "form"){
@@ -106,6 +107,7 @@ export class Forms extends BaseComponent{
 		
 					if(parentPath && el.name){
 						el._name = parentPath + "." + el.name ;
+						//el._parent = Objects.getPropertyByPath(this.formTemplate, el._name);
 					}else{
 						el._name = el.name;
 					}
@@ -343,10 +345,18 @@ export class Forms extends BaseComponent{
 		`) + items_items;
 	}
 
+	/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 */
 	addTitle(el){
 		if (!el.title) return '';
 		return `<label>${el.title}</label>`;
 	}
+	/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 */
 	addErrorHint(el){
 		return `<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>`
 	}
@@ -371,7 +381,7 @@ export class Forms extends BaseComponent{
 	addLabel(el){
 		return (`
 			${this.addTitle(el)}
-			<div>${(el.value != null ? el.value : "")}</div>
+			<div class="label">${(el.value != null ? el.value : "")}</div>
 		`);
 	}
 	/**
