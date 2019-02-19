@@ -41,8 +41,6 @@ export var Binder = function(context, container){
 	
 	function removeElement(elem){
 		$(elem).remove();
-		//if (elem.parentElement)
-		//	elem.parentElement.removeChild(elem);
 	}
 
 	function replaceElement(newNode, oldNode){
@@ -620,26 +618,24 @@ export var Binder = function(context, container){
 			var data = createGetter(parts.data,inject)(self, inject) || [];
 			
 			var fo = document.createDocumentFragment();
-
-			var f = document.createDocumentFragment();
-
+			
 			var touchedKeys = {};
-			var keys = Object.keys(data);
-
-			//remove all items temporarely
-			for (var index in on.items){
-				if (!on.items.hasOwnProperty(index))
-					continue;	
-				fo.appendChild(on.items[index].elem);
+			
+			//remove all items temporarely (not right away)
+			function moveAllToFragment(){
+				for (var index in on.items){
+					if (!on.items.hasOwnProperty(index))
+						continue;	
+					fo.appendChild(on.items[index].elem);
+				}
 			}
 			
 
 			//create a new fragment for new/updated items
-			f = document.createDocumentFragment();
 			var hasNew = false;
 			var hasDeleted = false;
 			var hasChanges = false;
-
+			
 			for (var index in data){
 				if (!data.hasOwnProperty(index))
 					continue;		
@@ -653,17 +649,20 @@ export var Binder = function(context, container){
 				inj = $.extend({},inject,inj);
 				if (!on.items.hasOwnProperty(index)){
 					//a new item appeared
-					hasNew = true;
+					if (!hasNew){
+						hasNew = true;
+						moveAllToFragment();
+					}
+
 					var ret = on.itemBuilder(inj);
 					on.items[index] = ret[0];
+					on.items[index].elem['INJECT'] = inj;
+					fo.appendChild(on.items[index].fragment || on.items[index].elem); 
 				}else{
 					if (checkVDomNode(on.items[index], inj)===true){
 						hasChanges = true;
 					}
 				}
-				on.items[index].elem['INJECT'] = inj;
-				f.appendChild(on.items[index].fragment || on.items[index].elem); 
-				
 			};
 			//delete vdom.items that were not in the data object
 			for (var index in on.items){
@@ -672,19 +671,15 @@ export var Binder = function(context, container){
 				if (touchedKeys.hasOwnProperty(index))
 					continue;
 				hasDeleted = true;	
+				removeElement(on.items[index].elem);
 				delete on.items[index];
 			}
 
 			if (on.elem.parentNode){
-				//if (hasNew || hasDeleted){
-					//if new or deleted elements, remove the old frag and insert the new one
-					removeElement(fo);
-					insertAfter(f, on.elem);
-				/*}else{
-					//else simply remove the new frag
-					//insertAfter(fo, on.elem);
-					removeElement(f);
-				}*/
+				//if new or deleted elements, remove the old frag and insert the new one
+				if (hasNew){
+					insertAfter(fo, on.elem);
+				}
 			}else{
 				console.warn("[ForEach]: element does not have a parent!",on.elem)
 			}
