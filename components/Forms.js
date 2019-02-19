@@ -112,12 +112,13 @@ export class Forms extends BaseComponent{
 						el._name = el.name;
 					}
 					//create value in each structure
-					if (! Objects.getPropertyByPath(this.data, el._name))
+					/*if (! Objects.getPropertyByPath(this.data, el._name))
 						Objects.setPropertyByPath(this.data, el._name, el.value != undefined ? el.value : null);
 					if (! Objects.getPropertyByPath(this.errors, el._name))
 						Objects.setPropertyByPath(this.errors, el._name, null);
 					if (! Objects.getPropertyByPath(this.attributes, el._name))
 						Objects.setPropertyByPath(this.attributes, el._name, null);
+					*/
 
 					var ret = this.render_field(el,parentPath);
 					if (ret){
