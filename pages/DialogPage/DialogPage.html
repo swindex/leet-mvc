@@ -3,7 +3,7 @@
 		<div class = 'title' [if]='this.title'  bind="this.title">Dialog title</div>
 		<div class = 'prompt' [if]='this.prompt' bind="this.prompt">Prompt</div>
 		
-		<div class = 'dialog-content touch-scroll' [directive] = "this.content"></div>
+		<div class = 'dialog-content touch-scroll' [directive] = "this.content" [style]="{maxHeight:this.dialog_content_max_height}"></div>
 		<div class = 'dialog-buttons' [if]="this.buttons">
 			<button [foreach]="button_title in this.buttons as button" onclick="this.onButtonClicked(button_title)" bind="this.Translate(button_title)" [attribute]="{id:'dialogButton'+button_title}"></button>
 		</div>

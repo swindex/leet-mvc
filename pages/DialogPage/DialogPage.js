@@ -31,7 +31,7 @@ export class DialogPage extends BasePage{
 		this.prompt= null;
 		/** @type {Forms|string} */
 		this.content= null;
-
+		this.dialog_content_max_height = "100%";
 		this.controls=[];
 		this.data = {};
 		this.errors={};
@@ -43,10 +43,8 @@ export class DialogPage extends BasePage{
 
 	onResize(){
 		super.onResize();
-		var c = this.page.find('.dialog-content').eq(0);
-
 		var h = (this.page.height() - 150);
-		c.css('max-height',h +"px")
+		this.dialog_content_max_height = h+"px";
 	}
 
 	onButtonClicked(button_title){
