@@ -26,21 +26,18 @@ select{
 	color: $color-input-fg;
 	padding-right: $size-input-i-md; //this used for hiding text under icon	
 }
-.icon-field{
-	position: relative;
-	width: 100%;
-	div.icon{
-		position: absolute;
-		width: 2em;
-		height: 100%;
-		top: 0;
-		right: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: $size-f-input;
-		font-weight: bold;
-	}	
+.fieldgroup	div.icon{
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	font-weight: bold;
+	font-size: $size-f-input;
+	pointer-events: none;
+	width: 2em;
+	height: 2em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 input[date]{
     background-image: url(../img/calendar_ico.png);
@@ -113,7 +110,7 @@ textarea {
 	flex-direction: column;
 	position: relative;
 	//padding-left: $margin-lg;
-	padding-bottom: $margin-lg;
+	margin-bottom: $margin-lg;
 	.fieldgroup:first-child{
 		padding-top: $margin-lg;
 	}

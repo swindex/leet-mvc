@@ -246,13 +246,11 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		return ( `
 			${this.addTitle(el)}
-			<div class="icon-field">
-				<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
-				<div class="icon">
-					${el.unit ? el.unit :''}
-					${el.icon ? `<i class="${el.icon}"></i>` :''}
-				</div>	
-			</div>	
+			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />`+
+			(el.unit || el.icon ? `<div class="icon">
+				${el.unit ? el.unit :''}
+				${el.icon ? `<i class="${el.icon}"></i>` :''}
+			</div>` : '')+`	
 			${this.addErrorHint(el)}
 		`);
 	}
@@ -271,13 +269,11 @@ export class Forms extends BaseComponent{
 		this.types[el._name] = "password";	
 		return (`
 			${this.addTitle(el)}
-			<div class="icon-field">
-				<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>
-				<div class="icon" onclick="component.togglePasswordType('${el._name}')">
-					<i class="fas fa-eye" [if]="component.types['${el._name}']=='password'"></i>
-					<i class="fas fa-eye-slash" [if]="component.types['${el._name}']=='text'"></i>
-				</div>	
-			</div>	
+			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>`+
+			(el.unit || el.icon ? `<div class="icon" onclick="component.togglePasswordType('${el._name}')">
+				<i class="fas fa-eye" [if]="component.types['${el._name}']=='password'"></i>
+				<i class="fas fa-eye-slash" [if]="component.types['${el._name}']=='text'"></i>
+			</div>` : '')+`	
 			${this.addErrorHint(el)}
 		`);
 	}
