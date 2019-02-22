@@ -64,14 +64,16 @@ input[type=button],button{
 	border: none;
     border-radius: 3px;
     padding: $margin-lg $margin-lg;
-    font-size: $size-f-input;
+	font-size: $size-f-input;
+	//box-shadow: 0px 0px 7px 1px #7a7a7a63;
 }
 input[type=button]:focus ,button:focus {
-    outline: none;
+	outline: none;
+	//box-shadow: 0px 0px 8px 1px #333;
 }
 input[type=button]:active ,button:active {
     outline: none;
-    box-shadow: 0px 0px 7px 1px #fbfbfb;
+	box-shadow: 0 0 10px 0px #607d8b82;
 }
 input[type=checkbox]{
     -webkit-appearance: none;
@@ -302,7 +304,7 @@ div[ion-fab]{
 	}
 	button{
 		position: relative;
-		box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.67);
+		//box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.67);
 	}
 }
 
