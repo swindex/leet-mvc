@@ -801,9 +801,9 @@ export var Binder = function(context, container){
 	
 		try{
 			var inj = findElemInject(elem);
-			if (empty(elem.VNODE.getters[attrName]))
-				elem.VNODE.getters[attrName] = createGetter(attrValue, inj);
-			var result = elem.VNODE.getters[attrName](self, inj);
+			if (empty(elem.VDOM.getters[attrName]))
+				elem.VDOM.getters[attrName] = createGetter(attrValue, inj);
+			var result = elem.VDOM.getters[attrName](self, inj);
 		}catch(ex){
 			var result = null;
 		}
