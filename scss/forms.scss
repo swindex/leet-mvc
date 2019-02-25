@@ -38,6 +38,9 @@ select{
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	&[onclick]{
+		pointer-events: all;
+	}
 }
 input[date]{
     background-image: url(../img/calendar_ico.png);
