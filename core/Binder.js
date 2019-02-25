@@ -659,6 +659,7 @@ export var Binder = function(context, container){
 					on.items[index].elem['INJECT'] = inj;
 					fo.appendChild(on.items[index].fragment || on.items[index].elem); 
 				}else{
+					on.items[index].elem['INJECT'] = inj;
 					if (checkVDomNode(on.items[index], inj)===true){
 						hasChanges = true;
 					}
