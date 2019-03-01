@@ -239,14 +239,12 @@ export class Forms extends BaseComponent{
 	 * @param {KeyValuePair} [override]
 	 */
 	addInput(el, override){
-		
-		
 		var opt = { name: el._name, type: "text", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
 			${this.addTitle(el)}
-			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />`+
+			<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -269,11 +267,11 @@ export class Forms extends BaseComponent{
 		this.types[el._name] = "password";	
 		return (`
 			${this.addTitle(el)}
-			<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>`+
-			(el.unit || el.icon ? `<div class="icon" onclick="component.togglePasswordType('${el._name}')">
+			<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>
+			<div class="icon" onclick="component.togglePasswordType('${el._name}')">
 				<i class="fas fa-eye" [if]="component.types['${el._name}']=='password'"></i>
 				<i class="fas fa-eye-slash" [if]="component.types['${el._name}']=='text'"></i>
-			</div>` : '')+`	
+			</div>	
 			${this.addErrorHint(el)}
 		`);
 	}
@@ -289,7 +287,7 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		return `
 			${this.addTitle(el)}
-			<textarea bind="component.data.${el._name}" ${this.generateAttributes(opt)}></textarea>
+			<textarea bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)}></textarea>
 			${this.addErrorHint(el)}
 		`;
 	}
@@ -305,7 +303,7 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		return (`
 			<label class="toggle">${el.title}
-				<input bind="component.data.${el._name}" ${this.generateAttributes(opt)} />
+				<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
 				<span class="slider round"></span>
 			</label>
 			${this.addErrorHint(el)}
@@ -318,7 +316,7 @@ export class Forms extends BaseComponent{
 	 */
 	addSelect(el, override,parentPath){
 
-		var opt = { name: el._name, type: "select", bind: `component.data.${el._name}`, placeholder:el.placeholder};
+		var opt = { name: el._name, type: "select", bind: `component.data${this.refactorAttrName(el._name)}`, placeholder:el.placeholder};
 		$.extend(opt, override, el.attributes);
 		var elem = `<select ${this.generateAttributes(opt)}>`;
 		if (el.placeholder)
@@ -328,7 +326,7 @@ export class Forms extends BaseComponent{
 		$.each(el.items,  (index, option)=>{
 			elem = elem+ `<option value="${ option.value===null ? '' : option.value }">${option.title}</option>`;
 			if (option.items){
-				items_items += `<div [if]="component.data.${el._name} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.renderArray(option.items,parentPath) + `</div>`;
+				items_items += `<div [if]="component.data${this.refactorAttrName(el._name)} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.renderArray(option.items,parentPath) + `</div>`;
 			}
 		});
 		elem = elem + "</select>";
@@ -355,7 +353,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addErrorHint(el){
-		return `<div class="hint" bind="component.errors.${el._name}" [class]="component.errors.${el._name} ? 'error' : ''"></div>`
+		return `<div class="hint" bind="component.errors${this.refactorAttrName(el._name)}" [class]="component.errors${this.refactorAttrName(el._name)} ? 'error' : ''"></div>`
 	}
 
 	/**

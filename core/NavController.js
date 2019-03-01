@@ -373,8 +373,6 @@ export function NavController() {
 		}
 	}
 
-	var guid = GUID();
-
 	//add ONE listener that will fire onResize on all pages;
 	$(window).on('resize', windowResizeHandler);
 	function windowResizeHandler (ev){ 
