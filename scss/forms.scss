@@ -27,14 +27,14 @@ select{
 	padding-right: $size-input-i-md; //this used for hiding text under icon	
 }
 .fieldgroup	div.icon{
-	position: absolute;
 	right: 0;
-	bottom: 0;
+	top: 30%;
 	font-weight: bold;
 	font-size: $size-f-input;
 	pointer-events: none;
-	width: 2em;
-	height: 2em;
+	width: $size-input-h-md;
+	height: $size-input-h-md;
+	margin-left: -$size-input-h-md; //negative margin to make sure the icon is on the same level as the input field
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -110,7 +110,8 @@ textarea {
 }
 .fieldgroup {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	flex-wrap: wrap;
 	position: relative;
 	//padding-left: $margin-lg;
 	margin-bottom: $margin-lg;
