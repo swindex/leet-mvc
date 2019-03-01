@@ -39,9 +39,20 @@ export class CalendarPage extends DialogPage{
 			return moment(i, 'e').startOf('week').isoWeekday(i + 1).format('ddd');
 		});
 
-		this._hours = Array.apply(null, Array(12)).map(function (_, i) {
-			return { value: i, title: moment(i, 'h').startOf('day').hour(i).format('h')};
-		});
+		this._hours = [
+			{ value: 0, title: 12, title_pm: 12},
+			{ value: 1, title: 1, title_pm: 13},
+			{ value: 2, title: 2, title_pm: 14},
+			{ value: 3, title: 3, title_pm: 15},
+			{ value: 4, title: 4, title_pm: 16},
+			{ value: 5, title: 5, title_pm: 17},
+			{ value: 6, title: 6, title_pm: 18},
+			{ value: 7, title: 7, title_pm: 19},
+			{ value: 8, title: 8, title_pm: 20},
+			{ value: 9, title: 9, title_pm: 21},
+			{ value: 10, title: 10, title_pm: 22},
+			{ value: 11, title: 11, title_pm: 23},
+		];
 
 		this._minutes = Array.apply(null, Array(12)).map(function (_, i) {
 			return { value: i*5, title: moment(i*5, 'm').startOf('hour').minute(i*5).format('mm')};
@@ -55,6 +66,8 @@ export class CalendarPage extends DialogPage{
 			var v = moment().add(i-5,"years").format('YYYY');
 			return { value: v, title: v};
 		});
+
+		this.hasMeridiem = moment.localeData().longDateFormat('LT').toLowerCase().indexOf('a') >= 0;
 
 		this._setProps();
 	}
@@ -279,7 +292,15 @@ export class CalendarPage extends DialogPage{
 		}
 
 	}
-
+	_getHourTitle(hours){
+		if (!this.isAM && !this.hasMeridiem){
+			return hours.title_pm;
+		}
+		if (!this.hasMeridiem && hours.value==0){
+			return 0;
+		}
+		return hours.title;
+	}
 }
 CalendarPage.selector = "page-CalendarPage";
 CalendarPage.content = `
@@ -333,7 +354,7 @@ CalendarPage.content = `
 			<div id="clock" [if]="this._showClock">
 				<div class="circle">
 					<div class="hours"  [selected]="!this._minutesSelected" onclick="this.onSelectHoursClicked()">
-						<div class="hour h-12" [foreach]="this._hours as hours" onclick="this.onSetHourClicked(hours.value)" [selected]="this._d_hour==hours.title" [class]="'h-' + hours.value"><span bind="hours.title">12</span></div>
+						<div class="hour h-12" [foreach]="this._hours as hours" onclick="this.onSetHourClicked(hours.value)" [selected]="this._d_hour==hours.title" [class]="'h-' + hours.value"><span bind="this._getHourTitle(hours)">0</span></div>
 					</div>
 					<div class="minutes" [selected]="this._minutesSelected" onclick="this.onSelectMinutesClicked()">
 						<div class="hour h-12" [foreach]="this._minutes as minutes" onclick="this.onSetMinuteClicked(minutes.value)" [selected]="this._d_minute==minutes.title" [class]="'h-' + minutes.value"><span bind="minutes.title">12</span></div>
