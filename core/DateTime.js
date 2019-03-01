@@ -1,4 +1,5 @@
 import * as moment from "moment";
+import { Translate } from "leet-mvc/core/Translate";
 
 export var DateTime = {
 	/**
@@ -30,7 +31,7 @@ export var DateTime = {
 			now.week() == date.week() &&
 			now.day() == date.day()
 		)
-			f = "["+ "Today" +"] LT";
+			f = "["+ Translate("Today") +"] LT";
 		
 		//Only Day of week is different	- show day of week and time
 		if (
