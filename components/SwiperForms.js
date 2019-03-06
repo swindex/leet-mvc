@@ -2,6 +2,7 @@ import { Objects } from "./../core/Objects";
 import Swiper from 'swiper';
 import { Forms } from "./Forms";
 import 'swiper/dist/css/swiper.css';
+import { tryCall } from "leet-mvc/core/helpers";
 
 
 /**
@@ -15,11 +16,13 @@ import 'swiper/dist/css/swiper.css';
 export class SwiperForms extends Forms{
 
 	constructor(formTemplate, data, errors,options){
-		super(formTemplate, data, errors, {}, 'swiper-slide scroll')
+		super(formTemplate, data, errors, {}, {formClass:'swiper-slide scroll'});
 		this.formTemplate = formTemplate;
 		this.options = options;
-				
+		
+		/** @type {Swiper} */
 		this.swiper = null;
+		this.index = 0;
 		this.options = $.extend({
 			navButtons: false,
 			submitButton: false,
@@ -57,6 +60,13 @@ export class SwiperForms extends Forms{
 	onSubmitClicked(){
 		throw new Error('Override ME!');
 	}
+	/**
+	 * ***Override***
+	 * @param {number} index 
+	 */
+	onSlideChange(index){
+
+	}
 
 	/**
 	 * Slide the swiper to the first invalid form
@@ -77,6 +87,7 @@ export class SwiperForms extends Forms{
 		super.init(container);
 		var sw = new Swiper($(container).find('#generatedform')[0],{
 			threshold:50,
+			initialSlide:this.index,
 			noSwiping: true,
 			iOSEdgeSwipeDetection: true,
 			pagination: $.extend({},this.options.pagination ?
@@ -86,9 +97,11 @@ export class SwiperForms extends Forms{
 		});
 		this.swiper = $(container).find('#generatedform')[0].swiper;
 		this.swiper.on('slideChange',(v)=>{
+			this.index = this.swiper.realIndex;
 			this.binder.updateElements();
+			tryCall(this,this.onSlideChange,this.index);
 		})
-		this.swiper.slideTo(0);
+		//this.swiper.slideTo(0);
 		//this.binder.updateElements();
 	}
 }

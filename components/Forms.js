@@ -167,7 +167,7 @@ export class Forms extends BaseComponent{
 			case "checkbox":
 				return this.renderFieldGroupHTML(el, this.addCheck(el,null));
 			case "select":
-				return this.renderFieldGroupHTML(el, this.addSelect(el,null,parentPath));
+				return this.addSelect(el,null,parentPath);
 			case "label":
 				return this.renderFieldGroupHTML(el, this.addLabel(el));
 			case "link":
@@ -233,12 +233,18 @@ export class Forms extends BaseComponent{
 		return `<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">${elHTML}</div>`; 
 	}
 
+	renderSelectGroupHTML(el, elHTML){
+		return `<div [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">${elHTML}</div>`; 
+	}
+
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
 	 */
 	addInput(el, override){
+		
+		
 		var opt = { name: el._name, type: "text", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
@@ -267,11 +273,11 @@ export class Forms extends BaseComponent{
 		this.types[el._name] = "password";	
 		return (`
 			${this.addTitle(el)}
-			<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>
-			<div class="icon" onclick="component.togglePasswordType('${el._name}')">
+			<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>`+
+			(el.unit || el.icon ? `<div class="icon" onclick="component.togglePasswordType('${el._name}')">
 				<i class="fas fa-eye" [if]="component.types['${el._name}']=='password'"></i>
 				<i class="fas fa-eye-slash" [if]="component.types['${el._name}']=='text'"></i>
-			</div>	
+			</div>` : '')+`	
 			${this.addErrorHint(el)}
 		`);
 	}
@@ -333,11 +339,11 @@ export class Forms extends BaseComponent{
 
 		
 
-		return (`
+		return this.renderFieldGroupHTML(el,(`
 			${this.addTitle(el)}
 			${elem}
 			${this.addErrorHint(el)}
-		`) + items_items;
+		`)) + this.renderSelectGroupHTML(el, items_items);
 	}
 
 	/**
