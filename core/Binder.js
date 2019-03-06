@@ -186,19 +186,19 @@ export var Binder = function(context, container){
 		var scope = {
 			createDirectiveElement: function(tag, attributes, createElements, inject){
 				var frag = document.createDocumentFragment();
-				var elem = document.createComment('DirectiveElement');
-				frag.appendChild(elem);
+				
 				var attrKeys = Object.keys(attributes);
 				var getters = {};
 				var setters = {};
 				var renderImmediately = [];
+				var coment = "";
 				for (var i in attrKeys){
 					var bindExpression = null;
 					var getter = null;
 					var setter = null;
 					var key = attrKeys[i]
 					bindExpression = attributes[key];	
-										
+					coment +=key+"="+bindExpression+" ";				
 					switch (key){
 						case '[if]':
 							renderImmediately.push(key);
@@ -216,6 +216,9 @@ export var Binder = function(context, container){
 						setters[key] = setter; 
 					}
 				}
+				var elem = document.createComment(coment);
+				frag.appendChild(elem);
+
 				var itemBuilder = function(inject){
 					var ii = createElements(inject);
 					return ii;

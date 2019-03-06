@@ -292,8 +292,6 @@ export function FormValidator(data,template,errors,attributes){
 				return;
 			}
 
-			var action = parts[0];
-			var fieldName = parts[1];
 			switch (action){
 				case 'math':
 					var p = new Parser();
