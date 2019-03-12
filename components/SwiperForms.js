@@ -2,8 +2,7 @@ import { Objects } from "./../core/Objects";
 import Swiper from 'swiper';
 import { Forms } from "./Forms";
 import 'swiper/dist/css/swiper.css';
-import { tryCall } from "leet-mvc/core/helpers";
-
+import { tryCall } from "./../core/helpers";
 
 /**
  * 
@@ -45,18 +44,33 @@ export class SwiperForms extends Forms{
 			<!-- Add Nav Buttons -->
 			<div [if]="component.options.navigation" class="swiper-navigation">
 				<button [if]="!component.swiper.isBeginning" 
-					onclick="component.swiper.slidePrev()" name="back">Back</button>
+					onclick="if (component.onBackClicked()!== false ) component.swiper.slidePrev()" name="back">Back</button>
 				<button [if]="!component.swiper.isEnd" 
-					onclick="component.swiper.slideNext()" class="item-right" name="next">Next</button>
+					onclick="if (component.onNextClicked()!== false ) component.swiper.slideNext()" class="item-right" name="next">Next</button>
 				<button [if]="component.swiper.isEnd && component.options.submitButton" 
 					onclick="component.onSubmitClicked()" class="item-right" name="submit">Submit</button>
 			</div>
 			
 		</div>
 		`
-
 	}
 
+	/**
+	 * ***Override***
+	 * Called on button click.
+	 * @return {void|false} return false to cancel slide action
+	 */
+	onBackClicked(){
+
+	}
+	/**
+	 * ***Override***
+	 * Called on button click.
+	 * @return {void|false} return false to cancel slide action
+	 */
+	onNextClicked(){
+
+	}
 	onSubmitClicked(){
 		throw new Error('Override ME!');
 	}
@@ -71,17 +85,25 @@ export class SwiperForms extends Forms{
 	/**
 	 * Slide the swiper to the first invalid form
 	 */
-	slideToInvalid(){
-		Objects.forEach(this.formTemplate, (v,n)=>{
-			var errs = Objects.filter(this.errors[v.name],(e)=>{
-				return !empty(e);
-			})
-			if (Object.keys(errs).length > 0){
-				this.swiper.slideTo(n);
-				return false;		
+	slideToInvalid( speed, runCallbacks){
+		//console.log("Start Walk")
+		var found = false;
+		for( var i in this.formTemplate){
+			this.validator.walkElements(this.formTemplate[i], (el, path)=>{
+				//console.log(path);
+				if (!found && !empty(this.errors[el.name])){
+					this.swiper.slideTo(i, speed, runCallbacks);
+					found = true;
+					return false;		
+				}
+			});
+			if (found){
+				return;
 			}
-		})
+		}
 	}
+
+
 	
 	init(container){
 		super.init(container);

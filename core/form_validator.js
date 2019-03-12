@@ -1,6 +1,6 @@
 import { isNumber, isBoolean, isObject,isArray, isString } from "util";
 import { Objects } from "./Objects";
-import { empty } from "./helpers";
+import { empty, tryCall } from "./helpers";
 import { Translate } from "./Translate";
 import { Parser } from 'expr-eval';
 
@@ -56,7 +56,35 @@ export function FormValidator(data,template,errors,attributes){
 		if (isObject(obj) && obj.items){
 			set_names(obj.items, path.slice());
 		}
-	
+	}
+
+	this.walkElements = walkElements;
+	function walkElements(obj, callback, path){
+		if (!path){
+			path = [];
+		}
+
+		if (isArray(obj)){
+			Objects.forEach(obj,(el)=>{
+				if (el.name){
+					var npath = path.slice();
+					npath.push(el.name);
+				}
+				if (walkElements(el, callback, npath) === false) return false;
+			});
+		}
+
+		if (isObject(obj) && obj.name){
+			if (tryCall(null, callback, obj, path.slice()) === false) return false;
+		}
+
+		if (isObject(obj) && obj.type=='select'){
+			path.pop();	
+		}
+
+		if (isObject(obj) && obj.items){
+			if (walkElements(obj.items, callback, path.slice())===false) return false;
+		}
 	}
 
 
@@ -105,10 +133,11 @@ export function FormValidator(data,template,errors,attributes){
 	 * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
 	 * @return {boolean}
 	 */
-	this.validate = function(){
+	this.validate = function( template ){
+		template = template || _template;
 		//return validate_template(_template);
 		used=[];
-		return validate_object(_template)==0;
+		return validate_object( template )==0;
 	}
 
 	this.clearErrors= function(){
@@ -410,7 +439,7 @@ export function FormValidator(data,template,errors,attributes){
 				if (!empty(dValue) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
 					var err = null;
 					var title = f.title;
-					if (isString(title) && title.length > 25)
+					if (!title || (isString(title) && title.length > 25))
 						title = ""
 					errmsg=errmsg.replace(':attribute', title);
 
