@@ -8,6 +8,16 @@ export function empty(value){
 	return typeof value === "undefined" || value === 0 || value === null || value === "" || value === false;// || (typeof value == 'object' && Object.getOwnPropertyNames(value).length === 0) ;
 }
 
+/**
+ * Round numeric value to n decimals
+ * @param {number} value 
+ * @param {number} [n] = 0
+ */
+export function round(value, n) {
+	n = n || 0;
+	var scale = Math.pow(10, n);
+	return Math.round(value * scale)/scale;
+}
 
 /**
  * Try calling a function under context.

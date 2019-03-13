@@ -1,6 +1,7 @@
 import { Binder } from '../core/Binder';
 import { NavController } from '../core/NavController';
 import { ChangeWatcher } from '../core/ChangeWatcher';
+import { tryCall } from 'leet-mvc/core/helpers';
 
 
 export class BasePage extends ChangeWatcher{
@@ -33,9 +34,13 @@ export class BasePage extends ChangeWatcher{
 	update(){
 		this.binder.updateElements();
 		this.onUpdated();
+	}
+
+	_onVisible(){
 		if (!this.isLoaded && (this.isLoaded=true)){
 			this.onLoaded();
 		}
+		this.onVisible();
 	}
 
 	/**
