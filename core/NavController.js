@@ -310,11 +310,8 @@ export function NavController() {
 					return;
 				
 				
-				/*if (typeof element.attr('creating') != 'undefined'){
-					tryCall(pageObject,pageObject.onLoaded);
-				}*/
 				if (typeof element.attr('visible') == 'undefined'){
-					tryCall(frame.page,frame.page.onVisible);
+					tryCall(frame.page, frame.page._onVisible);
 				}
 				
 				element.removeAttr('hidden');

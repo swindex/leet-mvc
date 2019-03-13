@@ -5,7 +5,6 @@ import './CalendarPage.scss';
 import { OptionsDialogPage } from "leet-mvc/pages/OptionsDialogPage/OptionsDialogPage";
 import { Objects } from "leet-mvc/core/Objects";
 
-
 export class CalendarPage extends DialogPage{
 	constructor(page, startDate){
 		super(page);
@@ -247,13 +246,19 @@ export class CalendarPage extends DialogPage{
 		this._currMonth = this._currDate.clone();
 		this._setProps();
 	}
+	onDateSelected(dateTime){
+		console.log('Override onDateSelected', dateTime);
+	}
 	onSetDateClicked(date){
 		if (!date)
 			return;
 		this.setDate(date);
-		setTimeout(()=>{
-			this._tabs.select("clock");
-		},10);
+		this.onDateSelected(date);
+		if(this.showClock){
+			setTimeout(()=>{
+				this._tabs.select("clock");
+			},10);
+		}
 	}
 	setAM(isAM){
 		if (this.isAM != isAM){
@@ -305,7 +310,7 @@ export class CalendarPage extends DialogPage{
 CalendarPage.selector = "page-CalendarPage";
 CalendarPage.content = `
 	<div [directive] = "this._tabs">
-		<ul class="tab-buttons">
+		<ul class="tab-buttons" [show]="this._showClock">
 			<li for="calendar" [if]="this._showCalendar">
 				<span bind="this._d_date"></span>
 				<i class="far fa-calendar-alt"></i>
