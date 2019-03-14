@@ -14,13 +14,15 @@ import { DateTime } from "./core/DateTime";
 import { DataShape } from "./core/DataShape";
 import { CallbackQueue } from "./core/CallbackQueue";
 import { Analytics } from "./core/analytics_matomo";
+import { Touch } from "./core/Touch.js";
+
 import { OptionsDialogPage } from "./pages/OptionsDialogPage/OptionsDialogPage";
 import { Extend, GUID, Override, tryCall } from "./core/helpers";
 
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
-
 import './core/polyfills';
 
 //Make jQuery available globally
 // @ts-ignore
 window.$ = window.jQuery = require("jquery");
+

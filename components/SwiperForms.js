@@ -4,6 +4,7 @@ import { Forms } from "./Forms";
 import 'swiper/dist/css/swiper.css';
 import { tryCall } from "./../core/helpers";
 
+
 /**
  * 
  * @param {FieldTemplate[]} formTemplate 

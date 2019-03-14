@@ -142,6 +142,9 @@ export var Binder = function(context, container){
 						case '[foreach]':
 							wrapForEach = `"${attr.name}":"${attr.value}"`
 							break;	
+						case '[transition]':
+							wrapDirective = `"${attr.name}":"${attr.value}"`
+							break;	
 						case '[directive]':
 							wrapDirective = `"${attr.name}":"${attr.value}"`
 							break;	
@@ -200,6 +203,8 @@ export var Binder = function(context, container){
 					bindExpression = attributes[key];	
 					coment +=key+"="+bindExpression+" ";				
 					switch (key){
+						case '[transition]':
+							renderImmediately.push(key);
 						case '[if]':
 							renderImmediately.push(key);
 						case '[directive]':
@@ -481,6 +486,71 @@ export var Binder = function(context, container){
 	}
 
 	var attributes = {
+		'[transition]':function(on, inject){
+			var key = "[transition]";
+			var getter = on.getters[key];
+			var options;
+			try{
+				options = getter(self,inject);
+			}catch(ex){
+				options = {};
+			}
+
+			options = $.extend({
+				trigger:null,
+				duration: 0,
+				enter:'enter',
+				enter_active:'enter_active',
+				enter_to:'enter_to',
+				leave:'leave',
+				leave_active:'leave_active',
+				leave_to:'leave_to'
+			},options);
+			
+			if (on.values[key] !== options.trigger){
+				on.values[key] =  options.trigger;
+				if ( on.items.length ==0){
+					//if if directive does not have any children, create them
+					vDomCreateItems(on,inject)
+				}else{
+					if (options.duration){
+						vDomCreateItems(on,inject)
+
+						$(on.items[1].elem).addClass(options.enter_active);
+						$(on.items[0].elem).addClass(options.leave_active);
+
+						$(on.items[1].elem).addClass(options.enter);
+						$(on.items[0].elem).addClass(options.leave);
+
+						setTimeout(function(){
+							$(on.items[1].elem).scrollTop($(on.items[0].elem).scrollTop());
+
+							$(on.items[1].elem).removeClass(options.enter);
+							$(on.items[0].elem).removeClass(options.leave);
+							
+							$(on.items[1].elem).addClass(options.enter_to);
+							$(on.items[0].elem).addClass(options.leave_to);
+
+						},0);
+						//discard vDom nodes of the element that will be removed
+						on.items[0].items=[];
+						setTimeout(function(){
+							$(on.items[1].elem).removeClass(options.enter_active);
+							$(on.items[0].elem).removeClass(options.leave_active);
+							$(on.items[1].elem).removeClass(options.enter_to);
+							$(on.items[0].elem).removeClass(options.leave_to);
+
+							removeElement(on.items[0].elem);
+							on.items.shift();
+						},options.duration);
+						return false;
+					}	
+					checkVDomNode(on.items[0],{});
+				}
+			}else{
+				checkVDomNode(on.items[0],{});
+			}	
+		},
 		'bind':function(on, inject){
 			var key = "bind";
 			var getter = on.getters[key];
