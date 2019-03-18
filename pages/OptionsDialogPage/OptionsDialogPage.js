@@ -9,22 +9,25 @@ export class OptionsDialogPage extends DialogPage{
 
 		/**
 		 * List items 
-		 * @type {{[x: string]: any,image?:string,icon?:string,title:string}[]} */
+		 * @type {{[x: string]: any,image?:string,icon?:string,title:string,text:string}[]} */
 		this.items=[];
 		this.content = `
 			<ul>
 				<li [foreach]="index in this.items as item" onclick="this._onItemClicked(item, index)" [selected] = "this.isSelectedItem(item)" [attribute]="{disabled:this.isDisabledItem(item) ? '' : null}">
 					<i [class] = "this.getIcon(item)" [if]="this.getIcon(item)"></i>
 					<img bind = "this.getImage(item)" [if]="this.getImage(item)" />
-					<span [innerHTML] = "item.title"></span>
+					<div class="item">
+						<div [if] ="item.title"  class="item-title" bind = "item.title"></div>
+						<div [if] ="item.text" class="item-text" bind = "item.text"></div>
+					</div>
 				</li>
 			</ul>
 		`;
 
-		this.buttons = {
-			"Cancel":()=>{this.onCancelClicked()},
-		}
+		this.buttons = {};
 
+		this.buttons['Cancel']= ()=>{this.onCancelClicked()};
+		
 		/** Default icons to use when no icons are supplide in items*/
 		this.icons = {
 			selected: 'fas fa-circle',

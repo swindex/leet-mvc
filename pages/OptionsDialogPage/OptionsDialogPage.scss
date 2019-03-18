@@ -28,13 +28,24 @@
 			max-width: 2em;	
 			max-height:2em;	
 		}
-		span {
+		div.item {
 			border-bottom: 1px solid #b8b8b8;
 			display: block;
 			margin-right: 0;
 			margin-left: $margin-lg;
 			padding: $margin-lg 0;
 			width: 100%;
+			>div{
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+			.item-text{
+				font-size: 0.9em;
+			}
+			.item-title{
+				font-size: 1em;
+			}
 
 		}
 		&:last-child {
