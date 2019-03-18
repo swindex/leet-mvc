@@ -200,12 +200,14 @@ textarea {
 	div.label{
 		color: #333;
 		font-size: $size-f-input;
+		width: 100%;
 		&.link{
 			text-decoration: underline;
 			color: $color-link;
 		}
 	}
 	div.link{
+		width: 100%;
 		font-size: $size-f-input;
 		text-decoration: underline;
 		color: $color-link;
@@ -277,6 +279,7 @@ floating action button
 div[ion-fab]{
 
 	position: absolute;
+	z-index: 10;
 	
 	&[round]{
 		width: $size-input-h-lg;
