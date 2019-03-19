@@ -912,6 +912,9 @@ export var Binder = function(context, container){
 			if (formats.length > 0 && formats[0] === "date") {
 				v = DateTime.toHumanDate(v);
 			}
+			if (formats.length > 0 && formats[0] === "time") {
+				v = DateTime.toHumanTime(v);
+			}
 		}
 		switch (elem.tagName) {
 			case "SELECT":
@@ -1038,6 +1041,11 @@ export var Binder = function(context, container){
 				if (formats.length > 0 && formats[0] == "date") {
 					if (formats.length == 1) {
 						v = DateTime.fromHumanDate(value);
+					}
+				}
+				if (formats.length > 0 && formats[0] == "time") {
+					if (formats.length == 1) {
+						v = DateTime.fromHumanTime(value);
 					}
 				}
 			}else{

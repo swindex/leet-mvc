@@ -107,6 +107,7 @@ export var DateTime = {
 		
 		return moment(__date).format('LL');
 	},
+
 	/**
 	 * convert date from human format to date.
 	 * @param {string} __date a parseable string, 
@@ -117,6 +118,28 @@ export var DateTime = {
 			return null;
 		return moment(__date, DateTime._humanDate).toDate();
 	},
+	/**
+	 * Return time in human- readable format.
+	 * @param {string|Date} __date a Date object or parseable string, 
+	 * @returns {string}
+	 */
+	toHumanTime: function(__date) {
+		if (__date !== undefined && !moment(__date).isValid())
+			return null;
+		
+		return moment(__date).format(DateTime._humanTime);
+	},
+	/**
+	 * Return convert readable format to date
+	 * @param {string|Date} __date a Date object or parseable string, 
+	 * @returns {Date}
+	 */
+	fromHumanTime: function(__date) {
+		if (__date !== undefined && !moment(__date, DateTime._humanTime).isValid())
+			return null;	
+		return moment(__date, DateTime._humanTime).toDate();
+	},
+	
 	/**
 	 * convert date from human format to date.
 	 * @param {string} __date a parseable string, 
@@ -178,10 +201,30 @@ export var DateTime = {
 		return v2;
 	},
 
+	/**
+	 * 
+	 * @param {Date} date 
+	 * @param {Date} time 
+	 */
+	combineDateTime(date, time){
+		var time_m = moment(time);
+		var cH = time_m.hour();
+		var cM = time_m.minute();
+		var cS = time_m.second();
+
+		var date_m = moment(date);
+		date_m.set('hour',cH);
+		date_m.set('minute',cM);
+		date_m.set('second',cS);
+
+		return date_m.toDate();
+	},
+
 	setLocale(lang){
 		moment.locale(lang);
 	},
 
+	_humanTime:"LT",
 	_humanDateTime:"LLLL",
 	_humanDate:"LL",
 	_JSONDate:'YYYY-MM-DD[T]HH:mm:ssZ',
