@@ -49,7 +49,7 @@ input[dateTime]{
     background-image: url(../img/calendar_ico.png);
 }
 input[time]{
-    background-image: url(../img/calendar_ico.png);
+    background-image: url(../img/clock_ico.png);
 }
 
 select{
@@ -148,7 +148,7 @@ textarea {
 		background-color: transparent;
 		padding-left: 0;
 		font-size: $size-f-toplabel;
-		width: auto;
+		width: 100%;
 		text-align: left;
 	}
 	&.short {
@@ -192,6 +192,13 @@ textarea {
 		display: flex;
 		.short{
 			width:3em,
+		}
+	}
+	.split{
+		width: 50%;
+		padding-right: $margin-md;
+		&:last-child{
+			padding-right: 0px
 		}
 	}
 }

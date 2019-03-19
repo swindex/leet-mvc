@@ -2,7 +2,9 @@ import { Objects } from "./../core/Objects";
 import { FormValidator } from "./../core/form_validator";
 import { Text } from "./../core/text";
 import { BaseComponent } from "./BaseComponent";
-import { isNumber } from "util";
+import { isNumber, isArray } from "util";
+import { DateTime } from "./../core/DateTime";
+
 
 export class Forms extends BaseComponent{
 	/**
@@ -65,6 +67,26 @@ export class Forms extends BaseComponent{
 	 */
 	onButtonClick(event){
 
+	}
+
+	_formatSplitDateField(evt, name , isTime){
+		var el = evt.target;
+		console.log(evt, name, isTime);
+		var date = null;
+		var time = null;
+		
+		if (isTime){
+			date = Objects.getPropertyByPath(this.data, name);
+			time = DateTime.fromHumanTime($(el).val().toString());
+		}else{
+			date = DateTime.fromHumanDate($(el).val().toString()); 
+			time = Objects.getPropertyByPath(this.data, name);
+		}
+
+		var newDate = DateTime.combineDateTime(date, time);
+		Objects.setPropertyByPath(this.data,name, newDate);
+
+		console.log(newDate);
 	}
 	
 	_formatPhoneNumber(evt){
@@ -144,38 +166,48 @@ export class Forms extends BaseComponent{
 				return this.addForm(el,parentPath /*? parentPath +'.' +el.name : el.name*/ );
 			case "email":
 				this.assertValidateRuleHas(el,"email");
-				return this.renderFieldGroupHTML(el, this.addInput(el,{type:'email'}));
+				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'email'})]);
 			case "text":
-				return this.renderFieldGroupHTML(el, this.addInput(el,null));
+				return this.renderFieldGroupHTML(el, [this.addInput(el,null)]);
 			case "date":
-				return this.renderFieldGroupHTML(el, this.addInput(el,{date:'', format:'date', /*readonly:''*/}));	
+				return this.renderFieldGroupHTML(el, [this.addInput(el,{date:'', format:'date'})]);	
 			case "datetime":
-				return this.renderFieldGroupHTML(el, this.addInput(el,{dateTime:'', format:'dateTime', /*readonly:''*/}));	
+				return this.renderFieldGroupHTML(el, [this.addInput(el,{dateTime:'', format:'dateTime'})]);	
 			case "time":
-				return this.renderFieldGroupHTML(el, this.addInput(el,{time:'', format:'time', /*readonly:''*/}));	
+				return this.renderFieldGroupHTML(el, [this.addInput(el,{time:'', format:'time'})]);	
+			case "date-time":
+				var dateEl = $.extend({}, el);
+				dateEl.name += "_date";
+				dateEl._name += "_date";
+				Objects.setPropertyByPath(this.data, dateEl._name, Objects.getPropertyByPath(this.data, el._name));
+				
+				return this.renderFieldGroupHTML(el,  [
+					'<div class="split">' + this.addInput(dateEl,{date:'', format:'date', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',false)"})+ '</div>',
+					'<div class="split">' + this.addInput(el,	 {time:'', format:'time', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',true)"})+ '</div>',
+				]);	
 			case "number":
 				this.assertValidateRuleHas(el,"number");
-				return this.renderFieldGroupHTML(el, this.addInput(el,{type:'number'}));
+				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'number'})]);
 			case "password":
-				return this.renderFieldGroupHTML(el, this.addPassword(el,null));
+				return this.renderFieldGroupHTML(el, [this.addPassword(el,null)]);
 			case "phone":
-				return this.renderFieldGroupHTML(el, this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"}));
+				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"})]);
 			case "hidden":
 				return "";
 			case "textarea":
-				return this.renderFieldGroupHTML(el, this.addTextArea(el,null));	
+				return this.renderFieldGroupHTML(el, [this.addTextArea(el,null)]);	
 			case "checkbox":
-				return this.renderFieldGroupHTML(el, this.addCheck(el,null));
+				return this.renderFieldGroupHTML(el, [this.addCheck(el,null)],true);
 			case "select":
 				return this.addSelect(el,null,parentPath);
 			case "label":
-				return this.renderFieldGroupHTML(el, this.addLabel(el));
+				return this.renderFieldGroupHTML(el, [this.addLabel(el)],null, true);
 			case "link":
-				return this.renderFieldGroupHTML(el, this.addLink(el));
+				return this.renderFieldGroupHTML(el, [this.addLink(el)],null, true);
 			case "button":
-				return this.renderFieldGroupHTML(el, this.addButton(el));
+				return this.renderFieldGroupHTML(el, [this.addButton(el)]);
 			case "buttons":
-				return this.renderFieldGroupHTML(el, this.addButtons(el));		
+				return this.renderFieldGroupHTML(el, [this.addButtons(el)]);		
 			case "html":
 				return this.addHtml(el);			
 
@@ -229,8 +261,13 @@ export class Forms extends BaseComponent{
 			`;
 	}
 
-	renderFieldGroupHTML(el, elHTML){
-		return `<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">${elHTML}</div>`; 
+	renderFieldGroupHTML(el, elHTML, noTitle, noErrorHint){
+		return `
+		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">
+			${(noTitle ? '' : this.addTitle(el))}
+			${isArray(elHTML) ? elHTML.join('') : elHTML}
+			${(noErrorHint ? '' : this.addErrorHint(el))}
+		</div>`; 
 	}
 
 	renderSelectGroupHTML(el, elHTML){
@@ -249,14 +286,12 @@ export class Forms extends BaseComponent{
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
-			${this.addTitle(el)}
 			<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
-			</div>` : '')+`	
-			${this.addErrorHint(el)}
-		`);
+			</div>` : '')
+		);
 	}
 
 	//{type:'password', autocorrect:"off", autocapitalize:"off"}
@@ -272,14 +307,12 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		this.types[el._name] = "password";	
 		return (`
-			${this.addTitle(el)}
 			<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>`+
 			(el.unit || el.icon ? `<div class="icon" onclick="component.togglePasswordType('${el._name}')">
 				<i class="fas fa-eye" [if]="component.types['${el._name}']=='password'"></i>
 				<i class="fas fa-eye-slash" [if]="component.types['${el._name}']=='text'"></i>
-			</div>` : '')+`	
-			${this.addErrorHint(el)}
-		`);
+			</div>` : '')
+		);
 	}
 	/**
 	 * 
@@ -292,9 +325,7 @@ export class Forms extends BaseComponent{
 		
 		$.extend(opt, override, el.attributes);
 		return `
-			${this.addTitle(el)}
 			<textarea bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)}></textarea>
-			${this.addErrorHint(el)}
 		`;
 	}
 	/**
@@ -312,7 +343,6 @@ export class Forms extends BaseComponent{
 				<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
 				<span class="slider round"></span>
 			</label>
-			${this.addErrorHint(el)}
 		`);
 	}
 	/**
@@ -343,7 +373,7 @@ export class Forms extends BaseComponent{
 			${this.addTitle(el)}
 			${elem}
 			${this.addErrorHint(el)}
-		`)) + this.renderSelectGroupHTML(el, items_items);
+		`), true,true) + this.renderSelectGroupHTML(el, items_items);
 	}
 
 	/**
@@ -381,7 +411,6 @@ export class Forms extends BaseComponent{
 	 */
 	addLabel(el){
 		return (`
-			${this.addTitle(el)}
 			<div class="label">${(el.value != null ? el.value : "")}</div>
 		`);
 	}
@@ -425,7 +454,8 @@ export class Forms extends BaseComponent{
 				${items.join('')}
 			</div>
 		`);
-	}	
+	}
+
 	togglePasswordType(name){
 		if (this.types[name]==="text")
 			this.types[name]="password";

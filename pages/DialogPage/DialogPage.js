@@ -128,6 +128,14 @@ export class DialogPage extends BasePage{
 		return this;
 	}
 
+	
+	addSplit (items) {
+		this.controls.push({name:"split", type:'split', title:null, value:null, items: items});
+		this.render();
+		
+		return this;
+	}
+
 	/**
 	 * Validate the content form
 	 */

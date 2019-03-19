@@ -254,7 +254,7 @@ export class CalendarPage extends DialogPage{
 			return;
 		this.setDate(date);
 		this.onDateSelected(date);
-		if(this.showClock){
+		if(this._showClock){
 			setTimeout(()=>{
 				this._tabs.select("clock");
 			},10);

@@ -302,6 +302,9 @@ export function FormValidator(data,template,errors,attributes){
 	 * @param {string} propname
 	 */
 	function execute_field_action(t,propname){
+		if (!isObject(t)){
+			return;
+		}
 		var wholerule = t[propname];
 		if (empty(wholerule) || !isString(wholerule))
 			return;
