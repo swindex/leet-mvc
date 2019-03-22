@@ -177,13 +177,20 @@ export class Forms extends BaseComponent{
 				return this.renderFieldGroupHTML(el, [this.addInput(el,{time:'', format:'time'})]);	
 			case "date-time":
 				var dateEl = $.extend({}, el);
+				var timeEl = $.extend({}, el);
+				
 				dateEl.name += "_date";
 				dateEl._name += "_date";
-				Objects.setPropertyByPath(this.data, dateEl._name, Objects.getPropertyByPath(this.data, el._name));
+				timeEl.name += "_time";
+				timeEl._name += "_time";
+				
+				var dateTime = Objects.getPropertyByPath(this.data, el._name)
+				Objects.setPropertyByPath(this.data, dateEl._name, dateTime);
+				Objects.setPropertyByPath(this.data, timeEl._name, dateTime);
 				
 				return this.renderFieldGroupHTML(el,  [
-					'<div class="split">' + this.addInput(dateEl,{date:'', format:'date', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',false)"})+ '</div>',
-					'<div class="split">' + this.addInput(el,	 {time:'', format:'time', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',true)"})+ '</div>',
+					'<div class="split">' + this.addInput(dateEl, {date:'', format:'date', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',false)"})+ '</div>',
+					'<div class="split">' + this.addInput(timeEl, {time:'', format:'time', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',true)"})+ '</div>',
 				]);	
 			case "number":
 				this.assertValidateRuleHas(el,"number");
