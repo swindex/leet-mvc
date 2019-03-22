@@ -71,7 +71,7 @@ export class Forms extends BaseComponent{
 
 	_formatSplitDateField(evt, name , isTime){
 		var el = evt.target;
-		console.log(evt, name, isTime);
+		//console.log(evt, name, isTime);
 		var date = null;
 		var time = null;
 		
@@ -86,7 +86,7 @@ export class Forms extends BaseComponent{
 		var newDate = DateTime.combineDateTime(date, time);
 		Objects.setPropertyByPath(this.data,name, newDate);
 
-		console.log(newDate);
+		//console.log(newDate);
 	}
 	
 	_formatPhoneNumber(evt){
