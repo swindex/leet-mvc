@@ -34,6 +34,20 @@ export var Confirm=function(prompt,onConfirm,title){
 }
 
 /**
+ * Show simple Confirm Box 
+ * @param {string} prompt 
+ * @param {function():void} onConfirm 
+ * @param {string} [title] 
+ */
+export var ConfirmDanger=function(prompt,onConfirm,title){
+	var p = Dialog(title);
+	
+	p.addLabel(null,Text.escapeHTML(prompt, true));
+	p.addActionButton('Yes', onConfirm);
+	p.addActionButton('No',()=>{});
+}
+
+/**
  * Show simple Prompt Box 
  * @param {string} prompt 
  * @param {function(string|number):void} onConfirm 
@@ -60,7 +74,7 @@ export var Prompt = function(prompt, onConfirm, title, value, validateRule, type
 /**
  * Show simple Alert box
  * @param {string} prompt 
- * @param {function():boolean} [onConfirm]
+ * @param {function():boolean|void} [onConfirm]
  * @param {string} [title] 
  */
 export var Alert=function(prompt,onConfirm,title){

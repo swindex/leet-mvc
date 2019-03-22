@@ -2,7 +2,7 @@ import { Map } from "./core/map";
 import { BasePage } from "./pages/BasePage";
 import { Objects } from "./core/Objects";
 import { NavController } from "./core/NavController";
-import { ConfirmButtons, Alert } from "./core/simple_confirm";
+import { ConfirmButtons, Alert, Confirm, ConfirmDanger } from "./core/simple_confirm";
 import { Dialog, DialogPage } from "./pages/DialogPage/DialogPage";
 import { Translate, ReplaceValues } from "./core/Translate";
 import { Injector } from "./core/Injector";
