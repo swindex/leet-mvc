@@ -9,7 +9,7 @@ export class OptionsDialogPage extends DialogPage{
 
 		/**
 		 * List items 
-		 * @type {{[x: string]: any,image?:string,icon?:string,title:string,text:string}[]} */
+		 * @type {{[x: string]: any,image?:string,icon?:string,title:string,text?:string}[]} */
 		this.items=[];
 		this.content = `
 			<ul>

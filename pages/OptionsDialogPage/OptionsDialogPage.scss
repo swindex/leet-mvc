@@ -46,12 +46,12 @@
 			.item-title{
 				font-size: 1em;
 			}
-
+			
 		}
 		&:last-child {
-			span{
+			div.item {
 				border-bottom: none;
 			}
-		}		
+		}
 	}
 }
