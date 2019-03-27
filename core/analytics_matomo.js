@@ -1,47 +1,34 @@
-//Firebase Analytics 
+
+// Analytics 
 export class Analytics {
 	static get Event() {return {
 		USERLOGIN:"Login",
-		USERLOGOUT:"Logout",
-		USERAUTOLOGIN: null,
-		LOGINFAIL:"LOGINFAIL",
-		
-		APPERROR:"APPERROR",
-		APIERROR:"APIERROR",
-		SEARCH:"SEARCH",
-		ORDER_OPEN:"Order Details",
-		LOADFILE:"LOADFILE",
-		EDITFEE:"Edit Fee",
-		SETAPPOINTMENT: "Set Appointment",
-		NOTE_ADDED:"Note Added",
-		NOTES_VIEWED:"Notes Viewed",
-		PHONE_CALL:"Make Call",
-		SMS_TEXT:"Send Text",
-		EDIT_MAPSETTINGS:"Edit Map Settings",
-		LAUNCH_NAVIGATOR:"Navigator Launch",
-		SETTINGS_SAVED:"Save User Settings",
-		FCM_START: null
 	}};
+
+	static get Page(){
+		return {
+			App: "Open App"
+		};
+	}
 	
 	//User properties that do not change during visit. Used for Segmenting users
-	static get UserProperty() {return{
-		USER_TYPE: "User_Type",
-		USER_NAME: "User_Name",
-	}}
-	//Action properties that change from order to order. Used for segmenting users
-	static get ActionProperty() {return{
-		LENDER_NAME: "Lender_Name",
-		ORDER_ID: "Order_ID",
-		ORDER_BRANCH_NAME: "Branch_Name",
-		ORDER_SCHEMA: "Schema_Name",
-		ORDER_AMC_NAME: "Order_AMC_Name",
-		ORDER_AMC_ID: "Order_AMC_ID"
-	}}
+	static get UserProperty() {
+		return {
+			USER_TYPE: "User_Type",
+		}
+	}
+	//Action properties that change from order to order. Used for segmenting actions
+	static get ActionProperty() {
+		return {
+			ORDER_BRANCH_NAME: "Branch_Name",
+		}
+	}
 	//Not used at the moment because there is no way to segment by dimension
-	static get Dimension() {return{
-		Visit_AMC_Name: 1,
-		Action_AMC_Name: 2,
-	}}
+	static get Dimension() {
+		return {
+			Visit_AMC_Name: 1,
+		}
+	}
 	/**
 	 * Create Tracker instance
 	 * @param {{SiteId:number, URL: string}} config 
@@ -50,15 +37,15 @@ export class Analytics {
 		this.config = config;
 
 		//only init if device is initialized
-		if (typeof device !== 'undefined')
+		if (typeof device !== 'undefined'){
 			this.Tracker = new Matomo(config.SiteId,config.URL);
-		
+		}
+
 		this.PrevScreenName = null;
 
 	}
 
 	init(){
-		//
 		this.Tracker = new Matomo(this.config.SiteId,this.config.URL);
 	}
 
