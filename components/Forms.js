@@ -315,7 +315,7 @@ export class Forms extends BaseComponent{
 		this.types[el._name] = "password";	
 		return (`
 			<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>`+
-			(el.unit || el.icon ? `<div class="icon" onclick="component.togglePasswordType('${el._name}')">
+			(true ? `<div class="icon" onclick="component.togglePasswordType('${el._name}')">
 				<i class="fas fa-eye" [if]="component.types['${el._name}']=='password'"></i>
 				<i class="fas fa-eye-slash" [if]="component.types['${el._name}']=='text'"></i>
 			</div>` : '')
