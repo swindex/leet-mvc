@@ -101,7 +101,13 @@ export class DialogPage extends BasePage{
 	}
 
 	addLabel (title, value, attrs) {
-		this.controls.push({name:"label", type:'label', title:title, value:value ,attributes:attrs});
+		this.controls.push({name:"label", type:'label', title:title, value:value, attributes:attrs});
+		this.render();
+		
+		return this;
+	}
+	addLink (title, value, attrs) {
+		this.controls.push({name:"link", type:'link', title:title, value:value, attributes:attrs});
 		this.render();
 		
 		return this;

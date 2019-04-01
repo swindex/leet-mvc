@@ -417,9 +417,14 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addLabel(el){
+		var opt = $.extend({}, { }, el.attributes);
 		return (`
-			<div class="label">${(el.value != null ? el.value : "")}</div>
-		`);
+			<div class="label" ${this.generateAttributes(opt)} >${(el.value != null ? el.value : "")}</div>`	+
+			(el.unit || el.icon ? `<div class="icon">
+				${el.unit ? el.unit :''}
+				${el.icon ? `<i class="${el.icon}"></i>` :''}
+			</div>` : '')
+		);
 	}
 	/**
 	 * 
@@ -433,9 +438,14 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addLink(el){
+		var opt = $.extend({}, { }, el.attributes);
 		return (`
-			<label class="link" name="${el._name}">${el.title}</label>
-		`); 
+			<div class="link" ${this.generateAttributes(opt)} >${(el.value != null ? el.value : "")}</div>`	+
+			(el.unit || el.icon ? `<div class="icon">
+				${el.unit ? el.unit :''}
+				${el.icon ? `<i class="${el.icon}"></i>` :''}
+			</div>` : '')
+		);
 	}
 	/**
 	 * 

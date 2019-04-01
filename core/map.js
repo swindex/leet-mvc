@@ -44,8 +44,8 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 
 	/** @type {google.maps.DirectionsRendererOptions} */
 	var directionsRendererOptions ={
-			suppressMarkers: false,
-			preserveViewport: true
+		suppressMarkers: false,
+		preserveViewport: true
 	}
 
 	GoogleMapsLoader.KEY = API_KEY;

@@ -82,7 +82,7 @@ export var DateTime = {
 	 * @returns {string}
 	 */
 	formatLocalDate: function(__date) {
-		if (__date !== undefined && !moment(__date).isValid())
+		if (__date == undefined || !moment(__date).isValid())
 			return null;
 		return moment(__date).format('YYYY-MM-DD HH:mm:ss');
 	},
@@ -92,7 +92,7 @@ export var DateTime = {
 	 * @returns {string}
 	 */
 	fromLocalDate: function(__date) {
-		if (__date !== undefined && !moment(__date).isValid())
+		if (__date == undefined || !moment(__date).isValid())
 			return null;
 		return moment(__date,'YYYY-MM-DD HH:mm:ss').toISOString();
 	},
@@ -102,7 +102,7 @@ export var DateTime = {
 	 * @returns {string}
 	 */
 	toHumanDate: function(__date) {
-		if (__date !== undefined && !moment(__date).isValid())
+		if (__date == undefined || !moment(__date).isValid())
 			return null;
 		
 		return moment(__date).format('LL');
@@ -114,7 +114,7 @@ export var DateTime = {
 	 * @returns {Date}
 	 */
 	fromHumanDate: function(__date) {
-		if (__date !== undefined && !moment(__date, DateTime._humanDate).isValid())
+		if (__date == undefined || !moment(__date, DateTime._humanDate).isValid())
 			return null;
 		return moment(__date, DateTime._humanDate).toDate();
 	},
@@ -124,7 +124,7 @@ export var DateTime = {
 	 * @returns {string}
 	 */
 	toHumanTime: function(__date) {
-		if (__date !== undefined && !moment(__date).isValid())
+		if (__date == undefined || !moment(__date).isValid())
 			return null;
 		
 		return moment(__date).format(DateTime._humanTime);
@@ -135,7 +135,7 @@ export var DateTime = {
 	 * @returns {Date}
 	 */
 	fromHumanTime: function(__date) {
-		if (__date !== undefined && !moment(__date, DateTime._humanTime).isValid())
+		if (__date == undefined || !moment(__date, DateTime._humanTime).isValid())
 			return null;	
 		return moment(__date, DateTime._humanTime).toDate();
 	},
@@ -146,7 +146,7 @@ export var DateTime = {
 	 * @returns {Date}
 	 */
 	fromHumanDateTime: function(__date) {
-		if (__date !== undefined && !moment(__date,DateTime._humanDateTime).isValid())
+		if (__date == undefined || !moment(__date,DateTime._humanDateTime).isValid())
 			return null;
 		return moment(__date,DateTime._humanDateTime).toDate();
 	},
@@ -156,7 +156,7 @@ export var DateTime = {
 	 * @returns {string}
 	 */
 	toHumanDateTime: function(__date) {
-		if (__date !== undefined && !moment(__date).isValid())
+		if (__date == undefined || !moment(__date).isValid())
 			return null;	
 		return moment(__date).format(DateTime._humanDateTime);
 	},
@@ -169,7 +169,7 @@ export var DateTime = {
 	 */
 	toFormat(__date, format){
 		format = format || DateTime._humanMMDDYYYY;
-		if (__date !== undefined && !moment(__date).isValid())
+		if (__date == undefined || !moment(__date).isValid())
 			return null;
 		return moment(__date).format(format);
 	},
@@ -178,14 +178,14 @@ export var DateTime = {
 	moment: moment,
 
 	toJSONDate: function(__date){
-		if (__date !== undefined && !moment(__date).isValid())
+		if (__date == undefined || !moment(__date).isValid())
 			return null;
 		
 		return moment(__date).format(DateTime._JSONDate);
 	},
 
 	fromJSONDate: function(__date){
-		if (__date !== undefined && !moment(__date).isValid())
+		if (__date == undefined || !moment(__date).isValid())
 			return null;
 		return moment(__date,DateTime._JSONDate);
 	},
@@ -194,7 +194,7 @@ export var DateTime = {
 	 * Return Device Date-Time
 	 */
 	fromJSONDeviceDate: function(__date){
-		if (__date !== undefined && !moment(__date).isValid())
+		if (__date == undefined || !moment(__date).isValid())
 			return null;
 		var v = moment(__date,DateTime._JSONDate).parseZone().format('LLLL');	
 		var v2= moment(v,'LLLL');

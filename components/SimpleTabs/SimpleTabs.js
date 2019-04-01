@@ -10,10 +10,14 @@ export class SimpleTabs extends BaseComponent{
 		this.container = null;
 		/** @type {DocumentFragment} */
 		this.tempContainer = null;
-
+		this._currentTabLabel = null;
 	}
 
-	onTabChanged(index){
+	/**
+	 * ***Override*** Called when tab is changed
+	 * @param {string} tabLabel 
+	 */
+	onTabChanged(tabLabel){
 
 	}
 
@@ -26,12 +30,24 @@ export class SimpleTabs extends BaseComponent{
 		);
 	}
 
+	/** @param {HTMLElement} elem */
+	_getTabLabel(elem){
+		return $(elem).attr('for');
+	}
+
 	_getTab(target){
-		var tab_id = $(target).attr('for');
+		var tab_id = this._getTabLabel(target);
 		return this.container.find('#'+tab_id);
 	}
 
 	_select(target){
+		var label = this._getTabLabel(target);
+		if (this._currentTabLabel !== label){
+			this._currentTabLabel = label;
+			this.onTabChanged( label );
+		}
+		this._currentTabLabel = label;
+
 		$(target).attr('selected','');
 		this._getTab(target).attr('selected','');
 	}
