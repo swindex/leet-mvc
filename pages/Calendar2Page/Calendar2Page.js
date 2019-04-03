@@ -929,32 +929,6 @@ function populateDayEventSlots(el, yBusySlots){
 		}
 	}
 }
-/**
- * 
- * @param {Calendar2Event} el 
- * @param {{ [slot: string]: Calendar2Event; }} daySlots 
- */
-function calculateEventOverlaps(el, daySlots){
-	var overlapShift = 0;
-	var touched = [];
-	Objects.forEach(daySlots, function(eli,i){
-		//added event start date overlaps with already-existing
-		if (el.startDate >= eli.startDate && el.startDate < eli.endDate && !eli.allday ){
-			touched.push(eli);
-			if (eli.overlaps > 0)
-				overlapShift = eli.overlaps + 1;
-			else
-				overlapShift = overlapShift + 1;
-		}
-	});
-	
-	Objects.forEach(touched, function(eli){
-		//set all touched events overlaps count to the total overlap
-		eli.overlaps = overlapShift;
-	});
-
-	return overlapShift;
-}
 
 /**
  * @param {string} title
