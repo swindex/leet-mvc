@@ -45,7 +45,9 @@ export function NavController() {
 	this.setRoot = function(pageConstructor, parameters){
 		removeAllFrames();
 		self.onPageNavigateTo(pageConstructor.name);
-		return createPage(pageConstructor, argumentsToArray(arguments,1));
+		var page = createPage(pageConstructor, argumentsToArray(arguments,1));
+		self.onPageCreated(page);
+		return page;
 	}
 	/**
 	 * Remove All Pages
@@ -61,6 +63,7 @@ export function NavController() {
 			tryCall(currentFrame().page, currentFrame().page.onLeave);		
 		self.onPageNavigateTo(pageConstructor.name);
 		var page = createPage(pageConstructor, argumentsToArray(arguments,1));
+		self.onPageCreated(page);
 		return page;
 	}
 	/**
@@ -396,15 +399,23 @@ export function NavController() {
 	}
 
 	/**
+	 * ***Override***
 	 * Callback fired when Back button is clicked on LAST page of the app 
 	 * @param {string} name
 	 */
 	this.onRootPageBackPressed = function (name){}
 	/**
+	 * ***Override***
 	 * Callback fired on page forward
 	 * @param {string} name 
 	 */
 	this.onPageNavigateTo = function (name){}
+
+	/**
+	 * ***Override***
+	 * Callback fired when page is created
+	 */
+	this.onPageCreated = function(page){}
 	/**
 	 * Callback fired when page is navigated "back" to
 	 * @param {string} name 

@@ -1,0 +1,324 @@
+@import "../../scss/_variables.scss";
+
+#page-Calendar2Page{
+	$c_bo_month :  1px solid #ededed;
+
+	$c_f_extra : #2196F3;
+
+	$c_b_current: #178101;
+	$c_f_current: #fff;
+	$c_b_internal: #266eab;
+	$c_f_internal: #fff;
+	$c_b_external: #FCEE98;
+	$c_f_external: #000;
+	$c_f_tab: #656363;
+	$c_tab_border: #E91E63;
+
+	$c_bo_sel_day: 2px solid #E91E63;
+
+	$c_b_day_ev_allday: #d1e9ff;
+	
+	$c_bo_day_ev_internal: 4px solid #266eab;
+	$c_bo_day_ev_external: 4px solid #FFC107;
+	$c_bo_day_ev_current: 4px solid #178101;
+	
+	$c_b_day_ev: #f4f4f9;
+	$s_day_ev: 1px 1px 2px 0 rgba(41, 41, 41, 0.5);
+	$s_month_ev: 1px 1px 2px 0 rgba(41, 41, 41, 0.5);
+
+	$c_b_body: #fff;
+	
+	$c_b_day_hour_even: #f5f5f5;
+	$c_b_day_hour_odd: #fff;
+	$c_b_day_border: #ededed;
+
+	$c_bo_nav:  1px solid #e2e2e2;
+	$c_b_nav: aliceblue;
+	.touch-scroll{
+		overflow: visible !important;
+	}
+	.tabs-container{
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+	.tabs{
+		height: 100%;
+		position: relative;
+		overflow: hidden;
+		&>div{
+			height: 100%;
+			width: 100%;
+			opacity: 0;
+			position: absolute;
+			display: flex;
+			flex-direction: column;
+			transform: scale(0.25);
+			transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+			&[selected]{
+				opacity: 1;
+				z-index: 1;
+				transform: scale(1);
+			}
+		}
+
+	}
+	.tab-buttons li{
+		font-size: 2rem;
+		line-height: 2rem;
+		margin: 0;
+		padding: 12px 0px;
+		color: $c_f_tab;
+		&[selected]{
+			border-bottom: 3px solid $c_tab_border;
+		}
+	}
+	.allday-events{
+		padding-left: 50px;
+		.event {
+			padding: 5px;
+			background-color: $c_b_day_ev_allday;
+			margin-bottom: 2px;
+			box-shadow: 1px 1px 2px 0 rgba(0,0,255,.5);
+		}
+	}
+	.day-slides-wrapper{
+		position: relative;
+	}
+	.day-events{
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		background-color: white;
+		transition: transform 0.3s ease-in-out;
+		&.slidefromleft{
+			transform: translateX(-100%);
+		}
+		&.slidefromright{
+			transform: translateX(100%);
+		}
+		&.slidetoleft{
+			transform: translateX(-100%);
+		}
+		&.slidetoright{
+			transform: translateX(100%);
+		}
+		
+		table{
+			width: 100%;
+
+			//position: absolute;
+			
+			border-spacing: 0px;
+			border-collapse: collapse;
+			table-layout: fixed;
+			tbody tr{
+				height: 60px;
+				background: $c_b_day_hour_odd
+			}
+			tr:nth-child(even) {
+				background: $c_b_day_hour_even;
+			}
+			tbody td{
+				border: 1px solid $c_b_day_border;
+				padding: 0;
+				&.eventColumn{
+					vertical-align: text-bottom;
+				}
+				&.hourColumn{
+					font-size: 1em;
+					padding: 0 5px;
+					.amLabel{
+						font-size: 0.75em;
+					}
+				}
+				.slots {
+					position: relative;
+					.event{
+						position: absolute;
+						overflow: hidden;
+						min-height: 20px;
+						width: 100%;
+						background-color: $c_b_day_ev;
+						border-left: $c_bo_day_ev_external;
+						padding: 0 5px;
+						box-shadow: $s_day_ev;
+						&.internal{
+							border-left: $c_bo_day_ev_internal;
+						}
+						&.current{
+							border-left: $c_bo_day_ev_current;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.calendar{
+		height: 100%;
+		position: relative;
+		table{
+			width: 100%;
+			height: 100%;
+			background-color: $c_b_body;
+
+			position: absolute;
+			
+			border-spacing: 0px;
+			border-collapse: collapse;
+			table-layout: fixed;
+
+			transition: transform 0.3s ease-in-out;
+			&.slidefromleft{
+				transform: translateX(-100%);
+			}
+			&.slidefromright{
+				transform: translateX(100%);
+			}
+			&.slidetoleft{
+				transform: translateX(-100%);
+			}
+			&.slidetoright{
+				transform: translateX(100%);
+			}
+	
+			thead td{
+				text-align: center;
+				padding: 6px 0;
+			}
+			tbody tr{
+				height: 16.5%;
+			}
+			tbody td {
+				vertical-align: top;
+				width: 14.28%;
+				border: $c_bo_month;
+				padding: 0;
+				//overflow-y: hidden;
+				position: relative;
+
+					.date {
+						font-size: 14px;
+						height: 19px;
+						text-align: right;
+						padding-right: 3px;
+						b{ //extra events counter
+							float: left;
+							color: $c_f_extra;
+							padding-left: 5px;
+						}
+					}
+					.slots{
+						position: relative;
+						.apt{
+							position: absolute;
+						}
+					}
+					.apt{
+						padding: 0 2px;
+						min-width: 100%;
+						font-size: 10px;
+						line-height: 12px;
+						height: 12px;
+						overflow: hidden;
+						background-color: $c_b_external;
+						word-break: break-all;
+						box-shadow: $s_month_ev;
+						&.internal{
+							color: $c_f_internal;
+							background-color: $c_b_internal;
+						}
+						&.current{
+							color: $c_f_current;
+							background-color: $c_b_current;
+						}
+						&.empty {
+							background-color: initial !important;
+						}
+						&.expand-2{
+							width:calc(28.0vw);
+						}
+						&.expand-3{
+							width:calc(42.5vw);
+						}
+						&.expand-4{
+							width:calc(56.5vw);
+						}
+						&.expand-5{
+							width:calc(70vw);
+						}
+						&.expand-6{
+							width:calc(84vw);
+						}
+						&.expand-7{
+							width:calc(98vw);
+						}
+						&.slot-0{
+							top:0px;
+						}
+						&.slot-1{
+							top:15px;
+						}
+						&.slot-2{
+							top:30px;
+						}
+						&.slot-3{
+							top:45px;
+						}
+						&.slot-4{
+							top:60px;
+						}
+						&.slot-5{
+							top:75px;
+						}
+						&.slot-6{
+							top:90px;
+						}
+					}
+
+				&[selected]{
+					>.frame { 
+						top: 0;
+						position: absolute;
+						border: $c_bo_sel_day;
+						height: 100%;
+						width: 100%;
+					}
+				}
+			}
+		}
+	}
+	.month-buttons{
+		display: flex;
+		background-color: $c_b_nav;
+		border-bottom: $c_bo_nav;
+		button{
+			color: $c_f_tab;
+			border-radius: 50%;
+			background-color: transparent;
+			width: 2.5em;
+			height: 2.5em;
+			padding: .5em;
+			line-height: 1em;
+			&:active{
+				transition: background-color 0.1s ease;
+				background-color: rgba(147, 145, 145, 0.5);
+			}
+		}
+		&>div{
+			margin:auto;
+			//padding:1em;
+			&>button{
+				width: auto;
+				border-radius: $margin-sm;
+			}
+			&:first-child{
+				margin-left: 0;
+			}
+			&:last-child{
+				margin-right: 0;
+			}
+		}
+	}
+}
