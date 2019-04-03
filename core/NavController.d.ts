@@ -13,6 +13,7 @@ declare namespace NavControllerModule{
 		setRoot<T>(PageClass: { new (x, ...args): T }, ...args): T;
 		push<T>(PageClass: { new (x, ...args): T }, ...args): T;
 		onPageNavigateTo(pageName: string): void;
+		onPageCreated(PageInstance: any):void;
 		onRootPageBackPressed(): void;
 		getPages(): PageFrame[];
 		destroy():void;

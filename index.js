@@ -21,6 +21,8 @@ import { Extend, GUID, Override, tryCall } from "./core/helpers";
 
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
 import './core/polyfills';
+import { CalendarPage } from "leet-mvc/pages/CalendarPage/CalendarPage";
+import { Calendar2Page } from "leet-mvc/pages/Calendar2Page/Calendar2Page";
 
 //Make jQuery available globally
 // @ts-ignore
