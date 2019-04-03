@@ -588,7 +588,6 @@ export class Calendar2Page extends HeaderPage{
 						this.onAppraisalEventSaveClicked( addEvent, (orderDetails)=>{
 							
 							var resolve = ()=>{
-								deleteEventFromDaySlots(appraisalEvent.title, undefined, this.dayEventSlots);
 								deleteEventFromUnscheduled(appraisalEvent.title, undefined, this.unscheduledEvents);
 								window.plugins.calendar.createEvent(
 									addEvent.title, addEvent.location,addEvent.message, addEvent.startDate, addEvent.endDate,
@@ -608,7 +607,6 @@ export class Calendar2Page extends HeaderPage{
 						})
 					} else if (event.id ){
 						var resolve = ()=>{
-							deleteEventIdFromDaySlots(event.id, this.dayEventSlots);
 							window.plugins.calendar.createEvent(
 								addEvent.title, addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate,
 								onEventAdded.bind(this),
@@ -636,13 +634,14 @@ export class Calendar2Page extends HeaderPage{
 					if (appraisalEvent){
 						event.internalEventInfo = appraisalEvent.internalEventInfo;
 					}
-					populateDayEventSlotsReOrder(event, this.dayEventSlots);
+					this._getCalendarEvents();
 				}
 			},(err)=>{
 				console.log(err);
 			})
 		}
 		function onEventAddError(data){
+			this._getCalendarEvents();
 			if (this.appraisalEvent){
 				this.onAppraisalEventError(event)
 			}
@@ -691,7 +690,8 @@ export class Calendar2Page extends HeaderPage{
 	 */
 	removeAppraisalEvent(appraisalEvent){
 		var resolve = ()=>{
-			deleteEventFromDaySlots(appraisalEvent.title, null, this.dayEventSlots);
+			//deleteEventFromDaySlots(appraisalEvent.title, null, this.dayEventSlots);
+			this._getCalendarEvents();
 		}
 		window.plugins.calendar.deleteEvent(appraisalEvent.title, null, null , appraisalEvent.startDate.clone().subtract(6, 'months').toDate(), appraisalEvent.startDate.clone().add(6, 'months').toDate(),
 			resolve.bind(this),resolve.bind(this)
@@ -836,26 +836,6 @@ function getDayNumber(mom_date){
 	return mom_date.diff( moment("1900-1-1","YYYY-MM-D"),'day');
 }
 
-function populateDayEventSlotsReOrder(el, yBusySlots){
-	var ev_st = moment(el.startDate);
-	var ev_end = moment(el.endDate).subtract(1,'second');
-	
-	var ev_d_st = getDayNumber(ev_st);
-
-	var copy = [];
-	Objects.forEach(yBusySlots[ev_d_st], function(event,slot){
-		copy.push(event);		
-	});
-	copy.push(el);
-	copy.sort(eventSortCallback);
-
-	yBusySlots[ev_d_st] = {};
-
-	Objects.forEach(copy, function(event){
-		populateDayEventSlots(event,yBusySlots);
-	});
-}
-
 function eventSortCallback(a, b){
 	return a.startDate - b.startDate !== 0 ? a.startDate - b.startDate : a.endDate - b.endDate;
 }
@@ -877,8 +857,23 @@ function populateDayEventSlots(el, yBusySlots){
 
 	//find next available slot for THIS day
 	var slot = 0;
-	var overlapShift = 0;;
+	var overlapShift = 0;
+	var totalOverlaps = 0;
+	var overlaps = 0;
+	var minOverlapShift = 0;
+	
 	var touched = [];
+	Objects.forEach(yBusySlots[ev_d_st], function(eli,i){
+		//if event being added is already added as internal
+		if (eli && eli.internalEventInfo && eli.title == el.title && eli.startDate.isSame(el.startDate) ){
+			return false;
+		}
+
+		if (el.startDate >= eli.startDate && el.startDate < eli.endDate && !eli.allday ){
+			overlaps++;
+		}
+	});
+	var maxOverlaps = 0;
 	Objects.forEach(yBusySlots[ev_d_st], function(eli,i){
 		//if event being added is already added as internal
 		if (eli && eli.internalEventInfo && eli.title == el.title && eli.startDate.isSame(el.startDate) ){
@@ -892,22 +887,29 @@ function populateDayEventSlots(el, yBusySlots){
 		}
 
 		if (el.startDate >= eli.startDate && el.startDate < eli.endDate && !eli.allday ){
-			touched.push(eli);
-			if (eli.overlaps > 0)
-				overlapShift = eli.overlaps + 1;
-			else
-				overlapShift = overlapShift + 1;
+			if (minOverlapShift < eli.overlapShift){
+				minOverlapShift = eli.overlapShift
+			}
+			if (maxOverlaps < eli.overlaps){
+				maxOverlaps = eli.overlaps
+			}
+			if (overlaps > eli.overlapShift ){ 
+				touched.push(eli);
+				overlapShift ++;
+				totalOverlaps ++;
+			} else {
+				overlapShift = Math.min(0, minOverlapShift-1);
+				totalOverlaps = eli.overlaps;
+			}
 		}
-
-
 	});
-	
+	totalOverlaps = Math.max(totalOverlaps, maxOverlaps);
 	Objects.forEach(touched, function(eli){
 		//set all touched events overlaps count to the total overlap
-		eli.overlaps = overlapShift;
+		eli.overlaps = totalOverlaps;
 	});
 	
-	el.overlaps = overlapShift;
+	el.overlaps = totalOverlaps;
 	el.overlapShift = overlapShift;
 
 	if (!yBusySlots[ev_d_st]){
@@ -934,34 +936,6 @@ function populateDayEventSlots(el, yBusySlots){
  * @param {string} title
  * @param {string} message
  * 
- * @param {Calendar2DaySlots} yBusySlots 
- */
-function deleteEventFromDaySlots(title, message, yBusySlots){
-	Objects.forEach(yBusySlots, function(daySlots, day){
-		var deleted = false;
-		Objects.forEach(daySlots, function(event,slot){
-			if (event.title == title && (empty(message) || message == event.message)){
-				delete daySlots[slot];
-				deleted = true;
-				return false;
-			}
-		})
-		if (deleted){
-			//create a copy of day slots
-			var copy = Objects.copy(daySlots);
-			//and re-assign all events of the day
-			yBusySlots[day] = {};
-			Objects.forEach(copy, function(event,slot){
-				populateDayEventSlots(event,yBusySlots);
-			});
-		}
-	});
-}
-
-/**
- * @param {string} title
- * @param {string} message
- * 
  * @param {Calendar2Event[]} events 
  */
 function deleteEventFromUnscheduled(title, message, events){
@@ -970,32 +944,6 @@ function deleteEventFromUnscheduled(title, message, events){
 			delete events[i];
 		}
 	})
-}
-
-/**
- * @param {number|string} event_id
- * @param {Calendar2DaySlots} yBusySlots 
- */
-function deleteEventIdFromDaySlots(event_id, yBusySlots){
-	Objects.forEach(yBusySlots, function(daySlots, day){
-		var deleted = false;
-		Objects.forEach(daySlots, function(event,slot){
-			if (event.id == event_id){
-				delete daySlots[slot];
-				deleted = true;
-				return false;
-			}
-		})
-		if (deleted){
-			//create a copy of day slots
-			var copy = Objects.copy(daySlots);
-			//and re-assign all events of the day
-			yBusySlots[day] = {};
-			Objects.forEach(copy, function(event,slot){
-				populateDayEventSlots(event,yBusySlots);
-			});
-		}
-	});
 }
 
 Calendar2Page.selector = "page-Calendar2Page";
