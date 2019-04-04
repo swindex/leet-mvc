@@ -9,6 +9,7 @@ import { Translate, ReplaceValues } from "./core/Translate";
 import { Injector } from "./core/Injector";
 import { SimpleTabs } from "./components/SimpleTabs/SimpleTabs";
 import { MenuPage } from "./pages/MenuPage/MenuPage";
+import { LoginPage } from "./pages/LoginPage/LoginPage";
 import { ActionSheetPage } from "./pages/ActionSheetPage/ActionSheetPage";
 import { DeBouncer } from "./core/DeBouncer"; 
 import { DateTime } from "./core/DateTime";
