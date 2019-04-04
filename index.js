@@ -1,9 +1,10 @@
-import { Map } from "./core/map";
+import { MapElement } from "./core/MapElement";
 import { BasePage } from "./pages/BasePage";
 import { Objects } from "./core/Objects";
 import { NavController } from "./core/NavController";
 import { ConfirmButtons, Alert, Confirm, ConfirmDanger } from "./core/simple_confirm";
 import { Dialog, DialogPage } from "./pages/DialogPage/DialogPage";
+import { DirectionsPage } from "./pages/DirectionsPage/DirectionsPage";
 import { Translate, ReplaceValues } from "./core/Translate";
 import { Injector } from "./core/Injector";
 import { SimpleTabs } from "./components/SimpleTabs/SimpleTabs";
@@ -21,10 +22,9 @@ import { Extend, GUID, Override, tryCall } from "./core/helpers";
 
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
 import './core/polyfills';
-import { CalendarPage } from "leet-mvc/pages/CalendarPage/CalendarPage";
-import { Calendar2Page } from "leet-mvc/pages/Calendar2Page/Calendar2Page";
+import { CalendarPage } from "./pages/CalendarPage/CalendarPage";
+import { Calendar2Page } from "./pages/Calendar2Page/Calendar2Page";
 
 //Make jQuery available globally
 // @ts-ignore
 window.$ = window.jQuery = require("jquery");
-

@@ -1,0 +1,9 @@
+@import './../../scss/variables';
+#page-DirectionsPage{
+	.dialog-content{
+		padding: $margin-sm;
+	}
+	.tab-buttons{
+		margin-top: $margin-lg;
+	}
+}
