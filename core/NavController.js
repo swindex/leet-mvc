@@ -275,7 +275,7 @@ export function NavController() {
 			if (!empty(frame.page.visibleParent))
 				hideAfter++;
 			if (hideAfter > n){
-				showPageElement(frame);
+				showPageElement(frame, i < stack.length-1);
 			}else{	
 				hidePageElement(frame);				
 			}
@@ -286,8 +286,9 @@ export function NavController() {
 	/**
 	 * Show particular page DOM element
 	 * @param {PageFrame} frame - page to show
+	 * @param {boolean} [inactive] 
 	 */
-	function showPageElement(frame){
+	function showPageElement(frame, inactive){
 		var element = frame.element;
 
 		window.requestAnimationFrame(function(){
@@ -306,7 +307,13 @@ export function NavController() {
 			//immediately remove block hidden
 			element.removeAttr('hidden');
 			element.removeAttr('hiding');
-						
+			
+			if (inactive){
+				element.attr('inactive',"");
+			} else {
+				element.removeAttr('inactive');
+			}
+			
 			//Set to fully visible after 500ms delay
 			setTimeout(function(){
 				if (typeof element.attr('deleting') !=='undefined')

@@ -4,12 +4,14 @@ import { Objects } from "./core/Objects";
 import { NavController } from "./core/NavController";
 import { ConfirmButtons, Alert, Confirm, ConfirmDanger } from "./core/simple_confirm";
 import { Dialog, DialogPage } from "./pages/DialogPage/DialogPage";
-import { DirectionsPage } from "./pages/DirectionsPage/DirectionsPage";
 import { Translate, ReplaceValues } from "./core/Translate";
 import { Injector } from "./core/Injector";
 import { SimpleTabs } from "./components/SimpleTabs/SimpleTabs";
 import { MenuPage } from "./pages/MenuPage/MenuPage";
 import { LoginPage } from "./pages/LoginPage/LoginPage";
+import { CalendarPage } from "./pages/CalendarPage/CalendarPage";
+import { Calendar2Page } from "./pages/Calendar2Page/Calendar2Page";
+import { DirectionsPage } from "./pages/DirectionsPage/DirectionsPage";
 import { ActionSheetPage } from "./pages/ActionSheetPage/ActionSheetPage";
 import { DeBouncer } from "./core/DeBouncer"; 
 import { DateTime } from "./core/DateTime";
@@ -23,9 +25,8 @@ import { Extend, GUID, Override, tryCall } from "./core/helpers";
 
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
 import './core/polyfills';
-import { CalendarPage } from "./pages/CalendarPage/CalendarPage";
-import { Calendar2Page } from "./pages/Calendar2Page/Calendar2Page";
 
 //Make jQuery available globally
 // @ts-ignore
 window.$ = window.jQuery = require("jquery");
+
