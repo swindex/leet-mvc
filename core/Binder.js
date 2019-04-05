@@ -790,31 +790,52 @@ export var Binder = function(context, container){
 
 				var f = document.createDocumentFragment()
 
-				//remove existing element, if it is already there
-				if (on.items[0])
-					$(on.items[0].elem).remove();
-				on.items = [];
-
-				//build directive conttnents
+				//build directive contents <div [directive]>contents</div>
+				var templateVdom = null;
 				var ret = on.itemBuilder(inj);
-				ret.map(function(vdom){
-					f.appendChild(vdom.elem);
-					vdom.elem['INJECT'] = inj;
-
-					on.items.push(vdom);
-				});
+				if (ret && ret[0]){
+					templateVdom = ret[0];
+					templateVdom.elem['INJECT'] = inj;
+				};
 				 
 				//if html is supplied, overwrite the first childs contents
-				if (on.items.length==1 && html){
-					var ff = document.createElement('div');
-					ff.innerHTML = html;
-					var parsed = parseElement(ff);
-					var vdom = executeSource(parsed, inj);
-					
-					$(on.items[0].elem).append(vdom.elem.childNodes)
-					on.items[0].items = vdom.items;
+				/** @type {vDom} */
+				var compVdom = null;
+				if (html){
+					var temp = document.createElement('div');
+					temp.innerHTML = html;
+					var parsed = parseElement(temp);
+					var compVdom = executeSource(parsed, inj);
 				}
-				insertAfter(f,on.elem);
+				
+				if (compVdom) {
+					//remember the original html
+					var templateHTML = templateVdom.elem.innerHTML;
+					if (component){
+						component.templateHTML = templateHTML;
+					}
+					
+					if (on.items.length ==0){
+						$(templateVdom.elem).empty();
+						$(templateVdom.elem).append(compVdom.elem.childNodes);
+						on.items[0] = templateVdom;
+						on.items[0].elem['INJECT'] = inj;
+						on.items[0].items = compVdom.items;
+						insertAfter(templateVdom.elem, on.elem);
+						
+					}else{
+						on.items[0].items = compVdom.items;
+						//if (on.items.length==0)
+						on.items[0].elem['INJECT'] = inj;
+						$(on.items[0].elem).empty();
+						$(on.items[0].elem).append(compVdom.elem.childNodes)
+					}
+				} else {
+					//add root [directive] element
+					on.items[0] = templateVdom;
+					insertAfter(templateVdom.elem,on.elem);
+				}
+	
 
 				for( var i in  on.items){
 					if (!on.items.hasOwnProperty(i))
