@@ -10,6 +10,7 @@ export class BaseComponent extends ChangeWatcher{
 		this.html = null;
 		this.events = null;
 		this.templateHTML = null;
+		this.templateFragment = null;
 	}
 
 	/** 

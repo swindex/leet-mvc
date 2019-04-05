@@ -7,6 +7,7 @@ import { isSkipUpdate, hashObject } from "./Watcher";
 import { DateTime } from "./DateTime";
 import { isArray } from "util";
 import { isFunction } from "util";
+import { Objects } from "leet-mvc/core/Objects";
 
 
 var getterCashe = {};
@@ -775,39 +776,45 @@ export var Binder = function(context, container){
 					callbacks = result.events;
 				else
 					callbacks = self.eventCallbacks;
-				
 			}else{ 
 				html=result;
 				callbacks = self.eventCallbacks;
 			}
 			if (on.values[key] !== result){
 				on.values[key] = result;
-				var inj = $.extend({},inject);
 				if (component){
 					tryCall(component,component.onInit, on.elem);
-					$.extend(inj,{component:component});
 				}
 				
-				
-				//build directive contents <div [directive]>contents</div>
-				var templateVdom = null;
-				var ret = on.itemBuilder(inj);
-				if (ret && ret[0]){
-					templateVdom = ret[0];
-					templateVdom.elem['INJECT'] = inj;
-				};
-				 
+				var inj = $.extend({},{component:component},inject);
+
+				var f = document.createDocumentFragment()
+
+			 
 				//if html is supplied, overwrite the first childs contents
 				/** @type {vDom} */
 				var compVdom = null;
+
 				if (html){
-					var temp = document.createElement('div');
-					temp.innerHTML = html;
-					var parsed = parseElement(temp);
-					var compVdom = executeSource(parsed, inj);
+					if(result instanceof DocumentFragment){
+						var compVdom = { elem:result, fragment: result};
+					}else{
+						var temp = document.createElement('div');
+						temp.innerHTML = html;
+						var parsed = parseElement(temp);
+						var compVdom = executeSource(parsed, inj);
+					}
 				}
 				
 				if (compVdom) {
+					//build directive contents <div [directive]>contents</div>
+					var templateVdom = null;
+					var ret = on.itemBuilder(inj);
+					if (ret && ret[0]){
+						templateVdom = ret[0];
+						templateVdom.elem['INJECT'] = inj;
+					};
+
 					//remember the original html
 					var templateHTML = templateVdom.elem.innerHTML;
 					if (component){
@@ -816,13 +823,23 @@ export var Binder = function(context, container){
 					
 					if (on.items.length ==0){
 						$(templateVdom.elem).empty();
+						var f = document.createDocumentFragment();
+						templateVdom.items.forEach(function(vd){
+							f.appendChild(vd.elem);
+						});
+						if (component){
+							component.templateFragment = f;
+						}
 						$(templateVdom.elem).append(compVdom.elem.childNodes);
 						on.items[0] = templateVdom;
 						on.items[0].elem['INJECT'] = inj;
-						on.items[0].items = compVdom.items;
+						on.items[1] = compVdom;
+						on.items[1].items = compVdom.items;
 						insertAfter(templateVdom.elem, on.elem);
 						
 					}else{
+						//Go, here if previously added component had parentTemplate
+						//add computed Vdom
 						on.items[0].items = compVdom.items;
 						//if (on.items.length==0)
 						on.items[0].elem['INJECT'] = inj;
@@ -830,6 +847,14 @@ export var Binder = function(context, container){
 						$(on.items[0].elem).append(compVdom.elem.childNodes)
 					}
 				} else {
+					//build directive contents <div [directive]>contents</div>
+					var templateVdom = null;
+					var ret = on.itemBuilder(inj);
+					if (ret && ret[0]){
+						templateVdom = ret[0];
+						templateVdom.elem['INJECT'] = inj;
+					};
+
 					//add root [directive] element
 					on.items[0] = templateVdom;
 					insertAfter(templateVdom.elem,on.elem);
