@@ -9,7 +9,7 @@ export class BaseComponent extends ChangeWatcher{
 		/** @type {string} */
 		this.html = null;
 		this.events = null;
-		
+		this.templateHTML = null;
 	}
 
 	/** 
