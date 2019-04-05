@@ -782,14 +782,13 @@ export var Binder = function(context, container){
 			}
 			if (on.values[key] !== result){
 				on.values[key] = result;
+				var inj = $.extend({},inject);
 				if (component){
 					tryCall(component,component.onInit, on.elem);
+					$.extend(inj,{component:component});
 				}
 				
-				var inj = $.extend({},{component:component},inject);
-
-				var f = document.createDocumentFragment()
-
+				
 				//build directive contents <div [directive]>contents</div>
 				var templateVdom = null;
 				var ret = on.itemBuilder(inj);
