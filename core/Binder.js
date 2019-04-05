@@ -796,8 +796,8 @@ export var Binder = function(context, container){
 				var compVdom = null;
 
 				if (html){
-					if(result instanceof DocumentFragment){
-						var compVdom = { elem:result, fragment: result};
+					if(html instanceof DocumentFragment){
+						var compVdom = { elem:html, items:[]};
 					}else{
 						var temp = document.createElement('div');
 						temp.innerHTML = html;
@@ -808,20 +808,21 @@ export var Binder = function(context, container){
 				
 				if (compVdom) {
 					//build directive contents <div [directive]>contents</div>
-					var templateVdom = null;
-					var ret = on.itemBuilder(inj);
-					if (ret && ret[0]){
-						templateVdom = ret[0];
-						templateVdom.elem['INJECT'] = inj;
-					};
-
-					//remember the original html
-					var templateHTML = templateVdom.elem.innerHTML;
-					if (component){
-						component.templateHTML = templateHTML;
-					}
-					
 					if (on.items.length ==0){
+						//if we have componenet AND it has a parentTemplate
+						var templateVdom = null;
+						var ret = on.itemBuilder(inj);
+						if (ret && ret[0]){
+							templateVdom = ret[0];
+							templateVdom.elem['INJECT'] = inj;
+						};
+	
+						//remember the original html
+						var templateHTML = templateVdom.elem.innerHTML;
+						if (component){
+							component.templateHTML = templateHTML;
+						}
+
 						$(templateVdom.elem).empty();
 						var f = document.createDocumentFragment();
 						templateVdom.items.forEach(function(vd){
