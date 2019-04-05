@@ -399,26 +399,26 @@ export function FormValidator(data,template,errors,attributes){
 
 		//check if errmsg is an array and then assign a proper errormsg
 		var type="string";
-		if (typeof(errmsg) != "string"){
-			if (rules.indexOf('array')!=-1){
-				type='array';
-			}
-			if (rules.indexOf('number')!=-1){
-				type='numeric';
-			}
-			if (rules.indexOf('numeric')!=-1){
-				type='numeric';
-			}
-			if (rules.indexOf('integer')!=-1){
-				type='numeric';
-			}
-			if (rules.indexOf('string')!=-1){
-				type='string';
-			}
-			if (rules.indexOf('digits')!=-1){
-				type='string';
-			}
+		
+		if (rules.indexOf('array')!=-1){
+			type='array';
 		}
+		if (rules.indexOf('number')!=-1){
+			type='numeric';
+		}
+		if (rules.indexOf('numeric')!=-1){
+			type='numeric';
+		}
+		if (rules.indexOf('integer')!=-1){
+			type='numeric';
+		}
+		if (rules.indexOf('string')!=-1){
+			type='string';
+		}
+		if (rules.indexOf('digits')!=-1){
+			type='string';
+		}
+		
 
 		if (type == 'string' && f.type =="select"){
 			type='select';
