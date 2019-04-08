@@ -606,7 +606,7 @@ export class Calendar2Page extends HeaderPage{
 								);
 							};
 
-							window.plugins.calendar.deleteEvent(appraisalEvent.title, null, null , appraisalEvent.startDate.clone().subtract(6, 'months').toDate(), appraisalEvent.startDate.clone().add(6, 'months').toDate(),
+							window.plugins.calendar.deleteEvent(appraisalEvent.title, null, null , DateTime.moment(appraisalEvent.startDate).clone().subtract(6, 'months').toDate(), DateTime.moment(appraisalEvent.startDate).clone().add(6, 'months').toDate(),
 								resolve.bind(this),resolve.bind(this)
 							);
 						})

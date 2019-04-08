@@ -216,7 +216,7 @@ export function NavController() {
 		//removeEvents(frame.element);
 	
 		tryCall(frame.page, frame.page.onLeave);		
-		tryCall(frame.page, frame.page.onDestroy);		
+		tryCall(frame.page, frame.page._onDestroy);		
 	
 		//immediately disable drop all events for the page being removed
 		//$(frame.element).off();

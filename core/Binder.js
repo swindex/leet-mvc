@@ -39,6 +39,16 @@ export var Binder = function(context, container){
 	}
 	
 	function removeElement(elem){
+		if (elem['INJECT']){
+			delete elem['INJECT'];
+		}
+		if (elem['VDOM']){
+			for (var i in  elem['VDOM'].items){
+				removeElement(elem['VDOM'].items[i]);
+			};
+			delete elem['VDOM']
+		}
+		
 		$(elem).remove();
 	}
 

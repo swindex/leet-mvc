@@ -25,6 +25,7 @@ import { Extend, GUID, Override, tryCall } from "./core/helpers";
 
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
 import './core/polyfills';
+import { State } from "./core/State";
 
 //Make jQuery available globally
 // @ts-ignore

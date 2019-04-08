@@ -16,7 +16,7 @@ export class ChangeWatcher {
 	 * ***OverrideCallSuper***
 	 * Delete allocated memory
 	 */
-	onDestroy(){
+	_onDestroy(){
 		//console.log(this.constructor.name, 'unwatching');
 		Watcher.off(this);
 	}
