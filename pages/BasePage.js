@@ -111,12 +111,22 @@ export class BasePage extends ChangeWatcher{
 
 	}
 	/**
-	 * ***OverrideCallSuper****
+	 * ***OverrideCallsuper****
+	 * Called when NavController is about to delete the page
+	 * @override
+	 */
+	_onDestroy(){
+		super._onDestroy();
+		this.onDestroy();
+	}
+
+	/**
+	 * ***Override***
 	 * Called when NavController is about to delete the page
 	 * @override
 	 */
 	onDestroy(){
-		super.onDestroy();
+		
 	}
 	
 	/**
