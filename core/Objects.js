@@ -116,7 +116,7 @@ export const Objects = {
 				}else{
 					if (isArray(src) && isArray(obj)){
 						//if both are arrays: make them the same length
-						obj = obj.slice(0,src.length-1);
+						obj.length = src.length;
 
 					}else {
 						//if one or both are not arrays, remove keys from target that are not in source

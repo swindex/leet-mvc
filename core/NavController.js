@@ -79,8 +79,9 @@ export function NavController() {
 
 			removeLastFrame();
 			self.onPageNavigateBack(currentFrame().name);
-			tryCall(currentFrame().page,currentFrame().page.onEnter);		
 			resetPagesVisibility();
+			//tryCall(currentFrame().page,currentFrame().page.onEnter);		
+			
 			return true;
 		}
 		return null;
@@ -96,9 +97,9 @@ export function NavController() {
 				break;
 			}
 		}
-		if (currentFrame())
-			tryCall(currentFrame().page,currentFrame().page.onEnter);		
 		resetPagesVisibility();
+		//if (currentFrame())
+			//tryCall(currentFrame().page,currentFrame().page.onEnter);		
 	}
 	/**
 	 * Get a list of displayed pages
@@ -169,10 +170,10 @@ export function NavController() {
 		
 		//p.style.display = 'block';
 		//enter done on next free frame
-		window.requestAnimationFrame(()=>{
-			tryCall(pageObject,pageObject.onEnter);
-		});
-		attachEvents(pageObject,p);
+		//window.requestAnimationFrame(()=>{
+			//tryCall(pageObject,pageObject.onEnter);
+		//});
+		//attachEvents(pageObject,p);
 
 		//console.timeEnd()
 		return pageObject;
@@ -189,11 +190,11 @@ export function NavController() {
 		//return new pageConstructor(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9]);
 	}
 
-	function attachEvents(pageObject,p){
+	/*function attachEvents(pageObject,p){
 		if (typeof pageObject.onResize=='function')
 			pageObject.onResize();
 
-	}
+	}*/
 	
 	/**
 	 * recalculate height of the standard elements
@@ -293,15 +294,17 @@ export function NavController() {
 
 		window.requestAnimationFrame(function(){
 					
-			if (typeof element.attr('hidden') !=='undefined'){
+			if (typeof element.attr('hidden') !=='undefined') {
 				element.attr('revealing',"");
+				setPageState(frame.page,'isShowing');
 			} else if (typeof element.attr('hidden') == 'undefined' && typeof element.attr('hiding') == 'undefined'  && typeof element.attr('visible') == 'undefined'){
 				//if page is not yet have any attributes
+				setPageState(frame.page,'isCreating');
 				//Add creating attribute ALMOST immedaitely for smooth appearance
 				setTimeout(function(){
 					element.attr('creating',"");
-					setPageState(frame.page,'isCreating');
-				});
+					tryCall(frame.page,frame.page.onResize);		
+				},0);
 			}
 
 			//immediately remove block hidden
@@ -313,24 +316,32 @@ export function NavController() {
 			} else {
 				element.removeAttr('inactive');
 			}
-			
+
+			if (typeof element.attr('visible') == 'undefined'){
+				//fire on enter int the next frame
+				setPageState(frame.page,'isShowing');
+				setTimeout(function(){
+					tryCall(frame.page,frame.page.onEnter);		
+				},0);
+			}
 			//Set to fully visible after 500ms delay
 			setTimeout(function(){
-				if (typeof element.attr('deleting') !=='undefined')
+				if (typeof element.attr('deleting') !=='undefined') {
 					return;
-				
-				
-				if (typeof element.attr('visible') == 'undefined'){
-					tryCall(frame.page, frame.page._onVisible);
 				}
 				
+				setPageState(frame.page,'isVisible');
+
+				if (typeof element.attr('visible') == 'undefined') {
+					tryCall(frame.page, frame.page._onVisible);
+				}
+					
 				element.removeAttr('hidden');
 				element.removeAttr('hiding');	
 				element.removeAttr('revealing');
 				element.removeAttr('creating');
 
 				element.attr('visible','');
-				setPageState(frame.page,'isVisible');
 
 				
 			},transitionTime);	

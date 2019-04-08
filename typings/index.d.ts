@@ -40,7 +40,7 @@ interface vDom {
 	valuesD:{},
 	getters: {},
 	setters: {},
-	elem: HTMLElement,
+	elem: HTMLElement|DocumentFragment,
 	items:vDom[],
 	itemBuilder:function,
 	inject:{},
