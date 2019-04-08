@@ -76,9 +76,6 @@ export var Binder = function(context, container){
 		else if (typeof eventCallbacks === "object")
 			self.eventCallbacks = $.extend(self.eventCallbacks,eventCallbacks);
 
-		if ( self.bindings && self.bindings.length>0)	
-			throw new Error("Already bound!. bindElements can only be called ONCE!")
-		
 		if (!self.context.injectVars){
 			context.injectVars = {};
 		}
@@ -90,6 +87,8 @@ export var Binder = function(context, container){
 		
 		
 		$(self.container).empty();
+
+		// @ts-ignore
 		$(self.container).append(newContainer.childNodes);
 		self.vdom.elem = self.container;
 		return self;
@@ -795,7 +794,7 @@ export var Binder = function(context, container){
 
 				if (html){
 					if(html instanceof DocumentFragment){
-						compVdom = { elem:html, items:[]};
+						compVdom = { elem:html, fragment: null, items:[], values:{},valuesD:{},getters:{},setters:{},itemBuilder:null,inject:{}};
 					}else{
 						var temp = document.createElement('div');
 						temp.innerHTML = html;
@@ -822,6 +821,8 @@ export var Binder = function(context, container){
 							});
 							component.templateFragment = templateFragment;
 						}
+						
+						// @ts-ignore
 						$(templateVdom.elem).append(compVdom.elem.childNodes);
 						//both the componenet and template VDOMs are on the same level
 						on.items[0] = templateVdom;
@@ -835,6 +836,7 @@ export var Binder = function(context, container){
 						//if (on.items.length==0)
 						on.items[0].elem['INJECT'] = inj;
 						$(on.items[0].elem).empty();
+						// @ts-ignore
 						$(on.items[0].elem).append(compVdom.elem.childNodes)
 					}
 				} else {
@@ -1161,7 +1163,7 @@ export var Binder = function(context, container){
 	/**
 	 * 
 	 * @param {string} expression 
-	 * @return {function(*,*)} callback
+	 * @return {function(*,*)} callback 
 	 */
 	function createGetter(expression, inject){
 		var inj = createInjectVarText(inject);
@@ -1176,6 +1178,7 @@ export var Binder = function(context, container){
 					}).call(context.context);`
 	 		);       
 			getterCashe[cashe] = getter;
+			// @ts-ignore
 			return getter;
 		}catch(ex){
 			return null;
@@ -1200,6 +1203,7 @@ export var Binder = function(context, container){
 				}).apply(context.context);`
 			);
 			getterCashe[cashe] = getter;
+			// @ts-ignore
 			return getter;
 		}catch(ex){
 			return null;
@@ -1216,6 +1220,7 @@ export var Binder = function(context, container){
 		var inj =  createInjectVarText(inject);
 		
 		try{
+			// @ts-ignore
 			return new Function('context','inject', 'value',
 				`${inj}
 				return (function(value){

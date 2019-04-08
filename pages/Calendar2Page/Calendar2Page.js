@@ -22,6 +22,7 @@ export class Calendar2Page extends HeaderPage{
 		}
 		this._currDate = moment(startDate || new Date());
 		this._currMonth = this._currDate.clone().startOf('month');
+		this.events_year != this._currMonth.get('year');
 
 		/** @type {Calendar2Event[]} */
 		this.events=[];
@@ -179,7 +180,7 @@ export class Calendar2Page extends HeaderPage{
 
 		var maxEventsPerDay = Math.floor((this.calendarInfo.cell.height - this.calendarInfo.cell.dateHeight) / 15)
 
-		for (var i = 1; i<=7 ; i++){
+		for (var i = 1; i<=7 ; i++) {
 			var day = week.clone().isoWeekday(i);
 			var day_e = day.clone().endOf('day');
 			var week_e = day.clone().endOf('isoWeek');
@@ -203,7 +204,7 @@ export class Calendar2Page extends HeaderPage{
 
 				var className = []; 
 				className.push('slot-'+slot);
-				if (el.internalEventInfo){
+				if (el.internalEventInfo) {
 					className.push('internal');
 					if (this.appraisalEvent && el.internalEventInfo.id == this.appraisalEvent.internalEventInfo.id && el.internalEventInfo.schema_name == this.appraisalEvent.internalEventInfo.schema_name ){
 						className.push('current');
@@ -211,17 +212,17 @@ export class Calendar2Page extends HeaderPage{
 				}
 
 				//event fits completely
-				if (ev_st >= day && ev_st <= day_e && ev_end >= day && ev_end <= day_e){
+				if (ev_st >= day && ev_st <= day_e && ev_end >= day && ev_end <= day_e) {
 					apts.push({dateTime:el.startDate,title: el.title, class: className.join(' ')});
-				}else{
+				} else {
 					//event covers several days
 					if (day.isBetween(ev_st,ev_end) || day_e.isBetween(ev_st,ev_end)){
 						//first day of a long event
-						if (day.get('dayOfYear') == ev_st.get('dayOfYear')){
+						if (day.get('dayOfYear') == ev_st.get('dayOfYear')) {
 							let daysWLong = Math.min( week_e.diff(day,'days')+1, ev_end.diff(day,'days'));
 							className.push("expand-"+daysWLong);
 							apts.push({dateTime:el.startDate,title: el.title, class: className.join(' ') });
-						}else{
+						} else {
 							//week or month break
 							if (day.get('isoWeekday')==1 || day.get('date')==1){
 								let daysWLong = Math.min( week_e.diff(day,'days')+1, ev_end.diff(day,'days')+1);
@@ -233,9 +234,9 @@ export class Calendar2Page extends HeaderPage{
 				}
 			});
 
-			if (day.month() !== cMonth)
+			if (day.month() !== cMonth) {
 				_weekDays.push({day: "",dayNum:0, date:null, selected:false,events:[]});
-			else{
+			} else {
 				var selected = dayF == cDayF;
 				_weekDays.push({day: D, dayNum: Number(D), date: day.toDate(), selected:selected,events:apts, extraEvents:extraEventsCounter});
 			}
@@ -254,7 +255,7 @@ export class Calendar2Page extends HeaderPage{
 		})
 
 		window.plugins.calendar.findEvent('','','',this._currMonth.clone().startOf('year').toDate(),this._currMonth.clone().endOf('year').toDate(), (list)=>{
-			console.log( JSON.stringify(list));
+			//console.log( JSON.stringify(list));
 			Objects.forEach(list,(el)=>{
 				calEvents.push(parseNativeCalendarEvent(el));
 			})
@@ -283,7 +284,7 @@ export class Calendar2Page extends HeaderPage{
 		this._d_day = this._currDate.format('D');
 		this._d_year = this._currMonth.format('YYYY');
 
-		if (this.events_year != this._currMonth.get('year')){
+		if (this.events_year != this._currMonth.get('year')) {
 			this._getCalendarEvents();
 		}
 	}
@@ -304,7 +305,11 @@ export class Calendar2Page extends HeaderPage{
 			this._weeks = [0,1,2,3,4,5];
 		}
 		this._setProps();
+	}
+
+	onEnter(){
 		this._measure();
+		this._getCalendarEvents();
 	}
 
 	onResize(){
@@ -314,7 +319,7 @@ export class Calendar2Page extends HeaderPage{
 	_onNextMonthClicked(){
 		this.ingoingSlideClass = "slidefromright";
 		this.outgoingSlideClass = "slidetoleft";
-		this.monthSlideTrigger++
+		this.monthSlideTrigger ++;
 
 		this._currMonth.add(1,'month');
 		this._setProps();
@@ -323,7 +328,7 @@ export class Calendar2Page extends HeaderPage{
 	_onPrevMonthClicked(){
 		this.ingoingSlideClass = "slidefromleft";
 		this.outgoingSlideClass = "slidetoright";
-		this.monthSlideTrigger++
+		this.monthSlideTrigger ++;
 
 		this._currMonth.subtract(1,'month');
 		this._setProps();
@@ -628,7 +633,8 @@ export class Calendar2Page extends HeaderPage{
 		} 
 
 		function onEventAdded(){
-			window.plugins.calendar.findEvent(addEvent.title,addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate,(list)=>{
+			this._getCalendarEvents();
+			/*window.plugins.calendar.findEvent(addEvent.title,addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate,(list)=>{
 				if (list && list.length>0){
 					Objects.overwrite(event, parseNativeCalendarEvent(list[0]));
 					if (appraisalEvent){
@@ -636,9 +642,10 @@ export class Calendar2Page extends HeaderPage{
 					}
 					this._getCalendarEvents();
 				}
+				
 			},(err)=>{
 				console.log(err);
-			})
+			})*/
 		}
 		function onEventAddError(data){
 			this._getCalendarEvents();
@@ -940,7 +947,7 @@ function populateDayEventSlots(el, yBusySlots){
  */
 function deleteEventFromUnscheduled(title, message, events){
 	Objects.forEach(events, function(event,i){
-		if (event.title == title && (empty(message) || message == event.message)){
+		if (event && event.title == title && (empty(message) || message == event.message)){
 			delete events[i];
 		}
 	})
