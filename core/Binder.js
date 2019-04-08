@@ -3,12 +3,10 @@ import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString } from "util";
 
 import * as $ from 'jquery';
-import { isSkipUpdate, hashObject } from "./Watcher";
+import { isSkipUpdate } from "./Watcher";
 import { DateTime } from "./DateTime";
 import { isArray } from "util";
 import { isFunction } from "util";
-import { Objects } from "leet-mvc/core/Objects";
-
 
 var getterCashe = {};
 
@@ -797,45 +795,37 @@ export var Binder = function(context, container){
 
 				if (html){
 					if(html instanceof DocumentFragment){
-						var compVdom = { elem:html, items:[]};
+						compVdom = { elem:html, items:[]};
 					}else{
 						var temp = document.createElement('div');
 						temp.innerHTML = html;
-						var parsed = parseElement(temp);
-						var compVdom = executeSource(parsed, inj);
+						compVdom = executeSource(parseElement(temp), inj);
 					}
 				}
 				
 				if (compVdom) {
 					//build directive contents <div [directive]>contents</div>
-					if (on.items.length ==0){
-						//if we have componenet AND it has a parentTemplate
-						var templateVdom = null;
-						var ret = on.itemBuilder(inj);
-						if (ret && ret[0]){
-							templateVdom = ret[0];
-							templateVdom.elem['INJECT'] = inj;
-						};
-	
-						//remember the original html
-						var templateHTML = templateVdom.elem.innerHTML;
-						if (component){
-							component.templateHTML = templateHTML;
-						}
+					if (on.items.length == 0){
+						//directive does not yet have any children
 
-						$(templateVdom.elem).empty();
-						var f = document.createDocumentFragment();
-						templateVdom.items.forEach(function(vd){
-							f.appendChild(vd.elem);
-						});
+						//if we have componenet AND it has a parentTemplate
+						var templateVdom = on.itemBuilder(inj)[0];
+						templateVdom.elem['INJECT'] = inj;
+												
 						if (component){
-							component.templateFragment = f;
+							//remember the original html
+							component.templateHTML =  templateVdom.elem.innerHTML;
+							
+							var templateFragment = document.createDocumentFragment();
+							templateVdom.items.forEach(function(vd){
+								templateFragment.appendChild(vd.elem);
+							});
+							component.templateFragment = templateFragment;
 						}
 						$(templateVdom.elem).append(compVdom.elem.childNodes);
+						//both the componenet and template VDOMs are on the same level
 						on.items[0] = templateVdom;
-						on.items[0].elem['INJECT'] = inj;
 						on.items[1] = compVdom;
-						on.items[1].items = compVdom.items;
 						insertAfter(templateVdom.elem, on.elem);
 						
 					}else{
@@ -849,18 +839,13 @@ export var Binder = function(context, container){
 					}
 				} else {
 					//build directive contents <div [directive]>contents</div>
-					var templateVdom = null;
-					var ret = on.itemBuilder(inj);
-					if (ret && ret[0]){
-						templateVdom = ret[0];
-						templateVdom.elem['INJECT'] = inj;
-					};
+					var templateVdom = on.itemBuilder(inj)[0];
+					templateVdom.elem['INJECT'] = inj;
 
 					//add root [directive] element
 					on.items[0] = templateVdom;
 					insertAfter(templateVdom.elem,on.elem);
 				}
-	
 
 				for( var i in  on.items){
 					if (!on.items.hasOwnProperty(i))
