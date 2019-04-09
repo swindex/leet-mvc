@@ -3,6 +3,7 @@ import { tryCall } from "./helpers";
 import { isDate } from "moment";
 
 let isProxy = Symbol("isProxy");
+let isDeleted = Symbol("isDeleted");
 let isOnTimer = Symbol("isOnTimer");
 
 //window['Proxy'] = null; //comment out to test dirty checking
@@ -14,6 +15,7 @@ export var isSkipUpdate = Symbol("isSkipUpdate");
  */
 export var Watcher={
 	skip: isSkipUpdate,
+	deleted: isDeleted,
 	/**
 	 * @param {object} object
 	 * @param {function()} onChangeCallback
@@ -51,17 +53,17 @@ export var Watcher={
 					}
 				},
 				set(target, property, value) {
-					if (property !== isSkipUpdate && !object[isSkipUpdate] && ignoreProperties.indexOf(property)<=0 )
+					if (property !== isSkipUpdate && !object[isSkipUpdate] && !object[isDeleted] && ignoreProperties.indexOf(property)<=0 )
 						scheduleCallback(object, onChangeCallback);
 					return Reflect.set(target, property, value);
 				},
 				defineProperty(target, property, descriptor) {
-					if (property !== isSkipUpdate && !object[isSkipUpdate] && ignoreProperties.indexOf(property)<=0 )
+					if (property !== isSkipUpdate && !object[isSkipUpdate] && !object[isDeleted] && ignoreProperties.indexOf(property)<=0 )
 						scheduleCallback(object, onChangeCallback);
 					return Reflect.defineProperty(target, property, descriptor);
 				},
 				deleteProperty(target, property) {
-					if (property !== isSkipUpdate && !object[isSkipUpdate] && ignoreProperties.indexOf(property)<=0 )
+					if (property !== isSkipUpdate && !object[isSkipUpdate] && !object[isDeleted] && ignoreProperties.indexOf(property)<=0 )
 						scheduleCallback(object, onChangeCallback);
 					return Reflect.deleteProperty(target, property);
 				}
@@ -82,6 +84,7 @@ export var Watcher={
 	off: function( object ){
 		if ( window['Proxy'] && window['Reflect']){
 			//object.revoke();
+			object[isDeleted] = true;
 		}else{
 			object[isOnTimer] = false;
 		}
@@ -89,7 +92,7 @@ export var Watcher={
 }
 
 function scheduleCallback(obj, callback){
-	if (obj[isSkipUpdate])
+	if (obj[isSkipUpdate] || obj[isDeleted])
 		return;
 	obj[isSkipUpdate] = true;
 

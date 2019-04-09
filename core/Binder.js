@@ -39,16 +39,6 @@ export var Binder = function(context, container){
 	}
 	
 	function removeElement(elem){
-		if (elem['INJECT']){
-			delete elem['INJECT'];
-		}
-		if (elem['VDOM']){
-			for (var i in  elem['VDOM'].items){
-				removeElement(elem['VDOM'].items[i]);
-			};
-			delete elem['VDOM']
-		}
-		
 		$(elem).remove();
 	}
 
@@ -75,6 +65,8 @@ export var Binder = function(context, container){
 		return self;
 	}
 
+
+
 	/**
 	 * Bind DOM elements that have "bind" attribute with model
 	 * @eventCallbacks Object, common event handler , {change:function(event){}, focus:function(event){}}
@@ -85,7 +77,7 @@ export var Binder = function(context, container){
 			self.eventCallbacks.change = eventCallbacks;
 		else if (typeof eventCallbacks === "object")
 			self.eventCallbacks = $.extend(self.eventCallbacks,eventCallbacks);
-
+		
 		if (!self.context.injectVars){
 			context.injectVars = {};
 		}
@@ -97,7 +89,6 @@ export var Binder = function(context, container){
 		
 		
 		$(self.container).empty();
-
 		// @ts-ignore
 		$(self.container).append(newContainer.childNodes);
 		self.vdom.elem = self.container;
@@ -412,12 +403,13 @@ export var Binder = function(context, container){
 		Array.prototype.slice.call(elem.attributes).forEach(function(attr) {
 			if (typeof elem[attr.name] == 'function'){
 				//var inject = self.injectVars;
-				elem[attr.name] = (function(evt){
+				elem[attr.name] = null;
+				$(elem).on(attr.name.substr(2), function(evt){
 					updateBoundContextProperty(evt.target);
 					var inj = $.extend({}, self.injectVars,{'$event':evt},inject, findElemInject(elem));
 					var c = createCaller(attr.value, inj);
 					c(self,inj);
-				}).bind(self);
+				});
 			}	
 		});
 	}
@@ -831,7 +823,6 @@ export var Binder = function(context, container){
 							});
 							component.templateFragment = templateFragment;
 						}
-						
 						// @ts-ignore
 						$(templateVdom.elem).append(compVdom.elem.childNodes);
 						//both the componenet and template VDOMs are on the same level
@@ -1173,7 +1164,7 @@ export var Binder = function(context, container){
 	/**
 	 * 
 	 * @param {string} expression 
-	 * @return {function(*,*)} callback 
+	 * @return {function(*,*)} callback
 	 */
 	function createGetter(expression, inject){
 		var inj = createInjectVarText(inject);
