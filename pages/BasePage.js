@@ -1,7 +1,9 @@
 import { Binder } from '../core/Binder';
 import { NavController } from '../core/NavController';
 import { ChangeWatcher } from '../core/ChangeWatcher';
-import { tryCall } from 'leet-mvc/core/helpers';
+import { tryCall } from '../core/helpers';
+import { BaseComponent } from '../components/BaseComponent';
+
 
 
 export class BasePage extends ChangeWatcher{
@@ -18,7 +20,7 @@ export class BasePage extends ChangeWatcher{
 		
 		// @ts-ignore
 		this.style = {};
-				
+		this.components = null;
 		this.binder = new Binder(this,this.page);
 
 		this.isDeleting = false;
@@ -117,6 +119,17 @@ export class BasePage extends ChangeWatcher{
 	 */
 	_onDestroy(){
 		super._onDestroy();
+		//
+		if (this.components){
+			for (var i in this.components){
+				var comp = this.components[i];
+				if (comp instanceof BaseComponent){
+					tryCall(comp, comp._onDestroy);
+					tryCall(comp, comp.onDestroy);
+					this.components[i] = null;
+				}
+			}
+		}
 		this.onDestroy();
 	}
 
@@ -143,3 +156,4 @@ BasePage.visibleParent = null;
 BasePage.selector = null;
 BasePage.template = null;
 BasePage.className = null;
+
