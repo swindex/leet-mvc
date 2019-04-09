@@ -1,36 +1,35 @@
-import { GUID, tryCall } from "./helpers";
+import { tryCall } from "./helpers";
 import { Objects } from "./Objects";
 
 
 export function State(){
 	/** @type {{[uid:string]:any}} */
-	var Queue = {};
+	var Queue = [];
 	var Data = null;
+	var index = 0;
 
 	/**
 	 * Add a callback to queue
-	 * @param {function()} callback 
-	 * @return {function()}
+	 * @param {function():void} callback 
+	 * @return {number}
 	 */
 	function listen(callback){
-		//modify callback by adding index to it
-		callback['_CallbackQueueGUID'] = GUID()
-		Queue[callback['_CallbackQueueGUID']] = callback;
-		tryCall(null, callback, Data);
-		return callback;
+		index++;
+		Queue[index] = callback;
+		return index;
 	}
 	/**
 	 * Remove callback from Queue
-	 * @param {function()} callback 
+	 * @param {number} index 
 	 */
-	function remove(callback){
+	function remove(index){
 		//use index to remove the callback we created
-		var UID = callback['_CallbackQueueGUID'];
-		if (Queue[UID])
-			delete	Queue[UID];
-		else{
-			console.log ('CallbackQueue: unable to .remove callback:',callback);
-		}
+		if (Queue[index]){
+			delete	Queue[index];
+			return true;
+		} 
+		console.log ('CallbackQueue: unable to .remove callback:',index);
+		return false;
 	}
 	/**
 	 * Call all callbacks
@@ -38,13 +37,13 @@ export function State(){
 	 */
 	function set(data){
 		Data = Objects.copy(data);
-		//execute callbacks in non-blocking fassion
-		setTimeout(function () {
-			Objects.forEach(Queue,(obj)=>{
-				//each getter will get independent object
-				tryCall(null, obj, Objects.copy(data));
-			});	
-		},0);	
+		//execute callbacks in Queue
+		for (var i in Queue){
+			var callback = Queue[i];
+			if (callback){
+				tryCall(null, callback, Objects.copy(data));
+			}
+		}
 	}
 
 	return {
