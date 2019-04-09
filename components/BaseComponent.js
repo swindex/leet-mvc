@@ -26,12 +26,25 @@ export class BaseComponent extends ChangeWatcher{
 	 * @param {HTMLElement} container
 	 */
 	init(container){
-		//this.isWatch = true;
-		
+		//register my self with the basePage components, so it knows what to destroy later
+		if (!this.binder.context.components){
+			this.binder.context.components = [];
+		}
+		this.binder.context.components.push(this);
 	}
 
 	update(){
 		if (this.binder)
 			this.binder.updateElements();
+	}
+
+	//To be called by the base page
+	_onDestroy(){
+		super._onDestroy();
+		this.binder = null;
+		this.html = null;
+		this.events = null;
+		this.templateHTML = null;
+		this.templateFragment = null;	
 	}
 }
