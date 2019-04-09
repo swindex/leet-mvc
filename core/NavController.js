@@ -291,9 +291,11 @@ export function NavController() {
 	 */
 	function showPageElement(frame, inactive){
 		var element = frame.element;
-
 		window.requestAnimationFrame(function(){
-					
+			if (typeof element.attr('deleting') !=='undefined') {
+				return;
+			}
+			
 			if (typeof element.attr('hidden') !=='undefined') {
 				element.attr('revealing',"");
 				setPageState(frame.page,'isShowing');
