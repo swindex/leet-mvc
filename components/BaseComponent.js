@@ -38,13 +38,10 @@ export class BaseComponent extends ChangeWatcher{
 			this.binder.updateElements();
 	}
 
-	//To be called by the base page
-	_onDestroy(){
-		super._onDestroy();
-		this.binder = null;
-		this.html = null;
-		this.events = null;
-		this.templateHTML = null;
-		this.templateFragment = null;	
+	/**
+	 * ***Override***
+	 **/
+	onDestroy(){
+
 	}
 }
