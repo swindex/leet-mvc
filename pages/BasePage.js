@@ -3,9 +3,6 @@ import { NavController } from '../core/NavController';
 import { ChangeWatcher } from '../core/ChangeWatcher';
 import { tryCall } from '../core/helpers';
 import { BaseComponent } from '../components/BaseComponent';
-import { Objects } from '../core/Objects';
-
-
 
 export class BasePage extends ChangeWatcher{
 	/**
@@ -35,6 +32,8 @@ export class BasePage extends ChangeWatcher{
 	 * Force Page update
 	 */
 	update(){
+		if (!this.binder)
+			return;
 		this.binder.updateElements();
 		this.onUpdated();
 	}
