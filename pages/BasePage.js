@@ -3,6 +3,7 @@ import { NavController } from '../core/NavController';
 import { ChangeWatcher } from '../core/ChangeWatcher';
 import { tryCall } from '../core/helpers';
 import { BaseComponent } from '../components/BaseComponent';
+import { Objects } from '../core/Objects';
 
 
 
@@ -118,19 +119,22 @@ export class BasePage extends ChangeWatcher{
 	 * @override
 	 */
 	_onDestroy(){
-		super._onDestroy();
-		//
+		//notify whoever implements, that page is to be destroyed.
+		this.onDestroy();		
+		
+		//Call destroy on all child components
 		if (this.components){
-			for (var i in this.components){
+			for (let i in this.components){
 				var comp = this.components[i];
 				if (comp instanceof BaseComponent){
-					tryCall(comp, comp._onDestroy);
 					tryCall(comp, comp.onDestroy);
-					this.components[i] = null;
+					tryCall(comp, comp._onDestroy);
+					delete this.components[i];
 				}
 			}
 		}
-		this.onDestroy();
+		//Destroy the rest of listeners, properties and methods
+		super._onDestroy();
 	}
 
 	/**
@@ -156,4 +160,3 @@ BasePage.visibleParent = null;
 BasePage.selector = null;
 BasePage.template = null;
 BasePage.className = null;
-
