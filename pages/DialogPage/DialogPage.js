@@ -8,7 +8,6 @@ import { Forms } from "../../components/Forms";
 import { Injector } from "../../core/Injector";
 import { NavController } from "../../core/NavController";
 import { Objects } from "../../core/Objects";
-import { Translate } from "../../core/Translate";
 
 /**
  * Create an instance of the dialog page
@@ -54,10 +53,6 @@ export class DialogPage extends BasePage{
 
 	render(){
 		this.content = new Forms(this.controls,this.data,this.errors);
-	}
-
-	Translate(val){
-		return Translate(val);
 	}
 
 	addCheck(name, title, value, required, attrs) {

@@ -99,7 +99,8 @@ export class OptionsDialogPage extends DialogPage{
 	}
 
 	onCancelClicked(){
-		this.destroy();
+		//will be destoyed by DialogPage handler
+		return true;
 	}
 
 	/**

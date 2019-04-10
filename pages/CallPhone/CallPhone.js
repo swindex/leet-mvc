@@ -26,7 +26,8 @@ export class CallPhone extends DialogPage{
 	}
 
 	onCancelClicked(){
-		this.destroy();
+		//will be destroyed by DialogPage
+		return true;
 	}
 
 	onCallClicked(evt){

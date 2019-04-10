@@ -17,6 +17,7 @@ import { DeBouncer } from "./core/DeBouncer";
 import { DateTime } from "./core/DateTime";
 import { DataShape } from "./core/DataShape";
 import { CallbackQueue } from "./core/CallbackQueue";
+import { State } from "./core/State";
 import { Analytics } from "./core/analytics_matomo";
 import { Touch } from "./core/Touch.js";
 
@@ -25,9 +26,9 @@ import { Extend, GUID, Override, tryCall } from "./core/helpers";
 
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
 import './core/polyfills';
-import { State } from "./core/State";
 
 //Make jQuery available globally
 // @ts-ignore
 window.$ = window.jQuery = require("jquery");
 
+window['Translate'] = Translate;

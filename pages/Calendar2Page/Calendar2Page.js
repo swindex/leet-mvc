@@ -520,7 +520,7 @@ export class Calendar2Page extends HeaderPage{
 
 				Objects.forEach(this.unscheduledEvents,(evt, i)=>{
 					if (evt){
-						items.push({title: evt.title, value: parseInt(i)+1});
+						items.push({ title: evt.title, placeholder: evt.location, value: parseInt(i)+1});
 					}
 				});
 
@@ -537,6 +537,7 @@ export class Calendar2Page extends HeaderPage{
 							unscheduledEvent();
 							
 							var evt = this.unscheduledEvents[p.data.eventType-1]
+							this.onCreateAppraisalEventSelected(evt);
 							appraisalEvent = evt;
 							p.data.location = evt.location;
 
@@ -550,7 +551,7 @@ export class Calendar2Page extends HeaderPage{
 						}
 					}});
 				}else{
-					p.addLabel('Appointment for', 'No Appraisals pending appointment');
+					p.addLabel('Appointment for', 'No Orders pending appointment');
 				}
 			}
 			genericEvent();
@@ -704,6 +705,16 @@ export class Calendar2Page extends HeaderPage{
 			resolve.bind(this),resolve.bind(this)
 		);
 	}
+
+	/**
+	 * ***Override***
+	 * Notify Appraisal Event is selected when creating event
+	 * @param {Calendar2Event} event 
+	 */
+	onCreateAppraisalEventSelected(event){
+
+	}
+
 
 	/**
 	 * ***Override***
