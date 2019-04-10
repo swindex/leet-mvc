@@ -4,6 +4,7 @@ import { Text } from "./../core/text";
 import { BaseComponent } from "./BaseComponent";
 import { isNumber, isArray } from "util";
 import { DateTime } from "./../core/DateTime";
+import { Translate } from "../core/Translate";
 
 
 export class Forms extends BaseComponent{
@@ -367,7 +368,7 @@ export class Forms extends BaseComponent{
 
 		var items_items = "";	
 		$.each(el.items,  (index, option)=>{
-			elem = elem+ `<option value="${ option.value===null ? '' : option.value }">${option.title}</option>`;
+			elem = elem+ `<option value="${ option.value===null ? '' : option.value }" title="${ option.placeholder || '' }">${option.title}</option>`;
 			if (option.items){
 				items_items += `<div [if]="component.data${this.refactorAttrName(el._name)} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.renderArray(option.items,parentPath) + `</div>`;
 			}
@@ -389,7 +390,7 @@ export class Forms extends BaseComponent{
 	 */
 	addTitle(el){
 		if (!el.title) return '';
-		return `<label>${el.title}</label>`;
+		return `<label>${Translate(el.title)}</label>`;
 	}
 	/**
 	 * 
