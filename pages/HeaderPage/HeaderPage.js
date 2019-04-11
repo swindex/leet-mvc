@@ -44,7 +44,7 @@ HeaderPage.template = `
 		<button id="menuButton" [if]="this.menuButton" onclick = "this.onMenuButtonClicked()"><i class="fas fa-bars"></i></button>
 		<span class="headertitle" [innerHTML]="this.title"></span>
 		<span class="logo" [if]="!this.title"></span>
-		<button id="refreshButton" [if]="this.refreshButton" [class]="this.refreshButtonRotating ? 'rotating' : null" onclick = "this.onRefreshButtonClicked()"><i class="fas fa-sync-alt"></i></i></button>
+		<button id="refreshButton" [if]="this.refreshButton" [class]="this.refreshButtonRotating ? 'rotating' : null" onclick = "this.onRefreshButtonClicked()"><i class="fas fa-sync-alt"></i></button>
 	</div>
 	<div class="content" [directive] = "this.content">
 	</div>

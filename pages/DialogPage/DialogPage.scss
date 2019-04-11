@@ -76,7 +76,8 @@
 				}
 
 				&:active{
-					background-color: #e7e7e7;
+					filter: brightness(0.8);
+					//background-color: #e7e7e7;
 				}
 			}
 		}
