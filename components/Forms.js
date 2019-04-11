@@ -453,9 +453,9 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addButton(el){
-
+		var opt = $.extend({}, { }, el.attributes);
 		return (`
-			<button class="link" name="${el._name}" onclick="component.onButtonClick($event);">${el.title}</button>
+			<button class="link" ${this.generateAttributes(opt)} name="${el._name}" onclick="component.onButtonClick($event);">${el.value || ''}</button>
 		`);
 	}	
 	/**

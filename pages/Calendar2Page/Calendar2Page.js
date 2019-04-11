@@ -450,6 +450,7 @@ export class Calendar2Page extends HeaderPage{
 		p.addLink('Location', event.location, { click: ()=>{
 			this.onAddressLabelClicked(event);			
 		}});
+		
 		p.addLabel('From', DateTime.toHumanDateTime(event.startDate));
 		p.addLabel('To', DateTime.toHumanDateTime(event.endDate));
 		p.addLabel('Notes',event.message);
@@ -495,6 +496,10 @@ export class Calendar2Page extends HeaderPage{
 		}
 
 		var unscheduledEvent = ()=>{
+			//p.controls.push({name: "contactButton", type: "button", title:null, value:"Contact"});
+			p.addLink('Contact', "View contact details",{ click: ()=>{
+				this.onViewContactDetailsLabelClicked(event);			
+			}});
 			p.addInput('location','Location','text', event.location,null, {readonly:true});
 			p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, true);
 			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required');
@@ -738,9 +743,18 @@ export class Calendar2Page extends HeaderPage{
 	/**
 	* ***Override***
 	* Callback on Address label clicked
+	* @param {Calendar2Event} event  
+   	*/ 
+	onAddressLabelClicked(event){
+
+	}
+
+	/**
+	* ***Override***
+	* Callback on Contact Details label clicked
 	* @param {Calendar2Event} event 
    	*/
-	onAddressLabelClicked(event){
+	onViewContactDetailsLabelClicked(event){
 
 	}
 
