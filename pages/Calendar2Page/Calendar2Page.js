@@ -501,16 +501,16 @@ export class Calendar2Page extends HeaderPage{
 			appraisalEvent = Objects.copy(this.appraisalEvent);
 		}
 
-		var unscheduledEvent = ()=>{
+		var unscheduledEvent = (evt)=>{
 			//p.controls.push({name: "contactButton", type: "button", title:null, value:"Contact"});
 			if (this.onViewContactDetailsLabelClicked)
 			p.addLink('Contact', "View contact details",{ click: ()=>{
-				this.onViewContactDetailsLabelClicked(event);			
+				this.onViewContactDetailsLabelClicked(evt);			
 			}});
-			p.addInput('location','Location','text', event.location,null, {readonly:true});
+			p.addInput('location','Location','text', evt.location,null, {readonly:true});
 			p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, true);
 			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required');
-			p.addTextArea('message','Notes', event.message);
+			p.addTextArea('message','Notes', evt.message);
 		}
 		var genericEvent = () => {
 			p.addInput('title','Title','text', event.title, true);
@@ -546,9 +546,8 @@ export class Calendar2Page extends HeaderPage{
 						
 						if (p.data.eventType !== "0"){
 							p.title = Translate("Set Appointment");
-							unscheduledEvent();
-							
 							var evt = this.unscheduledEvents[p.data.eventType-1]
+							unscheduledEvent(evt);
 							this.onCreateAppraisalEventSelected(evt);
 							appraisalEvent = evt;
 							p.data.location = evt.location;
