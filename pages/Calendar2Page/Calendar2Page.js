@@ -98,6 +98,11 @@ export class Calendar2Page extends HeaderPage{
 				width:null,
 			}
 		}
+
+		//set some optional handlers to null
+		//if they are left unimplemented, the UI elements that trigger them will not show up
+		this.onViewContactDetailsLabelClicked = null;
+		this.onAddressLabelClicked = null;
 	}
 
 	_allDayEvents(){
@@ -447,6 +452,7 @@ export class Calendar2Page extends HeaderPage{
 
 		p.title = "Event Details"
 		p.addLabel('Title',event.title);
+		if (this.onAddressLabelClicked)
 		p.addLink('Location', event.location, { click: ()=>{
 			this.onAddressLabelClicked(event);			
 		}});
@@ -497,6 +503,7 @@ export class Calendar2Page extends HeaderPage{
 
 		var unscheduledEvent = ()=>{
 			//p.controls.push({name: "contactButton", type: "button", title:null, value:"Contact"});
+			if (this.onViewContactDetailsLabelClicked)
 			p.addLink('Contact', "View contact details",{ click: ()=>{
 				this.onViewContactDetailsLabelClicked(event);			
 			}});
