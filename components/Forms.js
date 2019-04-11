@@ -190,8 +190,8 @@ export class Forms extends BaseComponent{
 				Objects.setPropertyByPath(this.data, timeEl._name, dateTime);
 				
 				return this.renderFieldGroupHTML(el,  [
-					'<div class="split">' + this.addInput(dateEl, {date:'', format:'date', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',false)"})+ '</div>',
-					'<div class="split">' + this.addInput(timeEl, {time:'', format:'time', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',true)"})+ '</div>',
+					'<div class="split" style="width:60%">' + this.addInput(dateEl, {date:'', format:'date', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',false)"})+ '</div>',
+					'<div class="split" style="width:40%">' + this.addInput(timeEl, {time:'', format:'time', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',true)"})+ '</div>',
 				]);	
 			case "number":
 				this.assertValidateRuleHas(el,"number");

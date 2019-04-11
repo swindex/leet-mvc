@@ -144,12 +144,14 @@
 			font-size: 1.6rem;
 			width:100%;
 			cursor:pointer;
+			box-shadow: none;
 						
 			background-image: linear-gradient(180deg,#EAF3F5,#b8cdd9,#88B3CC);
 			
 			color: #054877;
 
 			&:active {
+				filter: brightness(1);
 				background-image: linear-gradient(to bottom, #dce3f3, #d1ddf0, #c5d7ec, #b8d1e8, #aacce4);
 			}
 		}
