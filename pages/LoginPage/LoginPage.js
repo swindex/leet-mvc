@@ -152,11 +152,11 @@ LoginPage.template = `
 		<form>
 			<div class="fieldgroup" [class]="this.error.user ? 'has-error' : null">
 				<span class="hint" [class]="this.error.user ? 'error' : null" bind="this.error.user"></span>
-				<input autocapitalize="off" autocorrect="off" type="text" bind="this.form.user" name="user" [attribute]="{placeholder:Translate('User_Name')}" value="">
+				<input autocapitalize="off" autocorrect="off" autocomplete="username" type="text" bind="this.form.user" name="user" [attribute]="{placeholder:Translate('User_Name')}" value="">
 			</div>
 			<div class="fieldgroup" [class]="this.error.pass ? 'has-error' : null">
 				<span class="hint" [class]="this.error.pass ? 'error' : null" bind="this.error.pass"></span>
-				<input autocapitalize="off" autocorrect="off" [attribute]="{type: this.passwordType,placeholder:Translate('Password')}" bind="this.form.pass" name="pass" value="">
+				<input autocapitalize="off" autocorrect="off" autocomplete="current-password" [attribute]="{type: this.passwordType,placeholder:Translate('Password')}" bind="this.form.pass" name="pass" value="">
 				<div class="icon" onclick="this.togglePasswordType($event)" onmousedown="$event.preventDefault()">
 					<i class="fas fa-eye" [if]="this.passwordType=='password'"></i>
 					<i class="fas fa-eye-slash" [if]="this.passwordType=='text'"></i>

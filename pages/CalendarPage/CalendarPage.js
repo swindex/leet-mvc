@@ -78,6 +78,9 @@ export class CalendarPage extends DialogPage{
 		this._showCalendar = val;
 		if (!val)
 			this._tabs.select("clock")
+		else
+			this._tabs.select("calendar")	
+
 	}
 	/**
 	 * @param {boolean} val
@@ -86,6 +89,8 @@ export class CalendarPage extends DialogPage{
 		this._showClock = val;
 		if (!val)
 			this._tabs.select("calendar")
+		else
+			this._tabs.select("clock")	
 	}
 
 	//initial calendar binding takes time. Do it after the dialog is displayed and other items are drawn.
@@ -142,10 +147,14 @@ export class CalendarPage extends DialogPage{
 	onResize(){
 		setTimeout(()=>{
 			var clock = this.page.find('#clock');
-			var d = Math.min(clock.width(),clock.height());
+			var circle_wrapper = this.page.find('.circle_wrapper');
+			
+			var d = Math.min(clock.width(),clock.height()) - 50;
 
-			clock.height(d);
-			clock.width(d);
+			
+
+			circle_wrapper.height(d);
+			circle_wrapper.width(d);
 			
 			var hr = clock.find('.hour').width()/2;
 			var r = d/2 - hr ;
@@ -310,18 +319,21 @@ export class CalendarPage extends DialogPage{
 CalendarPage.selector = "page-CalendarPage";
 CalendarPage.content = `
 	<div [directive] = "this._tabs">
-		<ul class="tab-buttons" [show]="this._showClock">
-			<li for="calendar" [if]="this._showCalendar">
+		<ul class="tab-buttons" [show]="this._showClock || (this._showCalendar && this._showClock)">
+			<li for="calendar" [show]="this._showCalendar && this._showClock">
 				<span bind="this._d_date"></span>
 				<i class="far fa-calendar-alt"></i>
 			</li>
-			<li for="clock" [if]="this._showClock">
+			<li for="clock" [show]="this._showCalendar && this._showClock">
 				<span bind="this._d_time"></span>
 				<i class="far fa-clock"></i>
 			</li>
+			<li for="clock" [if]="!this._showCalendar" selected>
+				<span bind="this._d_time"></span>
+			</li>
 		</ul>
 		<div class="tabs">
-			<div id="calendar" [if]="this._showCalendar">
+			<div id="calendar" [show]="this._showCalendar">
 				<div class="month-buttons">
 					<div onclick="this.onPrevMonthClicked()">
 						<i class="fas fa-chevron-left"></i>
@@ -356,17 +368,19 @@ CalendarPage.content = `
 					</table>
 				</div>
 			</div>	
-			<div id="clock" [if]="this._showClock">
-				<div class="circle">
-					<div class="hours"  [selected]="!this._minutesSelected" onclick="this.onSelectHoursClicked()">
-						<div class="hour h-12" [foreach]="this._hours as hours" onclick="this.onSetHourClicked(hours.value)" [selected]="this._d_hour==hours.title" [class]="'h-' + hours.value"><span bind="this._getHourTitle(hours)">0</span></div>
-					</div>
-					<div class="minutes" [selected]="this._minutesSelected" onclick="this.onSelectMinutesClicked()">
-						<div class="hour h-12" [foreach]="this._minutes as minutes" onclick="this.onSetMinuteClicked(minutes.value)" [selected]="this._d_minute==minutes.title" [class]="'h-' + minutes.value"><span bind="minutes.title">12</span></div>
-					</div>
-					<div class="AMPM">
-						<div class="AM" onclick="this.onSetAMClicked(true)" [selected]="this.isAM"><span>AM</span></div>
-						<div class="PM" onclick="this.onSetAMClicked(false)" [selected]="!this.isAM"><span>PM</span></div>
+			<div id="clock" [show]="this._showClock">
+				<div class="circle_wrapper">
+					<div class="circle">
+						<div class="hours"  [selected]="!this._minutesSelected" onclick="this.onSelectHoursClicked()">
+							<div class="hour h-12" [foreach]="this._hours as hours" onclick="this.onSetHourClicked(hours.value)" [selected]="this._d_hour==hours.title" [class]="'h-' + hours.value"><span bind="this._getHourTitle(hours)">0</span></div>
+						</div>
+						<div class="minutes" [selected]="this._minutesSelected" onclick="this.onSelectMinutesClicked()">
+							<div class="hour h-12" [foreach]="this._minutes as minutes" onclick="this.onSetMinuteClicked(minutes.value)" [selected]="this._d_minute==minutes.title" [class]="'h-' + minutes.value"><span bind="minutes.title">12</span></div>
+						</div>
+						<div class="AMPM">
+							<div class="AM" onclick="this.onSetAMClicked(true)" [selected]="this.isAM"><span>AM</span></div>
+							<div class="PM" onclick="this.onSetAMClicked(false)" [selected]="!this.isAM"><span>PM</span></div>
+						</div>
 					</div>
 				</div>	
 			</div>	

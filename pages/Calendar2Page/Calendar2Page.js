@@ -572,7 +572,7 @@ export class Calendar2Page extends HeaderPage{
 			p.data.message = appraisalEvent.message
 			p.data.location = appraisalEvent.location
 			p.data.internalEventInfo = appraisalEvent.internalEventInfo
-			unscheduledEvent();
+			unscheduledEvent(event);
 		}
 		var addEvent;
 		p.buttons = {

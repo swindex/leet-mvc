@@ -59,6 +59,8 @@ export class SimpleTabs extends BaseComponent{
 				this._unSelectAll();
 				this._select(t);
 			}
+		} else{
+			this._currentTabLabel = forLabel;
 		}
 	}
 
@@ -94,7 +96,12 @@ export class SimpleTabs extends BaseComponent{
 		this._unSelectAll();
 		if (sel)
 			this._select(sel);
-		else
-			this._select($(container).find('li').first());
+		else{
+			if (this._currentTabLabel){
+				this.select(this._currentTabLabel);
+			}else{
+				this._select($(container).find('li').first());
+			}
+		}
 	}
 }

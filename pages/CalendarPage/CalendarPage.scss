@@ -162,17 +162,20 @@
 
 	#clock{
 
-		padding:2em 1em;
+		//padding:2em 1em;
 		width:100%;
 		height: 100%;
 		position: relative;
-		margin: auto;
+		//margin: auto;
 		// transform: scale(0.25);
 		// transition: transform 0.3s ease-in, opacity 0.3s ease-in;
 		// &[selected]{
 		// 	transform: scale(1);
 		// }
-
+		.circle_wrapper{
+			margin: auto;
+			padding: 2em;
+		}	
 		.circle{
 			width:100%;
 			height: 100%;
