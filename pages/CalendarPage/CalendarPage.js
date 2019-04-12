@@ -131,6 +131,7 @@ export class CalendarPage extends DialogPage{
 
 	}
 	_setProps(){
+		this._currDate.startOf('minute');
 		var H = Number(this._currDate.format('H'));
 		this.isAM = H >= 0 && H <12;
 

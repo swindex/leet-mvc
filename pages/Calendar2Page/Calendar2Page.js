@@ -18,7 +18,7 @@ export class Calendar2Page extends HeaderPage{
 
 		this._tabs = new SimpleTabs();
 		this._tabs.onTabChanged = (label)=>{
-			if (label == 'day') { this.scrollDayToFirstEvent();}
+			if (label == 'day') { this.scrollDayToFirstEvent(); }
 		}
 		this._currDate = moment(startDate || new Date());
 		this._currMonth = this._currDate.clone().startOf('month');
@@ -110,7 +110,7 @@ export class Calendar2Page extends HeaderPage{
 		var day_y = getDayNumber(day);
 		var ret = [];
 		Objects.forEach(this.dayEventSlots[day_y],(el)=>{
-			if (el.allday){
+			if (el.allday) {
 				ret.push({event:el, class: ""});
 			}
 		});
@@ -136,17 +136,17 @@ export class Calendar2Page extends HeaderPage{
 		
 			var minuteOffset = ev_st.get('minute');
 			var minuteLength;
-			if (ev_st.isSameOrAfter(day)){
+			if (ev_st.isSameOrAfter(day)) {
 				minuteLength = ev_end.diff(ev_st, 'minute');
-			}else{
+			} else {
 				minuteLength = ev_end.diff(day, 'minute');
 			}
-			if (minuteLength+minuteOffset+hourValue*60 > 24 * 60){
+			if (minuteLength+minuteOffset+hourValue*60 > 24 * 60) {
 				minuteLength = 24 * 60 - minuteOffset - hourValue*60;
 			}
 
 			var className = []; 
-			if (el.internalEventInfo){
+			if (el.internalEventInfo) {
 				className.push('internal');
 				if (this.appraisalEvent && el.internalEventInfo.id == this.appraisalEvent.internalEventInfo.id && el.internalEventInfo.schema_name == this.appraisalEvent.internalEventInfo.schema_name ){
 					className.push('current');
@@ -162,7 +162,7 @@ export class Calendar2Page extends HeaderPage{
 			if (
 				(!el.allday && ev_st.isSameOrAfter(hour) && ev_st.isSameOrBefore(hour_e)) || //event fits completely
 				(!el.allday && hourValue == 0 && ev_st.isBefore(day) && ev_end.isBefore(day_e)) //event started yesterday and ends today
-			){
+			) {
 				apts.push({
 					event:el, 
 					minuteOffset: minuteOffset,
@@ -211,7 +211,7 @@ export class Calendar2Page extends HeaderPage{
 				className.push('slot-'+slot);
 				if (el.internalEventInfo) {
 					className.push('internal');
-					if (this.appraisalEvent && el.internalEventInfo.id == this.appraisalEvent.internalEventInfo.id && el.internalEventInfo.schema_name == this.appraisalEvent.internalEventInfo.schema_name ){
+					if (this.appraisalEvent && el.internalEventInfo.id == this.appraisalEvent.internalEventInfo.id && el.internalEventInfo.schema_name == this.appraisalEvent.internalEventInfo.schema_name) {
 						className.push('current');
 					}	
 				}
@@ -221,7 +221,7 @@ export class Calendar2Page extends HeaderPage{
 					apts.push({dateTime:el.startDate,title: el.title, class: className.join(' ')});
 				} else {
 					//event covers several days
-					if (day.isBetween(ev_st,ev_end) || day_e.isBetween(ev_st,ev_end)){
+					if (day.isBetween(ev_st,ev_end) || day_e.isBetween(ev_st,ev_end)) {
 						//first day of a long event
 						if (day.get('dayOfYear') == ev_st.get('dayOfYear')) {
 							let daysWLong = Math.min( week_e.diff(day,'days')+1, ev_end.diff(day,'days'));
@@ -252,7 +252,7 @@ export class Calendar2Page extends HeaderPage{
 	}
 	_getCalendarEvents(){
 		this.events_year = this._currMonth.get('year');
-		var dayEventSlots = {0:null};
+		var dayEventSlots = { 0: null };
 
 		var calEvents=[];
 		Objects.forEach(this.events,(el)=>{
@@ -283,6 +283,8 @@ export class Calendar2Page extends HeaderPage{
 	}
 
 	_setProps(){
+		this._currDate.startOf( 'minute' ); 
+
 		//this.title = this._currDate.format('dddd');
 		this._d_monthName = this._currMonth.format('MMMM');
 		this._d_time = this._currDate.format('LT');
@@ -306,7 +308,7 @@ export class Calendar2Page extends HeaderPage{
 	}
 
 	onLoaded(){
-		if (this._weeks.length==0){
+		if (this._weeks.length==0) {
 			this._weeks = [0,1,2,3,4,5];
 		}
 		this._setProps();
@@ -380,20 +382,21 @@ export class Calendar2Page extends HeaderPage{
 	setDate(date){
 		var cH = this._currDate.hour();
 		var cM = this._currDate.minute();
-		var cS = this._currDate.second();
+		//var cS = this._currDate.second();
 
 		this._currDate = moment(date);
 		this._currDate.set('hour',cH);
 		this._currDate.set('minute',cM);
-		this._currDate.set('second',cS);
+		this._currDate.startOf('minute');
 		
 		this._currMonth = this._currDate.clone().startOf('month');
 		this._setProps();
 	}
 
 	_onCalendarDateClicked(date){
-		if (!date)
+		if (!date) {
 			return;
+		}
 		this.setDate(date);
 
 		this._tabs.select('day');
@@ -404,9 +407,9 @@ export class Calendar2Page extends HeaderPage{
 		//do it in next frame after page is updated
 		setTimeout(()=>{
 			var list = this.page.find('.day-events');
-			if (list.length){
+			if (list.length) {
 				var firstEvent = list.find('.event').get(0);
-				if(firstEvent){
+				if (firstEvent) {
 					firstEvent.scrollIntoView();
 				}
 			}
@@ -417,7 +420,7 @@ export class Calendar2Page extends HeaderPage{
 		var m_date = moment(date);
 		var d = getDayNumber(m_date);
 
-		if (!this.dayEventSlots[d]){
+		if (!this.dayEventSlots[d]) {
 			return;
 		}
 
@@ -461,12 +464,12 @@ export class Calendar2Page extends HeaderPage{
 		p.addLabel('To', DateTime.toHumanDateTime(event.endDate));
 		p.addLabel('Notes',event.message);
 				
-		if (!this.appraisalEvent && event.internalEventInfo){
+		if (!this.appraisalEvent && event.internalEventInfo) {
 			p.buttons = {
 				'View Order': ()=> {this.onViewOrderButtonClicked(event)},
 				'Close':null
 			}
-		}else{
+		} else {
 			p.buttons = {
 				'Edit': this.appraisalEvent ?  undefined : ()=>this.editEvent(event),
 				'Close':null
@@ -483,7 +486,7 @@ export class Calendar2Page extends HeaderPage{
 	}
 
 	onEditEventClicked(event){
-		if (this.appraisalEvent){
+		if (this.appraisalEvent) {
 			return;
 		}
 		this.editEvent(event);
@@ -497,7 +500,7 @@ export class Calendar2Page extends HeaderPage{
 		var p = this.Nav.push(DialogPage);
 
 		var appraisalEvent = null
-		if (this.appraisalEvent){
+		if (this.appraisalEvent) {
 			appraisalEvent = Objects.copy(this.appraisalEvent);
 		}
 
@@ -523,20 +526,20 @@ export class Calendar2Page extends HeaderPage{
 			
 		}
 
-		if (!appraisalEvent){
-			if (!event.id){
+		if (!appraisalEvent) {
+			if (!event.id) {
 				p.title = "New Event Details"
 				var items = [
 					{title: "Select Order", value: 0},
 				]
 
 				Objects.forEach(this.unscheduledEvents,(evt, i)=>{
-					if (evt){
+					if (evt) {
 						items.push({ title: evt.title, placeholder: evt.location, value: parseInt(i)+1});
 					}
 				});
 
-				if (items.length > 1){
+				if (items.length > 1) {
 					p.addSelect('eventType','Appointment for', null, false, items, {change: (ev)=>{
 						p.removeField('title');
 						p.removeField('location');
@@ -544,7 +547,7 @@ export class Calendar2Page extends HeaderPage{
 						p.removeField('endDate');
 						p.removeField('message');
 						
-						if (p.data.eventType !== "0"){
+						if (p.data.eventType !== "0") {
 							p.title = Translate("Set Appointment");
 							var evt = this.unscheduledEvents[p.data.eventType-1]
 							unscheduledEvent(evt);
@@ -552,21 +555,21 @@ export class Calendar2Page extends HeaderPage{
 							appraisalEvent = evt;
 							p.data.location = evt.location;
 
-							if (!appraisalEvent.startDate){
+							if (!appraisalEvent.startDate) {
 								appraisalEvent.startDate = moment();
 								appraisalEvent.endDate = moment();
 							}
-						}else{
+						} else {
 							genericEvent();
 							appraisalEvent = null;
 						}
 					}});
-				}else{
+				} else {
 					p.addLabel('Appointment for', 'No Orders pending appointment');
 				}
 			}
 			genericEvent();
-		}else{
+		} else {
 			p.title = Translate("Set Appointment")  + " #" + appraisalEvent.internalEventInfo.id ;
 			p.data.title = appraisalEvent.title
 			p.data.message = appraisalEvent.message
@@ -578,12 +581,12 @@ export class Calendar2Page extends HeaderPage{
 		p.buttons = {
 			'Cancel':null,
 			'Save':()=>{
-				if (p.data.endDate < p.data.startDate){
+				if (p.data.endDate < p.data.startDate) {
 					p.errors.endDate = "To date must be later than From";
 					return false;
 				}
 
-				if (p.validate()){
+				if (p.validate()) {
 					/** @type {Calendar2Event} */
 					addEvent = {
 						id: null,
@@ -596,7 +599,7 @@ export class Calendar2Page extends HeaderPage{
 						internalEventInfo: null
 					}
 
-					if (appraisalEvent){
+					if (appraisalEvent) {
 						//transfer the constant appraisalEvent properties
 						addEvent.title = appraisalEvent.title;
 						//addEvent.message = appraisalEvent.message;
@@ -610,7 +613,7 @@ export class Calendar2Page extends HeaderPage{
 									addEvent.title, addEvent.location,addEvent.message, addEvent.startDate, addEvent.endDate,
 									()=>{
 										onEventAdded.bind(this)();
-										if (this.onAppraisalEventAdded(orderDetails) !== false){
+										if (this.onAppraisalEventAdded(orderDetails) !== false) {
 											this.destroy();
 										}
 									},
@@ -622,7 +625,7 @@ export class Calendar2Page extends HeaderPage{
 								resolve.bind(this),resolve.bind(this)
 							);
 						})
-					} else if (event.id ){
+					} else if (event.id) {
 						var resolve = ()=>{
 							window.plugins.calendar.createEvent(
 								addEvent.title, addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate,
@@ -631,7 +634,7 @@ export class Calendar2Page extends HeaderPage{
 							);
 						};
 						window.plugins.calendar.deleteEventById(event.id, null, resolve.bind(this), resolve.bind(this) );
-					}else{
+					} else {
 						window.plugins.calendar.createEvent(
 							addEvent.title, addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate,
 							onEventAdded.bind(this),
@@ -661,7 +664,7 @@ export class Calendar2Page extends HeaderPage{
 		}
 		function onEventAddError(data){
 			this._getCalendarEvents();
-			if (this.appraisalEvent){
+			if (this.appraisalEvent) {
 				this.onAppraisalEventError(event)
 			}
 		}
@@ -672,6 +675,8 @@ export class Calendar2Page extends HeaderPage{
 	 * @param {moment.Moment} [startDate]
 	 */
 	createBlankEvent(startDate){
+		this._currDate.startOf( 'minute' ); 
+
 		/** @type {Calendar2Event} */
 		var blank ={
 			id:null,
@@ -684,7 +689,7 @@ export class Calendar2Page extends HeaderPage{
 			internalEventInfo:null
 		}
 
-		if (this.appraisalEvent){
+		if (this.appraisalEvent) {
 			blank = Objects.copy(this.appraisalEvent);
 			blank.startDate= startDate ? startDate : this._currDate.clone();
 			blank.endDate=startDate ? startDate.clone().add(1, 'hour') : this._currDate.clone().add(1, 'h');
@@ -804,10 +809,10 @@ export class Calendar2Page extends HeaderPage{
 		console.log("touchStart!");
 		this.swipe = Touch(ev);
 		this.swipe.onSwipe = (direction)=>{
-			if (direction == Touch.LEFT){
+			if (direction == Touch.LEFT) {
 				this._onNextMonthClicked();
 			}
-			if (direction == Touch.RIGHT){
+			if (direction == Touch.RIGHT) {
 				this._onPrevMonthClicked();
 			}
 		}
@@ -816,10 +821,10 @@ export class Calendar2Page extends HeaderPage{
 	_onDaySwipeStart(ev){
 		console.log("touchStart!");
 		Touch(ev).onSwipe = (direction)=>{
-			if (direction == Touch.LEFT){
+			if (direction == Touch.LEFT) {
 				this._onNextDayClicked();
 			}
-			if (direction == Touch.RIGHT){
+			if (direction == Touch.RIGHT) {
 				this._onPrevDayClicked();
 			}
 		}
@@ -828,7 +833,7 @@ export class Calendar2Page extends HeaderPage{
 	_onDayEventsHourClicked(hour){
 		this._currDate.set( 'hour', hour ); 
 		this._currDate.set( 'minute', 0 ); 
-		 
+		this._currDate.startOf( 'minute' ); 
 		this._setProps();
 		this.createBlankEvent(this._currDate);
 	}
@@ -851,16 +856,16 @@ function parseNativeCalendarEvent(el){
 		internalEventInfo: el.internalEventInfo
 	}
 
-	if (!el.allday){
+	if (!el.allday) {
 		evt.startDate = DateTime.moment(el.startDate);
 		evt.endDate = DateTime.moment(el.endDate);
-	}else{
+	} else {
 		var diff = DateTime.moment(el.startDate).diff( DateTime.moment.utc(el.startDate),'hours');
 		evt.startDate = DateTime.moment(el.startDate).add(diff, 'hour');
 		evt.endDate = DateTime.moment(el.endDate).add(diff, 'hour');
 	}
 
-	if (DateTime.moment(el.endDate).diff( DateTime.moment(el.startDate),'hours')>=24){
+	if (DateTime.moment(el.endDate).diff( DateTime.moment(el.startDate),'hours')>=24) {
 		evt.allday = true;
 	}
 	return evt;
@@ -871,7 +876,7 @@ function parseNativeCalendarEvent(el){
  * @param {moment.Moment} mom_date 
  */
 function getDayNumber(mom_date){
-	return mom_date.diff( moment("1900-1-1","YYYY-MM-D"),'day');
+	return mom_date.diff( moment("1900-1-1","YYYY-MM-D"), 'day');
 }
 
 function eventSortCallback(a, b){
@@ -889,7 +894,7 @@ function populateDayEventSlots(el, yBusySlots){
 	var ev_d_st = getDayNumber(ev_st);
 	var ev_d_end = getDayNumber(ev_end);
 
-	if (el.title=='Test allday 3'){
+	if (el.title=='Test allday 3') {
 		console.log(el);
 	}
 
@@ -901,37 +906,37 @@ function populateDayEventSlots(el, yBusySlots){
 	var minOverlapShift = 0;
 	
 	var touched = [];
-	Objects.forEach(yBusySlots[ev_d_st], function(eli,i){
+	Objects.forEach(yBusySlots[ev_d_st], function(eli,i) {
 		//if event being added is already added as internal
-		if (eli && eli.internalEventInfo && eli.title == el.title && eli.startDate.isSame(el.startDate) ){
+		if (eli && eli.internalEventInfo && eli.title == el.title && eli.startDate.isSame(el.startDate)) {
 			return false;
 		}
 
-		if (el.startDate >= eli.startDate && el.startDate < eli.endDate && !eli.allday ){
+		if (el.startDate >= eli.startDate && el.startDate < eli.endDate && !eli.allday) {
 			overlaps++;
 		}
 	});
 	var maxOverlaps = 0;
-	Objects.forEach(yBusySlots[ev_d_st], function(eli,i){
+	Objects.forEach(yBusySlots[ev_d_st], function(eli,i) {
 		//if event being added is already added as internal
-		if (eli && eli.internalEventInfo && eli.title == el.title && eli.startDate.isSame(el.startDate) ){
+		if (eli && eli.internalEventInfo && eli.title == el.title && eli.startDate.isSame(el.startDate)) {
 			el.internalEventInfo = eli.internalEventInfo;
 			slot = i;
 			return false;
 		}
 		
-		if (eli && i >= slot){
+		if (eli && i >= slot) {
 			slot = parseInt(i)+1;
 		}
 
-		if (el.startDate >= eli.startDate && el.startDate < eli.endDate && !eli.allday ){
+		if (el.startDate >= eli.startDate && el.startDate < eli.endDate && !eli.allday) {
 			if (minOverlapShift < eli.overlapShift){
-				minOverlapShift = eli.overlapShift
+				minOverlapShift = eli.overlapShift;
 			}
-			if (maxOverlaps < eli.overlaps){
-				maxOverlaps = eli.overlaps
+			if (maxOverlaps < eli.overlaps) {
+				maxOverlaps = eli.overlaps;
 			}
-			if (overlaps > eli.overlapShift ){ 
+			if (overlaps > eli.overlapShift) { 
 				touched.push(eli);
 				overlapShift ++;
 				totalOverlaps ++;
@@ -950,18 +955,18 @@ function populateDayEventSlots(el, yBusySlots){
 	el.overlaps = totalOverlaps;
 	el.overlapShift = overlapShift;
 
-	if (!yBusySlots[ev_d_st]){
+	if (!yBusySlots[ev_d_st]) {
 		yBusySlots[ev_d_st] = {};
 	}
 	el.title =el.title || '(Event)';	
 	//same day event
-	if (ev_d_st == ev_d_end){
+	if (ev_d_st == ev_d_end) {
 		yBusySlots[ev_d_st][slot] = el;
-	}else{
+	} else {
 		//event covers several days
-		for(var day_i = ev_d_st; day_i <= ev_d_end; day_i++){
+		for (var day_i = ev_d_st; day_i <= ev_d_end; day_i++) {
 			//mark the same slot busy for the rest of the event days
-			if (!yBusySlots[day_i]){
+			if (!yBusySlots[day_i]) {
 				yBusySlots[day_i] = {};
 			}
 
@@ -978,7 +983,7 @@ function populateDayEventSlots(el, yBusySlots){
  */
 function deleteEventFromUnscheduled(title, message, events){
 	Objects.forEach(events, function(event,i){
-		if (event && event.title == title && (empty(message) || message == event.message)){
+		if (event && event.title == title && (empty(message) || message == event.message)) {
 			delete events[i];
 		}
 	})
