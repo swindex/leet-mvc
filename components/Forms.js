@@ -37,19 +37,14 @@ export class Forms extends BaseComponent{
 			change:(ev)=>{
 				//validate element on change
 				if (ev.target.name){
-					/** @type {string} */
-					var p = Objects.getPropertyByPath(this.data,ev.target.name);
-					//if (typeof p == 'string')
-					//	Objects.setPropertyByPath(this.data, ev.target.name, p.trim());
-					this.validator.validateField(ev.target.name);
-					this.binder.updateElements();
+					//validate in the next render cycle.
+					setTimeout(()=>{
+						this.validator.validateField(ev.target.name);
+						this.binder.updateElements();
+					},0);
 				}
 				this.onChange(ev);
 			},
-			/*click:(ev)=>{
-				this.onClick(ev);
-			},*/
-
 		}
 
 		this.html = this.renderArray(this.formTemplate, null)
@@ -180,10 +175,14 @@ export class Forms extends BaseComponent{
 				var dateEl = $.extend({}, el);
 				var timeEl = $.extend({}, el);
 				
-				dateEl.name += "_date";
+				//dateEl.name += "_date";
+				//dateEl.__name = dateEl._name;
 				dateEl._name += "_date";
-				timeEl.name += "_time";
+				//timeEl.name += "_time";
+				//timeEl.__name += timeEl._name;
+				
 				timeEl._name += "_time";
+				
 				
 				var dateTime = Objects.getPropertyByPath(this.data, el._name)
 				Objects.setPropertyByPath(this.data, dateEl._name, dateTime);
@@ -290,7 +289,7 @@ export class Forms extends BaseComponent{
 	addInput(el, override){
 		
 		
-		var opt = { name: el._name, type: "text", placeholder: el.placeholder };
+		var opt = { name: el.name , type: "text", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
 		return ( `

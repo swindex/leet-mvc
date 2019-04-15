@@ -256,8 +256,12 @@ export class CalendarPage extends DialogPage{
 		this._currMonth = this._currDate.clone();
 		this._setProps();
 	}
+	/**
+	 * ***Override***
+	 * @param {*} dateTime 
+	 */
 	onDateSelected(dateTime){
-		console.log('Override onDateSelected', dateTime);
+		//console.log('Override onDateSelected', dateTime);
 	}
 	onSetDateClicked(date){
 		if (!date)
