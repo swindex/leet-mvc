@@ -73,6 +73,7 @@ export class Calendar2Page extends HeaderPage{
 		this.outgoingSlideClass = null;
 		this.daySlideTrigger = 0;
 		this.monthSlideTrigger = 0;
+		this.allowPastInternalAppointmentDate = false;
 		
 		this._minutes = Array.apply(null, Array(12)).map(function (_, i) {
 			return { value: i*5, title: moment(i*5, 'm').startOf('hour').minute(i*5).format('mm')};
@@ -511,8 +512,8 @@ export class Calendar2Page extends HeaderPage{
 				this.onViewContactDetailsLabelClicked(evt);			
 			}});
 			p.addInput('location','Location','text', evt.location,null, {readonly:true});
-			p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, true);
-			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required');
+			p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, 'required|after:' + new Date().getTime()); 
+			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
 			p.addTextArea('message','Notes', evt.message);
 		}
 		var genericEvent = () => {
@@ -520,7 +521,7 @@ export class Calendar2Page extends HeaderPage{
 			p.addInput('location','Location','text', event.location);
 				
 			p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, true);
-			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required');
+			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
 			
 			p.addTextArea('message','Notes', event.message);
 			
@@ -582,10 +583,6 @@ export class Calendar2Page extends HeaderPage{
 		p.buttons = {
 			'Cancel':null,
 			'Save':()=>{
-				if (p.data.endDate < p.data.startDate) {
-					p.errors.endDate = "To date must be later than From";
-					return false;
-				}
 
 				if (p.validate()) {
 					/** @type {Calendar2Event} */
@@ -609,6 +606,7 @@ export class Calendar2Page extends HeaderPage{
 						this.onAppraisalEventSaveClicked( addEvent, (orderDetails)=>{
 							
 							var resolve = ()=>{
+								p.destroy();
 								deleteEventFromUnscheduled(appraisalEvent.title, undefined, this.unscheduledEvents);
 								window.plugins.calendar.createEvent(
 									addEvent.title, addEvent.location,addEvent.message, addEvent.startDate, addEvent.endDate,
@@ -627,6 +625,7 @@ export class Calendar2Page extends HeaderPage{
 							);
 						})
 					} else if (event.id) {
+						p.destroy();
 						var resolve = ()=>{
 							window.plugins.calendar.createEvent(
 								addEvent.title, addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate,
@@ -636,13 +635,14 @@ export class Calendar2Page extends HeaderPage{
 						};
 						window.plugins.calendar.deleteEventById(event.id, null, resolve.bind(this), resolve.bind(this) );
 					} else {
+						p.destroy();
 						window.plugins.calendar.createEvent(
 							addEvent.title, addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate,
 							onEventAdded.bind(this),
 							onEventAddError.bind(this)
 						)
 					}	
-					return true;
+					return false;
 				}	
 				return false;
 			}

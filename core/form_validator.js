@@ -22,7 +22,7 @@ export function FormValidator(data,template,errors,attributes){
 	var used = [];
 	var touched = [];
 
-	var _messages=null;
+	var _messages={};
 
 	if (Translate('form_validator')!=='form_validator' && isObject(Translate('form_validator'))){
 		_messages = Translate('form_validator');
@@ -428,58 +428,73 @@ export function FormValidator(data,template,errors,attributes){
 		for (var r in rules) {
 			var rr=rules[r].split(":");
 			var condition="";
-			if (_messages[rr[0]] != undefined ) {
-				errmsg=_messages[rr[0]];
-				if (rr[1] != undefined ) condition=rr[1];
-				
-				errmsg= errmsg[type] || errmsg; //set default value
-				if (isObject(errmsg) || errmsg['string']){
-					errmsg = errmsg['string'];
-				}
-				var name = f._name
-				var dValue = getValue(_data, name);
-				//only validate fields that are either required, or not empty
-				if (!empty(dValue) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
-					var err = null;
-					var title = f.title;
-					if (!title || (isString(title) && title.length > 25))
-						title = ""
-					errmsg=errmsg.replace(':attribute', title);
 
-					var c_name = condition.split(',')[0];
+			//try translated first
+			if (_messages && _messages[rr[0]] != undefined ) {
+				errmsg=_messages[rr[0]];
+			//else get it from hard-coded text	
+			}else if (__messages[rr[0]] != undefined ) {
+				errmsg=__messages[rr[0]];
+			}	
+
+			if (rr[1] != undefined ) condition=rr[1];
 			
-					var c_template = getTemplateValue( tryDefaultForm(c_name,name));
+			errmsg= errmsg[type] || errmsg; //set default value
+			if (isObject(errmsg) || errmsg['string']){
+				errmsg = errmsg['string'];
+			}
+			var name = f._name
+			var dValue = getValue(_data, name);
+			//only validate fields that are either required, or not empty
+			if (!empty(dValue) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
+				var err = null;
+				var title = f.title;
+				if (!title || (isString(title) && title.length > 25))
+					title = ""
+				errmsg=errmsg.replace(':attribute', title);
+
+				var c_name = condition.split(',')[0];
+		
+				var c_template = getTemplateValue( tryDefaultForm(c_name,name));
+		
+				if (!empty(c_template)){
+					errmsg=errmsg.replace(':other', c_template.title);
+					var c_v = getValue(_data,tryDefaultForm(c_name,name));
+					if (c_template.items && c_template.items.length > 0){
+						var c_vv = Objects.find(c_template.items,(t)=>t.value==c_v)
+						errmsg=errmsg.replace(':value', c_vv ? c_vv.title : "null");
+					}else
+						errmsg=errmsg.replace(':value', c_v);
+				}
+				if (errmsg.indexOf(':max')!=-1 && errmsg.indexOf(':max')!=-1){
+					//min and max both present so split the condition string
+					if (condition.indexOf(',')){
+						errmsg=errmsg.replace(':min',condition.substr(0,condition.indexOf(',')));	
+						errmsg=errmsg.replace(':max',condition.substr(condition.indexOf(',')+1));	
+					}	
+				}else{
+					errmsg=errmsg.replace(':max',condition);
+					errmsg=errmsg.replace(':min',condition);
+				}
+				errmsg=errmsg.replace(':digits',condition);
+				errmsg=errmsg.replace(':size',condition);
+
+				var otherValue;
+				if (!isNaN(Number(condition))){
+					otherValue = Number(condition)
+				}else{
+					otherValue = getValue(_data, tryDefaultForm(condition,name));
+				}
+				errmsg=errmsg.replace(':date',new Date(otherValue).toLocaleString());
 			
-					if (!empty(c_template)){
-						errmsg=errmsg.replace(':other', c_template.title);
-						var c_v = getValue(_data,tryDefaultForm(c_name,name));
-						if (c_template.items && c_template.items.length > 0){
-							var c_vv = Objects.find(c_template.items,(t)=>t.value==c_v)
-							errmsg=errmsg.replace(':value', c_vv ? c_vv.title : "null");
-						}else
-							errmsg=errmsg.replace(':value', c_v);
-					}
-					if (errmsg.indexOf(':max')!=-1 && errmsg.indexOf(':max')!=-1){
-						//min and max both present so split the condition string
-						if (condition.indexOf(',')){
-							errmsg=errmsg.replace(':min',condition.substr(0,condition.indexOf(',')));	
-							errmsg=errmsg.replace(':max',condition.substr(condition.indexOf(',')+1));	
-						}	
-					}else{
-						errmsg=errmsg.replace(':max',condition);
-						errmsg=errmsg.replace(':min',condition);
-					}
-					errmsg=errmsg.replace(':digits',condition);
-					errmsg=errmsg.replace(':size',condition);
-				
-					var result = validate_isfail(name,rr[0],type,condition)
-			
-					if (result){
-						err = result===true ? errmsg : errmsg.replace(':result', result);
-						return err;
-					}
+				var result = validate_isfail(name,rr[0],type,condition)
+		
+				if (result){
+					err = result===true ? errmsg : errmsg.replace(':result', result);
+					return err;
 				}
 			}
+
 		}
 		return 0;
 	}
@@ -530,10 +545,11 @@ export function FormValidator(data,template,errors,attributes){
 				if (isNumber(otherValue)){
 					otherValue = otherValue + '';
 				}else if(isBoolean(otherValue)){
-					if (otherValue===true)
+					if (otherValue===true) {
 						otherValue	= "true";
-					else 
+					} else {
 						otherValue	= "false";
+					}
 				}
 
 				if (conditions.indexOf(otherValue)>=0){
@@ -626,6 +642,23 @@ export function FormValidator(data,template,errors,attributes){
 						return empty(value) || value.length < condition;
 				} 
 				break;
+			case 'after':
+				var otherValue;
+				if (!isNaN(Number(condition))){
+					otherValue = Number(condition)
+				}else{
+					otherValue = getValue(_data, tryDefaultForm(condition,name));
+				}
+
+				return empty(value) || new Date(value) < new Date(otherValue);
+			case 'before':
+				var otherValue;
+				if (!isNaN(Number(condition))){
+					otherValue = Number(condition)
+				}else{
+					otherValue = getValue(_data, tryDefaultForm(condition,name));
+				}
+				return empty(value) || new Date(value) > new Date(otherValue);	
 			case 'email':
 				var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 				return re.test(value)==false;
@@ -640,7 +673,8 @@ export function FormValidator(data,template,errors,attributes){
 				}
 				break;
 			case 'same':
-				return getValue(_data,  tryDefaultForm(condition, name)) !=value;
+				var otherValue = getValue(_data, tryDefaultForm(condition,name));
+				return otherValue !=value;
 			default:
 				return false;	
 
@@ -740,7 +774,7 @@ export function FormValidator(data,template,errors,attributes){
 	}
 
 	//apply default english messages, if net set
-	_messages ? null : _messages = {
+	var __messages = {
 		"accepted":"The :attribute must be accepted.",
 		"active_url":"The :attribute is not a valid URL.",
 		"after":"The :attribute must be a date after :date.",
