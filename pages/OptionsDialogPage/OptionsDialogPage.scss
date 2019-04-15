@@ -22,6 +22,7 @@
 		}
 		i{
 			padding-top: 3px; //nudge to the v-center
+			margin-right: $margin-lg;
 		}
 		img{
 			//margin-right: $margin-lg;
@@ -32,7 +33,7 @@
 			border-bottom: 1px solid #b8b8b8;
 			display: block;
 			margin-right: 0;
-			margin-left: $margin-lg;
+			margin-left: 0;
 			padding: $margin-lg 0;
 			width: 100%;
 			>div{
