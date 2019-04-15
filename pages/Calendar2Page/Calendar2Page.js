@@ -542,6 +542,7 @@ export class Calendar2Page extends HeaderPage{
 				if (items.length > 1) {
 					p.addSelect('eventType','Appointment for', null, false, items, {change: (ev)=>{
 						p.removeField('title');
+						p.removeField('link');
 						p.removeField('location');
 						p.removeField('startDate');
 						p.removeField('endDate');
