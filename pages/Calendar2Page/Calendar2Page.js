@@ -531,7 +531,7 @@ export class Calendar2Page extends HeaderPage{
 			if (!event.id) {
 				p.title = "New Event Details"
 				var items = [
-					{title: "Select Order", value: 0},
+					{title: Translate("Select Request"), value: 0},
 				]
 
 				Objects.forEach(this.unscheduledEvents,(evt, i)=>{
