@@ -15,7 +15,7 @@ select{
 	border: 1px solid #BBB;
 
 	-webkit-appearance: none;
-	//icon background
+
 	background-position: 99% 50%;
 	background-repeat: no-repeat;
 	height: $size-input-h-md;
@@ -23,6 +23,9 @@ select{
 	background-color: $color-input-bg;
 	color: $color-input-fg;
 	padding-right: $size-input-i-md; //this used for hiding text under icon	
+	&:focus{
+		outline:none;
+	}
 }
 .fieldgroup	div.icon{
 	right: 0;
@@ -64,7 +67,6 @@ input[type=button],button{
     padding: $margin-lg $margin-lg;
 	font-size: $size-f-input;
 	box-shadow: 0px 0px 3px 0px #000000ab;
-	//box-shadow: 0px 0px 7px 1px #7a7a7a63;
 }
 input[type=button]:focus ,button:focus, 
 input[type=button]:active ,button:active {
@@ -116,7 +118,6 @@ textarea {
 	flex-direction: row;
 	flex-wrap: wrap;
 	position: relative;
-	//padding-left: $margin-lg;
 	margin-bottom: $margin-lg;
 	.fieldgroup:first-child{
 		padding-top: $margin-lg;
@@ -166,7 +167,6 @@ textarea {
 	}
 	.hint {
 		font-size: 12px;
-		// margin-left: 40%;
 		&.error {
 
 			color: white;
@@ -257,9 +257,9 @@ textarea {
 			cursor: pointer;
 			background-color: #ccc;
 			transition: .4s;
-			width: 55px; // of the slot
+			width: 55px; 
 			min-width: 55px;
-			height: 22px; // of the slot
+			height: 22px; 
 			margin-left: auto;
 			&:before {
 				position: absolute;
@@ -270,11 +270,9 @@ textarea {
 				bottom: -1px;
 				top: -2px;
 				background-color: white;
-				// -webkit-transition: .4s;
 				transition: .2s;
 				box-shadow: 0 0px 2px #333;
 			}
-			/* Rounded sliders */
 			&.round {
 				border-radius: 34px;
 				margin-right: 4px;
@@ -286,12 +284,6 @@ textarea {
 	}
 }
 
-/*
-floating action button
-<div ion-fab right top>
-	<button><i class="fas fa-language"></i></button>
-</div>
-*/
 div[ion-fab]{
 
 	position: absolute;
@@ -324,7 +316,6 @@ div[ion-fab]{
 	}
 	button{
 		position: relative;
-		//box-shadow: 0px 0px 7px 1px rgba(0, 0, 0, 0.67);
 	}
 }
 
