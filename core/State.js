@@ -10,15 +10,17 @@ export function State(data){
 	var Queue = [];
 	var Data = Objects.copy(data);
 	var index = 0;
-
+	/** @type {boolean} */
+	var isRunning = null;
 	/**
 	 * Add a callback to queue
-	 * @param {function():void} callback 
+	 * @param {function():void} dataChanged 
+	 * @param {function():void} statusChanged  
 	 * @return {{index:number, remove:function():void}}
 	 */
-	function listen(callback){
+	function onChange(dataChanged, statusChanged){
 		index++;
-		Queue[index] = callback;
+		Queue[index] = {dataChanged:dataChanged,statusChanged};
 		var listener = {
 			index:index,
 			remove:function(){
@@ -67,21 +69,41 @@ export function State(data){
 		Data = Objects.copy(data);
 		//execute callbacks in Queue
 		for (var i in Queue){
-			var callback = Queue[i];
+			var callback = Queue[i].dataChanged;
 			if (callback){
 				tryCall(null, callback, Objects.copy(data));
 			}
 		}
+		setRunning(false);
 	}
 
-	var self = {
+	/**
+	 * 
+	 * @param {boolean} newStatus 
+	 */
+	function setRunning( newStatus ){
+		if (isRunning === newStatus){
+			return;
+		}
+		isRunning = newStatus;
+		for (var i in Queue){
+			var callback = Queue[i].statusChanged;
+			if (callback){
+				tryCall(null, callback, isRunning);
+			}
+		}
+	}
+
+	var Me = {
+		get isRunning(){return isRunning},
+		set isRunning(val){setRunning(val)}, 
 		get: function(){return Data;},
 		get data(){
 			return Data;
 		},
-		listen: listen,
+		onChange: onChange,
 		remove: remove,
 		set: set,
 	}
-	return self;
+	return Me;
 }
