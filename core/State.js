@@ -21,10 +21,12 @@ export function State(data){
 	function onChange(dataChanged, statusChanged){
 		index++;
 		Queue[index] = {dataChanged:dataChanged,statusChanged};
+
+		var i = index;
 		var listener = {
-			index:index,
+			index:i,
 			remove:function(){
-				removeIndex(index);
+				removeIndex(i);
 				delete this.index;
 				delete this.remove;
 			}
@@ -71,7 +73,11 @@ export function State(data){
 		for (var i in Queue){
 			var callback = Queue[i].dataChanged;
 			if (callback){
-				tryCall(null, callback, Objects.copy(data));
+				try {
+					tryCall(null, callback, Objects.copy(data));
+				} catch (ex) {
+					console.warn(ex);
+				}
 			}
 		}
 		setRunning(false);
@@ -100,6 +106,9 @@ export function State(data){
 		get: function(){return Data;},
 		get data(){
 			return Data;
+		},
+		set data(data){
+			set(data);
 		},
 		onChange: onChange,
 		remove: remove,
