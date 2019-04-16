@@ -866,7 +866,7 @@ function parseNativeCalendarEvent(el){
 		evt.endDate = DateTime.moment(el.endDate).add(diff, 'hour');
 	}
 
-	if (DateTime.moment(el.endDate).diff( DateTime.moment(el.startDate),'hours')>=24) {
+	if (DateTime.moment(el.endDate).diff( DateTime.moment(el.startDate),'hours')>=23) {
 		evt.allday = true;
 	}
 	return evt;
