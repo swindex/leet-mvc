@@ -8,7 +8,7 @@ import { Objects } from "./Objects";
  * Show "Confirm" dialog with custom buttons
  * @param {string} prompt 
  * @param {string} [title] 
- * @param {{[button_name:string]:function():boolean}} buttons 
+ * @param {{[button_name:string]:function():any}} buttons 
  */
 export var ConfirmButtons=function(prompt,title,buttons){
 	var p = Dialog(title);
