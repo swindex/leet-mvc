@@ -68,7 +68,9 @@ input[type=button],button{
 	font-size: $size-f-input;
 	box-shadow: 0px 0px 3px 0px #000000ab;
 }
-input[type=button]:focus ,button:focus, 
+input[type=button]:focus ,button:focus{
+    outline: none;
+} 
 input[type=button]:active ,button:active {
 	filter: brightness(0.75);
     outline: none;
