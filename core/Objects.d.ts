@@ -88,6 +88,26 @@ declare namespace ObjectsModule{
 		 * @param {string[]} pathArray 
 		 */
 		deletePropertyByPath(obj: any, pathArray: string[]|string);,
+
+		/**
+		 * Get Object's callable method names
+		 */
+		getMethods(obj: object): string[];,
+
+		/**
+		 * Get Object's property names
+		 */
+		getProperties(obj:object): string[];,
+
+		/**
+		 * Bind Object's methods to it self
+		 */
+		bindMethods(context: object): void;,
+
+		/**
+		 * Delete all of Object's methods and properties so they can no longer be referenced
+		 */
+		strip(obj: object): void;,
 	}
 }
 

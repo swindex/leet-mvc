@@ -13,22 +13,8 @@ export class ChangeWatcher {
 		this[Watcher.skip] = false;
 	}
 
-	/**
-	 * ***DO NOT OVERRIDE***
-	 * Last Call to be executed on the instance!
-	 * Delete allocated memory.
-	 */
-	_onDestroy(){
-		//console.log(this.constructor.name, 'unwatching');
+	stopWatch(){
 		Watcher.off(this);
-
-		//destroy all properties and methods, so they can no longer be referenced
-		Objects.forEach(this._getMethods(), (m,i) => {
-			delete this[i];
-		})
-		Objects.forEach(this._getProperties(), (p,i) => {
-			delete this[i];
-		})
 	}
 
 	/**
@@ -39,23 +25,5 @@ export class ChangeWatcher {
 	 */
 	update(){
 		throw new Error("Must Override");
-	}
-
-	_getMethods(){
-		var methods = {}
-		Object.getOwnPropertyNames(this.constructor.prototype).forEach((key) =>{ 
-			if(typeof this[key] === 'function')
-				methods[key] = this[key];
-		});
-		return methods;
-	}
-	_getProperties(){
-		var properties = {}
-		
-		Object.keys(this).forEach((key) =>{ 
-			properties[key] = this[key];
-		});
-		return properties;
-
 	}
 }

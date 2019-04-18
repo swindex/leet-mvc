@@ -1,5 +1,6 @@
 import { Binder } from "../core/Binder";
 import { ChangeWatcher } from "../core/ChangeWatcher";
+import { Objects } from "../core/Objects";
 
 export class BaseComponent extends ChangeWatcher{
 	constructor(){
@@ -11,6 +12,7 @@ export class BaseComponent extends ChangeWatcher{
 		this.events = null;
 		this.templateHTML = null;
 		this.templateFragment = null;
+		Objects.bindMethods(this);
 	}
 
 	/** 
@@ -33,6 +35,9 @@ export class BaseComponent extends ChangeWatcher{
 		this.binder.context.components.push(this);
 	}
 
+	/**
+	 * Overrides ChangeWatcher.update method
+	 */
 	update(){
 		if (this.binder)
 			this.binder.updateElements();
@@ -43,5 +48,13 @@ export class BaseComponent extends ChangeWatcher{
 	 **/
 	onDestroy(){
 
+	}
+
+	/**
+	 * ***DO NOT OVERRIDE*** 
+	 */
+	_onDestroy(){
+		this.stopWatch();
+		Objects.strip(this);
 	}
 }
