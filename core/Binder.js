@@ -38,8 +38,19 @@ export var Binder = function(context, container){
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	}
 	
-	function removeElement(elem){
-		$(elem).remove();
+	/**
+	 * 
+	 * @param {HTMLElement} elem 
+	 * @param {boolean} [keepEvents] 
+	 */
+	function removeElement(elem, keepEvents){
+		if (keepEvents === true) {
+			if(elem.parentNode) {
+				elem.parentNode.removeChild(elem);
+			}
+		} else {
+			$(elem).remove();
+		}
 	}
 
 	function replaceElement(newNode, oldNode){
@@ -676,7 +687,7 @@ export var Binder = function(context, container){
 
 				}else{
 					if ( on.items.length > 0 && on.items[0].elem.parentElement){
-						removeElement(on.items[0].elem);
+						removeElement(on.items[0].elem, true);
 					}
 					return false;
 				}

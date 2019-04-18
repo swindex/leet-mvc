@@ -216,5 +216,36 @@ export const Objects = {
 			Objects.deletePropertyByPath(obj[pathArray.shift()],pathArray);
 		else
 			delete obj[pathArray.shift()];
+	},
+
+	getMethods(object){
+		var methods = []
+		Object.getOwnPropertyNames(object.constructor.prototype || object.constructor).forEach((key) =>{ 
+			if(typeof object[key] === 'function')
+				methods.push(key);
+		});
+		return methods;
+	},
+	getProperties(object){
+		var properties = []
+		Object.keys(object).forEach((key) =>{ 
+			properties.push(key);
+		});
+		return properties;
+	},
+	bindMethods(context){
+		var methods = Objects.getMethods(context);
+		methods.forEach((name) => {
+			context[name] = context[name].bind(context);
+		});
+	},
+	strip(object){
+		//destroy all properties and methods, so they can no longer be referenced
+		Objects.getMethods(object).forEach((i) => {
+			delete object[i];
+		})
+		Objects.getProperties(this).forEach((i) => {
+			delete object[i];
+		})
 	}
 }

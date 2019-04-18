@@ -3,6 +3,7 @@ import { NavController } from '../core/NavController';
 import { ChangeWatcher } from '../core/ChangeWatcher';
 import { tryCall } from '../core/helpers';
 import { BaseComponent } from '../components/BaseComponent';
+import { Objects } from 'leet-mvc/core/Objects';
 
 export class BasePage extends ChangeWatcher{
 	/**
@@ -26,7 +27,12 @@ export class BasePage extends ChangeWatcher{
 		this.isHiding = false;
 		this.isShowing = false;
 		this.isVisible = false;
+
+		//Be lazy. This allows us to directly pass page methods without having to worry about "this"
+		Objects.bindMethods(this);
 	}
+
+	
 
 	/**
 	 * Force Page update
@@ -113,9 +119,8 @@ export class BasePage extends ChangeWatcher{
 
 	}
 	/**
-	 * ***OverrideCallsuper****
+	 * ***DO NOT OVERRIDE****
 	 * Called when NavController is about to delete the page
-	 * @override
 	 */
 	_onDestroy(){
 		//notify whoever implements, that page is to be destroyed.
@@ -133,7 +138,9 @@ export class BasePage extends ChangeWatcher{
 			}
 		}
 		//Destroy the rest of listeners, properties and methods
-		super._onDestroy();
+		//super._onDestroy();
+		this.stopWatch();
+		Objects.strip(this);
 	}
 
 	/**
