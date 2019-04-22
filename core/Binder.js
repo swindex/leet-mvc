@@ -23,10 +23,11 @@ export var Binder = function(context, container){
 	this.injectVars = {};
 	/**@type {HTMLElement} */
 	this.container
-	if (container instanceof jQuery)
+	if (container instanceof jQuery) {
 		this.container = container[0];
-	else
+	} else {
 		this.container = (container || this.container) || document;
+	}
 
 	this.eventCallbacks = {change:null, focus:null, input:null,click:null};
 
@@ -41,7 +42,7 @@ export var Binder = function(context, container){
 	/**
 	 * 
 	 * @param {HTMLElement} elem 
-	 * @param {boolean} [keepEvents] 
+	 * @param {boolean} [keepEvents] - default false
 	 */
 	function removeElement(elem, keepEvents){
 		if (keepEvents === true) {
@@ -92,9 +93,8 @@ export var Binder = function(context, container){
 		if (!self.context.injectVars){
 			context.injectVars = {};
 		}
-		self.source = parseElement(self.container);
-		//console.log(self.source);
-		var vdom = executeSource(self.source, self.injectVars);
+
+		var vdom = executeSource(parseElement(self.container), self.injectVars);
 		var newContainer = vdom.fragment || vdom.elem;
 		self.vdom = vdom; 
 		
@@ -106,25 +106,23 @@ export var Binder = function(context, container){
 		return self;
 	}
 
+	//escape attribute value
 	function escapeAttribute(attrValue){
 		return attrValue.replace(/\n/g,'\\n').
 							replace(/"/g,'\\"');
 	}
 	
-	this.source = "";
 	/**
-	 * Bind element's events to context
+	 * Turn element's HTML into a createDomElement function
 	 * @param {HTMLElement|Element} elem
 	 * @return {string}
 	 */
 	function parseElement(elem){
-		var wrapIf = "";
 		var wrapForEach = "";
 		var thisSorurce = "";
 		var wrapDirective = "";
 		if (elem.nodeName=='#text'){
 			var escaped = escapeAttribute(elem.textContent);
-
 			//parse {{moustache}} template within the text node
 			var bits = escaped.split(/({{[^{}]*}})/gmi);
 			var splitNodes = [];
@@ -139,36 +137,34 @@ export var Binder = function(context, container){
 				});
 			});
 			thisSorurce = splitNodes.join(',');
-		}else if (elem.nodeName=='#comment'){
+		} else if (elem.nodeName=='#comment') {
+			//skip comments
 			thisSorurce = null;
 		}else{	
 			thisSorurce = "createElement(";
 			var tag= elem.tagName
-			var attrText = "{";
+			//var attrText = "{";
+			var attributes = [];
 			if (elem.attributes){
 				Array.prototype.slice.call(elem.attributes).forEach(function(attr) {
 					attr.value = escapeAttribute(attr.value);
 					switch (attr.name){
 						case '[foreach]':
-							wrapForEach = `"${attr.name}":"${attr.value}"`
-							break;	
+							wrapForEach = `"${attr.name}":"${attr.value}"`;
+							break;
 						case '[transition]':
-							wrapDirective = `"${attr.name}":"${attr.value}"`
-							break;	
 						case '[directive]':
-							wrapDirective = `"${attr.name}":"${attr.value}"`
-							break;	
 						case '[if]':
-							wrapDirective = `"${attr.name}":"${attr.value}"`
+							wrapDirective = `"${attr.name}":"${attr.value}"`;
 							break;			
 						default:
-							attrText += `"${attr.name}":"${attr.value}",`	
+							attributes.push('"'+attr.name +'":"'+attr.value+'"');
 					}
 					
 				});
 			}
-			attrText +="}"
-			thisSorurce += "'"+tag +"',"+ attrText;	
+			//attrText +="}"
+			thisSorurce += "'"+tag +"',{"+ attributes.join(',')+"}";	
 			thisSorurce += ",[";
 
 			if (elem.childNodes && elem.childNodes.length>0){
@@ -204,33 +200,19 @@ export var Binder = function(context, container){
 				var getters = {};
 				var setters = {};
 				var renderImmediately = [];
-				var coment = "";
-				for (var i in attrKeys){
-					var bindExpression = null;
-					var getter = null;
-					var setter = null;
-					var key = attrKeys[i]
-					bindExpression = attributes[key];	
-					coment +=key+"="+bindExpression+" ";				
-					switch (key){
-						case '[transition]':
-							renderImmediately.push(key);
-						case '[if]':
-							renderImmediately.push(key);
-						case '[directive]':
-							if (bindExpression){
-								getter = createGetter(bindExpression,inject);
-								renderImmediately.push(key);
-							}
-							break;
-					}
+				var getter = null;
+				var key = attrKeys[0];
+				var bindExpression = attributes[key];	
+				var coment = key+"="+bindExpression+" ";	
+
+				if (bindExpression){
+					getter = createGetter(bindExpression,inject);
+					renderImmediately.push(key);
 					if (getter){
 						getters[key] = getter; 
 					}
-					if (setter){
-						setters[key] = setter; 
-					}
 				}
+				
 				var elem = document.createComment(coment);
 				frag.appendChild(elem);
 
@@ -305,23 +287,18 @@ export var Binder = function(context, container){
 					bindExpression = attributes[key];	
 					
 					switch (key){
-						//case '[if]':
 						case '[class]':
 						case '[attribute]':
 						case '[style]':
 						case '[display]':
 						case '[show]':
 						case '[selected]':
-						//case '[directive]':
 						case '[innerhtml]':
 							if (bindExpression){
 								getter = createGetter(bindExpression,inject);
 								renderImmediately.push(key);
 							}
 							break;
-						//case '[foreach]':
-						//	renderImmediately.push(key);
-						//	break;	
 						case 'bind':
 							if (bindExpression){
 								getter = createGetter(bindExpression,inject);
@@ -371,7 +348,7 @@ export var Binder = function(context, container){
 					}
 				}
 
-				var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
+				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
 				elem['VDOM'] = vdom;
 				
 				for (var ii =0; ii < renderImmediately.length; ii++){
@@ -387,7 +364,6 @@ export var Binder = function(context, container){
 			`return (function(createElement,context,inject){return ${parsedSource}}).call(context,createElement,context, inject);`
 		);
 		var ret =exec(scope.createElement,scope.createForEachElement,scope.createDirectiveElement, self.context, inj);
-		//console.log(ret);
 		
 		return ret;
 	} 
@@ -496,6 +472,9 @@ export var Binder = function(context, container){
 		return ret;
 	}
 
+	/**
+	 * Custom attribute handling goes here
+	 */
 	var attributes = {
 		'[transition]':function(on, inject){
 			var key = "[transition]";
@@ -894,7 +873,7 @@ export var Binder = function(context, container){
 	}
 
 	function applyCallBack(elem, context, evName, callback, cancelUIUpdate){
-		elem.addEventListener(evName, function (event) {
+		$(elem).on(evName, function(event){	
 			updateBoundContextProperty(event.target, cancelUIUpdate); //skip formatting for input event
 			if ( callback && tryCall(context, callback, event) && event.target['parentNode'])
 				repaint(event.target['parentNode']);
