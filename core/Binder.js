@@ -77,8 +77,6 @@ export var Binder = function(context, container){
 		return self;
 	}
 
-
-
 	/**
 	 * Bind DOM elements that have "bind" attribute with model
 	 * @eventCallbacks Object, common event handler , {change:function(event){}, focus:function(event){}}
@@ -118,7 +116,6 @@ export var Binder = function(context, container){
 	 * @return {string}
 	 */
 	function parseElement(elem){
-		var wrapForEach = "";
 		var thisSorurce = "";
 		var wrapDirective = "";
 		if (elem.nodeName=='#text'){
@@ -150,13 +147,11 @@ export var Binder = function(context, container){
 					attr.value = escapeAttribute(attr.value);
 					switch (attr.name){
 						case '[foreach]':
-							wrapForEach = `"${attr.name}":"${attr.value}"`;
-							break;
 						case '[transition]':
 						case '[directive]':
 						case '[if]':
 							wrapDirective = `"${attr.name}":"${attr.value}"`;
-							break;			
+							break;
 						default:
 							attributes.push('"'+attr.name +'":"'+attr.value+'"');
 					}
@@ -175,9 +170,6 @@ export var Binder = function(context, container){
 			}
 			thisSorurce += "], inject)";
 
-			if (!empty(wrapForEach)){
-				thisSorurce = "createForEachElement('"+tag+"',{"+wrapForEach+"}, function(inject){ return [ " + thisSorurce + "]},inject)";
-			}
 			if (!empty(wrapDirective)){
 				thisSorurce = "createDirectiveElement('"+tag+"',{"+wrapDirective+"}, function(inject){ return [ " + thisSorurce + "]},inject)";
 			}	
@@ -193,57 +185,42 @@ export var Binder = function(context, container){
 		
 		//var vdom = [];
 		var scope = {
+			/** Any kind of element that creates it's own scope AND returns vDOM with fragment and itemBuilder  */
 			createDirectiveElement: function(tag, attributes, createElements, inject){
-				var frag = document.createDocumentFragment();
+				//create directive fragment element, into which the deirective contents will be appended
+				var directiveFragment = document.createDocumentFragment();
 				
 				var attrKeys = Object.keys(attributes);
 				var getters = {};
-				var setters = {};
-				var renderImmediately = [];
+
 				var getter = null;
 				var key = attrKeys[0];
-				var bindExpression = attributes[key];	
-				var coment = key+"="+bindExpression+" ";	
+				var bindExpression = attributes[key];
+
+				//create comment element that will become the anchor for the directive.
+				var elem = document.createComment( key+"="+bindExpression+" ");
+				directiveFragment.appendChild(elem);
 
 				if (bindExpression){
-					getter = createGetter(bindExpression,inject);
-					renderImmediately.push(key);
-					if (getter){
-						getters[key] = getter; 
+					if (key =="[foreach]") {
+						//special handling for foreach. because getter can not be created from foreach attribute [foreach] = "index in this.items as item"
+						getters[key] = getForeachAttrParts(attributes[key]);
+					} else {
+						//for all other attributes like [if] = "this.isVisible" create getter for the attribute value
+						getter = createGetter(bindExpression,inject);
+						if (getter){
+							getters[key] = getter; 
+						}
 					}
 				}
-				
-				var elem = document.createComment(coment);
-				frag.appendChild(elem);
-
+				//because directive children are likely to be re-rendered, do not immediately render them. create itemBuilder function
 				var itemBuilder = function(inject){
 					var ii = createElements(inject);
 					return ii;
 				};
-				var vdom ={ values:{}, getters: getters, setters:setters, fragment:frag, elem:elem, items:[], itemBuilder:itemBuilder};
-				for (var ii =0; ii < renderImmediately.length; ii++){
-					executeAttribute(renderImmediately[ii], vdom ,inject);
-				}
-				return vdom;	
-			},
-			createForEachElement: function(tag, attributes, createElements, inject){
-				var frag = document.createDocumentFragment();
-				var elem = document.createComment(attributes['[foreach]']);
-				frag.appendChild(elem);
+				var vdom ={ values:{}, getters: getters, setters:{}, fragment:directiveFragment, elem:elem, items:[], itemBuilder:itemBuilder};
+				executeAttribute( key , vdom , inject);
 				
-				var getters = {};
-				var setters = {};
-
-				getters['[foreach]'] = getForeachAttrParts(attributes['[foreach]']);
-				var itemBuilder = function(inject){
-					var ii = createElements(inject);
-					return ii;
-				};
-				var vdom ={ values:{}, getters: getters, setters:setters,fragment:frag, elem:elem, items:[], itemBuilder:itemBuilder};
-				
-				//render
-				executeAttribute('[foreach]', vdom, inject);
-				 
 				return vdom;	
 			},
 			/**
@@ -360,10 +337,10 @@ export var Binder = function(context, container){
 			}
 		}
 
-		var exec = new Function('createElement','createForEachElement','createDirectiveElement','context','inject',
+		var exec = new Function('createElement','createDirectiveElement','context','inject',
 			`return (function(createElement,context,inject){return ${parsedSource}}).call(context,createElement,context, inject);`
 		);
-		var ret =exec(scope.createElement,scope.createForEachElement,scope.createDirectiveElement, self.context, inj);
+		var ret =exec(scope.createElement,scope.createDirectiveElement, self.context, inj);
 		
 		return ret;
 	} 
@@ -697,7 +674,7 @@ export var Binder = function(context, container){
 			//create a new fragment for new/updated items
 			var hasNew = false;
 			var hasDeleted = false;
-			var hasChanges = false;
+			var hasChanges = 0;
 			
 			for (var index in data){
 				if (!data.hasOwnProperty(index))
@@ -724,7 +701,7 @@ export var Binder = function(context, container){
 				}else{
 					on.items[index].elem['INJECT'] = inj;
 					if (checkVDomNode(on.items[index], inj)===true){
-						hasChanges = true;
+						hasChanges ++;
 					}
 				}
 			};
