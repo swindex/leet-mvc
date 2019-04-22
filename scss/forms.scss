@@ -170,27 +170,7 @@ textarea {
 	.hint {
 		font-size: 12px;
 		&.error {
-
-			color: white;
-		    position: absolute;
-		    background-color: $color-bg-error;
-		    top: 1px;
-		    right: 0;
-		    padding: .4rem .5rem;
-		    font-weight: bold;
-		    z-index: 10;
-
-		    &::after {
-		    	$size: 10px;
-		    	position: absolute;
-		    	bottom: -8px;
-				right: 0;
-		    	content: "";
-		    	width: 0;
-				height: 0;
-				border-top: $size solid $color-bg-error;
-				border-left: $size solid transparent;
-		    }
+			color: $color-error;
 		}
 	}
 	.message{
