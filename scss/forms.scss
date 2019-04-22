@@ -138,11 +138,12 @@ textarea {
 		border: none;
 		border-bottom: $size-border solid $color-border;
 		-webkit-appearance: none;
-		padding-bottom: $margin-md - $size-border-active ;
+		padding-bottom: $margin-md - $size-border ;
 		&:focus, &.focus, &.focus-blink{
 			outline: none;
 			box-shadow: none;
 			border-bottom: $size-border-active solid $color-border-active;
+			padding-bottom: $margin-md - $size-border-active ;
 		}
 		&[readonly]:focus, &.focus-blink{
 			animation: focus_blink 0.5s;
