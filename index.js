@@ -25,6 +25,9 @@ import { OptionsDialogPage } from "./pages/OptionsDialogPage/OptionsDialogPage";
 import { Extend, GUID, Override, tryCall } from "./core/helpers";
 
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
+import { EnableCustomElements } from "./core/EnableCustomElements";
+import { Forms } from "./components/Forms";
+
 import './core/polyfills';
 
 //Make jQuery available globally
@@ -32,3 +35,4 @@ import './core/polyfills';
 window.$ = window.jQuery = require("jquery");
 
 window['Translate'] = Translate;
+

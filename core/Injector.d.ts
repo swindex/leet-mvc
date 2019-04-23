@@ -1,6 +1,9 @@
+import { NavController } from "./NavController";
+
 //This stub is required to fool VSCode that implement method returns the template, while in actuality it teturns the Injector
 declare namespace InjectorModule{
 	const Injector = {
+		Nav: new NavController,
 		/**
 		 * Return Injector 
 		 * @param template - Injection template used for intelliSense 
