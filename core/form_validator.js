@@ -22,11 +22,14 @@ export function FormValidator(data,template,errors,attributes){
 	var used = [];
 	var touched = [];
 
-	var _messages={};
+	var _messages = FormValidator.messages;
 
 	if (Translate('form_validator')!=='form_validator' && isObject(Translate('form_validator'))){
+		// @ts-ignore
 		_messages = Translate('form_validator');
 	}
+
+	var _rules = FormValidator.rules;
 
 	set_names(_template);
 
@@ -122,12 +125,25 @@ export function FormValidator(data,template,errors,attributes){
 		return self;
 	}
 	/**
-	 * 
-	 * @param {*} messages 
+	 * Messages can Use :attribute :other :min :max :date placeholders
+	 * @param {{[rule:string]:string}} messages
 	 */
 	this.setMessages = function(messages){
-		_messages = messages;
+		_messages = Object.assign({}, FormValidator.messages, messages);
 		return self;
+	}
+	/**
+	 *  @param {{[rule:string]:function(any, 'string'|'array'|'numeric'|'select', string[], FormValidator):boolean}} rules
+	 */
+	this.setRules = function(rules){
+		_rules = Object.assign({}, FormValidator.rules , rules);
+		return self;
+	}
+	/**
+	 * 
+	 */
+	this.getMessages = function(){
+		return _messages;
 	}
 	/**
 	 * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
@@ -396,7 +412,6 @@ export function FormValidator(data,template,errors,attributes){
 		//iterate through messages to see if any keys match rule "required|max"
 		var rules= f[propName].split("|"); //split rules
 		var errmsg="";
-
 		//check if errmsg is an array and then assign a proper errormsg
 		var type="string";
 		
@@ -427,18 +442,17 @@ export function FormValidator(data,template,errors,attributes){
 		//iterate through rules
 		for (var r in rules) {
 			var rr=rules[r].split(":");
-			var condition="";
+			var conditions="";
 
-			//try translated first
-			if (_messages && _messages[rr[0]] != undefined ) {
-				errmsg=_messages[rr[0]];
-			//else get it from hard-coded text	
-			}else if (__messages[rr[0]] != undefined ) {
-				errmsg=__messages[rr[0]];
-			}	
+			errmsg=_messages[rr[0]];
 
-			if (rr[1] != undefined ) condition=rr[1];
+			if (!errmsg){
+				throw new Error("Message for rule " + rr[0] +" is not present in the validation messages!");
+			}
+
+			if (rr[1] != undefined ) conditions=rr[1];
 			
+			//errmsg can also be an array with different messages for different data types
 			errmsg= errmsg[type] || errmsg; //set default value
 			if (isObject(errmsg) || errmsg['string']){
 				errmsg = errmsg['string'];
@@ -446,51 +460,59 @@ export function FormValidator(data,template,errors,attributes){
 			var name = f._name
 			var dValue = getValue(_data, name);
 			//only validate fields that are either required, or not empty
-			if (!empty(dValue) || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' ){
-				var err = null;
+			if (!empty(dValue) || rules.indexOf('accepted')>=0  || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if'){
+
 				var title = f.title;
-				if (!title || (isString(title) && title.length > 25))
+
+				if (!title || (isString(title) && title.length > 25)){
 					title = ""
+				}
+
 				errmsg=errmsg.replace(':attribute', title);
 
-				var c_name = condition.split(',')[0];
-		
+				var conditions_arr = conditions.split(',');
+				
+				var c_name = conditions_arr[0];
+
 				var c_template = getTemplateValue( tryDefaultForm(c_name,name));
 		
 				if (!empty(c_template)){
 					errmsg=errmsg.replace(':other', c_template.title);
-					var c_v = getValue(_data,tryDefaultForm(c_name,name));
+					var otherFieldValue = getValue(_data,tryDefaultForm(c_name,name));
 					if (c_template.items && c_template.items.length > 0){
-						var c_vv = Objects.find(c_template.items,(t)=>t.value==c_v)
-						errmsg=errmsg.replace(':value', c_vv ? c_vv.title : "null");
+						var otherFieldItem = Objects.find(c_template.items,(t)=>t.value==otherFieldValue)
+						errmsg=errmsg.replace(':value', otherFieldItem ? otherFieldItem.title : "null");
 					}else
-						errmsg=errmsg.replace(':value', c_v);
+						errmsg=errmsg.replace(':value', otherFieldValue);
 				}
-				if (errmsg.indexOf(':max')!=-1 && errmsg.indexOf(':max')!=-1){
+				if (errmsg.indexOf(':max')>=0 && errmsg.indexOf(':max')>=0){
 					//min and max both present so split the condition string
-					if (condition.indexOf(',')){
-						errmsg=errmsg.replace(':min',condition.substr(0,condition.indexOf(',')));	
-						errmsg=errmsg.replace(':max',condition.substr(condition.indexOf(',')+1));	
+					if (conditions_arr.length==2){
+						errmsg=errmsg.replace(':min',conditions_arr[0]);	
+						errmsg=errmsg.replace(':max',conditions_arr[1]);	
 					}	
-				}else{
-					errmsg=errmsg.replace(':max',condition);
-					errmsg=errmsg.replace(':min',condition);
 				}
-				errmsg=errmsg.replace(':digits',condition);
-				errmsg=errmsg.replace(':size',condition);
+				
+				errmsg=errmsg.replace(':max',c_name);
+				errmsg=errmsg.replace(':min',c_name);
+				
+				errmsg=errmsg.replace(':digits',c_name);
+				errmsg=errmsg.replace(':size',c_name);
 
-				var otherValue;
-				if (!isNaN(Number(condition))){
-					otherValue = Number(condition)
-				}else{
-					otherValue = getValue(_data, tryDefaultForm(condition,name));
+				if (errmsg.indexOf(':date')>=0){
+					var otherFieldValue;
+					if (!isNaN(Number(c_name))){
+						otherFieldValue = Number(c_name)
+					}else{
+						otherFieldValue = getValue(_data, tryDefaultForm(c_name,name));
+					}
+					errmsg=errmsg.replace(':date',new Date(otherFieldValue).toLocaleString());
 				}
-				errmsg=errmsg.replace(':date',new Date(otherValue).toLocaleString());
 			
-				var result = validate_isfail(name,rr[0],type,condition)
+				var result = validate_isfail(name,rr[0],type, conditions_arr);
 		
 				if (result){
-					err = result===true ? errmsg : errmsg.replace(':result', result);
+					var err = result===true ? errmsg : errmsg.replace(':result', result);
 					return err;
 				}
 			}
@@ -499,186 +521,28 @@ export function FormValidator(data,template,errors,attributes){
 		return 0;
 	}
 
-	function isInt(value) {
-		var x = parseFloat(value);
-		return !isNaN(value) && (x | 0) === x;
-	}
 	//return true if fail validation
 	/**
 	 * 
 	 * @param {*} name 
 	 * @param {*} key 
 	 * @param {*} type 
-	 * @param {string} condition 
+	 * @param {string[]} conditions 
 	 */
-	function validate_isfail(name,key,type,condition){
+	function validate_isfail(name,key,type,conditions){
 		var value = getValue(_data,name);
-		var o_val = value;
 		if (typeof(value)=='undefined') value = null;
-		switch (key){
-			case 'unique':
-				return false;
-			case 'required':
-				switch (type){
-					case "select":
-						return value===null;
-					default :
-						return value === "" || value === null || value === false;
-				}
-			case 'different':	
-				var otherKeys = condition.split(',');
-				
-				var foundSame = false;
-				Objects.forEach(otherKeys, (otherKey, i)=>{
-					var otherValue = getValue(_data, tryDefaultForm(otherKey,name));
-					if (otherValue == value)
-						foundSame = true
-				});
-				
-				//in the end just check if the
-				return otherValue !== "" && otherValue !==null && foundSame ? true : false;	
-			case 'required_if':
-				var conditions = condition.split(',');
-				var otherKey = conditions.shift();
-				var otherValue = getValue(_data, tryDefaultForm(otherKey,name));
-				
-				if (isNumber(otherValue)){
-					otherValue = otherValue + '';
-				}else if(isBoolean(otherValue)){
-					if (otherValue===true) {
-						otherValue	= "true";
-					} else {
-						otherValue	= "false";
-					}
-				}
 
-				if (conditions.indexOf(otherValue)>=0){
-					return value==="" || value===null;
-				}
-				if (conditions.length>0)
-					//if matches no conditions, then it is NOT required
-					return false;
-				
-				//in the end just check if the
-				return otherValue !== "" && otherValue !==null && (value==="" || value===null) ? true : false;	
-			case 'true_if':
-				var conditions = condition.split(',');
-				var otherKey = conditions.shift();
-				var otherValue = getValue(_data, tryDefaultForm(otherKey,name));
-				
-				if (isNumber(otherValue)){
-					otherValue = otherValue + '';
-				}else if(isBoolean(otherValue)){
-					if (otherValue===true)
-						otherValue	= "true";
-					else 
-						otherValue	= "false";
-				}
-
-				if (conditions.indexOf(otherValue)>=0){
-					//if otherValue matches any conditions, then check if this value is not null
-					return false;
-				}
-				if (conditions.length>0)
-					//if matches no conditions, then it is NOT required
-					return true;
-				
-				//in the end just check if the
-				return otherValue == "" || otherValue == null;	
-			case 'digits':
-				var re = new RegExp('^[0-9]{'+condition+'}$');
-				return re.test(value)==false;
-			case 'digits_between':
-				var re = new RegExp('^[0-9]{'+condition+'}$');
-				return re.test(value)==false;
-			case 'in':
-				condition=condition.replace(/,/g,'|');
-				var re = new RegExp('^'+condition+'*$');
-				return re.test(value)==false;
-			case 'integer' :
-				return !isInt(value);	
-			case 'string' :
-				return false;
-			case 'size':
-				switch (type){
-					case "array":
-						return false;
-						break;
-					case "numeric":
-						return Number(value) != Number(condition);
-						break;
-					/*case "file":
-						return $('[name="'+name+'"]').files[0].size >condition;
-						break;*/
-					case "string":
-					default:
-						return value===null || value.length != Number(condition);
-				} 
-				break;	
-			case 'max':
-				switch (type){
-					case "array":
-						return false;
-					case "numeric":
-						return Number(value) > Number(condition);
-					/*case "file":
-						return $('[name="'+name+'"]').files[0].size >condition;
-						break;*/
-					case "string":
-					default:
-						return !empty(value) && value.length > condition;
-				} 
-			case 'min':
-				switch (type){
-					case "array":
-						return false;
-					case "numeric":
-						return Number(value) < Number(condition);
-					/*case "file":
-						return $('[name="'+name+'"]').files[0].size < condition;
-						break;*/
-					case "string":
-					default:
-						return empty(value) || value.length < condition;
-				} 
-				break;
-			case 'after':
-				var otherValue;
-				if (!isNaN(Number(condition))){
-					otherValue = Number(condition)
-				}else{
-					otherValue = getValue(_data, tryDefaultForm(condition,name));
-				}
-
-				return empty(value) || new Date(value) < new Date(otherValue);
-			case 'before':
-				var otherValue;
-				if (!isNaN(Number(condition))){
-					otherValue = Number(condition)
-				}else{
-					otherValue = getValue(_data, tryDefaultForm(condition,name));
-				}
-				return empty(value) || new Date(value) > new Date(otherValue);	
-			case 'email':
-				var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-				return re.test(value)==false;
-			case 'regex':
-				condition=condition.replace(/^\/|\/$/g, '');
-				var re = new RegExp(condition);
-				var repl = new RegExp('/'+condition+'/g');
-
-				if (re.test(value)==false){
-					var ret = value.replace(new RegExp(condition.replace(/^\^|\*|\$$/g,''),'g'),'');
-					return ret || true;
-				}
-				break;
-			case 'same':
-				var otherValue = getValue(_data, tryDefaultForm(condition,name));
-				return otherValue !=value;
-			default:
-				return false;	
-
+		if (_rules[key]){
+			var ret =_rules[key](value, type , conditions, self); 
+			if (ret===false ||ret ===true){
+				return !ret;
+			}
+			return ret;
 		}
+
+		throw new Error("Rule "+key +" is not present in the validation rules!");
+		
 		return false;
 	}
 	/**
@@ -709,6 +573,10 @@ export function FormValidator(data,template,errors,attributes){
 		}
 
 		return object[p.form][p.name];
+	}
+
+	this.getDataValue = function(name){
+		return getValue(_data, name);
 	}
 	/**
 	 * Get value at name or form.name
@@ -772,80 +640,240 @@ export function FormValidator(data,template,errors,attributes){
 		}
 		return _attributes[p.form][p.name] ? true : false ;
 	}
+}
+//default english messages. Rules for some of these are not yet implemented.
+FormValidator.messages = {
+	"accepted":"The :attribute must be accepted.",
+	"active_url":"The :attribute is not a valid URL.",
+	"after":"The :attribute must be a date after :date.",
+	"alpha":"The :attribute may only contain letters.",
+	"alpha_dash":"The :attribute may only contain letters, numbers, and dashes.",
+	"alpha_num":"The :attribute may only contain letters and numbers.",
+	"array":"The :attribute must be an array.",
+	"before":"The :attribute must be a date before :date.",
+	"between": {
+		"number":"The :attribute must be between :min and :max.",
+		"numeric":"The :attribute must be between :min and :max.",
+		"file":"The :attribute must be between :min and :max kilobytes.",
+		"string":"The :attribute must be between :min and :max characters.",
+		"array":"The :attribute must have between :min and :max items."
+	},
+	"boolean":"The :attribute field must be true or false.",
+	"confirmed":"The :attribute confirmation does not match.",
+	"date":"The :attribute is not a valid date.",
+	"date_format":"The :attribute does not match the format :format.",
+	"different":"The :attribute and :other must be different.",
+	"digits":"The :attribute must be :digits digits.",
+	"digits_between":"The :attribute must be between :min and :max digits.",
+	"distinct":"The :attribute field has a duplicate value.",
+	"email":"The :attribute must be a valid email address.",
+	"exists":"The selected :attribute is invalid.",
+	"filled":"The :attribute field is required.",
+	"image":"The :attribute must be an image.",
+	"in":"The selected :attribute is invalid.",
+	"in_array":"The :attribute field does not exist in :other.",
+	"integer":"The :attribute must be an integer.",
+	"ip":"The :attribute must be a valid IP address.",
+	"json":"The :attribute must be a valid JSON string.",
+	"max": {
+		"number":"The :attribute may not be greater than :max.",
+		"numeric":"The :attribute may not be greater than :max.",
+		"file":"The :attribute may not be greater than :max kilobytes.",
+		"string":"The :attribute may not be greater than :max characters.",
+		"array":"The :attribute may not have more than :max items."
+	},
+	"mimes":"The :attribute must be a file of type: :values.",
+	"min": {
+		"number":"The :attribute must be at least :min.",
+		"numeric":"The :attribute must be at least :min.",
+		"file":"The :attribute must be at least :min kilobytes.",
+		"string":"The :attribute must be at least :min characters.",
+		"array":"The :attribute must have at least :min items."
+	},
+	"not_in":"The selected :attribute is invalid.",
+	"number":"The :attribute must be a number.",
+	"numeric":"The :attribute must be a number.",
+	"present":"The :attribute field must be present.",
+	"regex":"The :attribute has invalid characters: :result",
+	"required":"The :attribute field is required.",
+	"required_if":"The :attribute field is required when :other is :value.",
+	"required_unless":"The :attribute field is required unless :other is in :values.",
+	"required_with":"The :attribute field is required when :values is present.",
+	"required_with_all":"The :attribute field is required when :values is present.",
+	"required_without":"The :attribute field is required when :values is not present.",
+	"required_without_all":"The :attribute field is required when none of :values are present.",
+	"same":"The :attribute and :other must match.",
+	"size": {
+		"number":"The :attribute must be :size.",
+		"numeric":"The :attribute must be :size.",
+		"file":"The :attribute must be :size kilobytes.",
+		"string":"The :attribute must be :size characters.",
+		"array":"The :attribute must contain :size items."
+	},
+	"string":"The :attribute must be a string.",
+	"timezone":"The :attribute must be a valid zone.",
+	"true_if":"The :other must be true",
+	"unique":"The :attribute has already been taken.",
+	"url":"The :attribute format is invalid."
+};
 
-	//apply default english messages, if net set
-	var __messages = {
-		"accepted":"The :attribute must be accepted.",
-		"active_url":"The :attribute is not a valid URL.",
-		"after":"The :attribute must be a date after :date.",
-		"alpha":"The :attribute may only contain letters.",
-		"alpha_dash":"The :attribute may only contain letters, numbers, and dashes.",
-		"alpha_num":"The :attribute may only contain letters and numbers.",
-		"array":"The :attribute must be an array.",
-		"before":"The :attribute must be a date before :date.",
-		"between": {
-			"number":"The :attribute must be between :min and :max.",
-			"numeric":"The :attribute must be between :min and :max.",
-			"file":"The :attribute must be between :min and :max kilobytes.",
-			"string":"The :attribute must be between :min and :max characters.",
-			"array":"The :attribute must have between :min and :max items."
-		},
-		"boolean":"The :attribute field must be true or false.",
-		"confirmed":"The :attribute confirmation does not match.",
-		"date":"The :attribute is not a valid date.",
-		"date_format":"The :attribute does not match the format :format.",
-		"different":"The :attribute and :other must be different.",
-		"digits":"The :attribute must be :digits digits.",
-		"digits_between":"The :attribute must be between :min and :max digits.",
-		"distinct":"The :attribute field has a duplicate value.",
-		"email":"The :attribute must be a valid email address.",
-		"exists":"The selected :attribute is invalid.",
-		"filled":"The :attribute field is required.",
-		"image":"The :attribute must be an image.",
-		"in":"The selected :attribute is invalid.",
-		"in_array":"The :attribute field does not exist in :other.",
-		"integer":"The :attribute must be an integer.",
-		"ip":"The :attribute must be a valid IP address.",
-		"json":"The :attribute must be a valid JSON string.",
-		"max": {
-			"number":"The :attribute may not be greater than :max.",
-			"numeric":"The :attribute may not be greater than :max.",
-			"file":"The :attribute may not be greater than :max kilobytes.",
-			"string":"The :attribute may not be greater than :max characters.",
-			"array":"The :attribute may not have more than :max items."
-		},
-		"mimes":"The :attribute must be a file of type: :values.",
-		"min": {
-			"number":"The :attribute must be at least :min.",
-			"numeric":"The :attribute must be at least :min.",
-			"file":"The :attribute must be at least :min kilobytes.",
-			"string":"The :attribute must be at least :min characters.",
-			"array":"The :attribute must have at least :min items."
-		},
-		"not_in":"The selected :attribute is invalid.",
-		"number":"The :attribute must be a number.",
-		"numeric":"The :attribute must be a number.",
-		"present":"The :attribute field must be present.",
-		"regex":"The :attribute has invalid characters: :result",
-		"required":"The :attribute field is required.",
-		"required_if":"The :attribute field is required when :other is :value.",
-		"required_unless":"The :attribute field is required unless :other is in :values.",
-		"required_with":"The :attribute field is required when :values is present.",
-		"required_with_all":"The :attribute field is required when :values is present.",
-		"required_without":"The :attribute field is required when :values is not present.",
-		"required_without_all":"The :attribute field is required when none of :values are present.",
-		"same":"The :attribute and :other must match.",
-		"size": {
-			"number":"The :attribute must be :size.",
-			"numeric":"The :attribute must be :size.",
-			"file":"The :attribute must be :size kilobytes.",
-			"string":"The :attribute must be :size characters.",
-			"array":"The :attribute must contain :size items."
-		},
-		"string":"The :attribute must be a string.",
-		"timezone":"The :attribute must be a valid zone.",
-		"true_if":"The :other must be true",
-		"unique":"The :attribute has already been taken.",
-		"url":"The :attribute format is invalid."
+/** @type {{[key:string]:function(any, 'string'|'array'|'numeric'|'select', string[], FormValidator):boolean}} */
+FormValidator.rules = {
+	unique(value, type, conditions,  validator){
+		return true;
+	},
+	accepted(value, type, conditions,  validator){
+		return value !== "" && value != null && value != false;
+	},
+	required(value, type, conditions,  validator){
+		if (type == "select"){
+			return value !== null;
+		}
+		return value !== "" && value != null && value != false;
+	},
+	filled(value, type, conditions,  validator){
+		return FormValidator.rules.required(value, type, conditions,  validator);
+	},
+	different(value, type, conditions,  validator){
+		if (value == validator.getDataValue(conditions[0]))
+			return false;
+
+		return true;
+	},	
+	same(value, type, conditions,  validator){
+		if (value == validator.getDataValue(conditions[0])){
+			return true;
+		}
+
+		return false;
+	},	
+	required_if(value, type, conditions,  validator){
+		var otherValue = validator.getDataValue(conditions[0]);
+		conditions = conditions.slice(1);
+		if (conditions.length==0 && otherValue){
+			return FormValidator.rules.required(value, type, conditions, validator);  
+		}
+		if (conditions.length > 0){
+			if (conditions.indexOf(otherValue)>=0){
+				return FormValidator.rules.required(value, type, conditions, validator); 
+			}
+		}
+		
+		return true;
+	},
+	min(value, type, conditions,  validator){
+		var otherValue = Number(conditions[0]);
+		switch (type){
+			case 'numeric':
+				return Number(value) >= otherValue;
+			case 'array':
+				return true;
+			case 'string':
+			default:
+					return (value+"").length >= otherValue;
+			}
+	},
+	max(value, type, conditions,  validator){
+		var otherValue = Number(conditions[0]);
+		switch (type){
+			case 'numeric':
+				return Number(value) <= otherValue;
+			case 'array':
+				return true;
+			case 'string':
+			default:
+				return (value+"").length <= otherValue;
+			}
+	},
+	size(value, type, conditions, validator){
+		var otherValue = Number(conditions[0]);
+		switch (type){
+			case 'numeric':
+				return Number(value) == otherValue;
+			case 'array':
+				return true;
+			case 'string':
+			default:
+				return (value+"").length == otherValue;
+		}
+	},
+	after(value, type, conditions, validator){
+		var otherValue;
+		if (!isNaN(Number(conditions[0]))){
+			otherValue = Number(conditions[0])
+		}else{
+			otherValue = validator.getDataValue(conditions[0]);
+		}
+
+		return empty(value) || new Date(value) < new Date(otherValue);
+	},
+	before(value, type, conditions, validator){
+		var otherValue;
+		if (!isNaN(Number(conditions[0]))){
+			otherValue = Number(conditions[0])
+		}else{
+			otherValue = validator.getDataValue(conditions[0]);
+		}
+
+		return empty(value) || new Date(value) > new Date(otherValue);	
+	},
+	digits(value, type, conditions, validator){
+		var re = new RegExp('^[0-9]{'+conditions[0]+'}$');
+		return re.test(value);
+	},
+	digits_between(value, type, conditions, validator){
+		var re = new RegExp('^[0-9]{'+conditions[0]+','+conditions[1]+'}$');
+		return re.test(value);
+	},
+	in(value, type, conditions, validator){
+		return conditions.indexOf(value)>=0;
+	},
+	string(value, type, conditions, validator){
+		return isString(value);
+	},
+	boolean(value, type, conditions, validator){
+		return isBoolean(value);
+	},
+	integer(value, type, conditions, otherValue, validator){
+		var x = parseFloat(value);
+		return !isNaN(value) && (x | 0) === x;
+	},
+	email(value, type, conditions, validator){
+		var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		return re.test(value);
+	},
+	regex(value, type, conditions, validator){
+		if (empty(value)) value="";
+		var condition=conditions[0].replace(/^\/|\/$/g, '');
+		var re = new RegExp(condition);
+
+		if (re.test(value)==false){
+			var ret = value.replace(new RegExp(condition.replace(/^\^|\*|\$$/g,''),'g'),'');
+			return ret;
+		}
+		return true;
+	},
+	true_if(value, type, conditions, validator){
+		var otherKey = conditions.shift();
+		var otherValue = validator.getDataValue(otherKey);
+		
+		if (isNumber(otherValue)){
+			otherValue = otherValue + '';
+		}else if(isBoolean(otherValue)){
+			if (otherValue===true)
+				otherValue	= "true";
+			else 
+				otherValue	= "false";
+		}
+
+		if (conditions.indexOf(otherValue)>=0){
+			return true;
+		}
+		if (conditions.length>0)
+			//if matches no conditions, then it is NOT required
+			return false;
+		
+		//in the end just check if the
+		return !empty(otherValue);	
 	}
 }
