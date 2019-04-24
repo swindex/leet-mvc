@@ -26,7 +26,7 @@ export function FormValidator(data,template,errors,attributes){
 
 	if (Translate('form_validator')!=='form_validator' && isObject(Translate('form_validator'))){
 		// @ts-ignore
-		self.setMessages(Translate('form_validator'));
+		setMessages(Translate('form_validator'));
 	}
 
 	var _rules = FormValidator.rules;
@@ -128,10 +128,11 @@ export function FormValidator(data,template,errors,attributes){
 	 * Messages can Use :attribute :other :min :max :date placeholders
 	 * @param {{[rule:string]:string}} messages
 	 */
-	this.setMessages = function(messages){
+	function setMessages (messages){
 		_messages = Object.assign({}, FormValidator.messages, messages);
 		return self;
 	}
+	this.setMessages = setMessages; 
 	/**
 	 *  @param {{[rule:string]:function(any, 'string'|'array'|'numeric'|'select', string[], FormValidator):boolean}} rules
 	 */
@@ -833,6 +834,9 @@ FormValidator.rules = {
 	},
 	boolean(value, type, conditions, validator){
 		return isBoolean(value);
+	},
+	numeric(value, type, conditions, validator){
+		return !isNaN(parseFloat(value));
 	},
 	integer(value, type, conditions, otherValue, validator){
 		var x = parseFloat(value);
