@@ -193,7 +193,7 @@ export class Forms extends BaseComponent{
 					'<div class="split" style="width:40%">' + this.addInput(timeEl, {time:'', format:'time', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',true)"})+ '</div>',
 				]);	
 			case "number":
-				this.assertValidateRuleHas(el,"number");
+				this.assertValidateRuleHas(el,"numeric");
 				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'number'})]);
 			case "password":
 				return this.renderFieldGroupHTML(el, [this.addPassword(el,null)]);
