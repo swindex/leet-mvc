@@ -26,7 +26,7 @@ export function FormValidator(data,template,errors,attributes){
 
 	if (Translate('form_validator')!=='form_validator' && isObject(Translate('form_validator'))){
 		// @ts-ignore
-		_messages = Translate('form_validator');
+		self.setMessages(Translate('form_validator'));
 	}
 
 	var _rules = FormValidator.rules;
