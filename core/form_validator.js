@@ -806,7 +806,7 @@ FormValidator.rules = {
 			otherValue = validator.getDataValue(conditions[0]);
 		}
 
-		return empty(value) || new Date(value) < new Date(otherValue);
+		return empty(value) || new Date(value) > new Date(otherValue);
 	},
 	before(value, type, conditions, validator){
 		var otherValue;
@@ -816,7 +816,7 @@ FormValidator.rules = {
 			otherValue = validator.getDataValue(conditions[0]);
 		}
 
-		return empty(value) || new Date(value) > new Date(otherValue);	
+		return empty(value) || new Date(value) < new Date(otherValue);	
 	},
 	digits(value, type, conditions, validator){
 		var re = new RegExp('^[0-9]{'+conditions[0]+'}$');
