@@ -21,14 +21,15 @@ export var Binder = function(context, container){
 	/** @type {vDom} */
 	this.vdom = null;
 	this.context = context || this;
-	/** @type {KeyValuePair} */
+	/** @type {{[key:string]:any}} */ 
 	this.injectVars = {};
 	/**@type {HTMLElement} */
 	this.container
 	if (container instanceof jQuery) {
 		this.container = container[0];
 	} else {
-		this.container = (container || this.container) || document;
+		// @ts-ignore
+		this.container = container;
 	}
 
 	this.eventCallbacks = {change:null, focus:null, input:null,click:null};
@@ -745,7 +746,7 @@ export var Binder = function(context, container){
 						
 			if (on.values[key] !== html){
 				on.values[key] = html;
-	 
+					 
 				/** @type {vDom} */
 				var compVdom = null;
 
@@ -759,14 +760,15 @@ export var Binder = function(context, container){
 					}
 				}
 				
-				if (compVdom) {
 					var templateVdom = on.itemBuilder(inject)[0];
 					templateVdom.elem['INJECT'] = inject;
 					$(templateVdom.elem).empty();						
-					// @ts-ignore
-					$(templateVdom.elem).append(compVdom.elem.childNodes);
-					//both the componenet and template VDOMs are on the same level
-					templateVdom.items = compVdom.items;
+					if (compVdom) {
+						// @ts-ignore
+						$(templateVdom.elem).append(compVdom.elem.childNodes);
+						//both the componenet and template VDOMs are on the same level
+						templateVdom.items = compVdom.items;
+					}
 					on.items[0] = templateVdom;
 					insertAfter(templateVdom.elem, on.elem);
 				
@@ -775,7 +777,6 @@ export var Binder = function(context, container){
 							continue;
 						checkVDomNode(on.items[i], inject);
 					};
-				}
 			} else {
 				//just update its items
 				for( var i in  on.items){
@@ -803,6 +804,10 @@ export var Binder = function(context, container){
 				if (!(component instanceof BaseComponent)){
 					return false;
 				}
+				//crear any previous component elements
+				if (on.items.length>0){
+					on.items.forEach(item => {$(item.elem).remove()});
+				}
 				//call onInit method
 				tryCall(component,component.onInit, on.elem);
 			
@@ -820,7 +825,10 @@ export var Binder = function(context, container){
 
 					//swap children between componenet temp element and the parent's element
 					var p_frag = document.createDocumentFragment();
+					
+					// @ts-ignore
 					$(p_frag).append(p_vDom.elem.childNodes);
+					// @ts-ignore
 					$(p_vDom.elem).append(c_vDom.elem.childNodes);
 
 					component.parentPage = self.context;
