@@ -746,7 +746,12 @@ export var Binder = function(context, container){
 						
 			if (on.values[key] !== html){
 				on.values[key] = html;
-					 
+
+				//clear any previous component elements
+				if (on.items.length>0){
+					on.items.forEach(item => {$(item.elem).remove()});
+				}
+	 
 				/** @type {vDom} */
 				var compVdom = null;
 
@@ -804,7 +809,7 @@ export var Binder = function(context, container){
 				if (!(component instanceof BaseComponent)){
 					return false;
 				}
-				//crear any previous component elements
+				//clear any previous component elements
 				if (on.items.length>0){
 					on.items.forEach(item => {$(item.elem).remove()});
 				}
