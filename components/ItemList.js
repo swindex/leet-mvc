@@ -3,7 +3,7 @@ import { BaseComponent } from "./BaseComponent";
 /**
  * Buffered ItemList component
  * to be used as [directive] provider for the Binder engine
- * this.listComp = new ItemList('<span bind = "item"></span>');
+ * this.listComp = new ItemList();
  * this.listComp.displayBufferItems = 50;
  * this.listComp.items = ["item 1","item 2","item 3"];
  * this.listComp.onItemClicked = (item, index)=>{
@@ -13,12 +13,8 @@ import { BaseComponent } from "./BaseComponent";
  * page.template = '<div [directive]="this.listComp">'
  */
 export class ItemList extends BaseComponent{
-	/**
-	 * @param {string} [itemTemplate] - html template text to render into each item by default will output span with bound item
- 	 */
-	constructor(itemTemplate){
+	constructor(){
 		super();
-		itemTemplate = itemTemplate || null;
 		//list, that is displayed at the moment
 		this._renderItems= [];
 		//all items
@@ -29,21 +25,9 @@ export class ItemList extends BaseComponent{
 		this.perPage = 20;
 		this._displayFrom = 0;
 		this._displayTo = 0;
-		this.defaultIterator = ' item [foreach]="index in component._renderItems as item" onclick="component.onItemClicked(item, index)"';
-
-		if (itemTemplate)
-			this.html = itemTemplate.replace('$iterator',this.defaultIterator);
+		this.html = '<!-- inject this.templateFragment in the init method --!>';
 	}
 
-	onInit(container){
-		super.onInit(container);
-		if (!this.html && container.innerHTML){
-			//chrome sometimes add garbage =""
-			var html = container.innerHTML.replace('$iterator=""','$iterator');
-			//replace $iterator with default iterator
-			container.innerHTML = html.replace('$iterator',this.defaultIterator);
-		}
-	}
 	/**
 	 * Set Items array
 	 */
@@ -73,6 +57,10 @@ export class ItemList extends BaseComponent{
 	onScroll(top, max){
 
 	};
+
+	onUpdate(){
+		this.templateUpdate();
+	}
 
 	/**
 	 * Set items for buffered rendering. Recommended instead of accessing  
@@ -119,8 +107,11 @@ export class ItemList extends BaseComponent{
 
 	init(container){
 		super.init(container);
+		//this.container
 		//attach scroll event to the closest parent with touch-scroll class
 		this.container = $(container);
+		//append parent template contents here
+		this.container.append(this.templateFragment);
 		this.scollParent = $($(container).closest('.touch-scroll, .scroll').get(0));
 		this.scollParent.on("scroll", (e)=>{
 			var el = $(e.target);
@@ -138,4 +129,4 @@ export class ItemList extends BaseComponent{
 	}
 }
 
-ItemList.iterator = ' item [foreach]="index in component._renderItems as item" onclick="component.onItemClicked(item, index)"';
+ItemList.iterator = function(name){ return ` item [foreach]="index in ${name}._renderItems as item" onclick="${name}.onItemClicked(item, index)"`};
