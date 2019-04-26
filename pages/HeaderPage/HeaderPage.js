@@ -11,7 +11,8 @@ export class HeaderPage extends BasePage{
 		this.backButton = false;
 		this.menuButton = false;
 		this.refreshButton = false;
-
+		this.searchButton = false;
+		
 		this.title = null;
 		this.content = null
 		this.footer = null;
@@ -35,6 +36,12 @@ export class HeaderPage extends BasePage{
 	onRefreshButtonClicked(){
 		console.log("Override me : onRefreshButtonClicked");
 	}
+	/**
+	 * ***Override***
+	 */
+	onSearchButtonClicked(){
+
+	}
 
 }
 HeaderPage.className = 'page-HeaderPage';
@@ -45,6 +52,7 @@ HeaderPage.template = `
 		<span class="headertitle" [innerHTML]="this.title"></span>
 		<span class="logo" [if]="!this.title"></span>
 		<button id="refreshButton" [if]="this.refreshButton" [class]="this.refreshButtonRotating ? 'rotating' : null" onclick = "this.onRefreshButtonClicked()"><i class="fas fa-sync-alt"></i></button>
+		<button id="searchButton" [if]="this.searchButton" onclick = "this.onSearchButtonClicked()"><i class="fas fa-search"></i></button>
 	</div>
 	<div class="content" [directive] = "this.content">
 	</div>
