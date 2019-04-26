@@ -189,8 +189,8 @@ export class Forms extends BaseComponent{
 				Objects.setPropertyByPath(this.data, timeEl._name, dateTime);
 				
 				return this.renderFieldGroupHTML(el,  [
-					'<div class="split" style="width:60%">' + this.addInput(dateEl, {date:'', format:'date', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',false)"})+ '</div>',
-					'<div class="split" style="width:40%">' + this.addInput(timeEl, {time:'', format:'time', onchange:"component._formatSplitDateField($event,'"+ el._name+ "',true)"})+ '</div>',
+					'<div class="split" style="width:60%">' + this.addInput(dateEl, {date:'', format:'date', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',false)"})+ '</div>',
+					'<div class="split" style="width:40%">' + this.addInput(timeEl, {time:'', format:'time', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',true)"})+ '</div>',
 				]);	
 			case "number":
 				this.assertValidateRuleHas(el,"numeric");
@@ -198,7 +198,7 @@ export class Forms extends BaseComponent{
 			case "password":
 				return this.renderFieldGroupHTML(el, [this.addPassword(el,null)]);
 			case "phone":
-				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'tel', oninput:"component._formatPhoneNumber($event)"})]);
+				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'tel', oninput:"this._formatPhoneNumber($event)"})]);
 			case "hidden":
 				return "";
 			case "textarea":
@@ -270,7 +270,7 @@ export class Forms extends BaseComponent{
 
 	renderFieldGroupHTML(el, elHTML, noTitle, noErrorHint){
 		return `
-		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">
+		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">
 			${(noTitle ? '' : this.addTitle(el))}
 			${isArray(elHTML) ? elHTML.join('') : elHTML}
 			${(noErrorHint ? '' : this.addErrorHint(el))}
@@ -278,7 +278,7 @@ export class Forms extends BaseComponent{
 	}
 
 	renderSelectGroupHTML(el, elHTML){
-		return `<div [if]="!component.attributes${this.refactorAttrName(el._name)} || !component.attributes${this.refactorAttrName(el._name)}.hidden">${elHTML}</div>`; 
+		return `<div [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">${elHTML}</div>`; 
 	}
 
 	/**
@@ -293,7 +293,7 @@ export class Forms extends BaseComponent{
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
-			<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />`+
+			<input bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -314,10 +314,10 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		this.types[el._name] = "password";	
 		return (`
-			<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} [attribute]="{type: component.types['${el._name}']}"/>`+
-			(true ? `<div class="icon" onclick="component.togglePasswordType('${el._name}')">
-				<i class="fas fa-eye" [if]="component.types['${el._name}']=='password'"></i>
-				<i class="fas fa-eye-slash" [if]="component.types['${el._name}']=='text'"></i>
+			<input bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
+			(true ? `<div class="icon" onclick="this.togglePasswordType('${el._name}')">
+				<i class="fas fa-eye" [if]="this.types['${el._name}']=='password'"></i>
+				<i class="fas fa-eye-slash" [if]="this.types['${el._name}']=='text'"></i>
 			</div>` : '')
 		);
 	}
@@ -332,7 +332,7 @@ export class Forms extends BaseComponent{
 		
 		$.extend(opt, override, el.attributes);
 		return `
-			<textarea bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)}></textarea>
+			<textarea bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)}></textarea>
 		`;
 	}
 	/**
@@ -347,7 +347,7 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		return (`
 			<label class="toggle">${el.title}
-				<input bind="component.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
+				<input bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
 				<span class="slider round"></span>
 			</label>
 		`);
@@ -359,7 +359,7 @@ export class Forms extends BaseComponent{
 	 */
 	addSelect(el, override,parentPath){
 
-		var opt = { name: el._name, type: "select", bind: `component.data${this.refactorAttrName(el._name)}`, placeholder:el.placeholder};
+		var opt = { name: el._name, type: "select", bind: `this.data${this.refactorAttrName(el._name)}`, placeholder:el.placeholder};
 		$.extend(opt, override, el.attributes);
 		var elem = `<select ${this.generateAttributes(opt)}>`;
 		if (el.placeholder)
@@ -369,7 +369,7 @@ export class Forms extends BaseComponent{
 		$.each(el.items,  (index, option)=>{
 			elem = elem+ `<option value="${ option.value===null ? '' : option.value }" title="${ option.placeholder || '' }">${option.title}</option>`;
 			if (option.items){
-				items_items += `<div [if]="component.data${this.refactorAttrName(el._name)} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.renderArray(option.items,parentPath) + `</div>`;
+				items_items += `<div [if]="this.data${this.refactorAttrName(el._name)} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.renderArray(option.items,parentPath) + `</div>`;
 			}
 		});
 		elem = elem + "</select>";
@@ -396,7 +396,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addErrorHint(el){
-		return `<div class="hint" bind="component.errors${this.refactorAttrName(el._name)}" [class]="component.errors${this.refactorAttrName(el._name)} ? 'error' : ''"></div>`
+		return `<div class="hint" bind="this.errors${this.refactorAttrName(el._name)}" [class]="this.errors${this.refactorAttrName(el._name)} ? 'error' : ''"></div>`
 	}
 
 	/**
@@ -454,7 +454,7 @@ export class Forms extends BaseComponent{
 	addButton(el){
 		var opt = $.extend({}, { }, el.attributes);
 		return (`
-			<button class="link" ${this.generateAttributes(opt)} name="${el._name}" onclick="component.onButtonClick($event);">${el.value || ''}</button>
+			<button class="link" ${this.generateAttributes(opt)} name="${el._name}" onclick="this.onButtonClick($event);">${el.value || ''}</button>
 		`);
 	}	
 	/**
@@ -490,7 +490,7 @@ export class Forms extends BaseComponent{
 			} else{
 				!this.attrEvents[name] ? this.attrEvents[name] = {} : null;
 				this.attrEvents[name][key] = val;
-				strOpts += 'on'+key + `="component.attrEvents['${name}']['${key}']()"`;
+				strOpts += 'on'+key + `="this.attrEvents['${name}']['${key}']()"`;
 			}
 		});
 		return strOpts;

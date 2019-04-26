@@ -43,13 +43,13 @@ export class SwiperForms extends Forms{
 			<!-- Add Pagination -->
 			<div class="swiper-pagination"></div>
 			<!-- Add Nav Buttons -->
-			<div [if]="component.options.navigation" class="swiper-navigation">
-				<button [if]="!component.swiper.isBeginning" 
-					onclick="if (component.onBackClicked()!== false ) component.swiper.slidePrev()" name="back">Back</button>
-				<button [if]="!component.swiper.isEnd" 
-					onclick="if (component.onNextClicked()!== false ) component.swiper.slideNext()" class="item-right" name="next">Next</button>
-				<button [if]="component.swiper.isEnd && component.options.submitButton" 
-					onclick="component.onSubmitClicked()" class="item-right" name="submit">Submit</button>
+			<div [if]="this.options.navigation" class="swiper-navigation">
+				<button [if]="!this.swiper.isBeginning" 
+					onclick="if (this.onBackClicked()!== false ) this.swiper.slidePrev()" name="back">Back</button>
+				<button [if]="!this.swiper.isEnd" 
+					onclick="if (this.onNextClicked()!== false ) this.swiper.slideNext()" class="item-right" name="next">Next</button>
+				<button [if]="this.swiper.isEnd && this.options.submitButton" 
+					onclick="this.onSubmitClicked()" class="item-right" name="submit">Submit</button>
 			</div>
 			
 		</div>

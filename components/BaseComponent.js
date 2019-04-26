@@ -10,9 +10,13 @@ export class BaseComponent extends ChangeWatcher{
 		/** @type {string} */
 		this.html = null;
 		this.events = null;
-		this.templateHTML = null;
+		/** fragment with children */
 		this.templateFragment = null;
+		/** update children*/
+		this.templateUpdate = function(){};
 		Objects.bindMethods(this);
+		/** reference to the parent page */
+		this.parentPage = null;
 	}
 
 	/** 
@@ -29,10 +33,12 @@ export class BaseComponent extends ChangeWatcher{
 	 */
 	init(container){
 		//register my self with the basePage components, so it knows what to destroy later
-		if (!this.binder.context.components){
-			this.binder.context.components = [];
+		if (this.parentPage){
+			if (!this.parentPage.components){
+				this.parentPage.components = [];
+			}
+			this.parentPage.components.push(this);
 		}
-		this.binder.context.components.push(this);
 	}
 
 	/**
@@ -41,12 +47,19 @@ export class BaseComponent extends ChangeWatcher{
 	update(){
 		if (this.binder)
 			this.binder.updateElements();
+		this.onUpdate();	
 	}
 
 	/**
 	 * ***Override***
 	 **/
 	onDestroy(){
+
+	}
+	/**
+	 * ***Override***
+	 **/
+	onUpdate(){
 
 	}
 

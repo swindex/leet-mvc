@@ -1,3 +1,5 @@
+import './core/polyfills';
+
 import { MapElement } from "./core/MapElement";
 import { BasePage } from "./pages/BasePage";
 import { Objects } from "./core/Objects";
@@ -27,12 +29,10 @@ import { Extend, GUID, Override, tryCall } from "./core/helpers";
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
 import { EnableCustomElements } from "./core/EnableCustomElements";
 import { Forms } from "./components/Forms";
+import { ItemList } from "./components/ItemList";
 
-import './core/polyfills';
 
 //Make jQuery available globally
-// @ts-ignore
-window.$ = window.jQuery = require("jquery");
-
+window["$"] = window["jQuery"] = require("jquery");
 window['Translate'] = Translate;
 

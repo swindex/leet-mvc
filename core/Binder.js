@@ -18,6 +18,8 @@ var getterCashe = {};
 export var Binder = function(context, container){
 	/** @type {Binder} */
 	var self = this;
+	/** @type {vDom} */
+	this.vdom = null;
 	this.context = context || this;
 	/** @type {KeyValuePair} */
 	this.injectVars = {};
@@ -149,6 +151,7 @@ export var Binder = function(context, container){
 						case '[foreach]':
 						case '[transition]':
 						case '[directive]':
+						case '[component]':
 						case '[if]':
 							wrapDirective = `"${attr.name}":"${attr.value}"`;
 							break;
@@ -670,7 +673,6 @@ export var Binder = function(context, container){
 				}
 			}
 			
-
 			//create a new fragment for new/updated items
 			var hasNew = false;
 			var hasDeleted = false;
@@ -727,37 +729,23 @@ export var Binder = function(context, container){
 
 			return false;
 		},
+		/**
+		 * @param {vDom} on  
+		 * @param {*} inject 
+		 */
 		'[directive]':function(on, inject){
 			var key = "[directive]";
 			var getter = on.getters[key];
-			var result = getter(self,inject);
-			var html = null;
-			var component;
-			var callbacks=null; 
-			if (result instanceof BaseComponent){
-				component = result;
-				html = result.html;
+			var html = getter(self,inject);
 
-				if (isObject(result.events))
-					callbacks = result.events;
-				else
-					callbacks = self.eventCallbacks;
-			}else{ 
-				html=result;
-				callbacks = self.eventCallbacks;
+			if (html instanceof BaseComponent){
+				on.getters["[component]"] = getter;
+				return attributes["[component]"](on, inject);
 			}
-			if (on.values[key] !== result){
-				on.values[key] = result;
-				if (component){
-					tryCall(component,component.onInit, on.elem);
-				}
-				
-				var inj = $.extend({},{component:component},inject);
-
-				var f = document.createDocumentFragment()
-
-			 
-				//if html is supplied, overwrite the first childs contents
+						
+			if (on.values[key] !== html){
+				on.values[key] = html;
+	 
 				/** @type {vDom} */
 				var compVdom = null;
 
@@ -767,82 +755,103 @@ export var Binder = function(context, container){
 					}else{
 						var temp = document.createElement('div');
 						temp.innerHTML = html;
-						compVdom = executeSource(parseElement(temp), inj);
+						compVdom = executeSource(parseElement(temp), inject);
 					}
 				}
 				
 				if (compVdom) {
-					//build directive contents <div [directive]>contents</div>
-					if (on.items.length == 0){
-						//directive does not yet have any children
+					var templateVdom = on.itemBuilder(inject)[0];
+					templateVdom.elem['INJECT'] = inject;
+					$(templateVdom.elem).empty();						
+					// @ts-ignore
+					$(templateVdom.elem).append(compVdom.elem.childNodes);
+					//both the componenet and template VDOMs are on the same level
+					templateVdom.items = compVdom.items;
+					on.items[0] = templateVdom;
+					insertAfter(templateVdom.elem, on.elem);
+				
+					for( var i in  on.items){
+						if (!on.items.hasOwnProperty(i))
+							continue;
+						checkVDomNode(on.items[i], inject);
+					};
+				}
+			} else {
+				//just update its items
+				for( var i in  on.items){
+					if (!on.items.hasOwnProperty(i))
+						continue;
+					checkVDomNode(on.items[i], inject);
+				};
+			}
+			
+			return false;
+		},
+		/**
+		 * 
+		 * @param {vDom} on  
+		 * @param {*} inject 
+		 */
+		'[component]':function(on, inject){
+			var key = "[component]";
+			var getter = on.getters[key];
+			/** @type {BaseComponent} */
+			var component = getter(self,inject);
 
-						//if we have componenet AND it has a parentTemplate
-						var templateVdom = on.itemBuilder(inj)[0];
-						templateVdom.elem['INJECT'] = inj;
-												
-						if (component){
-							//remember the original html
-							component.templateHTML =  templateVdom.elem.innerHTML;
-							
-							var templateFragment = document.createDocumentFragment();
-							templateVdom.items.forEach(function(vd){
-								templateFragment.appendChild(vd.elem);
-							});
-							component.templateFragment = templateFragment;
-						}
-						// @ts-ignore
-						$(templateVdom.elem).append(compVdom.elem.childNodes);
-						//both the componenet and template VDOMs are on the same level
-						on.items[0] = templateVdom;
-						on.items[1] = compVdom;
-						insertAfter(templateVdom.elem, on.elem);
-						
-					}else{
-						//Go, here if previously added component had parentTemplate
-						//add computed Vdom
-						on.items[0].items = compVdom.items;
-						//if (on.items.length==0)
-						on.items[0].elem['INJECT'] = inj;
-						$(on.items[0].elem).empty();
-						// @ts-ignore
-						$(on.items[0].elem).append(compVdom.elem.childNodes)
+			if (on.values[key] !== component) {
+				on.values[key] = component;
+				if (!(component instanceof BaseComponent)){
+					return false;
+				}
+				//call onInit method
+				tryCall(component,component.onInit, on.elem);
+			
+				var inj = $.extend({}, inject);
+				if (component.html) {
+					var temp = document.createElement('div');
+					temp.innerHTML = component.html;
+					component.binder = new Binder(component, temp).setInjectVars(inj).bindElements(component.events);
+					
+					var c_vDom = component.binder.vdom;
+
+					//build parent vDom in the parent scope
+					/** @type {vDom} */
+					var p_vDom = on.itemBuilder(inject)[0];
+
+					//swap children between componenet temp element and the parent's element
+					var p_frag = document.createDocumentFragment();
+					$(p_frag).append(p_vDom.elem.childNodes);
+					$(p_vDom.elem).append(c_vDom.elem.childNodes);
+
+					component.parentPage = self.context;
+					//let component decide where to put parent's children
+					component.templateFragment = p_frag;
+					component.templateUpdate = function(){
+						checkVDomNode(on, inject);
 					}
 				} else {
-					//build directive contents <div [directive]>contents</div>
-					var templateVdom = on.itemBuilder(inj)[0];
-					templateVdom.elem['INJECT'] = inj;
-
-					//add root [directive] element
-					on.items[0] = templateVdom;
-					insertAfter(templateVdom.elem,on.elem);
+					p_vDom = on.itemBuilder(inject)[0];
 				}
+				//parent vDom items still belong to the directive vDom node
+				on.items[0] = p_vDom;
 
+				//insert parent vDom with new children after the [component] vDom element
+				insertAfter(p_vDom.elem, on.elem);
+				//call onInit method in the next frame
+				setTimeout(function(){
+					tryCall(component,component.init, p_vDom.elem);
+				});
+			} else {
+				//same component. Just update own parent elem vDom items
+				//component items do not get updated by this!
 				for( var i in  on.items){
 					if (!on.items.hasOwnProperty(i))
 						continue;
-					checkVDomNode(on.items[i], inj);
+					checkVDomNode(on.items[i], inject);
 				};
-				
-				if (component){
-					component.binder = self;
-					//wait for container to be attached to its parent
-					setTimeout(function(){
-						tryCall(component,component.init, on.items[0].elem);
-					},0);
+				if (component && component.binder){
+					tryCall(component,component.binder.updateElements);
 				}
-			}else if (isObject(on.values[key])){
-				var inj = $.extend({},{component:on.values[key]},inject);
-				for( var i in  on.items){
-					if (!on.items.hasOwnProperty(i))
-						continue;
-					checkVDomNode(on.items[i], inj);
-				};
-			}else if (isString(on.values[key])){
-				for( var i in  on.items){
-					if (!on.items.hasOwnProperty(i))
-						continue;
-					checkVDomNode(on.items[i], inj);
-				};
 			}
 			
 			return false;
