@@ -766,6 +766,11 @@ export var Binder = function(context, container){
 				}
 				
 					var templateVdom = on.itemBuilder(inject)[0];
+					//if parent template element has attribute "fragment", turn it into a fragment				
+					if ( templateVdom.elem.getAttribute('fragment') !== null) {
+						templateVdom.elem = document.createDocumentFragment();
+					}
+					
 					templateVdom.elem['INJECT'] = inject;
 					$(templateVdom.elem).empty();						
 					if (compVdom) {
@@ -828,11 +833,17 @@ export var Binder = function(context, container){
 					/** @type {vDom} */
 					var p_vDom = on.itemBuilder(inject)[0];
 
-					//swap children between componenet temp element and the parent's element
 					var p_frag = document.createDocumentFragment();
 					
+					//swap children between componenet temp element and the parent's element
 					// @ts-ignore
 					$(p_frag).append(p_vDom.elem.childNodes);
+				
+					//if parent template element has attribute "fragment", turn it into a fragment				
+					if ( p_vDom.elem.getAttribute('fragment') !== null) {
+						p_vDom.elem = document.createDocumentFragment();
+					}
+					
 					// @ts-ignore
 					$(p_vDom.elem).append(c_vDom.elem.childNodes);
 
@@ -850,6 +861,7 @@ export var Binder = function(context, container){
 
 				//insert parent vDom with new children after the [component] vDom element
 				insertAfter(p_vDom.elem, on.elem);
+				
 				//call onInit method in the next frame
 				setTimeout(function(){
 					tryCall(component,component.init, p_vDom.elem);
