@@ -41,6 +41,13 @@ export var Binder = function(context, container){
 	function insertAfter(newNode, referenceNode) {
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	}
+	function insertVDomItemsAfter(items, referenceNode){
+		if (isArray(items)) {
+			var frag = document.createDocumentFragment();
+			items.forEach(item => { frag.appendChild(item.elem)});
+			insertAfter(frag, referenceNode)
+		}
+	}
 	
 	/**
 	 * 
@@ -54,6 +61,12 @@ export var Binder = function(context, container){
 			}
 		} else {
 			$(elem).remove();
+		}
+	}
+
+	function removeVDomItems(items, keepEvents){
+		if (isArray(items)) {
+			items.forEach(item => {removeElement(item.elem, keepEvents)})
 		}
 	}
 
@@ -219,8 +232,13 @@ export var Binder = function(context, container){
 				}
 				//because directive children are likely to be re-rendered, do not immediately render them. create itemBuilder function
 				var itemBuilder = function(inject){
-					var ii = createElements(inject);
-					return ii;
+					var items = createElements(inject);
+					if (items[0] && items[0].elem.getAttribute && items[0].elem.getAttribute("fragment")!==null) {
+						var frag = document.createDocumentFragment();
+						$(frag).append(items[0].elem.childNodes);
+						items[0].elem = frag;
+					} 
+					return items[0];
 				};
 				var vdom ={ values:{}, getters: getters, setters:{}, fragment:directiveFragment, elem:elem, items:[], itemBuilder:itemBuilder};
 				executeAttribute( key , vdom , inject);
@@ -354,13 +372,14 @@ export var Binder = function(context, container){
 	 * @param {vDom} on 
 	 */
 	function vDomCreateItems(on, inj){
-		var f = document.createDocumentFragment()
-		var ret = on.itemBuilder(inj);
-		ret.map(function(vdom){
-			f.appendChild(vdom.elem);
-			on.items.push(vdom);
-		}); 
-		insertAfter(f,on.elem);
+
+		var vdom = on.itemBuilder(inj);
+		if (vdom.elem instanceof DocumentFragment) {
+			on.items = vdom.items; 
+		} else {
+			on.items.push(vdom); 
+		}
+		insertAfter(vdom.elem,on.elem);
 	}
 
 	/**
@@ -642,12 +661,14 @@ export var Binder = function(context, container){
 						//if if directive does not have any children, create them
 						vDomCreateItems(on,inject)
 					}else{
-						insertAfter(on.items[0].elem, on.elem);
+						//if (on.items[0] instanceof DocumentFragment)
+						insertVDomItemsAfter(on.items, on.elem);
 					}
 
 				}else{
 					if ( on.items.length > 0 && on.items[0].elem.parentElement){
-						removeElement(on.items[0].elem, true);
+						//removeElement(on.items[0].elem, true);
+						removeVDomItems(on.items, true);
 					}
 					return false;
 				}
@@ -697,8 +718,8 @@ export var Binder = function(context, container){
 						moveAllToFragment();
 					}
 
-					var ret = on.itemBuilder(inj);
-					on.items[index] = ret[0];
+					var vdom = on.itemBuilder(inj);
+					on.items[index] = vdom;
 					on.items[index].elem['INJECT'] = inj;
 					fo.appendChild(on.items[index].fragment || on.items[index].elem); 
 				}else{
@@ -715,7 +736,11 @@ export var Binder = function(context, container){
 				if (touchedKeys.hasOwnProperty(index))
 					continue;
 				hasDeleted = true;	
+				if (on.items[index].elem == null || on.items[index].elem instanceof DocumentFragment) {
+					removeVDomItems(on.items[index].items);
+				}
 				removeElement(on.items[index].elem);
+
 				delete on.items[index];
 			}
 
@@ -765,11 +790,11 @@ export var Binder = function(context, container){
 					}
 				}
 				
-					var templateVdom = on.itemBuilder(inject)[0];
+					var templateVdom = on.itemBuilder(inject);
 					//if parent template element has attribute "fragment", turn it into a fragment				
-					if ( templateVdom.elem.getAttribute('fragment') !== null) {
+					/*if ( templateVdom.elem.getAttribute('fragment') !== null) {
 						templateVdom.elem = document.createDocumentFragment();
-					}
+					}*/
 					
 					templateVdom.elem['INJECT'] = inject;
 					$(templateVdom.elem).empty();						
@@ -831,7 +856,7 @@ export var Binder = function(context, container){
 
 					//build parent vDom in the parent scope
 					/** @type {vDom} */
-					var p_vDom = on.itemBuilder(inject)[0];
+					var p_vDom = on.itemBuilder(inject);
 
 					var p_frag = document.createDocumentFragment();
 					
@@ -840,9 +865,9 @@ export var Binder = function(context, container){
 					$(p_frag).append(p_vDom.elem.childNodes);
 				
 					//if parent template element has attribute "fragment", turn it into a fragment				
-					if ( p_vDom.elem.getAttribute('fragment') !== null) {
+					/*if ( p_vDom.elem.getAttribute('fragment') !== null) {
 						p_vDom.elem = document.createDocumentFragment();
-					}
+					}*/
 					
 					// @ts-ignore
 					$(p_vDom.elem).append(c_vDom.elem.childNodes);
@@ -854,7 +879,7 @@ export var Binder = function(context, container){
 						checkVDomNode(on, inject);
 					}
 				} else {
-					p_vDom = on.itemBuilder(inject)[0];
+					p_vDom = on.itemBuilder(inject);
 				}
 				//parent vDom items still belong to the directive vDom node
 				on.items[0] = p_vDom;
