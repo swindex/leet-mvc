@@ -58,7 +58,7 @@ HeaderPage.template = `
 	</div>
 
 	<div class="footer" [if]="this.footer" >
-		<div [directive] = "this.footer">
+		<div [directive] = "this.footer" fragment>
 		</div>
 	</div>
 `
