@@ -28,6 +28,10 @@ export class BasePage extends ChangeWatcher{
 		this.isShowing = false;
 		this.isVisible = false;
 
+		this.className = null;
+		this.visibleParent = null;
+		
+
 		//Be lazy. This allows us to directly pass page methods without having to worry about "this"
 		Objects.bindMethods(this);
 	}
