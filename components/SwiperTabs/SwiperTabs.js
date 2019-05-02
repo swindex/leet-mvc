@@ -6,7 +6,7 @@ import { argumentsToArray, Override } from "./../../core/helpers";
 import { DeBouncer } from "./../../core/DeBouncer";
 import './SwiperTabs.scss';
 import 'swiper/dist/css/swiper.css';
-import { Objects } from "leet-mvc/core/Objects";
+import { Objects } from "./../../core/Objects";
 
 /**
  * @param {{navButtons?: true}} [options]
