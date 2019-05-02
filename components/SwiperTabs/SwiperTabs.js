@@ -50,9 +50,12 @@ export class SwiperTabs extends BaseComponent{
 			this.Nav.setContainer(this.tempContainer);
 		}
 		
-		PageConstructor.className = 'swiper-slide'
-		PageConstructor.visibleParent = true;
 		var inst = this.Nav.push.apply(this, argumentsToArray(arguments));
+
+		inst.className = 'swiper-slide'
+		inst.visibleParent = true;
+		
+
 		//Override the onEnter method because onEnter must be called by this swiper only and not by the Nav controler
 		inst.onEnter = Override(inst,inst.onEnter, function(){/*console.log("OnEnter Overridden!")*/})
 		

@@ -9,6 +9,7 @@ import { Touch } from "./../../core/Touch";
 import { DialogPage } from "./../DialogPage/DialogPage";
 import { HeaderPage } from "./../HeaderPage/HeaderPage";
 import { Translate } from "./../../core/Translate";
+import { Injector } from "leet-mvc/core/Injector";
 
 export class Calendar2Page extends HeaderPage{
 	constructor(page, startDate){
@@ -371,7 +372,7 @@ export class Calendar2Page extends HeaderPage{
 	}
 
 	_onMonthDayClicked(){
-		var p = this.Nav.push(CalendarPage, this._currDate);
+		var p = Injector.Nav.push(CalendarPage, this._currDate);
 		p.showClock = false;
 		p.onDateSelected = (date)=>{
 			this.setDate(date);
@@ -425,7 +426,7 @@ export class Calendar2Page extends HeaderPage{
 			return;
 		}
 
-		var p = this.Nav.push(OptionsDialogPage);
+		var p = Injector.Nav.push(OptionsDialogPage);
 		p.title = m_date.format('ll');
 		p.icons = null;
 
@@ -452,7 +453,7 @@ export class Calendar2Page extends HeaderPage{
 	 * @param {Calendar2Event} event 
 	 */
 	viewEvent(event){
-		var p = this.Nav.push(DialogPage);
+		var p = Injector.Nav.push(DialogPage);
 
 		p.title = "Event Details"
 		p.addLabel('Title',event.title);
@@ -498,7 +499,7 @@ export class Calendar2Page extends HeaderPage{
 	 * @param {Calendar2Event} event 
 	 */
 	editEvent(event){
-		var p = this.Nav.push(DialogPage);
+		var p = Injector.Nav.push(DialogPage);
 
 		var appraisalEvent = null
 		if (this.appraisalEvent) {
@@ -781,7 +782,7 @@ export class Calendar2Page extends HeaderPage{
 	}
 
 	_onCalendarMonthClicked(){
-		var p = this.Nav.push(OptionsDialogPage);
+		var p = Injector.Nav.push(OptionsDialogPage);
 		p.icons=null;
 		p.items= Objects.copy(this._months);
 		p.buttons=null;
@@ -793,7 +794,7 @@ export class Calendar2Page extends HeaderPage{
 		}
 	}
 	_onCalendarYearClicked(){
-		var p = this.Nav.push(OptionsDialogPage);
+		var p = Injector.Nav.push(OptionsDialogPage);
 		p.icons=null;
 		p.items= Objects.copy(this._years);
 		p.buttons=null;

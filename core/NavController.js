@@ -138,6 +138,7 @@ export function NavController() {
 		<div
 			page
 			class="${className}"
+			[class]="this.className"
 			id="${selector}"
 			[style]="this.style"
 			style="z-index:${(stack.length + 1)*100}"
@@ -155,7 +156,7 @@ export function NavController() {
 		//create page object in a new scope
 		var pageObject = createPageInstance(pageConstructor,args);
 
-		pageObject.visibleParent = pageConstructor.visibleParent;
+		pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
 		pageObject.Nav = self;
 
 
@@ -166,8 +167,9 @@ export function NavController() {
 		tryCall(pageObject, pageObject.onInit);
 		tryCall(pageObject, pageObject.init);		
 
-		recalcContentHeight($(p));
-		
+		setTimeout(()=>{
+			recalcContentHeight($(p));
+		},0);
 		//p.style.display = 'block';
 		//enter done on next free frame
 		//window.requestAnimationFrame(()=>{
@@ -201,7 +203,7 @@ export function NavController() {
 	 * @param {JQuery<Element>} p - page
 	 */
 	function recalcContentHeight(p){
-		var h = $(window).height();
+		var h = $(p).height();
 		var header = p.find('>.header').height();
 		var footer = p.find('>.footer').height();
 
