@@ -121,6 +121,9 @@ textarea {
 	flex-wrap: wrap;
 	position: relative;
 	margin-bottom: $margin-lg;
+	*{
+		box-sizing: border-box;
+	}
 	.fieldgroup:first-child{
 		padding-top: $margin-lg;
 	}
