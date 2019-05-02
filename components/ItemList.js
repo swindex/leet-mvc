@@ -129,4 +129,4 @@ export class ItemList extends BaseComponent{
 	}
 }
 
-ItemList.iterator = function(name){ return ` item [foreach]="index in ${name}._renderItems as item" onclick="${name}.onItemClicked(item, index)"`};
+ItemList.iterator = function(name){ return ` [foreach]="index in ${name}._renderItems as item" onclick="${name}.onItemClicked(item, index)" `};

@@ -43,6 +43,7 @@ export class SwiperTabs extends BaseComponent{
 
 	}
 
+
 	addPage(PageConstructor, args){
 		if (!this.container && !this.tempContainer){
 			this.tempContainer = document.createDocumentFragment();
