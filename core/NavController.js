@@ -165,11 +165,15 @@ export function NavController() {
 
 		
 		tryCall(pageObject, pageObject.onInit);
-		tryCall(pageObject, pageObject.init);		
+		tryCall(pageObject, pageObject.init);	
 
 		setTimeout(()=>{
 			recalcContentHeight($(p));
 		},0);
+		setTimeout(()=>{
+			tryCall(pageObject, pageObject.onLoaded);		
+		},1);
+		
 		//p.style.display = 'block';
 		//enter done on next free frame
 		//window.requestAnimationFrame(()=>{
