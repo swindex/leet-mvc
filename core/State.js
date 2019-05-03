@@ -12,6 +12,8 @@ export function State(data){
 	var index = 0;
 	/** @type {boolean} */
 	var isRunning = null;
+	/** @type {boolean} */
+	var isSet = null;
 	/**
 	 * Add a callback to queue
 	 * @param {function():void} dataChanged 
@@ -33,6 +35,21 @@ export function State(data){
 		};
 		listener.remove.bind(listener);
 		return listener;
+	}
+	/**
+	 * Add a callback to queue AND cal the callback is already set!
+	 * @param {function():void} dataChanged 
+	 * @param {function():void} statusChanged  
+	 * @return {{index:number, remove:function():void}}
+	 */
+	function onSet(dataChanged, statusChanged){
+		
+		if (isSet) {
+			tryCall(null, dataChanged, Objects.copy(Data));
+		}
+		tryCall(null, statusChanged, isRunning);
+		
+		return onChange(dataChanged, statusChanged);
 	}
 	/**
 	 * Remove callback from Queue
@@ -68,6 +85,7 @@ export function State(data){
 	 * @param {*} data
 	 */
 	function set(data){
+		isSet = true;
 		Data = Objects.copy(data);
 		//execute callbacks in Queue
 		for (var i in Queue){
@@ -113,6 +131,7 @@ export function State(data){
 		onChange: onChange,
 		remove: remove,
 		set: set,
+		onSet: onSet,
 	}
 	return Me;
 }

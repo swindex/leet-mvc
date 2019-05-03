@@ -49,9 +49,6 @@ export class BasePage extends ChangeWatcher{
 	}
 
 	_onVisible(){
-		if (!this.isLoaded && (this.isLoaded=true)){
-			this.onLoaded();
-		}
 		this.onVisible();
 	}
 

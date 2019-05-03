@@ -49,6 +49,8 @@ export class LoginPage extends BasePage {
 		logo.height(this.i_height*0.35);
 		login.height(this.i_height);
 
+		this.backgroundSize = this.i_height*0.25+"px";
+
 		//create 2 debouncers, so they do not cancel each other
 		this.debouncer1 = DeBouncer.timeoutFirst(500);
 		this.debouncer2 = DeBouncer.timeoutFirst(500);;
@@ -139,7 +141,7 @@ export class LoginPage extends BasePage {
 LoginPage.selector = 'page-login';
 LoginPage.template = `
 <div class="content" >
-	<div id="logo">
+	<div id="logo" [style]="{backgroundSize:this.backgroundSize}">
 		<span bind="Translate('AppSlogan')"></span>
 		<div ion-fab right top [if]="this.showLanguage">
 			<button text-only onclick="this.onLanguageClicked()"><i class="fas fa-language"></i></button>

@@ -5,6 +5,7 @@ declare namespace StateNamespace{
 	}
 	declare function State<T> (data?: T): {
 		isRunning: boolean,
+		onSet(dataChangedCallback:(data: T)=>void,statusChangedCallback?:(running: boolean)=>void):Listener;
 		onChange(dataChangedCallback:(data: T)=>void,statusChangedCallback?:(running: boolean)=>void):Listener;
 		remove(listener:Listener):boolean;
 		set(data:T);
