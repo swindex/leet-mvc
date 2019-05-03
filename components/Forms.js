@@ -20,6 +20,9 @@ export class Forms extends BaseComponent{
 		super()
 		this.formTemplate = formTemplate;
 		this.data = data|| {};
+
+		this.extraData = {};
+
 		this.errors = errors ||{};
 
 		this.options =  {nestedData:false, formClass:'formgroup', fieldClass:'fieldgroup'};
@@ -189,8 +192,8 @@ export class Forms extends BaseComponent{
 				Objects.setPropertyByPath(this.data, timeEl._name, dateTime);
 				
 				return this.renderFieldGroupHTML(el,  [
-					'<div class="split" style="width:60%">' + this.addInput(dateEl, {date:'', format:'date', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',false)"})+ '</div>',
-					'<div class="split" style="width:40%">' + this.addInput(timeEl, {time:'', format:'time', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',true)"})+ '</div>',
+					'<div class="split" style="width:60%">' + this.addInput(dateEl, {date:'', format:'date', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',false)"},'extraData')+ '</div>',
+					'<div class="split" style="width:40%">' + this.addInput(timeEl, {time:'', format:'time', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',true)"},'extraData')+ '</div>',
 				]);	
 			case "number":
 				this.assertValidateRuleHas(el,"numeric");
@@ -285,15 +288,16 @@ export class Forms extends BaseComponent{
 	 * 
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
+	 * @param {string} [dataName] name of the data property
 	 */
-	addInput(el, override){
+	addInput(el, override, dataName){
 		
-		
+		dataName = dataName || "data"
 		var opt = { name: el.name , type: "text", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
-			<input bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />`+
+			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
