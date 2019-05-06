@@ -58,7 +58,7 @@ export function Touch(event, options) {
 
         tend = new Date();
 
-        if (tend.getMilliseconds() - tstart.getMilliseconds() < options.tapDuration && !moved){
+        if (tend.getMilliseconds() - tstart.getMilliseconds() < options.tapDuration && (!moved || (xDiff < options.swipeDistance && yDiff < options.swipeDistance))){
 			self.onTap();
 		}
     }
