@@ -259,6 +259,9 @@ export function NavController() {
 	 * @param {'isDeleting'|'isCreating'|'isHiding'|'isShowing'|'isVisible'} state 
 	 */
 	function setPageState(page, state){
+		if (page[state] == true){
+			return;
+		}
 		page.isDeleting = false;
 		page.isCreating = false;
 		page.isHiding = false;
