@@ -313,8 +313,9 @@ export var Binder = function(context, container){
 								}
 
 								renderImmediately.push(key);
+								elem.setAttribute(key,attributes[key]);
 							}
-							elem.setAttribute(key,attributes[key]);
+							
 							break;
 						default:
 							elem.setAttribute(key,attributes[key]);
@@ -465,6 +466,7 @@ export var Binder = function(context, container){
 		}catch(ex){
 			//this may cause an error
 			console.warn(ex);
+			//attributes[attribute](on,inject)
 		}
 		if (old !== on.values[attribute] && ret !== false){
 			ret = true;

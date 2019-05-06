@@ -53,8 +53,12 @@ export var Watcher={
 					}
 				},
 				set(target, property, value) {
-					if (property !== isSkipUpdate && !object[isSkipUpdate] && !object[isDeleted] && ignoreProperties.indexOf(property)<=0 )
+					if (property !== isSkipUpdate &&
+						!object[isSkipUpdate] && 
+						!object[isDeleted] &&
+						ignoreProperties.indexOf(property)<=0 ){
 						scheduleCallback(object, onChangeCallback);
+					}
 					return Reflect.set(target, property, value);
 				},
 				defineProperty(target, property, descriptor) {
@@ -96,13 +100,11 @@ function scheduleCallback(obj, callback){
 		return;
 	obj[isSkipUpdate] = true;
 
-	window.requestAnimationFrame(function(){
+	setTimeout(function(){
 		tryCall(null,callback);
 		//Notify.call(obj);
 		obj[isSkipUpdate] = false;
-	});
-	
-
+	},0);
 }
 
 function isObjLiteral(_obj) {
