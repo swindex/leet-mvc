@@ -71,8 +71,9 @@
 				height: 100%;
 				border-radius: 0;
 				box-shadow: none;
-				&:first-child {
-					border-right:1px solid #e7e7e7;
+				border-right:1px solid #e7e7e7;
+				&:last-child {
+					border-right: none;
 				}
 
 				&:active{

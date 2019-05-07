@@ -9,7 +9,8 @@ import { Touch } from "./../../core/Touch";
 import { DialogPage } from "./../DialogPage/DialogPage";
 import { HeaderPage } from "./../HeaderPage/HeaderPage";
 import { Translate } from "./../../core/Translate";
-import { Injector } from "leet-mvc/core/Injector";
+import { Injector } from "./../../core/Injector";
+import { ConfirmDanger } from "./../../core/simple_confirm";
 
 export class Calendar2Page extends HeaderPage{
 	constructor(page, startDate){
@@ -292,7 +293,7 @@ export class Calendar2Page extends HeaderPage{
 			
 			
 		}).then((list)=>{
-			console.log(list);
+			//console.log(list);
 			
 			Objects.forEach(list,(el)=>{
 				calEvents.push(parseNativeCalendarEvent(el));
@@ -497,7 +498,7 @@ export class Calendar2Page extends HeaderPage{
 
 		p.addLabel('Calendar', this.getCalendarName(event.calendarId));
 		p.addLabel('Notes',event.message);
-				
+			
 		if (!this.appraisalEvent && event.internalEventInfo) {
 			p.buttons = {
 				'View Order': ()=> {this.onViewOrderButtonClicked(event)},
@@ -505,10 +506,21 @@ export class Calendar2Page extends HeaderPage{
 			}
 		} else {
 			p.buttons = {
+				'Delete': this.appraisalEvent ?  undefined : ()=>this.removeEvent(event),
 				'Edit': this.appraisalEvent ?  undefined : ()=>this.editEvent(event),
 				'Close':null
 			}
 		}
+	}
+
+	/**
+	 * 
+	 * @param {Calendar2Event} event 
+	 */
+	removeEvent(event){
+		ConfirmDanger(Translate("Delete this event?"),()=>{
+			calendarDeleteEvent(event).then(this._getCalendarEvents).catch(this._getCalendarEvents);
+		})
 	}
 
 	getCalendarName(calendarId){
@@ -942,6 +954,20 @@ function calendarGetCalendars(){
 			reject(err);
 		});
 	})
+}
+/**
+ * @param {Calendar2Event} event
+ */
+function calendarDeleteEvent(event){
+	return new Promise(function(resolve, reject){
+		if (event.id){
+			window.plugins.calendar.deleteEventById(event.id, null, resolve, resolve, reject );
+		}else{
+			window.plugins.calendar.deleteEvent(event.title, null, null , DateTime.moment(event.startDate).clone().subtract(6, 'months').toDate(), DateTime.moment(event.startDate).clone().add(6, 'months').toDate(),
+				resolve, reject
+			);
+		}
+	});
 }
 /**
  * 
