@@ -49,12 +49,12 @@ export var DeBouncer = {
 					func.apply(context, arguments);
 			}
 			firstQueue ++;
-			window.requestAnimationFrame(function(){
+			setTimeout(function(){
 				firstQueue--
 				if (firstQueue==0){
 					firstQueueExecuted = false;
 				}
-			})
+			},0)
 		}
 	},
 	/**
@@ -66,7 +66,7 @@ export var DeBouncer = {
 			lastQueue ++;
 			var context = this;
 			var args = arguments;
-			window.requestAnimationFrame(function(){
+			setTimeout(function(){
 				lastQueue--;
 				if (lastQueue==0){
 					if (typeof func !== 'function')
@@ -74,7 +74,7 @@ export var DeBouncer = {
 					else
 						func.apply(context, args);
 				}
-			})
+			},0)
 		}
 	},
 	/**

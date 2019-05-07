@@ -188,8 +188,8 @@ export class Forms extends BaseComponent{
 				
 				
 				var dateTime = Objects.getPropertyByPath(this.data, el._name)
-				Objects.setPropertyByPath(this.data, dateEl._name, dateTime);
-				Objects.setPropertyByPath(this.data, timeEl._name, dateTime);
+				Objects.setPropertyByPath(this.extraData, dateEl._name, dateTime);
+				Objects.setPropertyByPath(this.extraData, timeEl._name, dateTime);
 				
 				return this.renderFieldGroupHTML(el,  [
 					'<div class="split" style="width:60%">' + this.addInput(dateEl, {date:'', format:'date', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',false)"},'extraData')+ '</div>',
