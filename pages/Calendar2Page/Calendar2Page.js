@@ -10,7 +10,6 @@ import { DialogPage } from "./../DialogPage/DialogPage";
 import { HeaderPage } from "./../HeaderPage/HeaderPage";
 import { Translate } from "./../../core/Translate";
 import { Injector } from "leet-mvc/core/Injector";
-import { resolve } from "url";
 
 export class Calendar2Page extends HeaderPage{
 	constructor(page, startDate){
@@ -561,7 +560,9 @@ export class Calendar2Page extends HeaderPage{
 			p.addInput('location','Location','text', evt.location,null, {readonly:true});
 			p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, 'required|after:' + new Date().getTime()); 
 			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
-			p.addSelect('calendar','Calendar', evt.calendarId, false, calitems);
+			if (calitems.length>0){
+				p.addSelect('calendar','Calendar', evt.calendarId, false, calitems);
+			}
 			p.addTextArea('message','Notes', evt.message);
 		}
 		var genericEvent = () => {
@@ -570,8 +571,9 @@ export class Calendar2Page extends HeaderPage{
 				
 			p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, true);
 			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
-			p.addSelect('calendar','Calendar', event.calendarId, false, calitems);
-			
+			if (calitems.length>0){
+				p.addSelect('calendar','Calendar', event.calendarId, false, calitems);
+			}
 			p.addTextArea('message','Notes', event.message);
 			
 		}
