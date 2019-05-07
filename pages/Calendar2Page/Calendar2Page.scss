@@ -34,6 +34,9 @@
 
 	$c_bo_nav:  1px solid #e2e2e2;
 	$c_b_nav: aliceblue;
+	*{
+		box-sizing: border-box;
+	}
 	.touch-scroll{
 		overflow: visible !important;
 	}
