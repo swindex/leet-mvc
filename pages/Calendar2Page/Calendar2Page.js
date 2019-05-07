@@ -10,6 +10,7 @@ import { DialogPage } from "./../DialogPage/DialogPage";
 import { HeaderPage } from "./../HeaderPage/HeaderPage";
 import { Translate } from "./../../core/Translate";
 import { Injector } from "leet-mvc/core/Injector";
+import { resolve } from "url";
 
 export class Calendar2Page extends HeaderPage{
 	constructor(page, startDate){
@@ -24,6 +25,11 @@ export class Calendar2Page extends HeaderPage{
 		this._currDate = moment(startDate || new Date());
 		this._currMonth = this._currDate.clone().startOf('month');
 		this.events_year != this._currMonth.get('year');
+
+		/** @type {Calendar2Calendar[]} */ 
+		this.calendars=[];
+
+		this.defaultCalendarId = null;
 
 		/** @type {Calendar2Event[]} */
 		this.events=[];
@@ -261,8 +267,34 @@ export class Calendar2Page extends HeaderPage{
 			calEvents.push(parseNativeCalendarEvent(el));
 		})
 
-		window.plugins.calendar.findEvent('','','',this._currMonth.clone().startOf('year').toDate(),this._currMonth.clone().endOf('year').toDate(), (list)=>{
-			//console.log( JSON.stringify(list));
+		calendarGetCalendars().then((calendars)=>{
+			this.calendars = calendars;
+			var all = []
+
+			//Calendar plugin freaks out when Promise.all is used and all getEvents calls are done aynchronously.
+			//so use this recursive resolver to resolve the promises for each calendar one-by-one
+			var index = 0;
+			var list = [];
+			var resolver = ()=>{
+				var calendar = calendars[index];
+				return calendarGetEvents(this._currMonth.clone().startOf('year').toDate(),this._currMonth.clone().endOf('year').toDate(), calendar.name,calendar.id)
+					.then(x => new Promise(resolve => setTimeout(() => resolve(x), 100))) //add 100ms delay
+					.then(function(ret){
+						list = list.concat(ret);
+						index++;
+						if (index < calendars.length) {
+							return resolver();
+						} else {
+							return Promise.resolve(list);		
+						}
+					});
+			}
+			return resolver();
+			
+			
+		}).then((list)=>{
+			console.log(list);
+			
 			Objects.forEach(list,(el)=>{
 				calEvents.push(parseNativeCalendarEvent(el));
 			})
@@ -273,8 +305,7 @@ export class Calendar2Page extends HeaderPage{
 				populateDayEventSlots(evt, dayEventSlots);	
 			});
 			this.dayEventSlots = dayEventSlots;
-				
-		}, (err)=>{
+		}).catch(()=>{
 			calEvents.sort(eventSortCallback);
 			//populate events list into day EventSlots
 			Objects.forEach(calEvents,(evt)=>{
@@ -464,6 +495,8 @@ export class Calendar2Page extends HeaderPage{
 		
 		p.addLabel('From', DateTime.toHumanDateTime(event.startDate));
 		p.addLabel('To', DateTime.toHumanDateTime(event.endDate));
+
+		p.addLabel('Calendar', this.getCalendarName(event.calendarId));
 		p.addLabel('Notes',event.message);
 				
 		if (!this.appraisalEvent && event.internalEventInfo) {
@@ -477,6 +510,11 @@ export class Calendar2Page extends HeaderPage{
 				'Close':null
 			}
 		}
+	}
+
+	getCalendarName(calendarId){
+		var cal = Objects.find(this.calendars, cal=> cal.id == calendarId );
+		return cal ? cal.name : "";
 	}
 
 	/**
@@ -506,6 +544,14 @@ export class Calendar2Page extends HeaderPage{
 			appraisalEvent = Objects.copy(this.appraisalEvent);
 		}
 
+		var calitems = [];
+
+		Objects.forEach(this.calendars,(cal)=>{
+			if (cal) {
+				calitems.push({ title: cal.name, value: cal.id });
+			}
+		});
+
 		var unscheduledEvent = (evt)=>{
 			//p.controls.push({name: "contactButton", type: "button", title:null, value:"Contact"});
 			if (this.onViewContactDetailsLabelClicked)
@@ -515,6 +561,7 @@ export class Calendar2Page extends HeaderPage{
 			p.addInput('location','Location','text', evt.location,null, {readonly:true});
 			p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, 'required|after:' + new Date().getTime()); 
 			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
+			p.addSelect('calendar','Calendar', evt.calendarId, false, calitems);
 			p.addTextArea('message','Notes', evt.message);
 		}
 		var genericEvent = () => {
@@ -523,6 +570,7 @@ export class Calendar2Page extends HeaderPage{
 				
 			p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, true);
 			p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
+			p.addSelect('calendar','Calendar', event.calendarId, false, calitems);
 			
 			p.addTextArea('message','Notes', event.message);
 			
@@ -544,6 +592,7 @@ export class Calendar2Page extends HeaderPage{
 				if (items.length > 1) {
 					p.addSelect('eventType','Appointment for', null, false, items, {change: (ev)=>{
 						p.removeField('title');
+						p.removeField('calendar');
 						p.removeField('link');
 						p.removeField('location');
 						p.removeField('startDate');
@@ -595,8 +644,11 @@ export class Calendar2Page extends HeaderPage{
 						allday: false,
 						message: p.data.message,
 						location: p.data.location,
-						internalEventInfo: null
+						calendarId: p.data.calendar,
+						internalEventInfo: null						
 					}
+
+					this.defaultCalendarId = addEvent.calendarId;
 
 					if (appraisalEvent) {
 						//transfer the constant appraisalEvent properties
@@ -609,8 +661,16 @@ export class Calendar2Page extends HeaderPage{
 							var resolve = ()=>{
 								p.destroy();
 								deleteEventFromUnscheduled(appraisalEvent.title, undefined, this.unscheduledEvents);
-								window.plugins.calendar.createEvent(
-									addEvent.title, addEvent.location,addEvent.message, addEvent.startDate, addEvent.endDate,
+								window.plugins.calendar.listCalendars(
+									(d)=>{
+										console.log(JSON.stringify(d));
+									},
+									(d)=>{
+										console.log(JSON.stringify(d));
+									},
+									)
+								calendarCreateEvent(
+									addEvent,
 									()=>{
 										onEventAdded.bind(this)();
 										if (this.onAppraisalEventAdded(orderDetails) !== false) {
@@ -628,8 +688,8 @@ export class Calendar2Page extends HeaderPage{
 					} else if (event.id) {
 						p.destroy();
 						var resolve = ()=>{
-							window.plugins.calendar.createEvent(
-								addEvent.title, addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate,
+							calendarCreateEvent(
+								addEvent,
 								onEventAdded.bind(this),
 								onEventAddError.bind(this)
 							);
@@ -637,8 +697,8 @@ export class Calendar2Page extends HeaderPage{
 						window.plugins.calendar.deleteEventById(event.id, null, resolve.bind(this), resolve.bind(this) );
 					} else {
 						p.destroy();
-						window.plugins.calendar.createEvent(
-							addEvent.title, addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate,
+						calendarCreateEvent(
+							addEvent,
 							onEventAdded.bind(this),
 							onEventAddError.bind(this)
 						)
@@ -843,6 +903,65 @@ export class Calendar2Page extends HeaderPage{
 
 /**
  * 
+ * @param {Calendar2Event} addEvent 
+ * @param {function():void} onEventAdded 
+ * @param {function():void} onEventAddError 
+ */
+function calendarCreateEvent(addEvent, onEventAdded, onEventAddError){
+	var options = window.plugins.calendar.getCalendarOptions();
+	window.plugins.calendar.listCalendars((calendars)=>{
+		//use primary calendar or first available
+		var calendar = Objects.find(calendars, calendar => {return (addEvent.calendarId ? (calendar.id == addEvent.calendarId && calendar.isPrimary) : calendar.isPrimary )});
+		if (calendar){
+			options.calendarId = calendar.id;	
+		}else if (calendars[0]){
+			options.calendarId = calendars[0].id;	
+		}
+		resolve();
+	},()=>{
+		resolve();
+	});
+
+
+	function resolve(){	
+		window.plugins.calendar.createEventWithOptions(addEvent.title, addEvent.location,addEvent.message, addEvent.startDate, addEvent.endDate, options, onEventAdded, onEventAddError	);
+	}
+}
+
+/**
+ * @return {Promise<Calendar2Calendar[]>} 
+ */
+function calendarGetCalendars(){
+	return new Promise(function(resolve, reject){
+		window.plugins.calendar.listCalendars((calendars)=>{
+			//use primary calendar or first available
+			resolve(calendars);
+		},(err)=>{
+			reject(err);
+		});
+	})
+}
+/**
+ * 
+ * @param {Date} dateFrom 
+ * @param {Date} dateTo 
+ * @param {string} calendarName 
+ * @return {Promise<Calendar2Event[]>}
+ */
+function calendarGetEvents( dateFrom, dateTo, calendarName, calendarId){
+	return new Promise(function(resolve,reject){
+		var options = window.plugins.calendar.getCalendarOptions();
+		options.calendarName = calendarName;
+		options.calendarId = calendarId;
+		window.plugins.calendar.findEventWithOptions('', '', '', dateFrom, dateTo, options, list => {
+			list.forEach(evt => {evt.calendarId = calendarId});
+			resolve(list)
+		}, reject);
+	})
+}
+
+/**
+ * 
  * @param {*} el 
  * @returns {Calendar2Event}
  */
@@ -854,6 +973,7 @@ function parseNativeCalendarEvent(el){
 		title: el.title,
 		location: el.location,
 		allday:false,
+		calendarId: el.calendarId,
 		message: el.message,
 		internalEventInfo: el.internalEventInfo
 	}

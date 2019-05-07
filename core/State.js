@@ -51,6 +51,7 @@ export function State(data){
 		
 		return onChange(dataChanged, statusChanged);
 	}
+
 	/**
 	 * Remove callback from Queue
 	 * @param {{index:number, remove:function():void}} listener 
@@ -85,7 +86,7 @@ export function State(data){
 	 * @param {*} data
 	 */
 	function set(data){
-		isSet = true;
+		isSet = data === undefined ? false : true;
 		Data = Objects.copy(data);
 		//execute callbacks in Queue
 		for (var i in Queue){
