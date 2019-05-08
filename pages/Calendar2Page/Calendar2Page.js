@@ -924,18 +924,21 @@ export class Calendar2Page extends HeaderPage{
 function calendarCreateEvent(addEvent, onEventAdded, onEventAddError){
 	var options = window.plugins.calendar.getCalendarOptions();
 	window.plugins.calendar.listCalendars((calendars)=>{
-		//use primary calendar or first available
-		var calendar = Objects.find(calendars, calendar => {return (addEvent.calendarId ? (calendar.id == addEvent.calendarId && calendar.isPrimary) : calendar.isPrimary )});
+		//use primary calendar or first available primary(android)
+		var calendar = Objects.find(calendars, calendar => {return (addEvent.calendarId ? (calendar.id == addEvent.calendarId) : calendar.isPrimary )});
 		if (calendar){
+			//calendar that 
 			options.calendarId = calendar.id;	
+			options.calendarName  = calendar.name;	
 		}else if (calendars[0]){
-			options.calendarId = calendars[0].id;	
+			//if fails, use the first available calendar
+			options.calendarId = calendars[0].id;
+			options.calendarName  = calendars[0].name;	
 		}
 		resolve();
 	},()=>{
 		resolve();
 	});
-
 
 	function resolve(){	
 		window.plugins.calendar.createEventWithOptions(addEvent.title, addEvent.location,addEvent.message, addEvent.startDate, addEvent.endDate, options, onEventAdded, onEventAddError	);

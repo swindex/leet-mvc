@@ -11,8 +11,8 @@ interface Calendar2Event{
 	endDate: moment.Moment,
 	title:string,
 	location:string,
-	allday:boolean
-	calendarId:integer
+	allday:boolean,
+	calendarId:string,
 	message:string;
 	internalEventInfo: {
 		schema_name: string,
