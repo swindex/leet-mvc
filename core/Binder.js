@@ -981,10 +981,16 @@ export var Binder = function(context, container){
 		switch (elem.tagName) {
 			case "SELECT":
 				$(elem).find("option").removeAttr('selected');
-				window.requestAnimationFrame(()=>{
-					if (v===null || v === undefined)
-						$(elem).find("option").first().attr('selected',"");
-					else{
+				setTimeout(()=>{
+					if (v===null || v === undefined){
+						var firstOption = $(elem).find("option").first();
+						firstOption.attr('selected',"");
+						var fVal = firstOption.val();
+						if (fVal !== null){
+							elem.value = fVal;
+							updateBoundContextProperty(elem);
+						}
+					} else {
 						var sel = $(elem).find("option[value='"+ v +"']").first();
 						if (sel.length){
 							sel.attr('selected',"");
