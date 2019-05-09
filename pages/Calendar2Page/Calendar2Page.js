@@ -296,8 +296,6 @@ export class Calendar2Page extends HeaderPage{
 			
 			
 		}).then((list)=>{
-			console.log(list);
-			
 			Objects.forEach(list,(el)=>{
 				calEvents.push(parseNativeCalendarEvent(el));
 			})
@@ -846,7 +844,7 @@ export class Calendar2Page extends HeaderPage{
 	}
 
 	_onMonthSwipeStart(ev){
-		console.log("touchStart!");
+		//console.log("touchStart!");
 		this.swipe = Touch(ev);
 		this.swipe.onSwipe = (direction)=>{
 			if (direction == Touch.LEFT) {
@@ -859,7 +857,7 @@ export class Calendar2Page extends HeaderPage{
 	}
 
 	_onDaySwipeStart(ev){
-		console.log("touchStart!");
+		//console.log("touchStart!");
 		Touch(ev).onSwipe = (direction)=>{
 			if (direction == Touch.LEFT) {
 				this._onNextDayClicked();
@@ -1021,10 +1019,6 @@ function populateDayEventSlots(el, yBusySlots){
 	
 	var ev_d_st = getDayNumber(ev_st);
 	var ev_d_end = getDayNumber(ev_end);
-
-	if (el.title=='Test allday 3') {
-		console.log(el);
-	}
 
 	//find next available slot for THIS day
 	var slot = 0;
