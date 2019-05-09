@@ -1,6 +1,7 @@
 interface Calendar2Calendar{
 	id: string,
 	isPrimary?: boolean,
+	isReadonly?: boolean,
 	type?: string,
 	name: string,
 }
