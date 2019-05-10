@@ -209,6 +209,7 @@ export var Binder = function(context, container){
 				
 				var attrKeys = Object.keys(attributes);
 				var getters = {};
+				var props = {};
 
 				var getter = null;
 				var key = attrKeys[0];
@@ -240,7 +241,7 @@ export var Binder = function(context, container){
 					} 
 					return items[0];
 				};
-				var vdom ={ values:{}, getters: getters, setters:{}, fragment:directiveFragment, elem:elem, items:[], itemBuilder:itemBuilder};
+				var vdom ={ values:{}, getters: getters, setters:{}, props: props, fragment:directiveFragment, elem:elem, items:[], itemBuilder:itemBuilder};
 				executeAttribute( key , vdom , inject);
 				
 				return vdom;	
@@ -259,6 +260,7 @@ export var Binder = function(context, container){
 				var attrKeys = Object.keys(attributes);
 				var getters = {};
 				var setters = {};
+				var props = {};
 				var renderImmediately = [];
 
 				if (tag == "#text"){
@@ -318,6 +320,7 @@ export var Binder = function(context, container){
 							
 							break;
 						default:
+							props[key] = attributes[key]; //only non-bound attributes go to props array. components my want to bind them later
 							elem.setAttribute(key,attributes[key]);
 					}
 
@@ -348,7 +351,7 @@ export var Binder = function(context, container){
 					}
 				}
 
-				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
+				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, props: props, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
 				elem['VDOM'] = vdom;
 				
 				for (var ii =0; ii < renderImmediately.length; ii++){
@@ -859,6 +862,8 @@ export var Binder = function(context, container){
 					//build parent vDom in the parent scope
 					/** @type {vDom} */
 					var p_vDom = on.itemBuilder(inject);
+					tryCall(component,component.onBuiltItems, p_vDom);
+			
 
 					var p_frag = document.createDocumentFragment();
 					
