@@ -65,6 +65,9 @@ export class BasePage extends ChangeWatcher{
 	 * Initialize binder
 	 */
 	onInit(binderEvent){
+
+		this.template = BasePage.template.replace('/*child-template*/', this.template);
+
 		this.binder.bindElements(binderEvent, this.template);
 		this.page = $(this.binder.vdom.elem);
 		super.startWatch();
@@ -167,4 +170,4 @@ export class BasePage extends ChangeWatcher{
 BasePage.visibleParent = null;
 BasePage.selector = null;
 BasePage.className = null;
-BasePage.template = `<div page></div>`;
+BasePage.template = `<div page [class]="this.className" [style]="this.style">/*child-template*/</div>`;

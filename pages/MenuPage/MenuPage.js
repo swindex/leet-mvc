@@ -49,6 +49,10 @@ export class MenuPage extends BasePage {
 		return (isFunction(item.action) && this.currPage instanceof item.action);
 	}
 
+	onVisible(){
+		console.log("");
+	}
+
 	init() {
 		$('body').addClass('menu-shown');
 	};
@@ -64,11 +68,11 @@ MenuPage.template = `
 <div class="backdrop" onclick="this.onBackdropClicked()"></div>
 <div class="menu-body">
 	<div class="menu-head">
-		<div id="logo" [innerHTML] = "this.logo"></div>
+		<div id="logo" [innerhtml] = "this.logo"></div>
 	</div>
 	<ul class="menu-tree">
 		<li [foreach]="index in this.items as item" onclick="this.onItemClicked(item, index)" [selected]="this.isSelected(item)">
-			<span [innerHTML] = "item.label"></span>
+			<span [innerhtml] = "item.label"></span>
 		</li>
 	</ul>
 </div>

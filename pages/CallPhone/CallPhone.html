@@ -1,5 +1,5 @@
 <div class='items'>
-	<div class = 'number'><span [innerHTML]="this.numberPre ? this.numberPre+': ' : ''"></span> <span bind="this.number"></span></div>
+	<div class = 'number'><span [innerhtml]="this.numberPre ? this.numberPre+': ' : ''"></span> <span bind="this.number"></span></div>
 	<div class = 'call-buttons'>
 		<a class="call" href = "#" bind onclick="this.onCallClicked()" >
 			<span class="icon"><i class="fas fa-phone"></i></span>

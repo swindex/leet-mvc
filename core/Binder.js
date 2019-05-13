@@ -35,6 +35,18 @@ export var Binder = function(context){
 	function insertAfter(newNode, referenceNode) {
 		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 	}
+	/**
+	 * Insert vDom element and its children after reference Node
+	 * @param {vDom} vDom 
+	 * @param {HTMLElement} referenceNode 
+	 */
+	function insertVDomElementAfter(vDom, referenceNode){
+		insertAfter(vDom.elem, referenceNode);
+		if (vDom.elem instanceof Comment){
+			insertVDomItemsAfter(vDom.items, vDom.elem);
+		}
+	}
+	
 	function insertVDomItemsAfter(items, referenceNode){
 		if (isArray(items)) {
 			var frag = document.createDocumentFragment();
@@ -60,7 +72,13 @@ export var Binder = function(context){
 
 	function removeVDomItems(items, keepEvents){
 		if (isArray(items)) {
-			items.forEach(item => {removeElement(item.elem, keepEvents)})
+			items.forEach(item => {
+				removeElement(item.elem, keepEvents);
+				//if item is a comment, remove its items too
+				if (item.elem instanceof Comment) {
+					removeVDomItems(item.items, keepEvents)
+				}
+			})
 		}
 	}
 
@@ -362,9 +380,7 @@ export var Binder = function(context){
 				elem['VDOM'] = vdom;
 				
 				for (var ii =0; ii < renderImmediately.length; ii++){
-					if (attributes[renderImmediately[ii]]) {
-						executeAttribute(renderImmediately[ii], vdom,inject);
-					}
+					executeAttribute(renderImmediately[ii], vdom,inject);
 				}
 				if (plainAttrs['fragment'] === undefined) {
 					bindEventsToContext(elem, inject);
@@ -522,7 +538,7 @@ export var Binder = function(context){
 		}catch(ex){
 			//this may cause an error
 			console.warn(ex);
-			//attributes[attribute](on,inject)
+		//	attributes[attribute](on,inject)
 		}
 		if (old !== on.values[attribute] && ret !== false){
 			ret = true;
@@ -710,7 +726,7 @@ export var Binder = function(context){
 			try{
 				isTrue = getter(self,inject);
 			}catch(ex){
-				isTrue = false;
+				isTrue = undefined;
 			}
 			if (on.values[key] !== isTrue){
 				on.values[key] = isTrue;
@@ -724,8 +740,7 @@ export var Binder = function(context){
 					}
 
 				}else{
-					if ( on.items.length > 0 && on.items[0].elem.parentElement){
-						//removeElement(on.items[0].elem, true);
+					if ( on.items.length > 0 && on.items[0].elem.parentNode){
 						removeVDomItems(on.items, true);
 					}
 					return false;
@@ -831,39 +846,50 @@ export var Binder = function(context){
 				on.values[key] = html;
 
 				//clear any previous component elements
-				if (on.items.length>0){
-					on.items.forEach(item => {$(item.elem).remove()});
-				}
+				removeVDomItems(on.items);
 	 
 				/** @type {vDom} */
-				var compVdom = null;
+				var c_vDom = null;
 
 				if (html){
 					if(html instanceof DocumentFragment){
-						compVdom = { elem:html, fragment: null, items:[], values:{},valuesD:{},getters:{},setters:{},itemBuilder:null,inject:{}};
+						c_vDom = { elem:html, fragment: null, items:[], values:{},valuesD:{},getters:{},setters:{},itemBuilder:null,inject:{}};
 					}else{
-						compVdom = executeSource(parseElement(html), inject);
+						c_vDom = executeSource(parseElement(html), inject);
 					}
 				}
-				
-					var templateVdom = on.itemBuilder(inject);
-
-					templateVdom.elem['INJECT'] = inject;
-					$(templateVdom.elem).empty();						
-					if (compVdom) {
-						// @ts-ignore
-						$(templateVdom.elem).append(compVdom.elem);
-						//both the componenet and template VDOMs are on the same level
-						templateVdom.items = compVdom.items;
+				if (c_vDom){
+					var p_vDom = on.itemBuilder(inject);
+					if (!(c_vDom.elem instanceof DocumentFragment)) {
+						Objects.forEach( p_vDom.getters, (getter,key)=>{
+							c_vDom.getters[key] = function(){ return getter(self, inject) };
+						});
+						
+						//copy html attributes
+						if (c_vDom.elem.attributes){
+							for (var ii=0 ; ii<p_vDom.elem.attributes.length; ii++ ) {
+								var attr = p_vDom.elem.attributes[ii];
+								//only overwrite non-existing clild attrs
+								if (!c_vDom.elem.getAttribute(attr.name)) {
+									c_vDom.elem.setAttribute(attr.name, attr.value);	
+								} else {
+									c_vDom.elem.setAttribute(attr.name,c_vDom.elem.getAttribute(attr.name) +" "+ attr.value);
+								}
+							}
+						}
+						on.items = [c_vDom];
+					} else {
+						on.items = c_vDom.items;
 					}
-					on.items[0] = templateVdom;
-					insertAfter(templateVdom.elem, on.elem);
-				
+					
+					insertVDomElementAfter(c_vDom, on.elem);
+
 					for( var i in  on.items){
 						if (!on.items.hasOwnProperty(i))
 							continue;
 						checkVDomNode(on.items[i], inject);
 					};
+				}
 			} else {
 				//just update its items
 				for( var i in  on.items){
@@ -889,62 +915,80 @@ export var Binder = function(context){
 			//if component is actually a class and component value is not yet set, then instantiate the constructor
 			if (!on.values[key] && component && component.prototype instanceof BaseComponent){
 				component = new component;
+			} else if (component && component.prototype instanceof BaseComponent) {
+				//if same component type, then do not check exact match.
+				component = on.values[key];
 			}
 
 			if (on.values[key] !== component) {
+				//clear any previous component elements
+				removeVDomItems(on.items);
+				if (on.values[key] && on.values[key].binder){
+					removeElement(on.values[key].binder.vdom.elem);
+					removeVDomItems(on.values[key].binder.vdom.items);
+				}
+				
 				on.values[key] = component;
+
 				if (!(component instanceof BaseComponent)){
 					return false;
-				}
-				//clear any previous component elements
-				if (on.items.length>0){
-					on.items.forEach(item => {$(item.elem).remove()});
 				}
 				//call onInit method
 				tryCall(component,component.onInit, on.elem);
 			
 				var inj = $.extend({}, inject);
 				if (component.html) {
+					on.values[key] = component;
 					//build parent vDom in the parent scope
 					/** @type {vDom} */
 					var p_vDom = on.itemBuilder(inject);
-					
-					component.binder = new Binder(component).setInjectVars(inj).bindElements(component.events, component.html);
-					var c_vDom = component.binder.vdom;
-					//$.extend(c_vDom.getters, p_vDom.getters)
-					Objects.forEach( p_vDom.getters, (getter,key)=>{
-						c_vDom.getters[key] = function(){ return getter(self, inject) };
-					});
-					Objects.forEach( p_vDom.setters, (setter,key)=>{
-						c_vDom.setters[key] = function(a, b, value){ return setter(self, inject, value) };
-						//add change listener to the context
-						component[key+'Change'] = function(val){
-							return c_vDom.setters[key](self,inject, val);
-						};
-						
-					});
-					Objects.forEach( p_vDom.callers, (caller,key)=>{
-						c_vDom.callers[key] = component[key] = function(){
-							return caller(self, inject, argumentsToArray(arguments));
-						};
-					});
-					//copy html attributes
-					for (var ii=0 ; ii<p_vDom.elem.attributes.length; ii++ ) {
-						var attr = p_vDom.elem.attributes[ii];
-						//only overwrite non-existing clild attrs
-						if (!c_vDom.elem.getAttribute(attr.name)) {
-							c_vDom.elem.setAttribute(attr.name, attr.value);	
-						} else {
-							c_vDom.elem.setAttribute(attr.name,c_vDom.elem.getAttribute(attr.name) +" "+ attr.value);
-						}
+					if (p_vDom instanceof DocumentFragment) {
+						throw Error ( "Component container " + JSON.stringify(on.elem) + " can not be a fragmnet!" )
 					}
-					//set plainAttrs as properties of our component instance
-					Objects.forEach( p_vDom.plainAttrs, (value,key)=>{
-						//only create property if value is not null: attribute has the value part
-						if (value !== null) {
-							component[key] = value;
+
+					component.binder = new Binder(component).setInjectVars(inj).bindElements(component.events, component.html);
+					
+					var c_vDom = component.binder.vdom;
+
+					if (!(c_vDom.elem instanceof DocumentFragment)) {
+
+						//$.extend(c_vDom.getters, p_vDom.getters)
+						Objects.forEach( p_vDom.getters, (getter,key)=>{
+							c_vDom.getters[key] = function(){ return getter(self, inject) };
+						});
+						Objects.forEach( p_vDom.setters, (setter,key)=>{
+							c_vDom.setters[key] = function(a, b, value){ return setter(self, inject, value) };
+							//add change listener to the context
+							component[key+'Change'] = function(val){
+								return c_vDom.setters[key](self,inject, val);
+							};
+							
+						});
+						Objects.forEach( p_vDom.callers, (caller,key)=>{
+							c_vDom.callers[key] = component[key] = function(){
+								return caller(self, inject, argumentsToArray(arguments));
+							};
+						});
+						//copy html attributes
+						for (var ii=0 ; ii<p_vDom.elem.attributes.length; ii++ ) {
+							var attr = p_vDom.elem.attributes[ii];
+							//only overwrite non-existing clild attrs
+							if (!c_vDom.elem.getAttribute(attr.name)) {
+								c_vDom.elem.setAttribute(attr.name, attr.value);	
+							} else {
+								c_vDom.elem.setAttribute(attr.name,c_vDom.elem.getAttribute(attr.name) +" "+ attr.value);
+							}
 						}
-					});
+						//set plainAttrs as properties of our component instance
+						Objects.forEach( p_vDom.plainAttrs, (value,key)=>{
+							//only create property if value is not null: attribute has the value part
+							if (value !== null) {
+								component[key] = value;
+							}
+						});
+					} else {
+						console.log("Component is fragment: no props copied");
+					}
 						
 
 					var p_frag = document.createDocumentFragment();
@@ -959,14 +1003,15 @@ export var Binder = function(context){
 					component.templateUpdate = function(){
 						checkVDomNode(on, inject);
 					}
-					on.items = p_vDom.items;
+
+					on.items = [p_vDom];
 
 					//insert component vDom with new children after the [component] vDom element
-					insertAfter(c_vDom.elem, on.elem);
-					
+					insertVDomElementAfter(c_vDom, on.elem);
+									
 					//call onInit method in the next frame
 					setTimeout(function(){
-						tryCall(component,component.init, p_vDom.elem);
+						tryCall(component,component.init, c_vDom.elem);
 					});
 				} else {
 					//component does not have own template. Render host template

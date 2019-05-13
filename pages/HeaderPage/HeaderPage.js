@@ -24,7 +24,7 @@ export class HeaderPage extends BasePage{
 		this.header=`
 			<button id="backButton" [if]="this.backButton" onclick = "this.onBackButtonClicked()"><i class="fas fa-arrow-left"></i></button>
 			<button id="menuButton" [if]="this.menuButton" onclick = "this.onMenuButtonClicked()"><i class="fas fa-bars"></i></button>
-			<span class="headertitle" [innerHTML]="this.title"></span>
+			<span class="headertitle" [innerhtml]="this.title"></span>
 			<span class="logo" [if]="!this.title"></span>
 			<button id="refreshButton" [if]="this.refreshButton" [class]="this.refreshButtonRotating ? 'rotating' : null" onclick = "this.onRefreshButtonClicked()"><i class="fas fa-sync-alt"></i></button>
 			<button id="searchButton" [if]="this.searchButton" onclick = "this.onSearchButtonClicked()"><i class="fas fa-search"></i></button>
@@ -59,17 +59,14 @@ export class HeaderPage extends BasePage{
 }
 HeaderPage.className = 'page-HeaderPage';
 HeaderPage.template = `
-<div page>
-	<div class="header" [if]="this.header" >
-		<div [directive] = "this.header" fragment>
-		</div>
+	<div class="header" [if]="this.header">
+		<div [directive] = "this.header"></div>
 	</div>
-	<div class="content" [directive] = "this.content">
+	<div class="content">
+		<div [directive] = "this.content"></div>
 	</div>
 
-	<div class="footer" [if]="this.footer" >
-		<div [directive] = "this.footer" fragment>
-		</div>
+	<div class="footer" [if]="this.footer">
+		<div [directive] = "this.footer"></div>
 	</div>
-</div>	
 `

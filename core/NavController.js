@@ -126,30 +126,10 @@ export function NavController() {
 	 * @return {Page} 
 	 */
     function createPage(pageConstructor, args) {
-		//currentPageName = pageConstructor.name;
-		//console.time()
+
 		var selector = typeof pageConstructor.selector !=='undefined' ? pageConstructor.selector : 'page-' + pageConstructor.name.toLowerCase() ;
 		var template = typeof pageConstructor.template !=='undefined' ? pageConstructor.template : null ;
 		var className = pageConstructor.className ? pageConstructor.className : "" ;
-
-
-		// factory.innerHTML = `
-		// <div
-		// 	page
-		// 	class="${className}"
-		// 	[class]="this.className"
-		// 	id="${selector}"
-		// 	[style]="this.style"
-		// 	style="z-index:${(stack.length + 1)*100}"
-		// >
-		// 	${template}
-		// </div>`;
-
-		//our actual page is the first child pf the factory
-	
-
-		
-		//pageContainer.appendChild(p);
 
 		args.unshift(null);
 		//create page object in a new scope
@@ -160,8 +140,8 @@ export function NavController() {
 
 
 		tryCall(pageObject, pageObject.onInit);
+		
 		var p = pageObject.page;
-		p.attr('page', "");
 		p.prop('id', selector);
 		p.addClass(className);
 		p.prop('style', `z-index:${(stack.length + 1)*100};`);
@@ -180,14 +160,6 @@ export function NavController() {
 			tryCall(pageObject, pageObject.onLoaded);		
 		},1);
 		
-		//p.style.display = 'block';
-		//enter done on next free frame
-		//window.requestAnimationFrame(()=>{
-			//tryCall(pageObject,pageObject.onEnter);
-		//});
-		//attachEvents(pageObject,p);
-
-		//console.timeEnd()
 		return pageObject;
 	}
 	/**
@@ -202,12 +174,6 @@ export function NavController() {
 		//return new pageConstructor(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9]);
 	}
 
-	/*function attachEvents(pageObject,p){
-		if (typeof pageObject.onResize=='function')
-			pageObject.onResize();
-
-	}*/
-	
 	/**
 	 * recalculate height of the standard elements
 	 * @param {JQuery<Element>} p - page
