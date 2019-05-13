@@ -20,7 +20,7 @@ export class BasePage extends ChangeWatcher{
 		// @ts-ignore
 		this.style = {};
 		this.components = null;
-		this.binder = new Binder(this,this.page);
+		this.binder = new Binder(this);
 
 		this.isDeleting = false;
 		this.isCreating = false;
@@ -65,7 +65,8 @@ export class BasePage extends ChangeWatcher{
 	 * Initialize binder
 	 */
 	onInit(binderEvent){
-		this.binder.bindElements(binderEvent);
+		this.binder.bindElements(binderEvent, this.template);
+		this.page = $(this.binder.vdom.elem);
 		super.startWatch();
 	}
 
@@ -165,5 +166,5 @@ export class BasePage extends ChangeWatcher{
 }
 BasePage.visibleParent = null;
 BasePage.selector = null;
-BasePage.template = null;
 BasePage.className = null;
+BasePage.template = `<div page></div>`;

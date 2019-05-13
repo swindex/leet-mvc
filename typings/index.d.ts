@@ -36,10 +36,12 @@ interface HTMLInputElementChangeEvent extends Event{
 }
 
 interface vDom {
-	values:{},
-	valuesD:{},
+	values: {},
+	valuesD: {},
 	getters: {},
 	setters: {},
+	callers: {},
+	plainAttrs: {},
 	elem: HTMLElement|DocumentFragment,
 	items:vDom[],
 	itemBuilder:function,

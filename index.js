@@ -30,7 +30,7 @@ import { Toast, ToastPage } from "./pages/Toast/Toast";
 import { EnableCustomElements } from "./core/EnableCustomElements";
 import { Forms } from "./components/Forms";
 import { ItemList } from "./components/ItemList";
-
+import { Register } from './core/Register';
 
 //Make jQuery available globally
 window["$"] = window["jQuery"] = require("jquery");
