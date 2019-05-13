@@ -59,6 +59,7 @@ export class HeaderPage extends BasePage{
 }
 HeaderPage.className = 'page-HeaderPage';
 HeaderPage.template = `
+<div page>
 	<div class="header" [if]="this.header" >
 		<div [directive] = "this.header" fragment>
 		</div>
@@ -70,4 +71,5 @@ HeaderPage.template = `
 		<div [directive] = "this.footer" fragment>
 		</div>
 	</div>
+</div>	
 `

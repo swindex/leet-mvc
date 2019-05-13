@@ -132,43 +132,49 @@ export function NavController() {
 		var template = typeof pageConstructor.template !=='undefined' ? pageConstructor.template : null ;
 		var className = pageConstructor.className ? pageConstructor.className : "" ;
 
-		//create page factory
-		var factory = document.createElement('div');
-		factory.innerHTML = `
-		<div
-			page
-			class="${className}"
-			[class]="this.className"
-			id="${selector}"
-			[style]="this.style"
-			style="z-index:${(stack.length + 1)*100}"
-		>
-			${template}
-		</div>`;
+
+		// factory.innerHTML = `
+		// <div
+		// 	page
+		// 	class="${className}"
+		// 	[class]="this.className"
+		// 	id="${selector}"
+		// 	[style]="this.style"
+		// 	style="z-index:${(stack.length + 1)*100}"
+		// >
+		// 	${template}
+		// </div>`;
 
 		//our actual page is the first child pf the factory
-		var p = factory.firstElementChild;
+	
 
 		
-		pageContainer.appendChild(p);
+		//pageContainer.appendChild(p);
 
-		args.unshift($(p));
+		args.unshift(null);
 		//create page object in a new scope
 		var pageObject = createPageInstance(pageConstructor,args);
-
+		pageObject.template = template;
 		pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
 		pageObject.Nav = self;
 
 
-		stack.push({name:pageConstructor.name, element: $(p), page: pageObject});
-		resetPagesVisibility();
-
-		
 		tryCall(pageObject, pageObject.onInit);
+		var p = pageObject.page;
+		p.attr('page', "");
+		p.prop('id', selector);
+		p.addClass(className);
+		p.prop('style', `z-index:${(stack.length + 1)*100};`);
+
+		$(pageContainer).append(p);
+
+		stack.push({name:pageConstructor.name, element: p, page: pageObject});
+		resetPagesVisibility();
+		
 		tryCall(pageObject, pageObject.init);	
 
 		setTimeout(()=>{
-			recalcContentHeight($(p));
+			recalcContentHeight(p);
 		},0);
 		setTimeout(()=>{
 			tryCall(pageObject, pageObject.onLoaded);		

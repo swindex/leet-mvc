@@ -1,4 +1,4 @@
-import { empty, tryCall } from "./helpers";
+import { empty, tryCall, argumentsToArray } from "./helpers";
 import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString } from "util";
 
@@ -7,15 +7,16 @@ import { isSkipUpdate } from "./Watcher";
 import { DateTime } from "./DateTime";
 import { isArray } from "util";
 import { isFunction } from "util";
+import { Objects } from "leet-mvc/core/Objects";
+
 
 var getterCashe = {};
 
 /** 
  * @constructor 
  * @param {*} context
- * @param {JQuery<HTMLElement>|HTMLElement|Node} container
  */
-export var Binder = function(context, container){
+export var Binder = function(context){
 	/** @type {Binder} */
 	var self = this;
 	/** @type {vDom} */
@@ -23,14 +24,7 @@ export var Binder = function(context, container){
 	this.context = context || this;
 	/** @type {{[key:string]:any}} */ 
 	this.injectVars = {};
-	/**@type {HTMLElement} */
-	this.container
-	if (container instanceof jQuery) {
-		this.container = container[0];
-	} else {
-		// @ts-ignore
-		this.container = container;
-	}
+
 
 	this.eventCallbacks = {change:null, focus:null, input:null,click:null};
 
@@ -75,11 +69,6 @@ export var Binder = function(context, container){
 		removeElement(oldNode);
 	}
 
-	this.setContainer = function(container){
-		this.container = container;
-		return self;
-	}
-
 	this.setContext = function(context){
 		this.context = context;
 		return self;
@@ -97,7 +86,7 @@ export var Binder = function(context, container){
 	 * Bind DOM elements that have "bind" attribute with model
 	 * @eventCallbacks Object, common event handler , {change:function(event){}, focus:function(event){}}
 	 */
-	this.bindElements = function (eventCallbacks){
+	this.bindElements = function (eventCallbacks, template){
 		//if callbacks is a function then it is change by default
 		if (typeof eventCallbacks === "function")
 			self.eventCallbacks.change = eventCallbacks;
@@ -108,15 +97,9 @@ export var Binder = function(context, container){
 			context.injectVars = {};
 		}
 
-		var vdom = executeSource(parseElement(self.container), self.injectVars);
-		var newContainer = vdom.fragment || vdom.elem;
+		var vdom = executeSource(parseElement(template), self.injectVars);
 		self.vdom = vdom; 
 		
-		
-		$(self.container).empty();
-		// @ts-ignore
-		$(self.container).append(newContainer.childNodes);
-		self.vdom.elem = self.container;
 		return self;
 	}
 
@@ -125,23 +108,49 @@ export var Binder = function(context, container){
 		return attrValue.replace(/\n/g,'\\n').
 							replace(/"/g,'\\"');
 	}
+
+	function parseElement(template){
+		var htmlparser = require("htmlparser2");
+		var handler = new htmlparser.DomHandler(function (error, dom) {
+			if (error){
+
+			}else{
+
+			}
+		});
+		var parser = new htmlparser.Parser(handler,{lowerCaseAttributeNames:false, decodeEntities:true});
+		parser.parseComplete(template);
+		//console.log(handler.dom);
+		var rootelements = Objects.filter(handler.dom, el => el.type=='tag');
+		if (rootelements.length != 1){
+			//throw Error("Error: Template must contain exactly one root element: "+template);
+			return parseAST({
+				data: 'div',
+				type: 'tag',
+				name: 'div',
+				attribs: {fragment:""},
+				children: rootelements
+			});	
+		}
+		return parseAST(rootelements[0]);
+	}
 	
 	/**
-	 * Turn element's HTML into a createDomElement function
-	 * @param {HTMLElement|Element} elem
+	 * Turn template HTML into a createDomElement function
+	 * @param {ASTObject} obj
 	 * @return {string}
 	 */
-	function parseElement(elem){
+	function parseAST(obj){
 		var thisSorurce = "";
 		var wrapDirective = "";
-		if (elem.nodeName=='#text'){
-			var escaped = escapeAttribute(elem.textContent);
+		if (obj.type=='text'){
+			var escaped = escapeAttribute(obj.data);
 			//parse {{moustache}} template within the text node
 			var bits = escaped.split(/({{[^{}]*}})/gmi);
 			var splitNodes = [];
 			bits.forEach(function(el){
 				var ret = null;
-				el.replace(/{{([^{}]+)}}|(.*)/,function(a,p1,p2,d){
+				el.replace(/{{([^{}]+)}}|(.*)/g,function(a,p1,p2,d){
 					if (p1){
 						splitNodes.push('createElement("#text",{bind:"'+p1+'"},[], inject)');
 					}else if (p2){
@@ -150,38 +159,38 @@ export var Binder = function(context, container){
 				});
 			});
 			thisSorurce = splitNodes.join(',');
-		} else if (elem.nodeName=='#comment') {
+		} else if (obj.type=='comment') {
 			//skip comments
 			thisSorurce = null;
 		}else{	
 			thisSorurce = "createElement(";
-			var tag= elem.tagName
+			var tag= obj.name
 			//var attrText = "{";
-			var attributes = [];
-			if (elem.attributes){
-				Array.prototype.slice.call(elem.attributes).forEach(function(attr) {
-					attr.value = escapeAttribute(attr.value);
-					switch (attr.name){
+			var attributes = {};
+			if (obj.attribs){
+				Objects.forEach( obj.attribs, function(value, key) {
+					//value = escapeAttribute(value);
+					switch (key){
 						case '[foreach]':
 						case '[transition]':
 						case '[directive]':
 						case '[component]':
 						case '[if]':
-							wrapDirective = `"${attr.name}":"${attr.value}"`;
+							wrapDirective = `"${key}":"${value}"`;
 							break;
 						default:
-							attributes.push('"'+attr.name +'":"'+attr.value+'"');
+							attributes[key] = value;
 					}
 					
 				});
 			}
 			//attrText +="}"
-			thisSorurce += "'"+tag +"',{"+ attributes.join(',')+"}";	
+			thisSorurce += "'"+tag +"', "+ JSON.stringify(attributes)+"";	
 			thisSorurce += ",[";
 
-			if (elem.childNodes && elem.childNodes.length>0){
-				Array.prototype.slice.call(elem.childNodes).forEach(function(child) {
-					thisSorurce += parseElement(child);
+			if (obj.children && obj.children.length>0){
+				Array.prototype.slice.call(obj.children).forEach(function(child) {
+					thisSorurce += parseAST(child);
 					thisSorurce += ",";
 				});
 			}
@@ -209,26 +218,24 @@ export var Binder = function(context, container){
 				
 				var attrKeys = Object.keys(attributes);
 				var getters = {};
-				var props = {};
 
-				var getter = null;
-				var key = attrKeys[0];
-				var bindExpression = attributes[key];
-
+				var attrName = attrKeys[0];
+				var bindExpression = attributes[attrName];
+				
 				//create comment element that will become the anchor for the directive.
-				var elem = document.createComment( key+"="+bindExpression+" ");
+				var elem = document.createComment( attrName+"="+bindExpression+" ");
 				directiveFragment.appendChild(elem);
 
+				var rType= getReactivityType(attrName);
+				var key = rType.key;
+				
 				if (bindExpression){
-					if (key =="[foreach]") {
+					if (key =="foreach") {
 						//special handling for foreach. because getter can not be created from foreach attribute [foreach] = "index in this.items as item"
-						getters[key] = getForeachAttrParts(attributes[key]);
+						getters[key] = getForeachAttrParts(bindExpression);
 					} else {
 						//for all other attributes like [if] = "this.isVisible" create getter for the attribute value
-						getter = createGetter(bindExpression,inject);
-						if (getter){
-							getters[key] = getter; 
-						}
+						getters[key] = createGetter(bindExpression,inject)
 					}
 				}
 				//because directive children are likely to be re-rendered, do not immediately render them. create itemBuilder function
@@ -241,7 +248,7 @@ export var Binder = function(context, container){
 					} 
 					return items[0];
 				};
-				var vdom ={ values:{}, getters: getters, setters:{}, props: props, fragment:directiveFragment, elem:elem, items:[], itemBuilder:itemBuilder};
+				var vdom ={ values:{}, getters: getters, setters:{}, callers:{}, fragment:directiveFragment, elem:elem, items:[], itemBuilder:itemBuilder};
 				executeAttribute( key , vdom , inject);
 				
 				return vdom;	
@@ -260,7 +267,8 @@ export var Binder = function(context, container){
 				var attrKeys = Object.keys(attributes);
 				var getters = {};
 				var setters = {};
-				var props = {};
+				var callers = {};
+				var plainAttrs = {};
 				var renderImmediately = [];
 
 				if (tag == "#text"){
@@ -276,62 +284,61 @@ export var Binder = function(context, container){
 					}
 									
 					return vdom;
-				}else{
-					elem = document.createElement(tag);
 				}
+
+				elem = document.createElement(tag);
+				
 				for (var i in attrKeys){
 					var bindExpression = null;
-					var value = null;
-					var getter = null;
-					var setter = null;
-					var key = attrKeys[i]
-					bindExpression = attributes[key];	
+
+					var attrName = attrKeys[i]
+					bindExpression = attributes[attrName];	
 					
-					switch (key){
-						case '[class]':
-						case '[attribute]':
-						case '[style]':
-						case '[display]':
-						case '[show]':
-						case '[selected]':
-						case '[innerhtml]':
-							if (bindExpression){
-								getter = createGetter(bindExpression,inject);
-								renderImmediately.push(key);
-							}
-							break;
-						case 'bind':
-							if (bindExpression){
-								getter = createGetter(bindExpression,inject);
-								if (isElementSetting(elem)){
-									setter = createSetter(bindExpression,inject);
-								}
-								
+					var rType= getReactivityType(attrName);
+					var key = rType.key;
 
+					if (!bindExpression){
+						plainAttrs[key] = null;
+						elem.setAttribute(key,attributes[key]);
+						continue;
+					}
+
+					switch (rType.type){
+						case 'get-set':
+							getters[key] = createGetter(bindExpression,inject);
+							setters[key] = createSetter(bindExpression,inject);
+							
+							//if element is directly setting, then apply all change and input callbacks
+							if (isElementSetting(elem)){
 								applyCallbacks(elem, self.context, self.eventCallbacks);
-
 								if (inject.component && inject.component.events){
 									applyCallbacks(elem, inject.component, inject.component.events);
 								}
-
-								renderImmediately.push(key);
-								elem.setAttribute(key,attributes[key]);
 							}
-							
-							break;
-						default:
-							props[key] = attributes[key]; //only non-bound attributes go to props array. components my want to bind them later
+							renderImmediately.push(key);
 							elem.setAttribute(key,attributes[key]);
-					}
-
-					if (getter){
-						getters[key] = getter; 
-					}
-					if (setter){
-						setters[key] = setter; 
+						break;
+						case 'get':
+							getters[key] = createGetter(bindExpression,inject);
+							renderImmediately.push(key);
+							break;
+						case 'call':
+							callers[key] = createCaller(bindExpression,inject);
+							break;
+						default:	
+							//normal attribute
+							//add it to the list of plain string-only attributes - will be used in component
+							plainAttrs[key] = bindExpression;
+							elem.setAttribute(key,attributes[key]);
+						break;
 					}
 				}
-				
+
+				//if element has an attribute "fragment" then make the element a fragment so its children can be added directly
+				if (plainAttrs['fragment'] !== undefined) {
+					elem = document.createDocumentFragment();
+				}
+			
 				for (var ii =0; ii < createElements.length; ii++){
 					if (isObject(createElements[ii])){
 						if (isArray(createElements[ii])){
@@ -351,14 +358,17 @@ export var Binder = function(context, container){
 					}
 				}
 
-				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, props: props, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
+				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, callers:callers, plainAttrs:plainAttrs, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
 				elem['VDOM'] = vdom;
 				
 				for (var ii =0; ii < renderImmediately.length; ii++){
-					executeAttribute(renderImmediately[ii], vdom,inject);
+					if (attributes[renderImmediately[ii]]) {
+						executeAttribute(renderImmediately[ii], vdom,inject);
+					}
 				}
-
-				bindEventsToContext(elem,inject);
+				if (plainAttrs['fragment'] === undefined) {
+					bindEventsToContext(elem, inject);
+				}
 				return vdom;	
 			}
 		}
@@ -370,6 +380,41 @@ export var Binder = function(context, container){
 		
 		return ret;
 	} 
+
+	/**
+	 * 
+	 * @param {string} attrValue 
+	 */
+	function isReactiveGetter(attrValue){
+		var matches = attrValue.match( /^\[(.*)\]$/);
+		if (matches){
+			return matches[1];
+		}
+	}
+	/**
+	 * 
+	 * @param {string} attrName 
+	 * @return {{type:'get'|'get-set'|'call'|null,key:string}}
+	 */
+	function getReactivityType(attrName){
+		if (attrName =='bind'){
+			return { type:'get-set', key: attrName};
+		}
+
+		var matches = attrName.match( /^\[\((.*)\)\]$/);
+		if (matches){
+			return { type:'get-set', key: matches[1]};
+		}
+		var matches = attrName.match( /^\((.*)\)$/);
+		if (matches){
+			return { type:'call', key: matches[1]};
+		}
+		var matches = attrName.match( /^\[(.*)\]$/);
+		if (matches){
+			return { type:'get', key: matches[1]};
+		}
+		return { type:null, key: attrName};
+	}
 
 	/**
 	 * 
@@ -446,6 +491,13 @@ export var Binder = function(context, container){
 						nodeChanged = true;
 					if (dirResult === false)
 						return false;
+				} else {
+					try {
+						self.context[key] = on.getters[key](self, inject);		
+					} catch (ex) {
+						console.warn(ex);
+					}
+
 				}
 			};
 		
@@ -465,6 +517,7 @@ export var Binder = function(context, container){
 	function executeAttribute(attribute, on, inject){
 		var old = on.values[attribute];
 		try{
+			//if a built-in attribute
 			var ret = attributes[attribute](on,inject)
 		}catch(ex){
 			//this may cause an error
@@ -481,8 +534,8 @@ export var Binder = function(context, container){
 	 * Custom attribute handling goes here
 	 */
 	var attributes = {
-		'[transition]':function(on, inject){
-			var key = "[transition]";
+		'transition':function(on, inject){
+			var key = "transition";
 			var getter = on.getters[key];
 			var options;
 			try{
@@ -557,8 +610,8 @@ export var Binder = function(context, container){
 			updateBoundElement(on.elem, newValue);
 			
 		},
-		'[selected]':function(on, inject){
-			var key = "[selected]";
+		'selected':function(on, inject){
+			var key = "selected";
 			var getter = on.getters[key];
 			var newValue = getter(self, inject); 
 			if (newValue){
@@ -567,8 +620,8 @@ export var Binder = function(context, container){
 				on.elem.removeAttribute('selected');
 			}
 		},
-		'[style]':function(on, inject){
-			var key = "[style]";
+		'style':function(on, inject){
+			var key = "style";
 			var getter = on.getters[key];
 			var newValue = getter(self, inject); 
 			if (typeof newValue =='object'){
@@ -580,8 +633,8 @@ export var Binder = function(context, container){
 				})
 			}
 		},
-		'[attribute]':function(on, inject){
-			var key = "[attribute]";
+		'attribute':function(on, inject){
+			var key = "attribute";
 			var getter = on.getters[key];
 			var newValue = getter(self, inject); 
 			if (typeof newValue =='object'){
@@ -593,8 +646,8 @@ export var Binder = function(context, container){
 				})
 			}
 		},
-		'[display]':function(on, inject){
-			var key = "[display]";
+		'display':function(on, inject){
+			var key = "display";
 			var getter = on.getters[key];
 			var newValue = getter(self, inject); 
 			if (on.values[key] !== newValue){
@@ -607,8 +660,8 @@ export var Binder = function(context, container){
 									
 			}
 		},
-		'[show]':function(on, inject){
-			var key = "[show]";
+		'show':function(on, inject){
+			var key = "show";
 			var getter = on.getters[key];
 			var newValue = getter(self, inject); 
 			if (on.values[key] !== newValue){
@@ -624,8 +677,8 @@ export var Binder = function(context, container){
 				}					
 			}
 		},
-		'[class]':function(on, inject){
-			var key = "[class]";
+		'class':function(on, inject){
+			var key = "class";
 			var getter = on.getters[key];
 			var newValue = getter(self, inject); 
 			if (on.values[key] !== newValue){
@@ -641,8 +694,8 @@ export var Binder = function(context, container){
 				}
 			}
 		},
-		'[innerhtml]':function(on, inject){
-			var key = "[innerhtml]";
+		'innerhtml':function(on, inject){
+			var key = "innerhtml";
 			var getter = on.getters[key];
 			var newValue = getter(self, inject); 
 			if (on.values[key] !== newValue){
@@ -650,8 +703,8 @@ export var Binder = function(context, container){
 				on.elem.innerHTML = newValue;
 			}
 		},
-		'[if]':function(on, inject){
-			var key = "[if]";
+		'if':function(on, inject){
+			var key = "if";
 			var getter = on.getters[key];
 			var isTrue;
 			try{
@@ -680,8 +733,8 @@ export var Binder = function(context, container){
 				
 			}
 		},
-		'[foreach]':function(on, inject){
-			var key = "[foreach]";
+		'foreach':function(on, inject){
+			var key = "foreach";
 			var getter = on.getters[key];
 			/** @type {{data:string,index:string,item:string}}*/
 			var parts = getter;
@@ -764,14 +817,14 @@ export var Binder = function(context, container){
 		 * @param {vDom} on  
 		 * @param {*} inject 
 		 */
-		'[directive]':function(on, inject){
-			var key = "[directive]";
+		'directive':function(on, inject){
+			var key = "directive";
 			var getter = on.getters[key];
 			var html = getter(self,inject);
 
 			if (html instanceof BaseComponent){
-				on.getters["[component]"] = getter;
-				return attributes["[component]"](on, inject);
+				on.getters["component"] = getter;
+				return attributes["component"](on, inject);
 			}
 						
 			if (on.values[key] !== html){
@@ -789,23 +842,17 @@ export var Binder = function(context, container){
 					if(html instanceof DocumentFragment){
 						compVdom = { elem:html, fragment: null, items:[], values:{},valuesD:{},getters:{},setters:{},itemBuilder:null,inject:{}};
 					}else{
-						var temp = document.createElement('div');
-						temp.innerHTML = html;
-						compVdom = executeSource(parseElement(temp), inject);
+						compVdom = executeSource(parseElement(html), inject);
 					}
 				}
 				
 					var templateVdom = on.itemBuilder(inject);
-					//if parent template element has attribute "fragment", turn it into a fragment				
-					/*if ( templateVdom.elem.getAttribute('fragment') !== null) {
-						templateVdom.elem = document.createDocumentFragment();
-					}*/
-					
+
 					templateVdom.elem['INJECT'] = inject;
 					$(templateVdom.elem).empty();						
 					if (compVdom) {
 						// @ts-ignore
-						$(templateVdom.elem).append(compVdom.elem.childNodes);
+						$(templateVdom.elem).append(compVdom.elem);
 						//both the componenet and template VDOMs are on the same level
 						templateVdom.items = compVdom.items;
 					}
@@ -833,11 +880,16 @@ export var Binder = function(context, container){
 		 * @param {vDom} on  
 		 * @param {*} inject 
 		 */
-		'[component]':function(on, inject){
-			var key = "[component]";
+		'component':function(on, inject){
+			var key = "component";
 			var getter = on.getters[key];
 			/** @type {BaseComponent} */
 			var component = getter(self,inject);
+
+			//if component is actually a class and component value is not yet set, then instantiate the constructor
+			if (!on.values[key] && component && component.prototype instanceof BaseComponent){
+				component = new component;
+			}
 
 			if (on.values[key] !== component) {
 				on.values[key] = component;
@@ -853,51 +905,84 @@ export var Binder = function(context, container){
 			
 				var inj = $.extend({}, inject);
 				if (component.html) {
-					var temp = document.createElement('div');
-					temp.innerHTML = component.html;
-					component.binder = new Binder(component, temp).setInjectVars(inj).bindElements(component.events);
-					
-					var c_vDom = component.binder.vdom;
-
 					//build parent vDom in the parent scope
 					/** @type {vDom} */
 					var p_vDom = on.itemBuilder(inject);
-					tryCall(component,component.onBuiltItems, p_vDom);
-			
+					
+					component.binder = new Binder(component).setInjectVars(inj).bindElements(component.events, component.html);
+					var c_vDom = component.binder.vdom;
+					//$.extend(c_vDom.getters, p_vDom.getters)
+					Objects.forEach( p_vDom.getters, (getter,key)=>{
+						c_vDom.getters[key] = function(){ return getter(self, inject) };
+					});
+					Objects.forEach( p_vDom.setters, (setter,key)=>{
+						c_vDom.setters[key] = function(a, b, value){ return setter(self, inject, value) };
+						//add change listener to the context
+						component[key+'Change'] = function(val){
+							return c_vDom.setters[key](self,inject, val);
+						};
+						
+					});
+					Objects.forEach( p_vDom.callers, (caller,key)=>{
+						c_vDom.callers[key] = component[key] = function(){
+							return caller(self, inject, argumentsToArray(arguments));
+						};
+					});
+					//copy html attributes
+					for (var ii=0 ; ii<p_vDom.elem.attributes.length; ii++ ) {
+						var attr = p_vDom.elem.attributes[ii];
+						//only overwrite non-existing clild attrs
+						if (!c_vDom.elem.getAttribute(attr.name)) {
+							c_vDom.elem.setAttribute(attr.name, attr.value);	
+						} else {
+							c_vDom.elem.setAttribute(attr.name,c_vDom.elem.getAttribute(attr.name) +" "+ attr.value);
+						}
+					}
+					//set plainAttrs as properties of our component instance
+					Objects.forEach( p_vDom.plainAttrs, (value,key)=>{
+						//only create property if value is not null: attribute has the value part
+						if (value !== null) {
+							component[key] = value;
+						}
+					});
+						
 
 					var p_frag = document.createDocumentFragment();
 					
-					//swap children between componenet temp element and the parent's element
+					//move host children to temp fragment
 					// @ts-ignore
 					$(p_frag).append(p_vDom.elem.childNodes);
 				
-					//if parent template element has attribute "fragment", turn it into a fragment				
-					/*if ( p_vDom.elem.getAttribute('fragment') !== null) {
-						p_vDom.elem = document.createDocumentFragment();
-					}*/
-					
-					// @ts-ignore
-					$(p_vDom.elem).append(c_vDom.elem.childNodes);
-
 					component.parentPage = self.context;
 					//let component decide where to put parent's children
 					component.templateFragment = p_frag;
 					component.templateUpdate = function(){
 						checkVDomNode(on, inject);
 					}
+					on.items = p_vDom.items;
+
+					//insert component vDom with new children after the [component] vDom element
+					insertAfter(c_vDom.elem, on.elem);
+					
+					//call onInit method in the next frame
+					setTimeout(function(){
+						tryCall(component,component.init, p_vDom.elem);
+					});
 				} else {
+					//component does not have own template. Render host template
 					p_vDom = on.itemBuilder(inject);
+					on.items[0] = p_vDom;
+
+					//insert parent vDom with new children after the [component] vDom element
+					insertAfter(p_vDom.elem, on.elem);
+					
+					//call onInit method in the next frame
+					setTimeout(function(){
+						tryCall(component,component.init, p_vDom.elem);
+					});
 				}
 				//parent vDom items still belong to the directive vDom node
-				on.items[0] = p_vDom;
-
-				//insert parent vDom with new children after the [component] vDom element
-				insertAfter(p_vDom.elem, on.elem);
 				
-				//call onInit method in the next frame
-				setTimeout(function(){
-					tryCall(component,component.init, p_vDom.elem);
-				});
 			} else {
 				//same component. Just update own parent elem vDom items
 				//component items do not get updated by this!
@@ -1236,11 +1321,11 @@ export var Binder = function(context, container){
 			var cashe = inj+expression;
 			if ( getterCashe.hasOwnProperty(cashe))
 				return getterCashe[cashe];
-			var getter = new Function('context','inject',
+			var getter = new Function('context','inject','args',
 				`${inj}
 				(function(){
 					${expression};
-				}).apply(context.context);`
+				}).apply(context.context, args);`
 			);
 			getterCashe[cashe] = getter;
 			// @ts-ignore
