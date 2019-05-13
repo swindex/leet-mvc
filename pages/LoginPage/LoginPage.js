@@ -40,7 +40,9 @@ export class LoginPage extends BasePage {
 				}
 			}
 		);
-		
+	}
+
+	init(){
 		var logo = this.page.find('#logo');
 		var login = this.page.find('#login');
 		this.i_height = this.page.height();
@@ -53,7 +55,7 @@ export class LoginPage extends BasePage {
 
 		//create 2 debouncers, so they do not cancel each other
 		this.debouncer1 = DeBouncer.timeoutFirst(500);
-		this.debouncer2 = DeBouncer.timeoutFirst(500);;
+		this.debouncer2 = DeBouncer.timeoutFirst(500);
 	}
 
 	onResize(){
