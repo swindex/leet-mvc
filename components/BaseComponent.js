@@ -17,6 +17,9 @@ export class BaseComponent extends ChangeWatcher{
 		Objects.bindMethods(this);
 		/** reference to the parent page */
 		this.parentPage = null;
+
+		/**@type {HTMLElement} */
+		this.container = null;
 	}
 
 	/** 

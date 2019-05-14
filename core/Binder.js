@@ -499,7 +499,9 @@ export var Binder = function(context){
 	 * Update DOM elements according to bindings
 	 */
 	this.updateElements = function(){
+		self.context[isSkipUpdate] = true;
 		checkVDomNode(self.vdom, self.injectVars); 
+		self.context[isSkipUpdate] = false;
 		return self;
 	} 
 
@@ -1028,6 +1030,7 @@ export var Binder = function(context){
 									
 					//call onInit method in the next frame
 					setTimeout(function(){
+						component.container = c_vDom.elem;
 						tryCall(component,component.init, c_vDom.elem);
 					});
 				} else {
@@ -1285,7 +1288,7 @@ export var Binder = function(context){
 			case "SELECT":
 				var sel = $(elem).find("option:selected");
 				v = formatValue(sel[0].getAttribute('value'),format);
-				//console.log(v);
+				//console.log(v); 
 				break;
 			case "OPTION":
 			case "INPUT":
