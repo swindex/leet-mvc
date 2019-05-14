@@ -54,21 +54,22 @@ export var Watcher={
 				},
 				set(target, property, value) {
 					//do nothing if value is already the same
-					if (target[property] === value){
-						return true;
+					if (target[property] === value ||
+						isSymbol(property) ||
+						property === isSkipUpdate ||
+						object[isDeleted] ||
+						ignoreProperties.indexOf(property) >= 0  ){
+
+						return Reflect.set(target, property, value);
 					}
-					if (!isSymbol(property) &&
-						property !== isSkipUpdate &&
-						!object[isSkipUpdate] && 
-						!object[isDeleted] &&
-						ignoreProperties.indexOf(property)<=0 ){
+					if (!object[isSkipUpdate]){
 						scheduleCallback(object, onChangeCallback);
-						//if target is the object we are watching, and property has method Changed, then call that method
-						if (target === object &&  isFunction(object[property+"Change"])){
-							object[isSkipUpdate] = true;
-							object[property+"Change"](value);
-							object[isSkipUpdate] = false;
-						}
+					}
+					//if target is the object we are watching, and property has method Changed, then call that method
+					if (target === object &&  isFunction(object[property+"Change"])){
+						object[isSkipUpdate] = true;
+						object[property+"Change"](value);
+						object[isSkipUpdate] = false;
 					}
 					return Reflect.set(target, property, value);
 				},
