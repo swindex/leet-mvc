@@ -50,7 +50,17 @@ export var Binder = function(context){
 	function insertVDomItemsAfter(items, referenceNode){
 		if (isArray(items)) {
 			var frag = document.createDocumentFragment();
-			items.forEach(item => { frag.appendChild(item.elem)});
+			items.forEach(item => { 
+				frag.appendChild(item.elem);
+				if (item.elem instanceof Comment) {
+					insertVDomItemsAfter(item.items, item.elem)
+					//if item is a componenet, re-insert its children too.
+					if (item.getters.component) {
+						var component = item.getters.component(self,{});
+						insertVDomElementAfter(component.binder.vdom, item.elem);
+					}
+				}
+			});
 			insertAfter(frag, referenceNode)
 		}
 	}
@@ -77,6 +87,11 @@ export var Binder = function(context){
 				//if item is a comment, remove its items too
 				if (item.elem instanceof Comment) {
 					removeVDomItems(item.items, keepEvents)
+					//if item is a componenet, remove its vDOM element too.
+					if (item.getters.component) {
+						var component = item.getters.component(self,{});
+						removeElement(component.binder.vdom.elem,keepEvents);
+					}
 				}
 			})
 		}
@@ -534,7 +549,9 @@ export var Binder = function(context){
 		var old = on.values[attribute];
 		try{
 			//if a built-in attribute
-			var ret = attributes[attribute](on,inject)
+			if (attributes[attribute]){
+				var ret = attributes[attribute](on,inject)
+			}
 		}catch(ex){
 			//this may cause an error
 			console.warn(ex);
@@ -943,7 +960,7 @@ export var Binder = function(context){
 					/** @type {vDom} */
 					var p_vDom = on.itemBuilder(inject);
 					if (p_vDom instanceof DocumentFragment) {
-						throw Error ( "Component container " + JSON.stringify(on.elem) + " can not be a fragmnet!" )
+						throw Error ( "Component container " + JSON.stringify(on.elem) + " can not be a fragment!" )
 					}
 
 					component.binder = new Binder(component).setInjectVars(inj).bindElements(component.events, component.html);
