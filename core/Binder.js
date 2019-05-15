@@ -499,9 +499,6 @@ export var Binder = function(context){
 	 * Update DOM elements according to bindings
 	 */
 	this.updateElements = function(){
-		if (!self.vdom.elem.parentNode){
-			console.warn(`Trying to update view of a deleted object: ${JSON.stringify(self.context)}`);
-		}
 		self.context[isSkipUpdate] = true;
 		checkVDomNode(self.vdom, self.injectVars); 
 		self.context[isSkipUpdate] = false;
