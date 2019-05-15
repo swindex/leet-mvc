@@ -5,10 +5,11 @@ import { Objects } from "./Objects";
  * This factory function allows to create shared state across multiple modules with listeners, getters and emmitters
  * @param {*} data 
  */
-export function State(data){
+export function State2(data){
 	/** @type {any[]} */
 	var Queue = [];
 	var Data = Objects.copy(data);
+	var _error;
 	var index = 0;
 	/** @type {boolean} */
 	var isRunning = null;
@@ -16,13 +17,11 @@ export function State(data){
 	var isSet = null;
 	/**
 	 * Add a callback to queue
-	 * @param {function():void} dataChanged 
-	 * @param {function():void} statusChanged  
-	 * @return {{index:number, remove:function():void}}
+	 * @return {{index:number, remove:function():void, onSet: function():void, onError: function():void, onStatus: function():void}}
 	 */
-	function onChange(dataChanged, statusChanged){
+	function add(){
 		index++;
-		Queue[index] = {dataChanged:dataChanged,statusChanged};
+		Queue[index] = {};
 
 		var i = index;
 		var listener = {
@@ -31,31 +30,38 @@ export function State(data){
 				removeIndex(i);
 				delete this.index;
 				delete this.remove;
-			}
+			},
+			onSet: function(callback){
+				Queue[this.index]._onSet = callback;
+				if (isSet) {
+					tryCall(null, callback, Objects.copy(Data));
+				}
+				return listener;
+			},
+			onError: function(callback){
+				Queue[this.index]._onError = callback;
+				if (_error) {
+					tryCall(null, callback, Objects.copy(_error));
+				}
+				return this;
+			},
+			onStatus: function(callback){
+				Queue[this.index]._onStatus = callback;
+				tryCall(null, callback, isRunning);
+				return this;
+			},
+			
 		};
 		listener.remove.bind(listener);
+		listener.onSet.bind(listener);
+		listener.onError.bind(listener);
+		listener.onStatus.bind(listener);
 		return listener;
 	}
-	/**
-	 * Add a callback to queue AND cal the callback is already set!
-	 * @param {function():void} dataChanged 
-	 * @param {function():void} statusChanged  
-	 * @return {{index:number, remove:function():void}}
-	 */
-	function onSet(dataChanged, statusChanged){
-		if (isSet) {
-			tryCall(null, dataChanged, Objects.copy(Data));
-		}
-		tryCall(null, statusChanged, isRunning);
-		
-		return onChange(dataChanged, statusChanged);
-	}
-
 	
-
 	/**
 	 * Remove callback from Queue
-	 * @param {{index:number, remove:function():void}} listener 
+	 * @param {{index:number, remove:function():void, onSet: function():void, onError: function():void, onStatus: function():void}} listener 
 	 * @return {boolean}
 	 */
 	function remove(listener){
@@ -63,7 +69,9 @@ export function State(data){
 			removeIndex(listener.index);
 			delete listener.index;
 			delete listener.remove;
-			
+			delete listener.onSet;
+			delete listener.onError;
+			delete listener.onStatus;
 			return true;
 		}
 		console.log ('CallbackQueue: unable to .remove callback:',index);
@@ -86,12 +94,12 @@ export function State(data){
 	 * Call all callbacks
 	 * @param {*} data
 	 */
-	function set(data){
+	function setData(data){
 		isSet = data === undefined ? false : true;
 		Data = Objects.copy(data);
 		//execute callbacks in Queue
 		for (var i in Queue){
-			var callback = Queue[i].dataChanged;
+			var callback = Queue[i]._onSet;
 			if (callback){
 				try {
 					tryCall(null, callback, Objects.copy(data));
@@ -100,20 +108,39 @@ export function State(data){
 				}
 			}
 		}
-		setRunning(false);
+		setStatus(false);
+	}
+	/**
+	 * Call all callbacks
+	 * @param {*} data
+	 */
+	function setError(data){
+		_error = Objects.copy(data);
+		//execute callbacks in Queue
+		for (var i in Queue){
+			var callback = Queue[i]._onError;
+			if (callback){
+				try {
+					tryCall(null, callback, Objects.copy(data));
+				} catch (ex) {
+					console.warn(ex);
+				}
+			}
+		}
+		setStatus(false);
 	}
 
 	/**
 	 * 
 	 * @param {boolean} newStatus 
 	 */
-	function setRunning( newStatus ){
+	function setStatus( newStatus ){
 		if (isRunning === newStatus){
 			return;
 		}
 		isRunning = newStatus;
 		for (var i in Queue){
-			var callback = Queue[i].statusChanged;
+			var callback = Queue[i]._onStatus;
 			if (callback){
 				tryCall(null, callback, isRunning);
 			}
@@ -121,19 +148,29 @@ export function State(data){
 	}
 
 	var Me = {
-		get isRunning(){return isRunning},
-		set isRunning(val){setRunning(val)}, 
-		get: function(){return Data;},
+		add: add,
+		get error(){
+			return _error;
+		},
+		set error(val){
+			setError(val);
+		},
+		get isRunning(){
+			return isRunning;
+		},
+		set isRunning(val){
+			setStatus(val);
+		},
 		get data(){
 			return Data;
 		},
 		set data(data){
-			set(data);
+			setData(data);
 		},
-		onChange: onChange,
 		remove: remove,
-		set: set,
-		onSet: onSet,
-	}
+		setData: setData,
+		setError: setError,
+		setRunning: setStatus
+	};
 	return Me;
 }
