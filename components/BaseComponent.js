@@ -25,9 +25,10 @@ export class BaseComponent extends ChangeWatcher{
 	/** 
 	 *  ***DO NOT OVERRIDE*** 
 	 * This functinon is called once after the container is bound to context
-	 * @param {JQuery<HTMLElement>} container
+	 * @param {HTMLElement} container
 	 */
 	_onInit(container){
+		this.container = $(container);
 		super.startWatch();
 		//register my self with the basePage components, so it knows what to destroy later
 		if (this.parentPage){
@@ -36,7 +37,7 @@ export class BaseComponent extends ChangeWatcher{
 			}
 			this.parentPage.components.push(this);
 		}
-		this.onInit(container);
+		this.onInit(this.container);
 	}
 	
 	/**

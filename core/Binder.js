@@ -1031,7 +1031,6 @@ export var Binder = function(context){
 									
 					//call onInit method in the next frame
 					setTimeout(function(){
-						component.container = $(c_vDom.elem);
 						tryCall(component,component._onInit, c_vDom.elem);
 					});
 				} else {
@@ -1044,7 +1043,7 @@ export var Binder = function(context){
 					
 					//call onInit method in the next frame
 					setTimeout(function(){
-						tryCall(component,component.onInit, p_vDom.elem);
+						tryCall(component,component._onInit, p_vDom.elem);
 					});
 				}
 				//parent vDom items still belong to the directive vDom node
