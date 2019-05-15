@@ -18,23 +18,17 @@ export class BaseComponent extends ChangeWatcher{
 		/** reference to the parent page */
 		this.parentPage = null;
 
-		/**@type {HTMLElement} */
+		/**@type {JQuery<HTMLElement>} */
 		this.container = null;
 	}
 
 	/** 
-	 * 
-	 * This functinon is called once BEFORE the container is bound to context
-	 * @param {HTMLElement} container
-	 */
-	onInit(container){
-		super.startWatch();
-	}
-	/** 
+	 *  ***DO NOT OVERRIDE*** 
 	 * This functinon is called once after the container is bound to context
-	 * @param {HTMLElement} container
+	 * @param {JQuery<HTMLElement>} container
 	 */
-	init(container){
+	_onInit(container){
+		super.startWatch();
 		//register my self with the basePage components, so it knows what to destroy later
 		if (this.parentPage){
 			if (!this.parentPage.components){
@@ -42,6 +36,25 @@ export class BaseComponent extends ChangeWatcher{
 			}
 			this.parentPage.components.push(this);
 		}
+		this.onInit(container);
+	}
+	
+	/**
+	 * ***DO NOT OVERRIDE*** 
+	 */
+	_onDestroy(){
+		this.onDestroy();
+		this.stopWatch();
+		Objects.strip(this);
+	}
+
+	/** 
+	 *  ***Override*** 
+	 * This functinon is called once after the container is bound to context
+	 * @param {JQuery<HTMLElement>} container
+	 */
+	onInit(container){
+
 	}
 
 	/**
@@ -64,13 +77,5 @@ export class BaseComponent extends ChangeWatcher{
 	 **/
 	onUpdate(){
 
-	}
-
-	/**
-	 * ***DO NOT OVERRIDE*** 
-	 */
-	_onDestroy(){
-		this.stopWatch();
-		Objects.strip(this);
 	}
 }

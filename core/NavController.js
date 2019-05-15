@@ -139,7 +139,7 @@ export function NavController() {
 		pageObject.Nav = self;
 
 
-		tryCall(pageObject, pageObject.onInit);
+		tryCall(pageObject, pageObject._init);
 		
 		var p = pageObject.page;
 		p.prop('id', selector);
@@ -151,7 +151,7 @@ export function NavController() {
 		stack.push({name:pageConstructor.name, element: p, page: pageObject});
 		resetPagesVisibility();
 		
-		tryCall(pageObject, pageObject.init);	
+		tryCall(pageObject, pageObject.onInit, p);	
 
 		setTimeout(()=>{
 			recalcContentHeight(p);
@@ -193,9 +193,8 @@ export function NavController() {
 		var frame = stack.splice(frameIndex,1)[0];
 		//removeEvents(frame.element);
 	
-		tryCall(frame.page, frame.page.onLeave);		
+		tryCall(frame.page, frame.page.onLeave);
 		tryCall(frame.page, frame.page._onDestroy);		
-	
 		//immediately disable drop all events for the page being removed
 		//$(frame.element).off();
 		hidePageElement(frame, true);
