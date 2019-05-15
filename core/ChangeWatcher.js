@@ -1,5 +1,4 @@
 import { Watcher } from './Watcher.js';
-import { Objects } from './Objects.js';
 
 export class ChangeWatcher {
 	constructor(){

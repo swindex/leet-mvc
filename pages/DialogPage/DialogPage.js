@@ -36,10 +36,6 @@ export class DialogPage extends BasePage{
 		this.errors={};
 	}
 
-	onInit(binderEvents){
-		super.onInit(binderEvents);
-	}
-
 	onResize(){
 		super.onResize();
 		var h = (this.page.height() - 150);

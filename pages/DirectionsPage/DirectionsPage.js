@@ -54,7 +54,7 @@ export class DirectionsPage extends DialogPage{
 		}
 	}
 
-	init(){
+	onInit(){
 		var maph = Math.floor($(window).innerHeight()/1.75);
 		if ( maph < 205 )
 			maph= 205;

@@ -64,7 +64,7 @@ export class BasePage extends ChangeWatcher{
 	 * ***OverrideCallSuper***
 	 * Initialize binder
 	 */
-	onInit(binderEvent){
+	_init(binderEvent){
 
 		this.template = BasePage.template.replace('/*child-template*/', this.template);
 
@@ -75,9 +75,10 @@ export class BasePage extends ChangeWatcher{
 
 	/**
 	 * ***Override***
-	 * Called after page is created but before it is rendered
+	 * Called after page is created and inserted into the document but before it is rendered
+	 * @param {JQuery<HTMLElement>} page 
 	 */
-	init(){
+	onInit(page){
 		
 	}
 	/**
@@ -136,7 +137,6 @@ export class BasePage extends ChangeWatcher{
 			for (let i in this.components){
 				var comp = this.components[i];
 				if (comp instanceof BaseComponent){
-					tryCall(comp, comp.onDestroy);
 					tryCall(comp, comp._onDestroy);
 					delete this.components[i];
 				}

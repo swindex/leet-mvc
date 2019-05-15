@@ -6,8 +6,7 @@ import './SimpleTabs.scss';
 export class SimpleTabs extends BaseComponent{
 	constructor(){
 		super();
-		/** @type {HTMLElement} */
-		this.container = null;
+
 		/** @type {DocumentFragment} */
 		this.tempContainer = null;
 		this._currentTabLabel = null;
@@ -76,9 +75,7 @@ export class SimpleTabs extends BaseComponent{
 		}
 	}
 	
-	init(container){
-		super.init(container);
-		this.container = $(container);
+	onInit(container){
 		$(container).find('li').on('click',(ev)=>{
 			var t = ev.currentTarget;
 			if (this._getTab(t).length>0){

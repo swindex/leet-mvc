@@ -76,7 +76,7 @@ export class OptionsDialogPage extends DialogPage{
 
 	/** ***Private*** Item click handler*/
 	_onItemClicked(item, index){
-		if (item.disabled || this.isDeleting || this.isHiding){
+		if (item.disabled || this.isDeleting){
 			return;
 		}
 		

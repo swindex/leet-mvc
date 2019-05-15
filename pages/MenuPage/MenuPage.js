@@ -53,7 +53,7 @@ export class MenuPage extends BasePage {
 		console.log("");
 	}
 
-	init() {
+	onInit() {
 		$('body').addClass('menu-shown');
 	};
 
