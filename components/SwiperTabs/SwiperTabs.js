@@ -43,6 +43,16 @@ export class SwiperTabs extends BaseComponent{
 
 	}
 
+	/**
+	 * Change the displayed tab
+	 * @param {number} index 
+	 * @param {number} [speed] - default 
+	 * @param {boolean} [triggerEvents] - default true
+	 */
+	changeTab(index, speed, triggerEvents){
+		this.swiper.slideTo(index, speed, triggerEvents);
+	}
+
 
 	addPage(PageConstructor, args){
 		if (!this.container && !this.tempContainer){
