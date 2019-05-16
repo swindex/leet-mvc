@@ -78,6 +78,7 @@ export class SwiperTabs extends BaseComponent{
 	 * Call to destroy container and remove all pages
 	 */
 	onDestroy(){
+		this.swiper.destroy(true,true);
 		//remove all pages
 		this.Nav.destroy();
 		this.removeAllPages();
