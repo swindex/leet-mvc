@@ -54,7 +54,8 @@ export var Watcher={
 				},
 				set(target, property, value) {
 					//do nothing if value is already the same
-					if (target[property] === value ||
+					if (value === isSkipUpdate ||
+						target[property] === value ||
 						isSymbol(property) ||
 						property === isSkipUpdate ||
 						object[isDeleted] ||

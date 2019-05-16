@@ -1311,6 +1311,9 @@ export var Binder = function(context){
 				elem['VDOM'].setters.bind(inj, v);
 				self.context[isSkipUpdate] = false;
 			}else{
+				//because upon change the value is likely to be the same, but we still want to trigger the update, set v to isSkipUpdate (that will not trigger anything) first and then re-set it back
+				elem['VDOM'].setters.bind(inj, isSkipUpdate);
+				//then immediately set the proper value
 				elem['VDOM'].setters.bind(inj, v);
 			}
 		}
