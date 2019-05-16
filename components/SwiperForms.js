@@ -106,8 +106,8 @@ export class SwiperForms extends Forms{
 
 
 	
-	init(container){
-		super.init(container);
+	onInit(container){
+		super.onInit(container);
 		var sw = new Swiper($(container).find('#generatedform')[0],{
 			threshold:50,
 			initialSlide:this.index,

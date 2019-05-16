@@ -77,7 +77,7 @@ export class SwiperTabs extends BaseComponent{
 	/**
 	 * Call to destroy container and remove all pages
 	 */
-	destroy(){
+	onDestroy(){
 		//remove all pages
 		this.Nav.destroy();
 		this.removeAllPages();
@@ -103,8 +103,8 @@ export class SwiperTabs extends BaseComponent{
 		this.Nav.remove(pageInstance);
 	}
 
-	init(container){
-		super.init(container);
+	onInit(container){
+		super.onInit(container);
 		this.container = container;
 		this.Nav.setContainer($(container).find('.swiper-wrapper')[0]);
 		if (this.tempContainer)
