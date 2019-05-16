@@ -350,11 +350,11 @@ export var Binder = function(context){
 							elem.setAttribute(key,attributes[key]);
 						break;
 						case 'get':
-							getters[key] = createGetter(bindExpression,inject);
+							getters[key] = createGetter(bindExpression, inject);
 							renderImmediately.push(key);
 							break;
 						case 'call':
-							callers[key] = createGetter(bindExpression,inject);
+							callers[key] = createCaller(bindExpression, inject);
 							break;
 						default:	
 							//normal attribute
@@ -396,7 +396,7 @@ export var Binder = function(context){
 					executeAttribute(renderImmediately[ii], vdom,inject);
 				}
 				if (plainAttrs['fragment'] === undefined) {
-					bindEventsToContext(elem, inject);
+					bindEventsToContext(elem,  inject);
 				}
 				return vdom;	
 			}
@@ -472,7 +472,7 @@ export var Binder = function(context){
 				$(elem).on(attr.name.substr(2), function(evt){
 					updateBoundContextProperty(evt.target);
 					var inj = $.extend({}, self.injectVars,{'$event':evt},inject, findElemInject(elem));
-					var c = createGetter(attr.value, inj);
+					var c = createCaller(attr.value, inj);
 					c(inj);
 				});
 			}	
@@ -1370,6 +1370,26 @@ export var Binder = function(context){
 		}		
 	}
 
+	/**
+	 * Create a caller that does not return any value. Can execute any number of methods.
+	 * @param {string} expression 
+	 * @return {function(*)} callback
+	 */
+	function createCaller(expression, inject){
+		var inj = createInjectVarText(inject);
+		try{
+			var cashe = inj+expression;
+			if ( getterCashe.hasOwnProperty(cashe))
+				return getterCashe[cashe];
+
+			var getter = new Function('inject',
+					`${inj}; ${expression};`
+	 		);       
+			return getter.bind(self.context);
+		}catch(ex){
+			return null;
+		}		
+	}
 	/**
 	 * 
 	 * @param {string} expression 
