@@ -1,4 +1,5 @@
 import { tryCall, empty, argumentsToArray, GUID } from "./helpers";
+import { removeDOMElement } from "leet-mvc/core/Binder";
 
 export function NavController() {
 	/** @type {NavController} */
@@ -139,7 +140,7 @@ export function NavController() {
 		pageObject.Nav = self;
 
 
-		tryCall(pageObject, pageObject.onInit);
+		tryCall(pageObject, pageObject._init);
 		
 		var p = pageObject.page;
 		p.prop('id', selector);
@@ -151,7 +152,7 @@ export function NavController() {
 		stack.push({name:pageConstructor.name, element: p, page: pageObject});
 		resetPagesVisibility();
 		
-		tryCall(pageObject, pageObject.init);	
+		tryCall(pageObject, pageObject.onInit, p);	
 
 		setTimeout(()=>{
 			recalcContentHeight(p);
@@ -193,9 +194,8 @@ export function NavController() {
 		var frame = stack.splice(frameIndex,1)[0];
 		//removeEvents(frame.element);
 	
-		tryCall(frame.page, frame.page.onLeave);		
+		tryCall(frame.page, frame.page.onLeave);
 		tryCall(frame.page, frame.page._onDestroy);		
-	
 		//immediately disable drop all events for the page being removed
 		//$(frame.element).off();
 		hidePageElement(frame, true);
@@ -349,9 +349,10 @@ export function NavController() {
 				element.removeAttr('deleting');
 				element.removeAttr('hiding');
 				element.attr('hidden','');
-				if (isDeleting)
-					$(element).remove();
-				else{	
+				if (isDeleting){
+					//$(element).remove();
+					removeDOMElement(element[0]);
+				} else{	
 					//element.css('display','none');
 					//console.log("Hide Element",element[0].id);
 				}

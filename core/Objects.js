@@ -244,7 +244,7 @@ export const Objects = {
 		Objects.getMethods(object).forEach((i) => {
 			delete object[i];
 		})
-		Objects.getProperties(this).forEach((i) => {
+		Objects.getProperties(object).forEach((i) => {
 			delete object[i];
 		})
 	}

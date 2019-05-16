@@ -43,7 +43,6 @@ export function State(data){
 	 * @return {{index:number, remove:function():void}}
 	 */
 	function onSet(dataChanged, statusChanged){
-		
 		if (isSet) {
 			tryCall(null, dataChanged, Objects.copy(Data));
 		}
@@ -51,6 +50,8 @@ export function State(data){
 		
 		return onChange(dataChanged, statusChanged);
 	}
+
+	
 
 	/**
 	 * Remove callback from Queue

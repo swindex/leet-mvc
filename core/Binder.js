@@ -3,20 +3,18 @@ import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString } from "util";
 
 import * as $ from 'jquery';
-import { isSkipUpdate } from "./Watcher";
+import { isSkipUpdate, isDeleted } from "./Watcher";
 import { DateTime } from "./DateTime";
 import { isArray } from "util";
 import { isFunction } from "util";
-import { Objects } from "leet-mvc/core/Objects";
-
-
-var getterCashe = {};
+import { Objects } from "./Objects";
 
 /** 
  * @constructor 
  * @param {*} context
  */
 export var Binder = function(context){
+	var getterCashe = {};
 	/** @type {Binder} */
 	var self = this;
 	/** @type {vDom} */
@@ -952,8 +950,7 @@ export var Binder = function(context){
 				if (!(component instanceof BaseComponent)){
 					return false;
 				}
-				//call onInit method
-				tryCall(component,component.onInit, on.elem);
+				
 			
 				var inj = $.extend({}, inject);
 				if (component.html) {
@@ -966,7 +963,6 @@ export var Binder = function(context){
 					}
 
 					component.binder = new Binder(component).setInjectVars(inj).bindElements(component.events, component.html);
-					
 					var c_vDom = component.binder.vdom;
 
 					if (!(c_vDom.elem instanceof DocumentFragment)) {
@@ -1025,13 +1021,15 @@ export var Binder = function(context){
 
 					on.items = [p_vDom];
 
+					//no real need to call _init 
+					//tryCall(component,component._init);	
+					
 					//insert component vDom with new children after the [component] vDom element
 					insertVDomElementAfter(c_vDom, on.elem);
 									
 					//call onInit method in the next frame
 					setTimeout(function(){
-						component.container = c_vDom.elem;
-						tryCall(component,component.init, c_vDom.elem);
+						tryCall(component,component._onInit, c_vDom.elem);
 					});
 				} else {
 					//component does not have own template. Render host template
@@ -1043,7 +1041,7 @@ export var Binder = function(context){
 					
 					//call onInit method in the next frame
 					setTimeout(function(){
-						tryCall(component,component.init, p_vDom.elem);
+						tryCall(component,component._onInit, p_vDom.elem);
 					});
 				}
 				//parent vDom items still belong to the directive vDom node
@@ -1444,4 +1442,36 @@ export var Binder = function(context){
 	    var scale = Math.pow(10, decimals);
 		return Math.round(num * scale)/scale;
 	}
+}
+
+export function removeDOMElement(elem){
+	if (elem.VDOM){
+		removeVDOMElement(elem.VDOM);
+		delete elem.VDOM;
+		delete elem.INJECT;
+	}
+	$(elem).remove();
+}
+/**
+ * 
+ * @param {vDom} en 
+ */
+export function removeVDOMElement(en){
+	if (en.items && en.items.length>0){
+		en.items.forEach(item => removeVDOMElement(item));
+		delete en.items;
+	}
+	delete en.elem.VDOM;
+	delete en.elem.INJECT;
+	
+	$(en.elem).remove();
+	delete en.elem;
+	delete en.fragment;
+	delete en.getters;
+	delete en.setters;
+	delete en.callers;
+	delete en.itemBuilder;	
+
+	delete en.values;
+	delete en.valuesD;
 }

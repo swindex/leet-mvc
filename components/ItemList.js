@@ -109,8 +109,8 @@ export class ItemList extends BaseComponent{
 		});
 	}
 
-	init(container){
-		super.init(container);
+	onInit(container){
+		super.onInit(container);
 		//this.container
 		//attach scroll event to the closest parent with touch-scroll class
 		this.container = $(container);

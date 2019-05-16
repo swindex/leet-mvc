@@ -31,8 +31,8 @@ export class LoginPage extends BasePage {
 		this.isDev = false;
 		this.version = "0.0.0";
 	}
-	onInit(){
-		super.onInit(
+	_init(){
+		super._init(
 			{
 				change:(ev)=>{
 					if (ev.target.name)
@@ -42,7 +42,7 @@ export class LoginPage extends BasePage {
 		);
 	}
 
-	init(){
+	onInit(){
 		var logo = this.page.find('#logo');
 		var login = this.page.find('#login');
 		this.i_height = this.page.height();
