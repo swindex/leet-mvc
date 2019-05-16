@@ -354,7 +354,7 @@ export var Binder = function(context){
 							renderImmediately.push(key);
 							break;
 						case 'call':
-							callers[key] = createCaller(bindExpression,inject);
+							callers[key] = createGetter(bindExpression,inject);
 							break;
 						default:	
 							//normal attribute
@@ -472,8 +472,8 @@ export var Binder = function(context){
 				$(elem).on(attr.name.substr(2), function(evt){
 					updateBoundContextProperty(evt.target);
 					var inj = $.extend({}, self.injectVars,{'$event':evt},inject, findElemInject(elem));
-					var c = createCaller(attr.value, inj);
-					c(self,inj);
+					var c = createGetter(attr.value, inj);
+					c(inj);
 				});
 			}	
 		});
@@ -637,7 +637,7 @@ export var Binder = function(context){
 			var getter = on.getters[key];
 			var newValue = undefined;
 			try{
-				newValue = getter(self, inject);  
+				newValue = getter(inject);  
 			}catch(ex){}	
 			on.values[key] = newValue;
 			updateBoundElement(on.elem, newValue);
@@ -646,7 +646,7 @@ export var Binder = function(context){
 		'selected':function(on, inject){
 			var key = "selected";
 			var getter = on.getters[key];
-			var newValue = getter(self, inject); 
+			var newValue = getter(inject); 
 			if (newValue){
 				on.elem.setAttribute('selected',"");
 			}else{
@@ -656,7 +656,7 @@ export var Binder = function(context){
 		'style':function(on, inject){
 			var key = "style";
 			var getter = on.getters[key];
-			var newValue = getter(self, inject); 
+			var newValue = getter(inject); 
 			if (typeof newValue =='object'){
 				$.each(newValue,function(i,prop){
 					if (prop!==null)
@@ -669,7 +669,7 @@ export var Binder = function(context){
 		'attribute':function(on, inject){
 			var key = "attribute";
 			var getter = on.getters[key];
-			var newValue = getter(self, inject); 
+			var newValue = getter(inject); 
 			if (typeof newValue =='object'){
 				$.each(newValue,function(i,prop){
 					if (prop!==null)
@@ -682,7 +682,7 @@ export var Binder = function(context){
 		'display':function(on, inject){
 			var key = "display";
 			var getter = on.getters[key];
-			var newValue = getter(self, inject); 
+			var newValue = getter(inject); 
 			if (on.values[key] !== newValue){
 				on.values[key] = newValue;
 				if (!on.valuesD.hasOwnProperty(key)){
@@ -696,7 +696,7 @@ export var Binder = function(context){
 		'show':function(on, inject){
 			var key = "show";
 			var getter = on.getters[key];
-			var newValue = getter(self, inject); 
+			var newValue = getter(inject); 
 			if (on.values[key] !== newValue){
 				on.values[key] = newValue;
 				if (!on.valuesD.hasOwnProperty(key)){
@@ -713,7 +713,7 @@ export var Binder = function(context){
 		'class':function(on, inject){
 			var key = "class";
 			var getter = on.getters[key];
-			var newValue = getter(self, inject); 
+			var newValue = getter(inject); 
 			if (on.values[key] !== newValue){
 				on.values[key] = newValue;
 				if (!on.valuesD.hasOwnProperty(key)){
@@ -730,7 +730,7 @@ export var Binder = function(context){
 		'innerhtml':function(on, inject){
 			var key = "innerhtml";
 			var getter = on.getters[key];
-			var newValue = getter(self, inject); 
+			var newValue = getter(inject); 
 			if (on.values[key] !== newValue){
 				on.values[key] = newValue;
 				on.elem.innerHTML = newValue;
@@ -741,7 +741,7 @@ export var Binder = function(context){
 			var getter = on.getters[key];
 			var isTrue;
 			try{
-				isTrue = getter(self,inject);
+				isTrue = getter(inject);
 			}catch(ex){
 				isTrue = undefined;
 			}
@@ -770,7 +770,7 @@ export var Binder = function(context){
 			var getter = on.getters[key];
 			/** @type {{data:string,index:string,item:string}}*/
 			var parts = getter;
-			var data = createGetter(parts.data,inject)(self, inject) || [];
+			var data = createGetter(parts.data,inject)(inject) || [];
 			
 			var fo = document.createDocumentFragment();
 			
@@ -852,7 +852,7 @@ export var Binder = function(context){
 		'directive':function(on, inject){
 			var key = "directive";
 			var getter = on.getters[key];
-			var html = getter(self,inject);
+			var html = getter(inject);
 
 			if (html instanceof BaseComponent){
 				on.getters["component"] = getter;
@@ -879,7 +879,7 @@ export var Binder = function(context){
 					var p_vDom = on.itemBuilder(inject);
 					if (!(c_vDom.elem instanceof DocumentFragment)) {
 						Objects.forEach( p_vDom.getters, (getter,key)=>{
-							c_vDom.getters[key] = function(){ return getter(self, inject) };
+							c_vDom.getters[key] = getter;
 						});
 						
 						//copy html attributes
@@ -927,7 +927,7 @@ export var Binder = function(context){
 			var key = "component";
 			var getter = on.getters[key];
 			/** @type {BaseComponent} */
-			var component = getter(self,inject);
+			var component = getter(inject);
 
 			//if component is actually a class and component value is not yet set, then instantiate the constructor
 			if (!on.values[key] && component && component.prototype instanceof BaseComponent){
@@ -969,20 +969,18 @@ export var Binder = function(context){
 
 						//$.extend(c_vDom.getters, p_vDom.getters)
 						Objects.forEach( p_vDom.getters, (getter,key)=>{
-							c_vDom.getters[key] = function(){ return getter(self, inject) };
+							c_vDom.getters[key] = getter;
 						});
 						Objects.forEach( p_vDom.setters, (setter,key)=>{
-							c_vDom.setters[key] = function(a, b, value){ return setter(self, inject, value) };
+							c_vDom.setters[key] = setter;
 							//add change listener to the context
 							component[key+'Change'] = function(val){
-								return c_vDom.setters[key](self,inject, val);
+								return c_vDom.setters[key](inject,val);
 							};
 							
 						});
 						Objects.forEach( p_vDom.callers, (caller,key)=>{
-							c_vDom.callers[key] = component[key] = function(){
-								return caller(self, inject, argumentsToArray(arguments));
-							};
+							c_vDom.callers[key] = component[key] = caller;
 						});
 						//copy html attributes
 						for (var ii=0 ; ii<p_vDom.elem.attributes.length; ii++ ) {
@@ -1304,16 +1302,16 @@ export var Binder = function(context){
 		}
 		var inj = $.extend({}, self.injectVars, findElemInject(elem));
 
-		var domElVal = elem['VDOM'].getters.bind(self, inj);
+		var domElVal = elem['VDOM'].getters.bind(inj);
 		var vDomdomElVal = elem['VDOM'].values.bind;
 		if ( domElVal !== v || v !== vDomdomElVal){
 			
 			if (skipUpdate && self.context[isSkipUpdate] === false){
 				self.context[isSkipUpdate] = true;
-				elem['VDOM'].setters.bind(self, inj, v);
+				elem['VDOM'].setters.bind(inj, v);
 				self.context[isSkipUpdate] = false;
 			}else{
-				elem['VDOM'].setters.bind(self, inj, v);
+				elem['VDOM'].setters.bind(inj, v);
 			}
 		}
 	}
@@ -1351,7 +1349,7 @@ export var Binder = function(context){
 	/**
 	 * 
 	 * @param {string} expression 
-	 * @return {function(*,*)} callback
+	 * @return {function(*)} callback
 	 */
 	function createGetter(expression, inject){
 		var inj = createInjectVarText(inject);
@@ -1359,40 +1357,11 @@ export var Binder = function(context){
 			var cashe = inj+expression;
 			if ( getterCashe.hasOwnProperty(cashe))
 				return getterCashe[cashe];
-			var getter = new Function('context', 'inject',
-					`${inj}
-					return (function(){
-						return ${expression};
-					}).call(context.context);`
+
+			var getter = new Function('inject',
+					`${inj}; return ${expression};`
 	 		);       
-			getterCashe[cashe] = getter;
-			// @ts-ignore
-			return getter;
-		}catch(ex){
-			return null;
-		}		
-	}
-	/**
-	 * 
-	 * @param {string} expression 
-	 * @param {object} inject
-	 * @return {function(*,*)} callback
-	 */
-	function createCaller(expression, inject){
-		var inj = createInjectVarText(inject);
-		try{
-			var cashe = inj+expression;
-			if ( getterCashe.hasOwnProperty(cashe))
-				return getterCashe[cashe];
-			var getter = new Function('context','inject','args',
-				`${inj}
-				(function(){
-					${expression};
-				}).apply(context.context, args);`
-			);
-			getterCashe[cashe] = getter;
-			// @ts-ignore
-			return getter;
+			return getterCashe[cashe] = getter.bind(self.context);
 		}catch(ex){
 			return null;
 		}		
@@ -1402,19 +1371,17 @@ export var Binder = function(context){
 	 * 
 	 * @param {string} expression 
 	 * @param {object} inject
-	 * @return {function(*,*,*)} callback
+	 * @return {function(*,*)} callback
 	 */	
 	function createSetter(expression, inject){
 		var inj =  createInjectVarText(inject);
 		
 		try{
 			// @ts-ignore
-			return new Function('context','inject', 'value',
-				`${inj}
-				return (function(value){
-					return ${expression} = value;
-				}).call(context.context, value);`
+			var setter = new Function('inject', 'value',
+				`${inj}; return ${expression} = value;`
 			);
+			return setter.bind(self.context);
 		}catch(ex){
 			return null;
 		}
@@ -1430,7 +1397,7 @@ export var Binder = function(context){
 		}
 		return inj;
 	}
-
+	
 	function repaint(element){
 		// in plain js
 		var old = element.style.display;
