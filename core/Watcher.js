@@ -122,7 +122,8 @@ function scheduleCallback(obj, callback){
 
 function isObjLiteral(_obj) {
 	var _test  = _obj;
-	return (
+	return isObject(_obj) && _obj.toString() === "[object Object]";
+	/*return (
 		typeof _obj !== 'object' || _obj === null ?
 			false :  
 			(
@@ -135,7 +136,7 @@ function isObjLiteral(_obj) {
 				return Object.getPrototypeOf(_obj) === _test;
 				})()
 			)
-	);
+	);*/
 }
 /**
  * 

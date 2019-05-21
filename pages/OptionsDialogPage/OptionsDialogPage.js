@@ -63,9 +63,11 @@ export class OptionsDialogPage extends DialogPage{
 
 	onLoaded(){
 		//Scroll to the selected item
-		if(this.page.find('[selected]').length>0 && this.page.find('[selected]')[0].scrollIntoView){
-			this.page.find('[selected]')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-		}
+		setTimeout(()=>{
+			if(this.page.find('[selected]').length>0 && this.page.find('[selected]')[0].scrollIntoView){
+				this.page.find('[selected]')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		},100);
 	}
 
 	onBackdropClicked(){

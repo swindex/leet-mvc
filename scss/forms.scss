@@ -5,7 +5,8 @@ input[type=password],
 input[type=number], 
 input[type=date], 
 input[type=tel], 
-select{
+select,
+.field{
     box-sizing:border-box;
     font-size: $size-f-input;
     padding: $margin-md;
@@ -127,6 +128,7 @@ textarea {
 	.fieldgroup:first-child{
 		padding-top: $margin-lg;
 	}
+
 	input[type=text], 
 	input[type=email], 
 	input[type=password], 
@@ -136,6 +138,9 @@ textarea {
 	textarea,
 	select,
 	.field {
+		font-size: $size-f-input;
+		padding: $margin-md;
+
 		border-collapse: collapse;
 		padding-left: 0;
 		border: none;
@@ -213,6 +218,23 @@ textarea {
 		text-decoration: underline;
 		color: $color-link;
 		align-self: center;
+	}
+}
+//special case: label contains input[file]
+.fieldgroup {
+	label.field{
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		background-image: url(../img/file_ico.png);
+		input[type=file]{
+			width: 0.1px;
+			height: 0.1px;
+			opacity: 0;
+			overflow: hidden;
+			position: absolute;
+			z-index: -1;
+		}	
 	}
 }
 //special case: label contains inpuit chechbox
