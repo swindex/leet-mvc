@@ -2,7 +2,7 @@ import { Objects } from "./../core/Objects";
 import { FormValidator } from "./../core/form_validator";
 import { Text } from "./../core/text";
 import { BaseComponent } from "./BaseComponent";
-import { isNumber, isArray } from "util";
+import { isNumber, isArray, isString } from "util";
 import { DateTime } from "./../core/DateTime";
 import { Translate } from "../core/Translate";
 
@@ -166,6 +166,9 @@ export class Forms extends BaseComponent{
 			case "email":
 				this.assertValidateRuleHas(el,"email");
 				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'email'})]);
+			case "file":
+				//this.assertValidateRuleHas(el,"file");
+				return this.renderFieldGroupHTML(el, [this.addFile(el)]);
 			case "text":
 				return this.renderFieldGroupHTML(el, [this.addInput(el,null)]);
 			case "date":
@@ -298,6 +301,27 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		return ( `
 			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />`+
+			(el.unit || el.icon ? `<div class="icon">
+				${el.unit ? el.unit :''}
+				${el.icon ? `<i class="${el.icon}"></i>` :''}
+			</div>` : '')
+		);
+	}
+
+		/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 * @param {KeyValuePair} [override]
+	 * @param {string} [dataName] name of the data property
+	 */
+	addFile(el, override, dataName){
+		
+		dataName = dataName || "data"
+		var opt = { name: el.name , type: "file", placeholder: el.placeholder };
+		
+		$.extend(opt, override, el.attributes);
+		return ( `
+			<label class="field">{{ this.trimDisplayFileName(this.${dataName}${this.refactorAttrName(el._name)}) || '${Translate('Select File')}' }}<input bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} /></label>`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -498,5 +522,12 @@ export class Forms extends BaseComponent{
 			}
 		});
 		return strOpts;
+	}
+
+	trimDisplayFileName(fileName){
+		if (!fileName || !isString(fileName)){
+			return "";
+		}
+		return fileName.split(/\\|\//).pop();
 	}
 }
