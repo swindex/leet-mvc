@@ -122,21 +122,21 @@ function scheduleCallback(obj, callback){
 
 function isObjLiteral(_obj) {
 	var _test  = _obj;
-	return isObject(_obj) && _obj.toString() === "[object Object]";
-	/*return (
+	//return isObject(_obj) && _obj.toString() === "[object Object]";
+	return (
 		typeof _obj !== 'object' || _obj === null ?
 			false :  
 			(
 				(function () {
-				while (!false) {
-					if (  Object.getPrototypeOf( _test = Object.getPrototypeOf(_test)  ) === null) {
-					break;
-					}      
-				}
-				return Object.getPrototypeOf(_obj) === _test;
+					while (!false) {
+						if (  Object.getPrototypeOf( _test = Object.getPrototypeOf(_test)  ) === null) {
+							break;
+						}      
+					}
+					return Object.getPrototypeOf(_obj) === _test;
 				})()
 			)
-	);*/
+	);
 }
 /**
  * 
