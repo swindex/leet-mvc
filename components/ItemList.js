@@ -100,7 +100,7 @@ export class ItemList extends BaseComponent{
 		this.scollParent.animate({ scrollTop: 0 }, 'ease-in');	
 	}
 	scrollToBottom(){
-		window.requestAnimationFrame(()=>{
+		setTimeout(()=>{
 			var vh = this.scollParent.height();
 			var ch = this.container.height();
 			if(ch > vh){
@@ -116,19 +116,21 @@ export class ItemList extends BaseComponent{
 		this.container = $(container);
 		//append parent template contents here
 		this.container.append(this.templateFragment);
-		this.scollParent = $($(container).closest('.touch-scroll, .scroll').get(0));
-		this.scollParent.on("scroll", (e)=>{
-			var el = $(e.target);
-			var top = el.scrollTop();
-			var max = el[0].scrollHeight - el[0].clientHeight;
-			this.onScroll(top, max);
-			if (this._items && max-top<10 && this._displayTo < this._items.length){
-				this._displayTo += this.perPage;
-				if (this._displayTo > this._items.length)
-					this._displayTo = this._items.length;
-	
-				this._renderItems = this._items.slice(0,this._displayTo);
-			}
+		window.requestAnimationFrame(()=>{
+			this.scollParent = $($(container).closest('.touch-scroll, .scroll').get(0));
+			this.scollParent.on("scroll", (e)=>{
+				var el = $(e.target);
+				var top = el.scrollTop();
+				var max = el[0].scrollHeight - el[0].clientHeight;
+				this.onScroll(top, max);
+				if (this._items && max-top<10 && this._displayTo < this._items.length){
+					this._displayTo += this.perPage;
+					if (this._displayTo > this._items.length)
+						this._displayTo = this._items.length;
+		
+					this._renderItems = this._items.slice(0,this._displayTo);
+				}
+			});
 		});
 	}
 }
