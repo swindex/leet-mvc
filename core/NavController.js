@@ -145,7 +145,7 @@ export function NavController() {
 		var p = pageObject.page;
 		p.prop('id', selector);
 		p.addClass(className);
-		p.prop('style', `z-index:${(stack.length + 1)*100};`);
+		p.css(`z-index:${(stack.length + 1)*100};`);
 
 		$(pageContainer).append(p);
 
