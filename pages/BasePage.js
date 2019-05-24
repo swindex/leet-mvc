@@ -128,6 +128,12 @@ export class BasePage extends ChangeWatcher{
 
 	}
 	/**
+	 * ***OverrideCallSuper***
+	 */
+	_onResize(){
+		this.onResize();
+	}
+	/**
 	 * ***DO NOT OVERRIDE****
 	 * Called when NavController is about to delete the page
 	 */
