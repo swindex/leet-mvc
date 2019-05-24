@@ -1288,8 +1288,9 @@ export var Binder = function(context){
 		switch (elem.tagName) {
 			case "SELECT":
 				var sel = $(elem).find("option:selected");
-				v = formatValue(sel[0].getAttribute('value'),format);
-				//console.log(v); 
+				if (sel[0]) {
+					v = formatValue(sel[0].getAttribute('value'),format);
+				}
 				break;
 			case "OPTION":
 			case "INPUT":
