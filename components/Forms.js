@@ -456,7 +456,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addErrorHint(el){
-		return `<div class="hint" bind="this.errors${this.refactorAttrName(el._name)}" [class]="this.errors${this.refactorAttrName(el._name)} ? 'error' : ''"></div>`
+		return `<div class="hint" [class]="this.errors${this.refactorAttrName(el._name)} ? 'error' : ''">{{ this.errors${this.refactorAttrName(el._name)} || '${ el.hint ? el.hint : '' }' }}</div>`
 	}
 
 	/**

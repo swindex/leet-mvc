@@ -5,18 +5,18 @@ import 'swiper/dist/css/swiper.css';
 import { tryCall } from "./../core/helpers";
 
 
-/**
- * 
- * @param {FieldTemplate[]} formTemplate 
- * @param {*} [dataName]
- * @param {*} [errorsName]
- * @param {{navButtons?: true,submitButton?:boolean,pagination?:true, navigation?:boolean}} [options]
- * @return {{html: string, swiper: Swiper, validator: FormValidator,methods:{init:function(),slideToInvalid: function()}}}
- */
-export class SwiperForms extends Forms{
 
-	constructor(formTemplate, data, errors,options){
-		super(formTemplate, data, errors, {}, {formClass:'swiper-slide scroll'});
+export class SwiperForms extends Forms{
+	/**
+	 * 
+	 * @param {FieldTemplate[]} formTemplate 
+	 * @param {*} data
+	 * @param {*} [errors]
+ 	 * @param {*} [attrs]
+	 * @param {{navButtons?: true,submitButton?:boolean,pagination?:true, navigation?:boolean}} [options]
+	 */
+	constructor(formTemplate, data, errors, attrs={} ,options){
+		super(formTemplate, data, errors, attrs, {formClass:'swiper-slide scroll'});
 		this.formTemplate = formTemplate;
 		this.options = options;
 		
@@ -108,9 +108,9 @@ export class SwiperForms extends Forms{
 	
 	onInit(container){
 		super.onInit(container);
-		var sw = new Swiper($(container).find('#generatedform')[0],{
+		this.swiper = new Swiper(container,{
 			threshold:50,
-			initialSlide:this.index,
+			//initialSlide:this.index,
 			noSwiping: true,
 			iOSEdgeSwipeDetection: true,
 			pagination: $.extend({},this.options.pagination ?
@@ -118,13 +118,12 @@ export class SwiperForms extends Forms{
 					el: '.swiper-pagination'
 				} : null),
 		});
-		this.swiper = $(container).find('#generatedform')[0].swiper;
-		this.swiper.on('slideChange',(v)=>{
-			this.index = this.swiper.realIndex;
-			this.binder.updateElements();
-			tryCall(this,this.onSlideChange,this.index);
+
+		this.swiper.on('slideChange',()=>{
+			var v = this.swiper.activeIndex;
+			//Notify listener that the page has changed
+			this.onSlideChange(v);
 		})
-		//this.swiper.slideTo(0);
-		//this.binder.updateElements();
+		this.swiper.slideTo(0);
 	}
 }

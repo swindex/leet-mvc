@@ -121,12 +121,12 @@ export class SwiperTabs extends BaseComponent{
 		if (this.tempContainer)
 			$(container).find('.swiper-wrapper').append(this.tempContainer);
 		
-		var sw = new Swiper(container,{
+		this.swiper = new Swiper(container,{
 			threshold:50,
 			noSwiping: true,
 			iOSEdgeSwipeDetection: true,
 		});
-		this.swiper = sw;// $(container).find('#generatedpage')[0].swiper;
+
 		this.swiper.on('slideChange',()=>{
 			var v = this.swiper.activeIndex;
 			this.binder.updateElements();
