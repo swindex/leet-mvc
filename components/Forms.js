@@ -46,7 +46,10 @@ export class Forms extends BaseComponent{
 						this.binder.updateElements();
 					},0);
 				}
-				this.onChange(ev);
+				//notify in the next render cycle.
+				setTimeout(()=>{
+					this.onChange(ev);
+				},0);
 			},
 		}
 
@@ -211,6 +214,8 @@ export class Forms extends BaseComponent{
 				return this.renderFieldGroupHTML(el, [this.addTextArea(el,null)]);	
 			case "checkbox":
 				return this.renderFieldGroupHTML(el, [this.addCheck(el,null)],true);
+			case "radio":
+				return this.addRadio(el,null);
 			case "select":
 				return this.addSelect(el,null,parentPath);
 			case "label":
@@ -369,8 +374,6 @@ export class Forms extends BaseComponent{
 	 * @param {KeyValuePair} [override]
 	 */
 	addCheck(el, override){
-
-
 		var opt = { name: el._name, type: "checkbox" };
 		$.extend(opt, override, el.attributes);
 		return (`
@@ -379,6 +382,35 @@ export class Forms extends BaseComponent{
 				<span class="slider round"></span>
 			</label>
 		`);
+	}
+
+		/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 * @param {KeyValuePair} [override]
+	 */
+	addRadio(el, override){
+		var opt = { name: el._name, type: "radio" };
+		$.extend(opt, override, el.attributes);
+
+		var elems = ""
+		Objects.forEach(el.items, item=>{
+			elems += (`
+				<label class="toggle">${item.title}
+					<input bind = "this.data${this.refactorAttrName(el._name)}" format="${el.dataType ? el.dataType : ''}" value = "${item.value !==null ? item.value : '' }" ${this.generateAttributes(opt)} />
+					<span class="slider round"></span>
+				</label>
+			`);
+		});
+
+		return this.renderFieldGroupHTML(
+			el,
+			(`
+				${this.addTitle(el)}
+				${elems}
+				${this.addErrorHint(el)}
+			`)
+			, true,true);
 	}
 	/**
 	 * 

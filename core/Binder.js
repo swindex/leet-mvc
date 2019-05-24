@@ -1119,15 +1119,17 @@ export var Binder = function(context){
 						throw Error("Value of bind is not part of format's boolean options");
 				}
 			}
-			if (formats.length > 0 && formats[0] === "dateTime") {
-				v = DateTime.toHumanDateTime(v);
-			}
-			if (formats.length > 0 && formats[0] === "date") {
-				v = DateTime.toHumanDate(v);
-			}
-			if (formats.length > 0 && formats[0] === "time") {
-				v = DateTime.toHumanTime(v);
-			}
+			//if (v !== undefined && v !== "null" && v !== null ){
+				if (formats.length > 0 && formats[0] === "dateTime") {
+					v = DateTime.toHumanDateTime(v);
+				}
+				if (formats.length > 0 && formats[0] === "date") {
+					v = DateTime.toHumanDate(v);
+				}
+				if (formats.length > 0 && formats[0] === "time") {
+					v = DateTime.toHumanTime(v);
+				}
+			//}
 		}
 		switch (elem.tagName) {
 			case "SELECT":
@@ -1159,7 +1161,7 @@ export var Binder = function(context){
 			case "INPUT":
 				switch (elem.type) {
 					case "radio":
-						elem.checked = (v == elem.value);
+						elem.checked = (v == elem.value || (v === null && elem.value == "" ));
 						break;
 					case "checkbox":
 						elem.checked = v;
@@ -1227,8 +1229,8 @@ export var Binder = function(context){
 	}
 	function updateBoundContextProperty(elem, skipUpdate ){
 		function formatValue(value, format){
-			var v;
-			if(format != null ){
+			var v = value;
+			if(!empty(format)){
 				var formats = format.split(":");
 				if (formats.length > 0 && formats[0] === "number") {
 					if (value==="" )
