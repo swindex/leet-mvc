@@ -155,7 +155,7 @@ export function NavController() {
 		tryCall(pageObject, pageObject.onInit, p);	
 
 		setTimeout(()=>{
-			recalcContentHeight(p);
+			tryCall(pageObject, pageObject._onResize);		
 		},0);
 		setTimeout(()=>{
 			tryCall(pageObject, pageObject.onLoaded);		
@@ -175,21 +175,6 @@ export function NavController() {
 		//return new pageConstructor(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9]);
 	}
 
-	/**
-	 * recalculate height of the standard elements
-	 * @param {JQuery<Element>} p - page
-	 */
-	function recalcContentHeight(p){
-		var h = $(p).height();
-		var header = p.find('>.header').height();
-		var footer = p.find('>.footer').height();
-
-		h -= !empty(header) ? header : 0 ;
-		h -= !empty(footer) ? footer : 0 ;
-
-		p.find('.content').css('height', h +'px');
-		//console.log("Content Height:", h);
-	}
 	function removeFrameN (frameIndex){
 		var frame = stack.splice(frameIndex,1)[0];
 		//removeEvents(frame.element);
@@ -286,7 +271,7 @@ export function NavController() {
 				//Add creating attribute ALMOST immedaitely for smooth appearance
 				setTimeout(function(){
 					element.attr('creating',"");
-					tryCall(frame.page,frame.page.onResize);		
+					tryCall(frame.page,frame.page._onResize);		
 				},0);
 			}
 
@@ -379,7 +364,7 @@ export function NavController() {
 	$(window).on('resize', windowResizeHandler);
 	function windowResizeHandler (ev){ 
 		for(var i=0 ; i<stack.length;i++){
-			recalcContentHeight(stack[i].element);
+			//recalcContentHeight(stack[i].element);
 			tryCall(stack[i].page, stack[i].page.onResize);
 		}
 	}

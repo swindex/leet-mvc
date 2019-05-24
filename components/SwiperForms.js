@@ -108,22 +108,24 @@ export class SwiperForms extends Forms{
 	
 	onInit(container){
 		super.onInit(container);
-		this.swiper = new Swiper(container,{
-			threshold:50,
-			//initialSlide:this.index,
-			noSwiping: true,
-			iOSEdgeSwipeDetection: true,
-			pagination: $.extend({},this.options.pagination ?
-				{
-					el: '.swiper-pagination'
-				} : null),
-		});
+		setTimeout(()=>{
+			this.swiper = new Swiper(container,{
+				threshold:50,
+				//initialSlide:this.index,
+				noSwiping: true,
+				iOSEdgeSwipeDetection: true,
+				pagination: $.extend({},this.options.pagination ?
+					{
+						el: '.swiper-pagination'
+					} : null),
+			});
 
-		this.swiper.on('slideChange',()=>{
-			var v = this.swiper.activeIndex;
-			//Notify listener that the page has changed
-			this.onSlideChange(v);
-		})
-		this.swiper.slideTo(0);
+			this.swiper.on('slideChange',()=>{
+				var v = this.swiper.activeIndex;
+				//Notify listener that the page has changed
+				this.onSlideChange(v);
+			})
+			this.swiper.slideTo(0);
+		});
 	}
 }

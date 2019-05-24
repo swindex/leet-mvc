@@ -56,6 +56,22 @@ export class HeaderPage extends BasePage{
 
 	}
 
+	/**
+	 * ***OverrideCallSuper***
+	 */
+	_onResize(){
+		var h = $(this.page).height();
+		var header = this.page.find('>.header').height();
+		var footer = this.page.find('>.footer').height();
+
+		h -= !empty(header) ? header : 0 ;
+		h -= !empty(footer) ? footer : 0 ;
+
+		this.page.find('.content').css('height', h +'px');
+
+		super._onResize();
+	}
+
 }
 HeaderPage.className = 'page-HeaderPage';
 HeaderPage.template = `
