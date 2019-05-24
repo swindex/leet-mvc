@@ -327,16 +327,20 @@ export function FormValidator(data,template,errors,attributes){
 			return;
 
 		var parts = wholerule.split('|');
-		
+		var expr;
 		try{
-			if (parts.length==2){
+			if (parts.length==1){
 				var action = 'set'
 				var fieldName = parts[0];
-				var expr = parts[1];
+				expr = getValue(_data, t._name);
+			}else if (parts.length==2){
+				var action = 'set'
+				var fieldName = parts[0];
+				expr = parts[1];
 			}else if (parts.length==3){
 				var action = parts[0];
 				var fieldName = parts[1];
-				var expr = parts[2];
+				expr = parts[2];
 			}else{
 				return;
 			}
@@ -436,7 +440,7 @@ export function FormValidator(data,template,errors,attributes){
 		}
 		
 
-		if (type == 'string' && f.type =="select"){
+		if (type == 'string' && (f.type =="select" /*|| f.type =="radio"*/)){
 			type='select';
 		}
 		
@@ -461,7 +465,7 @@ export function FormValidator(data,template,errors,attributes){
 			var name = f._name
 			var dValue = getValue(_data, name);
 			//only validate fields that are either required, or not empty
-			if (!empty(dValue) || rules.indexOf('accepted')>=0  || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if'){
+			if (!empty(dValue) || rules.indexOf('accepted')>=0  || rules.indexOf('required')>=0 || rr[0]==='required_if' || rr[0]==='true_if' || rr[0]==='true_if_not'){
 
 				var title = f.title;
 
@@ -714,6 +718,7 @@ FormValidator.messages = {
 	"string":"The :attribute must be a string.",
 	"timezone":"The :attribute must be a valid zone.",
 	"true_if":"The :other must be true",
+	"true_if_not":"The :other must be not be true",
 	"unique":"The :attribute has already been taken.",
 	"url":"The :attribute format is invalid."
 };
@@ -879,5 +884,8 @@ FormValidator.rules = {
 		
 		//in the end just check if the
 		return !empty(otherValue);	
+	},
+	true_if_not(value, type, conditions, validator){
+		return ! FormValidator.rules.true_if(value, type, conditions, validator)
 	}
 }
