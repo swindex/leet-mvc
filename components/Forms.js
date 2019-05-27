@@ -203,7 +203,7 @@ export class Forms extends BaseComponent{
 				]);	
 			case "number":
 				this.assertValidateRuleHas(el,"numeric");
-				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'number'})]);
+				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'tel', pattern:"[0-9]*", novalidate: true})]);
 			case "password":
 				return this.renderFieldGroupHTML(el, [this.addPassword(el,null)]);
 			case "phone":
