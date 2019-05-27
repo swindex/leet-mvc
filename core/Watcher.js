@@ -129,9 +129,10 @@ function isObjLiteral(_obj) {
 			(
 				(function () {
 					while (!false) {
-						if (  Object.getPrototypeOf( _test = Object.getPrototypeOf(_test)  ) === null) {
+						_test = Object.getPrototypeOf(_test)
+						if ( _test === null || Object.getPrototypeOf(_test) === null ) {
 							break;
-						}      
+						}        
 					}
 					return Object.getPrototypeOf(_obj) === _test;
 				})()

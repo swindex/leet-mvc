@@ -12,7 +12,7 @@ export class OptionsDialogPage extends DialogPage{
 		 * @type {{[x: string]: any,image?:string,icon?:string,title:string,text?:string}[]} */
 		this.items=[];
 		this.content = `
-			<ul>
+			<ul [class]="this.hideOverflow ? 'hideOverflow' : ''">
 				<li [foreach]="index in this.items as item" onclick="this._onItemClicked(item, index)" [selected] = "this.isSelectedItem(item)" [attribute]="{disabled:this.isDisabledItem(item) ? '' : null}">
 					<i [class] = "this.getIcon(item)" [if]="this.getIcon(item)"></i>
 					<img bind = "this.getImage(item)" [if]="this.getImage(item)" />
@@ -23,6 +23,8 @@ export class OptionsDialogPage extends DialogPage{
 				</li>
 			</ul>
 		`;
+
+		this.hideOverflow = false;
 
 		this.buttons = {};
 
