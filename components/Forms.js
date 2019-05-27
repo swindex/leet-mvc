@@ -42,8 +42,10 @@ export class Forms extends BaseComponent{
 				if (ev.target.name){
 					//validate in the next render cycle.
 					setTimeout(()=>{
-						this.validator.validateField(ev.target.name);
-						this.binder.updateElements();
+						if (this.validator){
+							this.validator.validateField(ev.target.name);
+							this.binder.updateElements();
+						}
 					},0);
 				}
 				//notify in the next render cycle.
