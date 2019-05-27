@@ -29,10 +29,10 @@ export function NavController() {
 	/**
 	 * @param {HTMLElement} container
 	 */
-	this.setContainer = function(container){
+	this.setContainer = function(container, listenTobBackButton = false){
 		pageContainer = container
 		//if container is not document, remove the back button handler
-		if (pageContainer != document.body){
+		if (pageContainer != document.body && !listenTobBackButton){
 			$(document).off('backbutton',documentBackButtonHandler);
 		}
 	}

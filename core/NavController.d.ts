@@ -9,7 +9,7 @@ declare namespace NavControllerModule{
 		remove(PageInstance: any);
 		removeAll(): void;
 		back():void;
-		setContainer(container: HTMLElement): void;
+		setContainer(container: HTMLElement, listenToBackButton: boolean): void;
 		setRoot<T>(PageClass: { new (x, ...args): T }, ...args): T;
 		push<T>(PageClass: { new (x, ...args): T }, ...args): T;
 		onPageNavigateTo(pageName: string): void;
