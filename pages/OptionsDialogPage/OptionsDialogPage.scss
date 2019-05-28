@@ -10,6 +10,13 @@
 		margin: 0;
 		color: $color-list-item-fg;
 		font-size: 1.15em;
+		&.hideOverflow{
+			div.item > div{
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+		}
 	}
 	li {
 		list-style: none;
@@ -36,11 +43,7 @@
 			margin-left: 0;
 			padding: $margin-lg 0;
 			width: 100%;
-			>div{
-				overflow: hidden;
-				white-space: nowrap;
-				text-overflow: ellipsis;
-			}
+			
 			.item-text{
 				font-size: 0.9em;
 			}
