@@ -59,7 +59,9 @@ select{
 	background-size: $size-input-i-sm;
 }
 
-input[type=button],button{
+button,
+input[type=button]
+{
 	width: auto;
 	color: $color-button-fg;
 	background-color: $color-button-bg;
@@ -69,6 +71,19 @@ input[type=button],button{
 	font-size: $size-f-input;
 	box-shadow: 0px 0px 3px 0px #000000ab;
 }
+
+button[none],
+input[type=button][none]
+{
+	width: auto;
+	background-color: transparent;
+	border: none;
+	margin: 0;
+	padding: 0;
+    -webkit-appearance: none;
+}
+
+
 input[type=button]:focus ,button:focus{
     outline: none;
 } 
