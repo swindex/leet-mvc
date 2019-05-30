@@ -1,5 +1,6 @@
 import { tryCall, empty, argumentsToArray, GUID } from "./helpers";
 import { removeDOMElement } from "leet-mvc/core/Binder";
+import { BasePage } from "leet-mvc/pages/BasePage";
 
 export function NavController() {
 	/** @type {NavController} */
@@ -41,7 +42,7 @@ export function NavController() {
 	 * Remove all pages and load passed page Constructor as Root
 	 * @param {object} pageConstructor
 	 * @param {...any} [parameters] 
-	 * @return {Page}
+	 * @return {BasePage}
 	 */
 	this.setRoot = function(pageConstructor, parameters){
 		removeAllFrames();
@@ -124,7 +125,7 @@ export function NavController() {
 	 * Create page 
 	 * @param {any} pageConstructor 
 	 * @param {any[]} args - array of arguments to pass to the page constructor
-	 * @return {Page} 
+	 * @return {BasePage} 
 	 */
     function createPage(pageConstructor, args) {
 
@@ -134,10 +135,13 @@ export function NavController() {
 
 		args.unshift(null);
 		//create page object in a new scope
+		/** @type {BasePage} */
 		var pageObject = createPageInstance(pageConstructor,args);
 		pageObject.template = template;
 		pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
+		// @ts-ignore
 		pageObject.Nav = self;
+		pageObject.style.zIndex = (stack.length + 1)*100+"";
 
 
 		tryCall(pageObject, pageObject._init);
@@ -145,7 +149,7 @@ export function NavController() {
 		var p = pageObject.page;
 		p.prop('id', selector);
 		p.addClass(className);
-		p.css(`z-index:${(stack.length + 1)*100};`);
+		//p.css(`z-index:${(stack.length + 1)*100};`);
 
 		$(pageContainer).append(p);
 
