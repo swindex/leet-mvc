@@ -1,6 +1,14 @@
 @import '../../scss/variables';
 
 .page-HeaderPage{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	opacity:0;
+	transform: translate3d(0,50px,0);
+	transition: opacity 0.5s ease, transform 0.4s ease;
+	overflow: hidden !important;
+
 	background-color: #fff;
 	.header {
 		-webkit-transform:translateZ(0);
@@ -130,4 +138,49 @@
 	.content{
 		position: relative;
 	}
+
+
+		&[root] {
+			transform: translate3d(0,0,0);
+			transition: opacity 0.4s ease;
+			&[deleting] { //when root is deleted: Prevent it from sliding 
+				transform: translate3d(0,0,0);
+			}
+		}
+		&[hidden] {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			opacity:1;
+			transform: translate3d(0,0,0);
+			transition: none;
+		}
+		&[hiding] {
+			opacity:1;
+			transform: translate3d(0px,0,0);
+		}
+		&[deleting] {
+			opacity:0;
+			transform: translate3d(300px,0,0);
+		}
+	
+		&[creating] {
+			opacity:1;
+			transform: translate3d(0,0,0);
+		}
+		&[revealing] {
+			opacity:1;
+			transform: translate3d(0,0,0);
+		}
+		//once it is loaded, visible class is added. thus implementing transition
+		&[visible] {
+			opacity:1;
+			transform: translate3d(0,0,0);
+		}
+
+		/*&#page-fullcalendar[deleting],
+		&#page-timepicker[deleting],
+		&#page-dialog[deleting]{  //prevent dialog from sliding up and down
+			transform: translate3d(0,50px,0);
+		}*/
 }

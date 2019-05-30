@@ -70,6 +70,7 @@ input[type=button]
     padding: $margin-lg $margin-lg;
 	font-size: $size-f-input;
 	box-shadow: 0px 0px 3px 0px #000000ab;
+	-webkit-appearance: none;
 }
 
 button[none],

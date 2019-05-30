@@ -98,12 +98,12 @@ export class Forms extends BaseComponent{
 		var selS = el.selectionStart;
 		var selE = el.selectionStart;
 		var old = el.value
-		//setTimeout(function(){
+		setTimeout(function(){
 			el.value = Text.formatPhone(el.value,{3:'-',6:'-',10:'x'}/*{3:'-',6:'-'}/**/);
 			var dif = el.value.length - old.length;
 			el.selectionStart = selS+dif;
 			el.selectionEnd = selE+dif;
-		//},1);
+		},1);
 	}	
 	
 	/**
@@ -205,7 +205,7 @@ export class Forms extends BaseComponent{
 				]);	
 			case "number":
 				this.assertValidateRuleHas(el,"numeric");
-				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'tel', pattern:"[0-9]*", novalidate: true})]);
+				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'number', pattern:"[0-9]*", novalidate: true})]);
 			case "password":
 				return this.renderFieldGroupHTML(el, [this.addPassword(el,null)]);
 			case "phone":
@@ -229,7 +229,9 @@ export class Forms extends BaseComponent{
 			case "buttons":
 				return this.renderFieldGroupHTML(el, [this.addButtons(el)]);		
 			case "html":
-				return this.addHtml(el);			
+				return this.addHtml(el);		
+			default:
+				throw Error("Unknown form element type:" + el.type + " in "+ JSON.stringify(el,null,'\t'));	
 
 		}
 	}
