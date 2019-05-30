@@ -3,6 +3,7 @@ import { Objects } from "./Objects";
 import { empty, tryCall } from "./helpers";
 import { Translate } from "./Translate";
 import { Parser } from 'expr-eval';
+import { isDate } from "util";
 
 /**
  * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
@@ -822,6 +823,9 @@ FormValidator.rules = {
 		}
 
 		return empty(value) || new Date(value) < new Date(otherValue);	
+	},
+	date(value, type, conditions, validator){
+		return isDate(value);
 	},
 	digits(value, type, conditions, validator){
 		var re = new RegExp('^[0-9]{'+conditions[0]+'}$');

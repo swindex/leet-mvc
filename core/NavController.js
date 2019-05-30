@@ -365,7 +365,7 @@ export function NavController() {
 	function windowResizeHandler (ev){ 
 		for(var i=0 ; i<stack.length;i++){
 			//recalcContentHeight(stack[i].element);
-			tryCall(stack[i].page, stack[i].page.onResize);
+			tryCall(stack[i].page, stack[i].page._onResize);
 		}
 	}
 
