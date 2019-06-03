@@ -1,0 +1,96 @@
+#page-NumericKeyboardPage[page]{
+    top: 0;
+    height: 20rem;
+    background-color: transparent;
+    left: 0;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    width: 100%;
+    user-select: none;
+	overflow: hidden !important;
+	&[creating], &[visible]{
+		.keyboard{
+			transform: translate3d(0, 0, 0);
+		}
+	}
+	&[deleting], &[hiding]{
+		.keyboard{
+			transform: translate3d(0, 100%, 0);
+		}	
+	}
+
+	&.layout-1{
+		tr{
+			height: 25%;
+		}
+}
+	&.layout-2{
+		height: 10rem;
+		.keyboard{
+			tr{
+				height: 50%;
+			}
+			
+		}
+	}
+	
+	.keyboard{
+		border: 0;
+		border-collapse: collapse;
+		border-spacing: 0;
+		border-top: rgb(206, 210, 216);
+
+		background-color: #B8BBBF;
+		transform: translate3d(0, 100%, 0);
+    	transition: transform 0.3s ease;
+		width: 100%;
+		height: 100%;
+
+		button{
+			font-size: 3rem;
+			box-shadow: none;
+			width: 100%;
+			background-color: #FCFCFC;
+			display:block;
+			min-width:0.9em;
+			height:100%;
+			color:#000;
+			padding:0;
+			margin: 0;
+			border: none;
+			text-align:center;
+			-khtml-border-radius: 0;
+			border-radius: 0;
+			-webkit-appearance: none;
+			background-size: 100% 100%;
+			&:active, 
+			&.active{
+				filter: brightness(0.5);
+				//box-shadow: 0 0 3px blue;
+				background-color: #fff;
+				outline-color: transparent;
+			}
+			&.gr{
+				background-color: #B8BBBF;	
+			}
+
+			&#delete{
+				background-image: url('./kb_delete.png');
+				background-size: 4rem;
+				background-repeat: no-repeat;
+				background-position: 50%;
+			}
+		
+			&#enter{
+				background-image: url('./kb_enter.png');
+				background-size: 4rem;
+				background-repeat: no-repeat;
+				background-position: 50%;
+
+				float: none;
+			}
+		}
+	}
+	
+}
