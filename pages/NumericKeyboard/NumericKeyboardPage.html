@@ -1,0 +1,67 @@
+<table class="keyboard" [if]="this._options.layout == 0" colpadding="0" colspacing="0">
+	<tr>
+		<td><button value="1">1</button></td>
+		<td><button value="2">2</button></td>
+		<td><button value="3">3</button></td>
+	</tr>
+	<tr>
+		<td><button value="4">4</button></td>
+		<td><button value="5">5</button></td>
+		<td><button value="6">6</button></td>
+	</tr>
+	<tr>
+		<td><button value="7">7</button></td>
+		<td><button value="8">8</button></td>
+		<td><button value="9">9</button></td>
+	</tr>
+	<tr>
+		<td><button class="gr" value=".">.</button></td>
+		<td><button value="0">0</button></td>
+		<td><button class="gr" id="delete" value="d"></button></td>
+	</tr>
+</table>
+
+<table class="keyboard" [if]="this._options.layout == 1" colpadding="0" colspacing="0">
+	<tr>
+		<td><button value="1">1</button></td>
+		<td><button value="2">2</button></td>
+		<td><button value="3">3</button></td>
+		<td><button class="gr" id="delete" value="d"></button></td>
+	</tr>
+	<tr>
+		<td><button value="4">4</button></td>
+		<td><button value="5">5</button></td>
+		<td><button value="6">6</button></td>
+		<td rowspan="3"><button class="gr" id="enter" value="e"></button></td>
+	</tr>
+	<tr>
+		<td><button value="7">7</button></td>
+		<td><button value="8">8</button></td>
+		<td><button  value="9">9</button></td>
+	</tr>
+	<tr>
+		<td><button class="gr" value="-">-</button></td>
+		<td><button value="0">0</button></td>
+		<td><button class="gr" value=".">.</button></td>
+	</tr>
+</table>
+<table class="keyboard" [if]="this._options.layout == 2" colpadding="0" colspacing="0">
+	<tr>
+		<td><button value="1">1</button></td>
+		<td><button value="2">2</button></td>
+		<td><button value="3">3</button></td>
+		<td><button value="4">4</button></td>
+		<td><button value="5">5</button></td>
+		<td><button value="6">6</button></td>
+		<td><button class="gr" id="delete" value="d" class="delete"></button></td>
+	</tr>
+	<tr>
+		<td><button value="7">7</button></td>
+		<td><button value="8">8</button></td>
+		<td><button  value="9">9</button></td>
+		<td><button value="0">0</button></td>
+		<td><button class="gr" value=".">.</button></td>
+		<td><button class="gr" value="-">-</button></td>
+		<td rowspan="3"><button class="gr" id="enter" value="e"></button></td>
+	</tr>
+</table>	
