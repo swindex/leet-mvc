@@ -3,6 +3,10 @@
 export class Analytics {
 	static get Event() {return {
 		USERLOGIN:"Login",
+		APPERROR:"App Error",
+		LOADFILE: "Load File",
+		APIERROR: "API Error",
+		LOGINFAIL: "Login Failure"
 	}};
 
 	static get Page(){
