@@ -37,6 +37,12 @@ export class Forms extends BaseComponent{
 		this.validator.validateVisibility();
 		
 		this.events = {
+			click:(ev)=>{
+				//notify in the next render cycle.
+				setTimeout(()=>{
+					this.onClick(ev);
+				},0);
+			},
 			change:(ev)=>{
 				//validate element on change
 				if (ev.target.name){
@@ -63,6 +69,13 @@ export class Forms extends BaseComponent{
 	 * @param {HTMLInputElementChangeEvent} event
 	 */
 	onChange(event){
+
+	}
+
+	/** 
+	 * @param {HTMLInputElementChangeEvent} event
+	 */
+	onClick(event){
 
 	}
 
@@ -326,11 +339,13 @@ export class Forms extends BaseComponent{
 	addFile(el, override, dataName){
 		
 		dataName = dataName || "data"
-		var opt = { name: el.name , type: "file", placeholder: el.placeholder };
+		var opt = { name: el.name , type: "hidden", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
-			<label class="field">{{ this.trimDisplayFileName(this.${dataName}${this.refactorAttrName(el._name)}) || '${Translate('Select File')}' }}<input bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} /></label>`+
+			<label class="field" onclick="this.transferEventToChildInput($event)">{{ this.trimDisplayFileName(this.${dataName}${this.refactorAttrName(el._name)}) || '${Translate('Select File')}' }}
+				<input file bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
+			</label>`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -558,6 +573,15 @@ export class Forms extends BaseComponent{
 			}
 		});
 		return strOpts;
+	}
+
+	/**
+	 * 
+	 * @param {Event} event  
+	 */
+	transferEventToChildInput(event){
+		var el = event.target;
+		$(el).find('input')[0].dispatchEvent(new Event(event.type));
 	}
 
 	trimDisplayFileName(fileName){

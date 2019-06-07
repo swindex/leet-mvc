@@ -1,4 +1,4 @@
-import { empty, tryCall, argumentsToArray } from "./helpers";
+import { empty, tryCall } from "./helpers";
 import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString } from "util";
 
@@ -971,15 +971,25 @@ export var Binder = function(context){
 						Objects.forEach( p_vDom.getters, (getter,key)=>{
 							c_vDom.getters[key] = getter;
 						});
+
+						var dynamicEvents = [];
+
 						Objects.forEach( p_vDom.setters, (setter,key)=>{
 							c_vDom.setters[key] = setter;
 							//add change listener to the context
-							component[key+'Change'] = function(val){
+							if (isFunction(component[key+'Change_2'])) {
+								throw new Error(`Component can not have method ${key+'Change_2'} it is used excusively for 2-way data binding with ${key}`);
+							}
+							dynamicEvents.push(key+'Change_2');
+							component[key+'Change_2'] = function(val){
 								return c_vDom.setters[key](inject,val);
-							};
+							}
 							
 						});
 						Objects.forEach( p_vDom.callers, (caller,key)=>{
+							if (dynamicEvents.indexOf(key) >=0 ) {
+								throw new Error(`Component ${component.constructor.name} can not override 2-way event (${key})!`);
+							}
 							c_vDom.callers[key] = component[key] = caller;
 						});
 						//copy html attributes
