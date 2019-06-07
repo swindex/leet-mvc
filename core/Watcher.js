@@ -23,6 +23,7 @@ export var Watcher={
 	 */
 	on: function(object, onChangeCallback, ignoreProperties){
 		ignoreProperties = ignoreProperties || [];
+		object[isDeleted] = false;
 		if (window['Proxy'] && window['Reflect']){
 			const handler = {
 				get(target, property, receiver) {
@@ -67,10 +68,17 @@ export var Watcher={
 						scheduleCallback(object, onChangeCallback);
 					}
 					//if target is the object we are watching, and property has method Changed, then call that method
-					if (target === object &&  isFunction(object[property+"Change"])){
-						object[isSkipUpdate] = true;
-						object[property+"Change"](value);
-						object[isSkipUpdate] = false;
+					if ((target === object || target.constructor === object.constructor)){
+						if (isFunction(object[property+"Change_2"])) {
+							object[isSkipUpdate] = true;
+							object[property+"Change_2"](value);
+							object[isSkipUpdate] = false;
+						}
+						if (isFunction(object[property+"Change"])) {
+							object[isSkipUpdate] = true;
+							object[property+"Change"](value);
+							object[isSkipUpdate] = false;
+						}
 					}
 					return Reflect.set(target, property, value);
 				},
@@ -92,19 +100,14 @@ export var Watcher={
 
 			return new Proxy(object, handler);
 		}else{
-			onDirtyChange(object ,()=>{
+			onObjectDirtyChange(object ,()=>{
 				onChangeCallback();
-			});
+			}, ignoreProperties);
 			return object;
 		}	
 	},
 	off: function( object ){
-		if ( window['Proxy'] && window['Reflect']){
-			//object.revoke();
-			object[isDeleted] = true;
-		}else{
-			object[isOnTimer] = false;
-		}
+		object[isDeleted] = true;
 	}
 }
 
@@ -158,32 +161,57 @@ function onDirtyChange(obj, callback, ignoreProperties){
 				pHash = hash;
 				tryCall(null,callback);
 			}
-			if (obj[isOnTimer])
+			if (!obj[isDeleted])
 				window.requestAnimationFrame(checkHash);
 		},50);
 	}
 	window.requestAnimationFrame(checkHash);
 }
 
-function onDirtyChangeEvent(obj, callback, ignoreProperties){
+/**
+ * 
+ * @param {object} object 
+ * @param {function()} callback 
+ * @param {string[]} [ignoreProperties]
+ */
+function onObjectDirtyChange(object, callback, ignoreProperties){
 	ignoreProperties = ignoreProperties || [];
 
-	obj[isOnTimer] = true;	
-	var pHash = hashObject(obj, ignoreProperties);
-	var start = +new Date();
-	return function(e){	
-		if (e && e.detail && e.detail.object==obj)
-			return;
-
-		window.requestAnimationFrame(function(){	
-			var hash = hashObject(obj, ignoreProperties);
-			if (hash !== pHash){
-				pHash = hash;
-				tryCall(null,callback);
+	var pHash = {};//hashObject(obj, ignoreProperties);
+	var checkHash = function(){	
+		//throttle the request animation to 50ms
+		setTimeout(function(){
+			var somethingChanged = false;
+			var checked = copyCompare(pHash, object, ignoreProperties,
+				(target, property, value)=>{ //property chnaged callback
+					somethingChanged = true;
+					if ((target === object || target.constructor === object.constructor)){
+						if (isFunction(object[property+"Change_2"])) {
+							object[isSkipUpdate] = true;
+							object[property+"Change_2"](value);
+							object[isSkipUpdate] = false;
+						}
+						if (isFunction(object[property+"Change"])) {
+							object[isSkipUpdate] = true;
+							object[property+"Change"](value);
+							object[isSkipUpdate] = false;
+						}
+					}
+				}
+			);
+			
+			if (!object[isDeleted]){
+				if (somethingChanged) {
+					pHash = checked;
+					tryCall(null,callback);	
+				}
+				window.requestAnimationFrame(checkHash);
 			}
-		})
-	};
+		},50);
+	}
+	window.requestAnimationFrame(checkHash);
 }
+
 /**
  * 
  * @param {object} obj 
@@ -217,3 +245,108 @@ export function hashObject(obj, ignoreProperties){
 		return obj;
 	}
 } 
+
+
+/**
+ * 
+ * @param {object} oldObj 
+ * @param {object} newObj 
+ * @param {string[]} ignoreProperties 
+ * @param {function(object, string, any):void} changeCallback 
+ */
+export function copyCompare(oldObj, newObj, ignoreProperties, changeCallback){
+	ignoreProperties = ignoreProperties || [];
+	var oldKeys = getObjKeys(oldObj);
+	var newKeys = getObjKeys(newObj);
+	var newChecked = [];
+	var ret = isArray(newObj) ? [] : {};
+
+	for (var i in oldKeys){
+		var k = oldKeys[i];
+		if (newObj[k] !== undefined) {
+			//new object has the old key
+			if (ignoreProperties.indexOf(k) < 0) {
+				//if key is not in the igniore array
+
+				if (isDate(oldObj[k]) && isDate(newObj[k])) {
+					if (oldObj[k].getTime() !== newObj[k].getTime()) {
+						changeCallback(oldObj, k, newObj[k]);
+						oldObj[k] = new Date(newObj[k]);
+					}
+				} else
+				if (isObject(oldObj[k]) && isObject(newObj[k])) {
+					if (isArray(newObj[k]) || isObjLiteral(newObj[k])) {
+						ret[k] = copyCompare(oldObj[k], newObj[k], ignoreProperties, changeCallback)
+					} else {
+						//new object is not an array and is a complex object
+						//do not scan complex children
+						ret[k] = newObj[k]
+					} 
+				} else
+				if (isObject(oldObj[k]) && !isObject(newObj[k])) {
+					//old is object, new is NOT object 
+					changeCallback(oldObj, k, newObj[k]);
+				} else
+				if (!isObject(oldObj[k]) && isObject(newObj[k])) {
+					//old is NOT object, new is object
+					changeCallback(oldObj, k, newObj[k]);
+				} else
+				if (!isObject(oldObj[k]) && !isObject(newObj[k]) && !isFunction(newObj[k])) {
+					//old is NOT object, new is NOT object
+					if (oldObj[k] !== newObj[k]){
+						changeCallback(oldObj, k, newObj[k]);
+					}
+				} else
+				if (isFunction(newObj[k])) {
+					if (oldObj[k] !== newObj[k]){
+						changeCallback(oldObj, k, newObj[k]);
+					}
+				}
+			}
+			if (ret[k]==undefined) {
+				ret[k] = newObj[k];	
+			}
+			//delete newKey
+			newChecked.push(k);
+		} else {
+			//key does not exist in the new object
+			if (oldObj[k] !== undefined) {
+				changeCallback(oldObj, k, undefined);
+			} else{
+				//both old and new objects properties are undefined
+				newChecked.push(k);
+			}
+		}
+	}
+	//iterate over keys that are NOT in the old object
+	for (var i in newKeys){
+		var k = newKeys[i];
+		if (newObj[k] === undefined || newChecked.indexOf(k) >= 0 || ignoreProperties.indexOf(k) >= 0 ) {
+			continue;
+		}
+		
+		changeCallback(oldObj, k, newObj[k]);
+		ret[k] = {}
+		if (!isArray(newObj) && !isObjLiteral(newObj)) {
+			ret[k] = newObj[k];
+		} else {
+			ret[k] = copyCompare({}, newObj[k], ignoreProperties, changeCallback)
+		}
+	}
+	if (!isObject(newObj))
+		return newObj;
+
+	return ret;
+} 
+
+
+function getObjKeys(obj){
+	if (isObject(obj)) {
+		if (isArray(obj)){
+			return Array.apply(null, Array(obj.length)).map(function(v, i){return i});
+		} else {
+			return Object.keys(obj);
+		}
+	}
+	return [];
+}

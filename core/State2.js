@@ -148,7 +148,7 @@ export function State2(data){
 	}
 
 	var Me = {
-		add: add,
+		newListener: add,
 		get error(){
 			return _error;
 		},

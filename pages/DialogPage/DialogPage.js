@@ -28,7 +28,7 @@ export class DialogPage extends BasePage{
 		this.buttons = {};
 		this.title= title;
 		this.prompt= null;
-		/** @type {Forms|string} */
+		/** @type {Forms} */
 		this.content= null;
 		this.dialog_content_max_height = "100%";
 		this.controls=[];
@@ -48,6 +48,10 @@ export class DialogPage extends BasePage{
 	}
 
 	render(){
+		if (this.content && this.content.destroy) {
+			//if destrou method exists, thennn destroy to remove meomory
+			this.content.destroy()
+		}
 		this.content = new Forms(this.controls,this.data,this.errors);
 	}
 
