@@ -1,4 +1,4 @@
-function empty(value){
+window['empty'] = function(value){
 	return typeof value === "undefined" || value === null || value === "" || value === 0 || value === false;
 }
 
