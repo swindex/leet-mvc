@@ -67,6 +67,12 @@ export class BaseComponent extends ChangeWatcher{
 		this.onUpdate();	
 	}
 
+	destroy(){
+		if (this._onDestroy) {
+			this._onDestroy();
+		}
+	}
+
 	/**
 	 * ***Override***
 	 **/

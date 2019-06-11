@@ -10,7 +10,7 @@ declare namespace State2Namespace{
 		/**
 		 * Add State Listener to the queue. Make sure to use Remove method to prevent memory leaks
 		 */
-		add():{
+		newListener():{
 			index:number;
 			remove():boolean;
 			/**
