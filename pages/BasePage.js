@@ -27,6 +27,7 @@ export class BasePage extends ChangeWatcher{
 		this.isHiding = false;
 		this.isShowing = false;
 		this.isVisible = false;
+		this.isDeleted = false;
 
 		this.className = null;
 		this.visibleParent = null;
@@ -155,6 +156,7 @@ export class BasePage extends ChangeWatcher{
 		//super._onDestroy();
 		this.stopWatch();
 		Objects.strip(this);
+		this.isDeleted = true;
 	}
 
 	/**

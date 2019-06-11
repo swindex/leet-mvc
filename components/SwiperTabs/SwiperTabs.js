@@ -58,16 +58,21 @@ export class SwiperTabs extends BaseComponent{
 		if (!this.container && !this.tempContainer){
 			this.tempContainer = document.createDocumentFragment();
 			this.Nav.setContainer(this.tempContainer);
+		} else {
+			//this.Nav.setContainer(this.container);
 		}
 		
 		var inst = this.Nav.push.apply(this, argumentsToArray(arguments));
 
 		inst.className = 'swiper-slide'
+		inst.page.addClass('swiper-slide');
+		
 		inst.visibleParent = true;
 		
 
 		//Override the onEnter method because onEnter must be called by this swiper only and not by the Nav controler
 		inst.onEnter = Override(inst,inst.onEnter, function(){/*console.log("OnEnter Overridden!")*/})
+
 		
 		this.pages.push(inst);
 		//cause swiper to reinit after adding all pages in this animation frame

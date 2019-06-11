@@ -23,6 +23,7 @@ export var Watcher={
 	 */
 	on: function(object, onChangeCallback, ignoreProperties){
 		ignoreProperties = ignoreProperties || [];
+		object[isDeleted] = false;
 		if (window['Proxy'] && window['Reflect']){
 			const handler = {
 				get(target, property, receiver) {
@@ -67,10 +68,17 @@ export var Watcher={
 						scheduleCallback(object, onChangeCallback);
 					}
 					//if target is the object we are watching, and property has method Changed, then call that method
-					if (target === object &&  isFunction(object[property+"Change"])){
-						object[isSkipUpdate] = true;
-						object[property+"Change"](value);
-						object[isSkipUpdate] = false;
+					if (target === object){
+						if (isFunction(object[property+"Change_2"])) {
+							object[isSkipUpdate] = true;
+							object[property+"Change_2"](value);
+							object[isSkipUpdate] = false;
+						}
+						if (isFunction(object[property+"Change"])) {
+							object[isSkipUpdate] = true;
+							object[property+"Change"](value);
+							object[isSkipUpdate] = false;
+						}
 					}
 					return Reflect.set(target, property, value);
 				},
@@ -86,25 +94,30 @@ export var Watcher={
 				}
 			};
 			
-			/*Notify.add(onDirtyChangeEvent(object ,()=>{
-				onChangeCallback();
-			}));*/
-
 			return new Proxy(object, handler);
 		}else{
-			onDirtyChange(object ,()=>{
-				onChangeCallback();
-			});
+			onObjectDirtyChange(object ,
+				(target, property, value)=>{ //property changed callback
+					if (target === object){
+						if (isFunction(object[property+"Change_2"])) {
+							object[isSkipUpdate] = true;
+							object[property+"Change_2"](value);
+							object[isSkipUpdate] = false;
+						}
+						if (isFunction(object[property+"Change"])) {
+							object[isSkipUpdate] = true;
+							object[property+"Change"](value);
+							object[isSkipUpdate] = false;
+						}
+					}
+					scheduleCallback(object, onChangeCallback);
+				}, ignoreProperties
+			);
 			return object;
 		}	
 	},
 	off: function( object ){
-		if ( window['Proxy'] && window['Reflect']){
-			//object.revoke();
-			object[isDeleted] = true;
-		}else{
-			object[isOnTimer] = false;
-		}
+		object[isDeleted] = true;
 	}
 }
 
@@ -122,7 +135,6 @@ function scheduleCallback(obj, callback){
 
 function isObjLiteral(_obj) {
 	var _test  = _obj;
-	//return isObject(_obj) && _obj.toString() === "[object Object]";
 	return (
 		typeof _obj !== 'object' || _obj === null ?
 			false :  
@@ -139,81 +151,135 @@ function isObjLiteral(_obj) {
 			)
 	);
 }
+
 /**
- * 
- * @param {object} obj 
- * @param {function()} callback 
+ * Dirty-Listen to object changes 
+ * Callback is fired for every changed property
+ * @param {object} object 
+ * @param {function(object, string, any):void} callback 
  * @param {string[]} [ignoreProperties]
  */
-function onDirtyChange(obj, callback, ignoreProperties){
+export function onObjectDirtyChange(object, callback, ignoreProperties){
 	ignoreProperties = ignoreProperties || [];
 
-	obj[isOnTimer] = true;	
-	var pHash = hashObject(obj, ignoreProperties);
+	var refObject = {}; //reference cpy of the object we are watching
 	var checkHash = function(){	
 		//throttle the request animation to 50ms
 		setTimeout(function(){
-			var hash = hashObject(obj, ignoreProperties);
-			if (hash !== pHash){
-				pHash = hash;
-				tryCall(null,callback);
-			}
-			if (obj[isOnTimer])
+			var checked = objectCloneCompare(refObject, object, callback, ignoreProperties);
+			
+			if (!object[isDeleted]){
+				refObject = checked;
 				window.requestAnimationFrame(checkHash);
+			}
 		},50);
 	}
 	window.requestAnimationFrame(checkHash);
 }
 
-function onDirtyChangeEvent(obj, callback, ignoreProperties){
-	ignoreProperties = ignoreProperties || [];
-
-	obj[isOnTimer] = true;	
-	var pHash = hashObject(obj, ignoreProperties);
-	var start = +new Date();
-	return function(e){	
-		if (e && e.detail && e.detail.object==obj)
-			return;
-
-		window.requestAnimationFrame(function(){	
-			var hash = hashObject(obj, ignoreProperties);
-			if (hash !== pHash){
-				pHash = hash;
-				tryCall(null,callback);
-			}
-		})
-	};
-}
 /**
- * 
- * @param {object} obj 
+ * Compares old object and new object. 
+ * Does not clone classes or functions. they are compared by reference only.
+ * Callback is fired for every changed property.
+ * Returns the cloned copy of the new object for subsequent change checking
+ * @param {object} oldObj 
+ * @param {object} newObj 
+ * @param {function(object, string, any):void} changeCallback 
+ * @param {string[]} [ignoreProperties]
+ * @return {object}
  */
-export function hashObject(obj, ignoreProperties){
+export function objectCloneCompare(oldObj, newObj, changeCallback, ignoreProperties){
 	ignoreProperties = ignoreProperties || [];
-	var ret = "";
-	if (isObject(obj)){
-		ret = ret +"{";
-		for(var i in obj){
-			if (!obj.hasOwnProperty(i))
-				continue;
-			var el = obj[i];
-			if (ignoreProperties.indexOf(i)>=0)
-				return;
-			if (isObject(el)){
-				if (isObjLiteral(el)){
-					ret = ret+ i+":"+ hashObject(el, ignoreProperties)+",";
-				}else if (isArray(el)){
-					ret = ret+ i+":"+ hashObject(el, ignoreProperties)+",";
-				}else if (isDate(el)){	
-					ret = ret+ i+":"+ el.getTime() + ",";
+	var oldKeys = getObjKeys(oldObj);
+	var newKeys = getObjKeys(newObj);
+	var newChecked = [];
+	var ret = isArray(newObj) ? [] : {};
+
+	for (var i in oldKeys){
+		var k = oldKeys[i];
+		if (newObj[k] !== undefined) {
+			//new object has the old key
+			if (ignoreProperties.indexOf(k) < 0) {
+				//if key is not in the igniore array
+
+				if (isDate(oldObj[k]) && isDate(newObj[k])) {
+					if (oldObj[k].getTime() !== newObj[k].getTime()) {
+						changeCallback(newObj, k, newObj[k]);
+						oldObj[k] = new Date(newObj[k]);
+					}
+				} else
+				if (isObject(oldObj[k]) && isObject(newObj[k])) {
+					if (isArray(newObj[k]) || isObjLiteral(newObj[k])) {
+						if (oldObj[k].length !== newObj[k].length ) {
+							changeCallback(newObj, k, newObj[k]);
+						}
+						ret[k] = objectCloneCompare(oldObj[k], newObj[k], changeCallback, ignoreProperties)
+					} else {
+						//new object is not an array and is a complex object
+						if (oldObj[k] !== newObj[k]){
+							//check them by reference
+							changeCallback(newObj, k, newObj[k]);
+						}
+						//do not scan complex children
+						ret[k] = newObj[k]
+					} 
+				} else
+				if (isObject(oldObj[k]) !== isObject(newObj[k])) {
+					//old isObject is not the same as new isObject
+					changeCallback(newObj, k, newObj[k]);
+				} else {
+					//in the end compare values the normal way
+					if (oldObj[k] !== newObj[k]){
+						changeCallback(newObj, k, newObj[k]);
+					}
+					ret[k] = newObj[k];
 				}
-			}else{
-				ret = ret+ i +":"+ el+",";
 			}
-		};
-		ret = ret +"}";
-		return ret;
-	}else{
-		return obj;
+			if (ret[k]==undefined) {
+				ret[k] = newObj[k];	
+			}
+			//delete newKey
+			newChecked.push(k);
+		} else {
+			//key does not exist in the new object
+			if (oldObj[k] !== undefined) {
+				changeCallback(newObj, k, undefined);
+			} else{
+				//both old and new objects properties are undefined
+				newChecked.push(k);
+			}
+		}
 	}
+	//iterate over keys that are NOT in the old object
+	for (var i in newKeys){
+		var k = newKeys[i];
+		if (newObj[k] === undefined || newChecked.indexOf(k) >= 0 || ignoreProperties.indexOf(k) >= 0 ) {
+			continue;
+		}
+		
+		changeCallback(newObj, k, newObj[k]);
+		ret[k] = {}
+		if (!isArray(newObj) && !isObjLiteral(newObj)) {
+			ret[k] = newObj[k];
+		} else {
+			ret[k] = objectCloneCompare({}, newObj[k], changeCallback, ignoreProperties)
+		}
+	}
+	if (!isObject(newObj)) {
+		return newObj;
+	}
+
+	return ret;
 } 
+
+
+function getObjKeys(obj){
+	if (isObject(obj)) {
+		if (isArray(obj)){
+			return Array.apply(null, Array(obj.length)).map(function(v, i){return i});
+		} else {
+			return Object.keys(obj);
+		}
+	}
+	return [];
+}
