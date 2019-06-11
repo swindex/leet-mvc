@@ -12,6 +12,7 @@ export var NumericKeyboard = {
 		selectOnFocus : false,
 		selectForeColor : 'white',
 		selectBackColor : '#039be5',
+		theme : '',
 	},
 	enable(){
 		if (NumericKeyboard.isEnabled)
@@ -89,7 +90,7 @@ class NumericKeyboardPage extends BasePage {
 			selectOnFocus : false,
 			selectForeColor : 'white',
 			selectBackColor : '#039be5',
-			
+			theme: '',
 		}
 
 		this.inputStyle = {};
@@ -103,7 +104,7 @@ class NumericKeyboardPage extends BasePage {
 	 */
 	setOptions (value){
 		this._options = value;
-		this.className = "layout-"+ this._options.layout;
+		this.className = "layout-"+ this._options.layout + ' '+ this._options.theme ;
 	}
 
 	unFocusCurrentElement(){

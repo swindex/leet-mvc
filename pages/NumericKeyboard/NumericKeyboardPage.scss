@@ -1,4 +1,40 @@
+$fontname: 'NumericKeyboardPage';
+@font-face {
+	font-family: 'NumericKeyboardPage';
+	src:
+	  url('./fonts/NumericKeyboardPage.ttf?3umxgn') format('truetype'),
+	  url('./fonts/NumericKeyboardPage.woff?3umxgn') format('woff'),
+	  url('./fonts/NumericKeyboardPage.svg?3umxgn#NumericKeyboardPage') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
 #page-NumericKeyboardPage[page]{
+	  
+	  i {
+		/* use !important to prevent issues with browser extensions that change fonts */
+		pointer-events: none;
+		font-family: $fontname !important;
+		speak: none;
+		font-style: normal;
+		font-weight: normal;
+		font-variant: normal;
+		text-transform: none;
+		line-height: 1;
+	  
+		/* Better Font Rendering =========== */
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	  }
+	  
+	  .icon-kb_delete:before {
+		content: "\e900";
+	  }
+	  .icon-kb_enter:before {
+		content: "\e901";
+	  }
+	  
     top: 0;
     height: 20rem;
     background-color: transparent;
@@ -24,7 +60,7 @@
 		tr{
 			height: 25%;
 		}
-}
+	}
 	&.layout-2{
 		height: 10rem;
 		.keyboard{
@@ -35,7 +71,7 @@
 		}
 	}
 	
-	.keyboard{
+	table.keyboard{
 		border: 0;
 		border-collapse: collapse;
 		border-spacing: 0;
@@ -76,19 +112,67 @@
 			}
 
 			&#delete{
-				background-image: url('./kb_delete.png');
+				/*background-image: url('./kb_delete.png');
 				background-size: 4rem;
 				background-repeat: no-repeat;
-				background-position: 50%;
+				background-position: 50%;*/
+				//color:red;
 			}
 		
 			&#enter{
-				background-image: url('./kb_enter.png');
+				/*background-image: url('./kb_enter.png');
 				background-size: 4rem;
 				background-repeat: no-repeat;
 				background-position: 50%;
 
-				float: none;
+				float: none;*/
+				//color:green;
+			}
+		}
+	}
+	//dark theme
+	&.dark{
+		$kb-background: #1E1E1E;
+		$key-background: #32363F;
+		$key-background-active: #32363F;
+		$key-color: #fff;
+		$key-color-active: #fff;
+		$key-background-gr: #32363F;
+		table.keyboard{
+			background-color: $kb-background;
+			td{
+				padding:3px;
+			}
+			button {
+				background-color: $key-background;
+				color: $key-color;
+				&:active, 
+				&.active{
+					color: $key-color-active;
+					filter: brightness(0.5);
+					//box-shadow: 0 0 3px blue;
+					background-color: $key-background;
+					outline-color: transparent;
+				}
+				&.gr{
+					background-color: $key-background;	
+				}
+
+				&#delete{
+					//background-image: url('./kb_delete.png');
+					//background-size: 4rem;
+					//background-repeat: no-repeat;
+					//background-position: 50%;
+					color:red;
+				}
+			
+				&#enter{
+					//background-image: url('./kb_enter.png');
+					//background-size: 4rem;
+					//background-repeat: no-repeat;
+					//background-position: 50%;
+					color:green;
+				}
 			}
 		}
 	}
