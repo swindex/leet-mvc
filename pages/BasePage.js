@@ -3,15 +3,13 @@ import { NavController } from '../core/NavController';
 import { ChangeWatcher } from '../core/ChangeWatcher';
 import { tryCall } from '../core/helpers';
 import { BaseComponent } from '../components/BaseComponent';
-import { Objects } from 'leet-mvc/core/Objects';
+import { Objects } from '../core/Objects';
 
 export class BasePage extends ChangeWatcher{
-	/**
-	 * @param {JQuery<HTMLElement>} page 
-	 */
-	constructor(page){
+	constructor(){
 		super();
-		this.page = page;
+		/** {@type {JQuery<HTMLElement>}*/
+		this.page = null;
 		/** @type {NavController} */
 		this.Nav;
 		/** @type {CSSStyleDeclaration} */
@@ -31,7 +29,6 @@ export class BasePage extends ChangeWatcher{
 
 		this.className = null;
 		this.visibleParent = null;
-		
 
 		//Be lazy. This allows us to directly pass page methods without having to worry about "this"
 		Objects.bindMethods(this);
@@ -57,9 +54,36 @@ export class BasePage extends ChangeWatcher{
 	 * Command the nav controller to remove this page from the stack
 	 */
 	destroy(){
-		//sometimes destroy is called on killed page
+		if (this.isDeleted) {
+			return;
+		}
+		//if nav exists, then tell nav to delete the page
 		if (this.Nav){
+			//tell Nav to remove the page from the stack
 			this.Nav.remove(this);
+		} else {
+			//Nav does not exist any more: delete the page
+			//notify whoever implements, that page is to be destroyed.
+			this.onDestroy();		
+					
+			//Call destroy on all child components
+			if (this.components){
+				for (let i in this.components){
+					var comp = this.components[i];
+					if (comp instanceof BaseComponent){
+						tryCall(comp, comp.destroy);
+						delete this.components[i];
+					}
+				}
+			}
+			//destroy binder
+			if (this.binder){
+				this.binder.destroy();
+			}
+			//Destroy the rest of listeners, properties and methods
+			this.stopWatch();
+			Objects.strip(this);
+			this.isDeleted = true;
 		}
 	}
 
@@ -69,8 +93,7 @@ export class BasePage extends ChangeWatcher{
 	 * Initialize binder
 	 */
 	_init(binderEvent){
-
-		this.template = BasePage.template.replace('/*child-template*/', this.template);
+ 		this.template = BasePage.template.replace('/*child-template*/', this.template);
 
 		this.binder.bindElements(binderEvent, this.template);
 		this.page = $(this.binder.vdom.elem);
@@ -131,41 +154,16 @@ export class BasePage extends ChangeWatcher{
 	/**
 	 * ***OverrideCallSuper***
 	 */
-	_onResize(){
+	resize(){
 		this.onResize();
-	}
-	/**
-	 * ***DO NOT OVERRIDE****
-	 * Called when NavController is about to delete the page
-	 */
-	_onDestroy(){
-		//notify whoever implements, that page is to be destroyed.
-		this.onDestroy();		
-		
-		//Call destroy on all child components
-		if (this.components){
-			for (let i in this.components){
-				var comp = this.components[i];
-				if (comp instanceof BaseComponent){
-					tryCall(comp, comp._onDestroy);
-					delete this.components[i];
-				}
-			}
-		}
-		//Destroy the rest of listeners, properties and methods
-		//super._onDestroy();
-		this.stopWatch();
-		Objects.strip(this);
-		this.isDeleted = true;
 	}
 
 	/**
 	 * ***Override***
-	 * Called when NavController is about to delete the page
+	 * Called when NavController removes it self from the page and page is about to be deleted
 	 * @override
 	 */
 	onDestroy(){
-		
 	}
 	
 	/**

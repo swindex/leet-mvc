@@ -295,7 +295,7 @@ class NumericKeyboardPage extends BasePage {
 		this._resizeBody(false);
 	}
 
-	_onDestroy(){
+	onDestroy(){
 		this.unFocusCurrentElement();
 		this.page.off();
 		$(document).off('keydown.virtual_keyboard');
@@ -311,7 +311,6 @@ class NumericKeyboardPage extends BasePage {
 		window.dispatchEvent(new Event('resize'));
 			
 		this.enter();
-		super._onDestroy();
 	}
 	customKB_keydownhandler (e) {
 		switch (e.keyCode) {

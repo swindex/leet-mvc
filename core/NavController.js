@@ -1,6 +1,7 @@
 import { tryCall, empty, argumentsToArray, GUID } from "./helpers";
 import { removeDOMElement } from "leet-mvc/core/Binder";
 import { BasePage } from "leet-mvc/pages/BasePage";
+import { isSkipUpdate } from "./Watcher";
 
 export function NavController() {
 	/** @type {NavController} */
@@ -158,9 +159,9 @@ export function NavController() {
 		
 		tryCall(pageObject, pageObject.onInit, p);	
 
-		setTimeout(()=>{
-			tryCall(pageObject, pageObject._onResize);		
-		},0);
+		//setTimeout(()=>{
+			tryCall(pageObject, pageObject.resize);		
+		//},0);
 		setTimeout(()=>{
 			tryCall(pageObject, pageObject.onLoaded);		
 		},1);
@@ -275,7 +276,7 @@ export function NavController() {
 				//Add creating attribute ALMOST immedaitely for smooth appearance
 				setTimeout(function(){
 					element.attr('creating',"");
-					tryCall(frame.page,frame.page._onResize);		
+					tryCall(frame.page,frame.page.resize);		
 				},0);
 			}
 
@@ -340,7 +341,10 @@ export function NavController() {
 				element.attr('hidden','');
 				if (isDeleting){
 					//$(element).remove();
-					removeDOMElement(element[0]);
+					frame.page[isSkipUpdate] = true;
+					frame.page.Nav = null;
+					frame.page.destroy(true);
+					//removeDOMElement(element[0]);
 				} else{	
 					//element.css('display','none');
 					//console.log("Hide Element",element[0].id);
@@ -369,7 +373,7 @@ export function NavController() {
 	function windowResizeHandler (ev){ 
 		for(var i=0 ; i<stack.length;i++){
 			//recalcContentHeight(stack[i].element);
-			tryCall(stack[i].page, stack[i].page._onResize);
+			tryCall(stack[i].page, stack[i].page.resize);
 		}
 	}
 

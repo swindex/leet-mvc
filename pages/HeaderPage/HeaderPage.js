@@ -59,7 +59,7 @@ export class HeaderPage extends BasePage{
 	/**
 	 * ***OverrideCallSuper***
 	 */
-	_onResize(){
+	resize(){
 		var h = $(this.page).height();
 		var header = this.page.find('>.header').height();
 		var footer = this.page.find('>.footer').height();
@@ -69,7 +69,7 @@ export class HeaderPage extends BasePage{
 
 		this.page.find('.content').css('height', h +'px');
 
-		super._onResize();
+		super.resize();
 	}
 
 }
