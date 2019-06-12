@@ -134,6 +134,16 @@ export var Binder = function(context){
 		return self;
 	}
 
+	/**
+	 * Destroy the root DOM and vDOM elements and ALL Hooks
+	 */
+	this.destroy = function(){
+		if (self.vdom){
+			removeVDOMElement(self.vdom);
+			self.vdom = null;
+		}
+	}
+
 	//escape attribute value
 	function escapeAttribute(attrValue){
 		return attrValue.replace(/\n/g,'\\n').

@@ -1,4 +1,4 @@
-import { Binder } from "../core/Binder";
+import { Binder, removeVDOMElement } from "../core/Binder";
 import { ChangeWatcher } from "../core/ChangeWatcher";
 import { Objects } from "../core/Objects";
 
@@ -40,15 +40,6 @@ export class BaseComponent extends ChangeWatcher{
 		this.onInit(this.container);
 	}
 	
-	/**
-	 * ***DO NOT OVERRIDE*** 
-	 */
-	_onDestroy(){
-		this.onDestroy();
-		this.stopWatch();
-		Objects.strip(this);
-	}
-
 	/** 
 	 *  ***Override*** 
 	 * This functinon is called once after the container is bound to context
@@ -68,9 +59,14 @@ export class BaseComponent extends ChangeWatcher{
 	}
 
 	destroy(){
-		if (this._onDestroy) {
-			this._onDestroy();
+		if (this.onDestroy) {
+			this.onDestroy();
 		}
+		if (this.binder) {
+			this.binder.destroy();
+		}
+		this.stopWatch();
+		Objects.strip(this);
 	}
 
 	/**
