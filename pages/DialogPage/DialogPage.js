@@ -22,8 +22,8 @@ export function Dialog(title){
 }
 
 export class DialogPage extends BasePage{
-	constructor(page, title){
-		super(page);
+	constructor(title){
+		super();
 		/** @type {KeyValuePair} */
 		this.buttons = {};
 		this.title= title;

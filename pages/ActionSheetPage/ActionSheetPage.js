@@ -6,8 +6,8 @@ import { BasePage } from './../BasePage';
  */
 export class ActionSheetPage extends BasePage {
 
-	constructor(page){
-		super(page);
+	constructor(){
+		super();
 		/** @type {{image:string,icon:string,title:string}[]} */
 		this.items = null;
 	}

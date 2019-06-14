@@ -9,14 +9,14 @@ declare namespace ObjectsModule{
 		 * @param callback The function that will be executed on every object. Return true to add it to filtered array
 		 * @return {T}
 		 */
-		filter<T, K extends keyof T>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | true): T;,
+		filter<T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | true): T;,
 		/**
 		 * Find first element
 		 * @param obj The array of objects to find element in
 		 * @param callback The function that will be executed on every object. Return true to add it to filtered array
 		 * @return {T}
 		 */
-		find<T, K extends keyof T>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | true): T[K];,
+		find<T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | true): T[K];,
 		/**
 		 * A iterator function, which can be used to seamlessly iterate over both objects and arrays.
 		 * Arrays and array-like objects with a length property (such as a function's arguments object) are
@@ -26,14 +26,14 @@ declare namespace ObjectsModule{
 		 * @param callback The function that will be executed on every object. Return false to stop iteration. Return any to skip rest of block
 		 * @return {T}
 		 */
-		forEach<T, K extends keyof T>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | any): void;,
+		forEach<T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | any): void;,
 
 		/**
 		 * Convert array of objects to key-value pair collection
 		 * @param arr array of objects
 		 * @param keyColumn name of the column to become the new key
 		 */
-		keyBy<T, K extends keyof T>(arr: T, keyColumn: string):{[key:string]: T[K]};, 
+		keyBy<T, K extends {[KeyT in keyof T]: V}>(arr: T, keyColumn: string):{[key:string]: T[K]};, 
 		
 		/**
 		 * Convert array of objects to key-value pair collection
@@ -41,7 +41,7 @@ declare namespace ObjectsModule{
 		 * @param keyColumn name of the column to become the new key
 		 * @param valueColumn name of the column to use as the value
 		 */
-		keyBy<T, K extends keyof T>(arr: T, keyColumn: string, valueColumn: string):{[key:string]: any};, 
+		keyBy<T, K extends {[KeyT in keyof T]: V}>(arr: T, keyColumn: string, valueColumn: string):{[key:string]: any};, 
 		
 		/**
 		 * 
@@ -49,7 +49,7 @@ declare namespace ObjectsModule{
 		 * @param keyColumn name of the column to become the new key
 		 * @param valueColumns array of column names to include in to the value.
 		 */
-		keyBy<T, K extends keyof T>(arr: T, keyColumn: string, valueColumns:string[]):{[key:string]: T[K]};, 
+		keyBy<T, K extends {[KeyT in keyof T]: V}>(arr: T, keyColumn: string, valueColumns:string[]):{[key:string]: T[K]};, 
 	
 		/**
 		 * Set Object properties to null, preserving references and structure

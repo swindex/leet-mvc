@@ -3,8 +3,8 @@ import './CallPhone.scss';
 import { DialogPage } from "../DialogPage/DialogPage";
 
 export class CallPhone extends DialogPage{
-	constructor(page, title, prompt, numberPre ,number, useSMS){
-		super(page);
+	constructor(title, prompt, numberPre ,number, useSMS){
+		super();
 		this.title=title || "Complete action with number";
 		
 		this.prompt=prompt;

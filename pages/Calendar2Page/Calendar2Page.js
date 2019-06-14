@@ -13,8 +13,8 @@ import { Injector } from "./../../core/Injector";
 import { ConfirmDanger } from "./../../core/simple_confirm";
 
 export class Calendar2Page extends HeaderPage{
-	constructor(page, startDate){
-		super(page);
+	constructor(startDate){
+		super();
 		this.backButton = true;
 		this.content = template;
 

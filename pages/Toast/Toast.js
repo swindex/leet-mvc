@@ -21,8 +21,8 @@ export function Toast(message, timeout, onClosed){
 	
 }
 export class ToastPage extends BasePage{
-	constructor(page){
-		super(page);
+	constructor(){
+		super();
 		this.message = "Toast!";
 	}
 	show(timeout){

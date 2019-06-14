@@ -5,8 +5,8 @@ import { Translate } from "./../../core/Translate";
 import { DeBouncer } from "./../../core/DeBouncer";
 
 export class LoginPage extends BasePage {
-	constructor(page){
-		super(page)
+	constructor(){
+		super()
 
 		this.passwordType = "password";
 
