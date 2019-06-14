@@ -9,8 +9,8 @@ import { Injector } from './../../core/Injector';
  * @param {HTMLElement} container
  */
 export class MenuPage extends BasePage {
-	constructor(page) {
-		super(page)
+	constructor() {
+		super()
 		this.down = false;
 		//this.selected = selected;
 

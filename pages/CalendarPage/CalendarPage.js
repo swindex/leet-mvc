@@ -6,8 +6,8 @@ import { OptionsDialogPage } from "leet-mvc/pages/OptionsDialogPage/OptionsDialo
 import { Objects } from "leet-mvc/core/Objects";
 
 export class CalendarPage extends DialogPage{
-	constructor(page, startDate){
-		super(page);
+	constructor(startDate){
+		super();
 
 		this.title = "Calendar";
 		this.content = CalendarPage.content;

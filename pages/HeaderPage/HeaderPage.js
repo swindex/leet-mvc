@@ -6,8 +6,8 @@ import { BasePage } from '../BasePage';
  * A page with header and menu and back buttons
  */
 export class HeaderPage extends BasePage{
-	constructor(Page){
-		super(Page);
+	constructor(){
+		super();
 		this.backButton = false;
 		this.menuButton = false;
 		this.refreshButton = false;
@@ -20,6 +20,8 @@ export class HeaderPage extends BasePage{
 		//footer directive
 		this.footer = null;
 
+		this.serviceProvider_id = null;
+
 		//header directive
 		this.header=`
 			<button id="backButton" [if]="this.backButton" onclick = "this.onBackButtonClicked()"><i class="fas fa-arrow-left"></i></button>
@@ -30,7 +32,7 @@ export class HeaderPage extends BasePage{
 			<button id="searchButton" [if]="this.searchButton" onclick = "this.onSearchButtonClicked()"><i class="fas fa-search"></i></button>
 		`;
 	}
-	
+
 	/**
 	 * ***Override***
 	 */

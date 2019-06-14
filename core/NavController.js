@@ -1,5 +1,4 @@
 import { tryCall, empty, argumentsToArray, GUID } from "./helpers";
-import { removeDOMElement } from "leet-mvc/core/Binder";
 import { BasePage } from "leet-mvc/pages/BasePage";
 import { isSkipUpdate } from "./Watcher";
 
@@ -134,7 +133,6 @@ export function NavController() {
 		var template = typeof pageConstructor.template !=='undefined' ? pageConstructor.template : null ;
 		var className = pageConstructor.className ? pageConstructor.className : "" ;
 
-		args.unshift(null);
 		//create page object in a new scope
 		/** @type {BasePage} */
 		var pageObject = createPageInstance(pageConstructor,args);

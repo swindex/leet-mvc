@@ -67,8 +67,8 @@ function getPxNumber(val){
 	return Number(val.split('px')[0]);
 }
 class NumericKeyboardPage extends BasePage {
-	constructor(page, options) {
-		super(page);
+	constructor(options) {
+		super();
 	
 		/** @type {HTMLInputElement} */
 		this.old_input;

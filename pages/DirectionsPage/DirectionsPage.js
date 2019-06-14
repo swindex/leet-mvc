@@ -19,8 +19,8 @@ export class DirectionsPage extends DialogPage{
 	 * @param {*} p 
 	 * @param {{isShowPropertyDirections: boolean, language: string, lat: number,lng: number,address: string, API:{ KEY: string, VERSION: string, Location:{lat: number,lng: number}}, map_settings:{}, direction_settings : {}}} options 
 	 */
-	constructor(p, options){
-		super(p);
+	constructor(options){
+		super();
 		this.options = {
 			isShowPropertyDirections: false,
 			language:null,
