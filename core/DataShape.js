@@ -61,7 +61,7 @@ export var DataShape = {
 	 * Copy object data using DataShape template
 	 * @param {object} obj - object to create a copy of
 	 * @param {object} [templateObject] - template object. shape of object that will be used for copying
-	 * @param {boolean} [checkSource] - template object. shape of object that will be used for copying
+	 * @param {boolean|1} [checkSource] - false - no error reporting (default); true - Throw errors; 1 - Throw warnings
 	 * @param {string} [path] - internal path to property. passed within the function for proper error reporting
 	 * @return {object}
 	 */
@@ -70,28 +70,32 @@ export var DataShape = {
 		checkSource = checkSource || false;
 		templateObject = templateObject || obj;
 		let newObj
-		if (isArray(templateObject)){
+		if (isArray(templateObject)) {
+			//speacial handling of array template
 			newObj = [];
-			//fillup the template with its own first element
-			if (isArray(obj))
-				templateObject = Array.apply(null, Array(obj.length)).map(function(){return templateObject[0]});
-			else
+			//simply apply the first element of the template array to each element in the object array!
+			if (isArray(obj)) {
+				Objects.forEach(obj, (objEl, i)=>{
+					newObj[i] = DataShape.copy(objEl, templateObject[0], checkSource, path + '.' + i);
+				});
+				return newObj;
+			} else {
 				templateObject=[];
-		}else if (isObject(templateObject)){
+			}
+		} else if (isObject(templateObject)) {
 			newObj = {};
 			//if the template object contains ANY_KEY property, implement the template value to each key of the corresponding source object property
-			if (templateObject.hasOwnProperty(ANY_KEY)){
+			if (templateObject.hasOwnProperty(ANY_KEY)) {
 				Object.keys(obj).forEach(function(key){
 					//Only assign dynamic key template if the template object does not yet have the same key present
-					if (!templateObject.hasOwnProperty(key)){
-						templateObject[key] = templateObject[ANY_KEY];
+					if (!templateObject.hasOwnProperty(key)) {
+						newObj[key] = DataShape.copy(obj[key], templateObject[ANY_KEY], checkSource, path + '.' + key);		
 					}
 				});
-				delete templateObject[ANY_KEY];
 			}
-		}else if (isFunction(templateObject)){
+		} else if (isFunction(templateObject)) {
 			return templateObject(obj);
-		}else{				
+		} else {				
 			//if primitive, return as is
 			if (typeof obj == 'undefined' && templateObject==null)
 				return null
@@ -99,16 +103,18 @@ export var DataShape = {
 		}
 		//copy object properties
 		Objects.forEach(templateObject, (tEl,i)=>{
-			if (obj && typeof obj[i] == 'undefined' && checkSource)
+			if (obj && typeof obj[i] == 'undefined' && checkSource===true) {
 				throw new Error(`A Required Property ${i} of template${path} does not exist in source object${path}`);
-			else{
+			} else {
 				var e;
-				if (!isObject(obj)){
-					//console.log(`A Required Property ${i} of template${path} does not exist in source object${path}`,new Error().stack);
-				}else{
+				if (!isObject(obj)) {
+					if (checkSource === 1){
+						console.warn(`A Required Property ${i} of template${path} does not exist in source object${path}`,new Error().stack);
+					}
+				} else {
 					e = obj[i];
 				}
-				newObj[i] = DataShape.copy(e, tEl,checkSource, path + '.' + i);
+				newObj[i] = DataShape.copy(e, tEl , checkSource, path + '.' + i);
 			}
 		});
 		return newObj;
