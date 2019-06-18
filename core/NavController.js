@@ -129,8 +129,8 @@ export function NavController() {
 	 */
     function createPage(pageConstructor, args) {
 
-		var selector = typeof pageConstructor.selector !=='undefined' ? pageConstructor.selector : 'page-' + pageConstructor.name.toLowerCase() ;
-		var template = typeof pageConstructor.template !=='undefined' ? pageConstructor.template : null ;
+		var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + pageConstructor.name;
+		var template = pageConstructor.template ? pageConstructor.template : null ;
 		var className = pageConstructor.className ? pageConstructor.className : "" ;
 
 		//create page object in a new scope
