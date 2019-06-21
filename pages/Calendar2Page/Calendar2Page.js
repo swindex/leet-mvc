@@ -11,6 +11,7 @@ import { HeaderPage } from "./../HeaderPage/HeaderPage";
 import { Translate } from "./../../core/Translate";
 import { Injector } from "./../../core/Injector";
 import { ConfirmDanger } from "./../../core/simple_confirm";
+import { isArray, isFunction } from "util";
 
 export class Calendar2Page extends HeaderPage{
 	constructor(startDate){
@@ -271,7 +272,7 @@ export class Calendar2Page extends HeaderPage{
 		//so we add 0ms delay to run it in a next frame.
 
 		calendarGetCalendars()
-		.then(x => new Promise(resolve => setTimeout(() => resolve(x), 50))) //add 0ms delay after getting calendars
+		//.then(x => new Promise(resolve => setTimeout(() => resolve(x), 50))) //add 0ms delay after getting calendars
 		.then((calendars)=>{
 			this.calendars = calendars;
 			//Calendar plugin freaks out when Promise.all is used and all getEvents calls are done aynchronously.
@@ -281,7 +282,7 @@ export class Calendar2Page extends HeaderPage{
 			var resolver = ()=>{
 				var calendar = calendars[index];
 				return calendarGetEvents(this._currMonth.clone().startOf('year').toDate(),this._currMonth.clone().endOf('year').toDate(), calendar.name,calendar.id)
-					.then(x => new Promise(resolve => setTimeout(() => resolve(x), 50))) //add 0ms delay
+					//.then(x => new Promise(resolve => setTimeout(() => resolve(x), 50))) //add 0ms delay
 					.then(function(ret){
 						list = list.concat(ret);
 						index++;
@@ -679,6 +680,7 @@ export class Calendar2Page extends HeaderPage{
 									return calendarCreateEvent(addEvent);
 								})
 								.then(()=>{
+									
 									if (this.onAppraisalEventAdded(orderDetails) !== false) {
 										this.destroy();
 									} else {
@@ -755,9 +757,11 @@ export class Calendar2Page extends HeaderPage{
 			//deleteEventFromDaySlots(appraisalEvent.title, null, this.dayEventSlots);
 			this._getCalendarEvents();
 		}
-		window.plugins.calendar.deleteEvent(appraisalEvent.title, null, null , appraisalEvent.startDate.clone().subtract(6, 'months').toDate(), appraisalEvent.startDate.clone().add(6, 'months').toDate(),
-			resolve.bind(this),resolve.bind(this)
-		);
+		queueCalendarRequest(function(){
+			window.plugins.calendar.deleteEvent(appraisalEvent.title, null, null , appraisalEvent.startDate.clone().subtract(6, 'months').toDate(), appraisalEvent.startDate.clone().add(6, 'months').toDate(),
+				next(resolve.bind(this)),next(resolve.bind(this))
+			);
+		})
 	}
 
 	/**
@@ -897,7 +901,10 @@ function calendarCreateEvent(addEvent){
 				options.calendarName  = calendars[0].name;	
 			}
 		}).finally(()=>{
-			window.plugins.calendar.createEventWithOptions(addEvent.title, addEvent.location,addEvent.message, addEvent.startDate, addEvent.endDate, options, resolve, reject	);
+			//console.log("finallyCalled!");
+			queueCalendarRequest(function(){
+				window.plugins.calendar.createEventWithOptions(addEvent.title, addEvent.location,addEvent.message, addEvent.startDate, addEvent.endDate, options, next(resolve), next(reject));
+			})
 		});
 	});
 }
@@ -907,14 +914,44 @@ function calendarCreateEvent(addEvent){
  */
 function calendarGetCalendars(){
 	return new Promise(function(resolve, reject){
-		window.plugins.calendar.listCalendars(
-			(calendars)=>{
-				calendars.forEach(calendar => {calendar.isReadonly = calendarIsReadonlyCalendar(calendar)} )
-				resolve(calendars);
-			},
-			reject
-		);
+		queueCalendarRequest(()=>{
+			window.plugins.calendar.listCalendars(
+				next((calendars)=>{
+					calendars.forEach(calendar => {calendar.isReadonly = calendarIsReadonlyCalendar(calendar)} )
+					resolve(calendars);
+				}),
+				next(reject)
+			);
+		})
 	})
+}
+
+var calendarQueue = [];
+function queueCalendarRequest(callback){
+	calendarQueue.push(callback);
+	setTimeout(()=>{
+		nextCalendarRequest();
+	});
+}
+
+function next(callback){
+	return function(){
+		if (isFunction(callback))
+			callback.apply(null, arguments);
+		setTimeout(()=>{
+			//delay execution of next block	
+			nextCalendarRequest();
+		},50);
+	}
+}
+
+
+function nextCalendarRequest(){
+	if (calendarQueue.length > 0) {
+		var callable = calendarQueue[0];
+		callable();
+		calendarQueue.shift();
+	} 
 }
 
 function calendarIsReadonlyCalendar(calendar){
@@ -934,15 +971,17 @@ function calendarIsReadonlyCalendar(calendar){
  * @param {Calendar2Event} event
  */
 function calendarDeleteEvent(event){
-	return new Promise(function(resolve, reject){
-		if (event.id){
-			window.plugins.calendar.deleteEventById(event.id, null, resolve, reject );
-		}else{
-			window.plugins.calendar.deleteEvent(event.title, null, null , DateTime.moment(event.startDate).clone().subtract(6, 'months').toDate(), DateTime.moment(event.startDate).clone().add(6, 'months').toDate(),
-				resolve, reject
-			);
-		}
-	});
+		return new Promise(function(resolve, reject){
+			queueCalendarRequest(function(){
+				if (event.id){
+					window.plugins.calendar.deleteEventById(event.id, null, next(resolve), next(reject) );
+				}else{
+					window.plugins.calendar.deleteEvent(event.title, null, null , DateTime.moment(event.startDate).clone().subtract(6, 'months').toDate(), DateTime.moment(event.startDate).clone().add(6, 'months').toDate(),
+						next(resolve), next(reject)
+					);
+				}
+			})
+		});
 }
 /**
  * 
@@ -952,16 +991,23 @@ function calendarDeleteEvent(event){
  * @return {Promise<Calendar2Event[]>}
  */
 function calendarGetEvents( dateFrom, dateTo, calendarName, calendarId){
-	return new Promise(function(resolve,reject){
-		var options = window.plugins.calendar.getCalendarOptions();
-		options.calendarName = calendarName;
-		options.calendarId = calendarId;
-		window.plugins.calendar.findEventWithOptions('', '', '', dateFrom, dateTo, options, list => {
-			list.forEach(evt => {evt.calendarId = calendarId});
-			//console.log(JSON.stringify(list, null, '\t'))
-			resolve(list)
-		}, reject);
-	})
+		return new Promise(function(resolve,reject){
+			var options = window.plugins.calendar.getCalendarOptions();
+			options.calendarName = calendarName;
+			options.calendarId = calendarId;
+			queueCalendarRequest(function(){
+				window.plugins.calendar.findEventWithOptions('', '', '', dateFrom, dateTo, options, list => {
+					if (!isArray(list)){
+						reject();
+						return;
+					}
+					Objects.forEach(list, evt => {evt.calendarId = calendarId});
+					//console.log(JSON.stringify(list, null, '\t'))
+					resolve(list);
+					nextCalendarRequest();
+				}, next(reject));
+			})
+		})
 }
 
 /**
