@@ -85,7 +85,7 @@ export var DataShape = {
 		} else if (isObject(templateObject)) {
 			newObj = {};
 			//if the template object contains ANY_KEY property, implement the template value to each key of the corresponding source object property
-			if (templateObject.hasOwnProperty(ANY_KEY)) {
+			if (templateObject.hasOwnProperty(ANY_KEY) && obj !== null && obj !== undefined) {
 				Object.keys(obj).forEach(function(key){
 					//Only assign dynamic key template if the template object does not yet have the same key present
 					if (!templateObject.hasOwnProperty(key)) {

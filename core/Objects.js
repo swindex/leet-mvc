@@ -177,7 +177,11 @@ export const Objects = {
 	 */
 	getPropertyByPath(obj, pathArray){
 		if (typeof pathArray == 'string'){
+			pathArray = pathArray.replace(/\]./g , '.').replace(/\]/g , '.').replace(/\[/g , '.');
 			pathArray = pathArray.split('.');
+			if (pathArray[pathArray.length-1] === ''){
+				pathArray.pop();
+			}
 		}
 
 		if (pathArray.length>1)
@@ -193,7 +197,11 @@ export const Objects = {
 	 */
 	setPropertyByPath(obj, pathArray, value){
 		if (typeof pathArray == 'string'){
+			pathArray = pathArray.replace(/\]./g , '.').replace(/\]/g , '.').replace(/\[/g , '.');
 			pathArray = pathArray.split('.');
+			if (pathArray[pathArray.length-1] === ''){
+				pathArray.pop();
+			}
 		}
 
 		if (pathArray.length>1)

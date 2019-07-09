@@ -141,7 +141,7 @@ export function NavController() {
 		// @ts-ignore
 		pageObject.Nav = self;
 		pageObject.style.zIndex = (stack.length + 1)*100+"";
-
+		pageObject.name = pageConstructor.name;
 
 		tryCall(pageObject, pageObject._init);
 		
