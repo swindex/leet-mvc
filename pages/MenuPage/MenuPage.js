@@ -1,6 +1,5 @@
 import './MenuPage.scss';
 import { BasePage } from "./../BasePage"; 
-import { ItemList } from './../../components/ItemList';
 import { isFunction } from 'util';
 import { Injector } from './../../core/Injector';
 
@@ -12,19 +11,13 @@ export class MenuPage extends BasePage {
 	constructor() {
 		super()
 		this.down = false;
-		//this.selected = selected;
-
 		var st = Injector.Nav ? Injector.Nav.getPages() : null;
 
 		this.currPage = st[st.length-1].page;
 
-		/** @type {{action:Page|string,label:string}[]}*/
+		/** @type {{action:Page|string,label:string,className?:string}[]}*/
 		this.items = [];
-		//this.List = new ItemList()
-		//this.items = [];
-		//this.List.onItemClicked = (item,index)=>{
-		//	this.onItemClicked(item,index)
-		//};
+
 		/**
 		 * HTML text to put in logo
 		 */
@@ -66,12 +59,12 @@ MenuPage.selector = "page-menu";
 MenuPage.className = "page-Menu";
 MenuPage.template = `
 <div class="backdrop" onclick="this.onBackdropClicked()"></div>
-<div class="menu-body">
+<div class="menu-body scroll">
 	<div class="menu-head">
 		<div id="logo" [innerhtml] = "this.logo"></div>
 	</div>
 	<ul class="menu-tree">
-		<li [foreach]="index in this.items as item" onclick="this.onItemClicked(item, index)" [selected]="this.isSelected(item)">
+		<li [foreach]="index in this.items as item" onclick="this.onItemClicked(item, index)" [class]="item.className" [selected]="this.isSelected(item)">
 			<span [innerhtml] = "item.label"></span>
 		</li>
 	</ul>

@@ -101,8 +101,8 @@ export class ItemList extends BaseComponent{
 	}
 	scrollToBottom(){
 		setTimeout(()=>{
-			var vh = this.scollParent.height();
-			var ch = this.container.height();
+			var vh = this.scollParent.outerHeight();
+			var ch = this.container.outerHeight();
 			if(ch > vh){
 				this.scollParent.animate({ scrollTop: ch }, 'ease-in');	
 			}

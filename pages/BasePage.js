@@ -20,6 +20,8 @@ export class BasePage extends ChangeWatcher{
 		this.components = null;
 		this.binder = new Binder(this);
 
+		this.name = null;
+
 		this.isDeleting = false;
 		this.isCreating = false;
 		this.isHiding = false;
