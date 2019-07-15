@@ -1,5 +1,5 @@
-import { tryCall, empty, argumentsToArray, GUID } from "./helpers";
-import { BasePage } from "leet-mvc/pages/BasePage";
+import { tryCall, empty, argumentsToArray } from "./helpers";
+import { BasePage } from "../pages/BasePage";
 import { isSkipUpdate } from "./Watcher";
 
 export function NavController() {
@@ -158,7 +158,7 @@ export function NavController() {
 		tryCall(pageObject, pageObject.onInit, p);	
 
 		//setTimeout(()=>{
-			tryCall(pageObject, pageObject.resize);		
+		//	tryCall(pageObject, pageObject.resize);		
 		//},0);
 		setTimeout(()=>{
 			tryCall(pageObject, pageObject.onLoaded);		
