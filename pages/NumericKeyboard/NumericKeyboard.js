@@ -30,7 +30,7 @@ export var NumericKeyboard = {
 				} else { 
 					NumericKeyboard._page = Injector.Nav.push(NumericKeyboardPage, NumericKeyboard.options);
 					NumericKeyboard._page.focusElement(elem);
-					NumericKeyboard._page.onDestroy = ()=>{
+					NumericKeyboard._page.onDestroyed = ()=>{
 						NumericKeyboard._page=null;
 					}
 					NumericKeyboard._page.onClick = NumericKeyboard.onClick;
@@ -43,7 +43,7 @@ export var NumericKeyboard = {
 	},
 	disable(){
 		if (NumericKeyboard._page){
-			NumericKeyboard._page.destroy(); 
+			NumericKeyboard._page.destroyKB(); 
 		}
 		NumericKeyboard.isEnabled = false;
 		$(document).off('focus.virtual_keyboard_c');
@@ -137,7 +137,7 @@ class NumericKeyboardPage extends BasePage {
 		
 		/** @type {HTMLDivElement} */ 
 		this.curr_input = document.createElement('div');
-		var st = $(elem).css(['display','padding','padding-top','padding-bottom','border','border-top','border-bottom','border-left','border-right','border-radius','font','font-size','color','width','height','position','background','box-shadow']);
+		var st = $(elem).css(['display','padding','padding-top','padding-bottom','border','border-top','border-bottom','border-left','border-right','border-radius','font','font-size','color','top','left','bottom','right','width','height','position','background','box-shadow']);
 
 		var p = getPxNumber(st['height']) - (getPxNumber(st['padding-top'])+getPxNumber(st['padding-bottom']));
 		st['line-height'] = p + 'px';
@@ -196,7 +196,7 @@ class NumericKeyboardPage extends BasePage {
 			if ( v=="d" ) {
 				this.backspace();
 			}else if ( v=="e" ) {
-				this.destroy();
+				this.destroyKB();
 			}else if ( v=="-" ) {
 				this.minus();
 			}else{
@@ -244,25 +244,35 @@ class NumericKeyboardPage extends BasePage {
 
 			//if clicked outside of keyboard AND target element is not input number, simulate ENTER
 			ev.stopPropagation();
-			self.destroy();
+			self.destroyKB();
 			
 		});
 
-		this._resizeBody(true);
-	}
-
-	_resizeBody(emitResize){
 		var w_h =  $(window).height();
 
 		var kb_h =  this.page.height();
 
 		//phase one: show keyboard slowly with body the same
 		this.page.css({top:w_h - kb_h});
+		this.listenResize = true;
+		this._resizeBody(true);	
+	}
+
+	_resizeBody(emitResize){
+		if (!this.listenResize){
+			return;
+		}
+		var w_h =  $(window).height();
+
+		var kb_h =  this.page.height();
+
+		//phase one: show keyboard slowly with body the same
+		//this.page.css({top:w_h - kb_h});
 
 		//phase two resize body after keyboard is shown
 		var self = this;
 		setTimeout(()=>{
-			if (!self.page){
+			if (!self.page || !this.listenResize){
 				//in case page is already removed
 				return;
 			}
@@ -290,12 +300,8 @@ class NumericKeyboardPage extends BasePage {
 		},400);
 	}
 
-	onResize(){
-		this.window_resize=true;
-		this._resizeBody(false);
-	}
-
-	onDestroy(){
+	//prepare for removing the keyboard page
+	destroyKB(){
 		this.unFocusCurrentElement();
 		this.page.off();
 		$(document).off('keydown.virtual_keyboard');
@@ -308,15 +314,31 @@ class NumericKeyboardPage extends BasePage {
 		this.page.css({top:w_h - kb_h});
 		$('body').css({height: w_h, overflow: this.original.bodyOverflow, position:this.original.bodyPosition });
 
+		this.listenResize = false;
 		window.dispatchEvent(new Event('resize'));
 			
 		this.enter();
+		this.destroy();
+		this.onDestroyed();
 	}
+
+	onResize(){
+		this.window_resize=true;
+		this._resizeBody(false);
+	}
+
+	/**
+	 * Notify creator that keyboard has been destroyed
+	 */
+	onDestroyed(){
+
+	}
+
 	customKB_keydownhandler (e) {
 		switch (e.keyCode) {
 			case 27:
 				e.preventDefault();
-				this.destroy();
+				this.destroyKB();
 				break;
 			case 46:
 			case 8:
@@ -325,7 +347,7 @@ class NumericKeyboardPage extends BasePage {
 				break;
 			case 13:
 				e.preventDefault();
-				this.destroy();
+				this.destroyKB();
 				break;
 			case 109:
 				e.preventDefault();
@@ -414,7 +436,9 @@ class NumericKeyboardPage extends BasePage {
 
 	startBlinker(){
 		this.blinker = setInterval(()=>{
-			this.blink();
+			if (!this.isDeleted){
+				this.blink();
+			}
 		},400);
 	}
 

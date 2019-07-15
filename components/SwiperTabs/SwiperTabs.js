@@ -82,8 +82,10 @@ export class SwiperTabs extends BaseComponent{
 			//notify tabchange with the tab that is active
 			if (this.swiper.realIndex >= 0){
 				var v = this.swiper.realIndex;
-				this.pages[v].onEnter.super();
-				this.onTabChanged(this.pages[v],v);
+				if (this.pages[v]) {
+					this.pages[v].onEnter.super();
+					this.onTabChanged(this.pages[v],v);
+				}
 			}
 		});
 		return inst;
