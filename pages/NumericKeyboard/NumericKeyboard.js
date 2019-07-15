@@ -138,7 +138,6 @@ class NumericKeyboardPage extends BasePage {
 		/** @type {HTMLDivElement} */ 
 		this.curr_input = document.createElement('div');
 		var st = $(elem).css(['display','padding','padding-top','padding-bottom','border','border-top','border-bottom','border-left','border-right','border-radius','font','font-size','color','top','left','bottom','right','width','height','position','background','box-shadow']);
-
 		var p = getPxNumber(st['height']) - (getPxNumber(st['padding-top'])+getPxNumber(st['padding-bottom']));
 		st['line-height'] = p + 'px';
 		st['overflow'] = 'hidden';
@@ -154,11 +153,12 @@ class NumericKeyboardPage extends BasePage {
 
 		this.original = {
 			type: elem.type,
-			bodyOverflow: $('body').css('overflow'),
-			bodyPosition: $('body').css('position'),
+			bodyStyle:$('body').css(['height','overflow', 'position']),
 			elemClassName: elem.className,
 			elemDisplay:  $(elem).css('display')
 		};
+
+		this.original.bodyStyle.height = "100%";
 
 		//remove focus from the old element!
 		elem.blur();
@@ -280,6 +280,8 @@ class NumericKeyboardPage extends BasePage {
 			var b_h = w_h - kb_h;
 	
 			self.page.css({top:w_h - kb_h});
+
+			//$('body').css(this.bodyStyle);
 			$('body').css({height:b_h, overflow:'visible', position:'relative'});
 			if (emitResize){
 				window.dispatchEvent(new Event('resize'));
@@ -312,7 +314,8 @@ class NumericKeyboardPage extends BasePage {
 		var w_h =  $(window).height();
 		var kb_h =  this.page.height();
 		this.page.css({top:w_h - kb_h});
-		$('body').css({height: w_h, overflow: this.original.bodyOverflow, position:this.original.bodyPosition });
+		
+		$('body').css(this.original.bodyStyle);
 
 		this.listenResize = false;
 		window.dispatchEvent(new Event('resize'));
