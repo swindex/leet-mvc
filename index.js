@@ -37,4 +37,4 @@ import { NumericKeyboard } from 'leet-mvc/pages/NumericKeyboard/NumericKeyboard'
 window["$"] = window["jQuery"] = require("jquery");
 window['Translate'] = Translate;
 
-
+import './scss/app.scss';

@@ -439,15 +439,17 @@ export var Binder = function(context){
 		if (attrName =='bind'){
 			return { type:'get-set', key: attrName};
 		}
-
+		// [()]
 		var matches = attrName.match( /^\[\((.*)\)\]$/);
 		if (matches){
 			return { type:'get-set', key: matches[1]};
 		}
+		// ()
 		var matches = attrName.match( /^\((.*)\)$/);
 		if (matches){
 			return { type:'call', key: matches[1]};
 		}
+		// []
 		var matches = attrName.match( /^\[(.*)\]$/);
 		if (matches){
 			return { type:'get', key: matches[1]};
@@ -521,24 +523,16 @@ export var Binder = function(context){
 		var nodeChanged = false;
 		if (on && on.getters){
 			for (var key in on.getters){
-				if (!on.getters.hasOwnProperty(key))
+				if (!on.getters.hasOwnProperty(key)){
 					continue;
+				}
 										
-				if (attributes[key]){
-					
-					var dirResult =executeAttribute(key, on, inject);
-					//if directives[key](on, inject) returns false, means return right away
-					if (dirResult === true)
-						nodeChanged = true;
-					if (dirResult === false)
-						return false;
-				} else {
-					try {
-						self.context[key] = on.getters[key](self, inject);		
-					} catch (ex) {
-						console.warn(ex);
-					}
-
+				var dirResult = executeAttribute(key, on, inject);
+				//if directives[key](on, inject) returns false, means return right away
+				if (dirResult === true)
+					nodeChanged = true;
+				if (dirResult === false){
+					return false;
 				}
 			};
 		
@@ -561,6 +555,16 @@ export var Binder = function(context){
 			//if a built-in attribute
 			if (attributes[attribute]){
 				var ret = attributes[attribute](on,inject)
+			} else {
+				//attribute is not in the standard attribute list
+				if (on.getters[attribute]) {
+					//getter exists
+					var value = on.getters[attribute]( inject);
+					on.elem[attribute] = value;
+					if (self.context instanceof BaseComponent){
+						self.context[attribute] = value;
+					}
+				}
 			}
 		}catch(ex){
 			//this may cause an error
@@ -582,7 +586,7 @@ export var Binder = function(context){
 			var getter = on.getters[key];
 			var options;
 			try{
-				options = getter(self,inject);
+				options = getter(inject);
 			}catch(ex){
 				options = {};
 			}
@@ -956,6 +960,7 @@ export var Binder = function(context){
 				}
 				
 				on.values[key] = component;
+
 
 				if (!(component instanceof BaseComponent)){
 					return false;
