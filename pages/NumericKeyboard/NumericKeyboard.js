@@ -137,7 +137,7 @@ class NumericKeyboardPage extends BasePage {
 		
 		/** @type {HTMLDivElement} */ 
 		this.curr_input = document.createElement('div');
-		var st = $(elem).css(['display','padding','padding-top','padding-bottom','border','border-top','border-bottom','border-left','border-right','border-radius','font','font-size','color','width','height','position','background','box-shadow']);
+		var st = $(elem).css(['display','padding','padding-top','padding-bottom','border','border-top','border-bottom','border-left','border-right','border-radius','font','font-size','color','top','left','bottom','right','width','height','position','background','box-shadow']);
 
 		var p = getPxNumber(st['height']) - (getPxNumber(st['padding-top'])+getPxNumber(st['padding-bottom']));
 		st['line-height'] = p + 'px';
