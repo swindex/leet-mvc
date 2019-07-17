@@ -1,4 +1,4 @@
-import { NavController } from "leet-mvc/core/NavController";
+import { NavController } from "./NavController";
 
 declare namespace SwiperTabsModule{
 	class SwiperTabs extends SwiperTabs {

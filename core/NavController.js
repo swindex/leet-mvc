@@ -172,10 +172,10 @@ export function NavController() {
 	 * @param {any[]} args 
 	 */
 	function createPageInstance(pageConstructor, args){
-		var page = Object.create(pageConstructor.prototype);
+		/*var page = Object.create(pageConstructor.prototype);
 		var ret = pageConstructor.apply(page, args);
-		return ret ? ret : page;
-		//return new pageConstructor(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9]);
+		return ret ? ret : page;*/
+		return new pageConstructor( ...args );
 	}
 
 	function removeFrameN (frameIndex){
