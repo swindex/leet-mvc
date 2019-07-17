@@ -1,5 +1,5 @@
 import * as moment from "moment";
-import { Translate } from "leet-mvc/core/Translate";
+import { Translate } from "./Translate";
 
 export var DateTime = {
 	/**

@@ -31,7 +31,7 @@ import { EnableCustomElements } from "./core/EnableCustomElements";
 import { Forms } from "./components/Forms";
 import { ItemList } from "./components/ItemList";
 import { Register } from './core/Register';
-import { NumericKeyboard } from 'leet-mvc/pages/NumericKeyboard/NumericKeyboard';
+import { NumericKeyboard } from './pages/NumericKeyboard/NumericKeyboard';
 
 //Make jQuery available globally
 window["$"] = window["jQuery"] = require("jquery");

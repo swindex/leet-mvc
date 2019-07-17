@@ -2,8 +2,8 @@ import { DialogPage } from "../DialogPage/DialogPage";
 import { SimpleTabs } from "../../components/SimpleTabs/SimpleTabs";
 import * as moment from "moment";
 import './CalendarPage.scss';
-import { OptionsDialogPage } from "leet-mvc/pages/OptionsDialogPage/OptionsDialogPage";
-import { Objects } from "leet-mvc/core/Objects";
+import { OptionsDialogPage } from "./../OptionsDialogPage/OptionsDialogPage";
+import { Objects } from "./../../core/Objects";
 
 export class CalendarPage extends DialogPage{
 	constructor(startDate){
