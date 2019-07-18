@@ -1,37 +1,12 @@
-import { Config } from "../../src/js/Config";
-import '../../src/js/polyfill';
-import { InjectTemplate } from "../../src/js/Inject";
-import { Injector } from "leet-mvc/core/Injector";
-import { NASAPI } from "../../src/js/NASDomesticAPI";
+import { NavController } from "../../core/NavController";
+import { Injector } from "../../core/Injector";
+import { LoginPage } from "../../pages/LoginPage/LoginPage";
 
-import { NavController } from "leet-mvc/core/NavController";
-import { Common } from "../../src/js/Common";
-import { Storage } from "leet-mvc/core/storage";
-import { TempMemory } from "../../src/js/TempMemory";
-import { Language } from "../../src/language/Language";
-import { Translate } from "./../../core/Translate";
-import { LoginPage } from "./../LoginPage/LoginPage";
-//import "babel-polyfill";
-window.$ = window.jQuery = require("jquery");
-//load easing plugin
-require('jquery.easing');
+var Inject = Injector.implement({
+	Nav: null,
+})
 
-window.device = null;
-window['Translate'] = Translate;
-
-
-var Inject = Injector.implement(InjectTemplate)
-Inject.Config = Config ;
-Inject.Nav = new NavController;
-Inject.CMN = Common;
-Inject.Storage = Storage;
-Inject.Mem= TempMemory;
-Inject.LNG = Language;
-Inject.API= new NASAPI(Config.API_URL_UAT);
-Inject.API.settings_key = "NAS_KARMA_TESTING"
-Inject.API.start(function(){
-});
-//Inject.SPY = new Analytics();
+Inject.Nav = new NavController();
 
 /** @type {LoginPage} */
 var page = null;
@@ -40,7 +15,6 @@ describe("Page Login", function() {
 		var spy
 		beforeEach(function(done) {
 			page = Inject.Nav.setRoot(LoginPage);
-			spyOn(Inject.API,'login').and.callThrough();
 			spyOn(Inject.Nav,'setRoot').and.callThrough();
 			spyOn(Inject.Nav,'push').and.callThrough();
 			done();
