@@ -45,21 +45,20 @@ export function argumentsToArray(args,nStart){
 
 /**
  * Override Function or a method 
- * @param {any} context - contect to call the original function from
- * @param {function} method - method or function to override
- * @param {function(function, ...any):any} callback - the new implementation. callback to original function is injected info the method's super property
+ * @param {any} originalContext - context to call the original function from
+ * @param {function} originalFunction - method or function to override
+ * @param {function(function, ...any):any} overrideFunction - callback to execute instead of the original function/method
+ * @returns function
  */
-export function Override(context, method, callback){
-	var f;
-	f = function(){
+export function Override(originalContext, originalFunction, overrideFunction){
+	return function(){
 		var args = arguments;
 		var argsWithNext = argumentsToArray(arguments);
 		argsWithNext.unshift(function(){
-			return method.apply(context, arguments.length>0 ? arguments : args );
+			return originalFunction.apply(originalContext, arguments.length > 0 ? arguments : args );
 		});
-		return callback.apply(context, argsWithNext );
+		return overrideFunction.apply( originalContext, argsWithNext );
 	}
-	return f;
 }
 
 /**	

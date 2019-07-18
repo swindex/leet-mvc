@@ -4,8 +4,8 @@ function test(a){
 	return " AAA:"+a;
 }
 
-describe('test Override function chain',function(){
-	it("",function(){
+describe('test Override() function chain',function(){
+	it("Expect override chain in the proper order",function(){
 
 		expect(test(0)).toEqual(" AAA:0");
 		
@@ -20,8 +20,6 @@ describe('test Override function chain',function(){
 		})
 
 		expect(test(2)).toEqual(" CCC:2 BBB:2 AAA:2");
-
-		
 
 	})
 });

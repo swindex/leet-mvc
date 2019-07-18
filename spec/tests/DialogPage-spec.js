@@ -14,7 +14,7 @@ var I = Injector.implement({
 I.Nav = new NavController();
 /** @type {DialogPage} */
 var page;
-xdescribe('Test DialogPage',function(){
+describe('Test DialogPage',function(){
 	beforeEach(function(done){
 		page = Dialog("str_Title");
 		page.onLoaded=()=>{
@@ -23,13 +23,11 @@ xdescribe('Test DialogPage',function(){
 		}
 	})
 	afterEach(function(done){
-		page.destroy();
-
-		debugger;
 		page.onDestroy = Override(page, page.onDestroy, (next)=>{
-			done();
 			next();
-		})
+			done();
+		});
+		page.destroy();
 	})
 
 	it("Page defined",function(){
@@ -77,8 +75,8 @@ xdescribe('Test DialogPage',function(){
 		};
 
 		page.onDestroy = Override(page, page.onDestroy, (next)=>{
-			done();
 			next();
+			done();
 		})
 
 
