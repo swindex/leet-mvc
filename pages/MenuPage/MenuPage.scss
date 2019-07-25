@@ -36,12 +36,10 @@ div[page].page-Menu{
 		transform: translate3d(-100%,0,0);
 		
 		.menu-head{
-			padding: 70px 0 50px;
 			border-radius: 1px;
 			background-color: #fff;
-			font-family: Crimson Text, serif;
-			font-style: italic;
-			font-size: 2rem;
+			color: #11497f;
+			font-size: 1.2em;
 			padding: 5rem 1rem;
 			#logo{  
 				display: flex;
@@ -52,6 +50,9 @@ div[page].page-Menu{
 				background-size: contain;
 				background-position: 50% 50%;
 				background-repeat: no-repeat;
+			}
+			#slogan{
+				text-align: center;
 			}
 			p{
 				text-align:center;
