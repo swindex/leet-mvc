@@ -22,6 +22,8 @@ export class MenuPage extends BasePage {
 		 * HTML text to put in logo
 		 */
 		this.logo="";
+
+		this.slogan = "";
 	}
 	onItemClicked(item,index){
 		console.log(item);
@@ -62,6 +64,7 @@ MenuPage.template = `
 <div class="menu-body scroll">
 	<div class="menu-head">
 		<div id="logo" [innerhtml] = "this.logo"></div>
+		<div id="slogan" [innerhtml] = "this.slogan"></div> 
 	</div>
 	<ul class="menu-tree">
 		<li [foreach]="index in this.items as item" onclick="this.onItemClicked(item, index)" [class]="item.className" [selected]="this.isSelected(item)">
