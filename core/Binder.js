@@ -27,7 +27,7 @@ export var Binder = function(context){
 	this.eventCallbacks = {change:null, focus:null, input:null,click:null};
 
 	function insertBefore(newNode, referenceNode) {
-		referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+		referenceNode.parentNode.insertBefore(newNode, referenceNode);
 	}
 
 	function insertAfter(newNode, referenceNode) {
@@ -788,6 +788,9 @@ export var Binder = function(context){
 			
 			var fo = document.createDocumentFragment();
 			
+			var fo1 = document.createDocumentFragment();
+			
+
 			var touchedKeys = {};
 			
 			//remove all items temporarely (not right away)
@@ -825,8 +828,9 @@ export var Binder = function(context){
 					var vdom = on.itemBuilder(inj);
 					on.items[index] = vdom;
 					on.items[index].elem['INJECT'] = inj;
-					fo.appendChild(on.items[index].fragment || on.items[index].elem); 
-				}else{
+					fo1.appendChild(on.items[index].fragment || on.items[index].elem); 
+				} else {
+					insertBefore(fo1, on.items[index].elem);
 					on.items[index].elem['INJECT'] = inj;
 					if (checkVDomNode(on.items[index], inj)===true){
 						hasChanges ++;
@@ -847,6 +851,8 @@ export var Binder = function(context){
 
 				delete on.items[index];
 			}
+
+			fo.appendChild(fo1);
 
 			if (on.elem.parentNode){
 				//if new or deleted elements, remove the old frag and insert the new one
@@ -960,7 +966,6 @@ export var Binder = function(context){
 				}
 				
 				on.values[key] = component;
-
 
 				if (!(component instanceof BaseComponent)){
 					return false;
