@@ -56,10 +56,16 @@ export class BasePage extends ChangeWatcher{
 	 * Command the nav controller to remove this page from the stack
 	 */
 	destroy(){
+
 		if (this.isDeleted) {
 			return;
 		}
-		//if nav exists, then tell nav to delete the page
+
+		if (this.Nav && this.onBeforeDestroy() === false){
+			return;
+		}
+		
+		//if nav exists, then tell nav to delete the page. Nav will then call this method again
 		if (this.Nav){
 			//tell Nav to remove the page from the stack
 			this.Nav.remove(this);
@@ -166,6 +172,16 @@ export class BasePage extends ChangeWatcher{
 	 * @override
 	 */
 	onDestroy(){
+	}
+
+	/**
+	 * ***Override***
+	 * Called before page is deleted. Return false to prefent page deletion. 
+	 * @return {any|false}
+	 * @override
+	 */
+	onBeforeDestroy(){
+		return true;
 	}
 	
 	/**
