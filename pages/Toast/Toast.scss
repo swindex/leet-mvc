@@ -1,7 +1,19 @@
 div#page-ToastPage {
+	opacity: 0;
+	&[visible], &[creating]{
+		opacity: 1;
+	}
 	height: auto;
-	bottom: 0;
-	
+
+	&.bottom{
+		bottom: 0;
+	}
+	&.top{
+		top: 0;
+	}
+	&.middle{
+		top: 45%;
+	}
 	.backdrop {
 		display: flex;
 	}
