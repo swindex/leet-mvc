@@ -8,12 +8,14 @@ import './Toast.scss'
  * @param {number} [timeout] - timout - default 3000 ms
  * @param {*} [onClosed] - callback fied when toast is closed
  */
-export function Toast(message, timeout, onClosed){
+export function Toast(message, timeout, onClosed, className="bottom"){
 	timeout = (timeout===undefined || timeout===null) ? 3000 : timeout;
 
 	/** @type {ToastPage} */
 	var p = Injector.Nav.push(ToastPage);
 	p.message = message;
+	p.className = className;
+
 	p.onClosed=()=>{
 		tryCall(null, onClosed);
 	};
@@ -23,7 +25,7 @@ export function Toast(message, timeout, onClosed){
 export class ToastPage extends BasePage{
 	constructor(){
 		super();
-		this.message = "Toast!";
+		this.message = "";
 	}
 	show(timeout){
 		setTimeout(()=>{
