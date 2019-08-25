@@ -6,6 +6,7 @@ import { Injector } from "./../../core/Injector";
 
 export var NumericKeyboard = {
 	isEnabled: false,
+	/** @type {NumericKeyboardPage} */
 	_page:null,
 	options : {
 		layout:0,
@@ -26,11 +27,13 @@ export var NumericKeyboard = {
 			var elem = event.target;
 			if (NumericKeyboard.isEnabled){
 				if (NumericKeyboard._page){
-					NumericKeyboard._page.focusElement(elem);
+					//if (!NumericKeyboard._page.isDeleting){
+						NumericKeyboard._page.focusElement(elem);
+					//}
 				} else { 
 					NumericKeyboard._page = Injector.Nav.push(NumericKeyboardPage, NumericKeyboard.options);
 					NumericKeyboard._page.focusElement(elem);
-					NumericKeyboard._page.onDestroyed = ()=>{
+					NumericKeyboard._page.onDestroy = ()=>{
 						NumericKeyboard._page=null;
 					}
 					NumericKeyboard._page.onClick = NumericKeyboard.onClick;
@@ -151,14 +154,16 @@ class NumericKeyboardPage extends BasePage {
 			this.isTextSelected = true;
 		}
 
-		this.original = {
-			type: elem.type,
-			bodyStyle:$('body').css(['height','overflow', 'position']),
-			elemClassName: elem.className,
-			elemDisplay:  $(elem).css('display')
-		};
+		if (isNew){
+			this.original = {
+				type: elem.type,
+				bodyStyle:$('body').css(['height','overflow', 'position']),
+				elemClassName: elem.className,
+				elemDisplay:  $(elem).css('display')
+			};
 
-		this.original.bodyStyle.height = "100%";
+			this.original.bodyStyle.height = "100%";
+		}
 
 		//remove focus from the old element!
 		elem.blur();
@@ -302,8 +307,17 @@ class NumericKeyboardPage extends BasePage {
 		},400);
 	}
 
-	//prepare for removing the keyboard page
+
 	destroyKB(){
+		this.destroy();
+	}
+	/*onBackNavigate(){
+		this.destroyKB();
+		return true;
+	}*/
+
+	//prepare for removing the keyboard page
+	onBeforeDestroy(){
 		this.unFocusCurrentElement();
 		this.page.off();
 		$(document).off('keydown.virtual_keyboard');
@@ -321,20 +335,11 @@ class NumericKeyboardPage extends BasePage {
 		window.dispatchEvent(new Event('resize'));
 			
 		this.enter();
-		this.destroy();
-		this.onDestroyed();
 	}
 
 	onResize(){
 		this.window_resize=true;
 		this._resizeBody(false);
-	}
-
-	/**
-	 * Notify creator that keyboard has been destroyed
-	 */
-	onDestroyed(){
-
 	}
 
 	customKB_keydownhandler (e) {
