@@ -1,6 +1,6 @@
 export var Storage = {
 	set: function (key, value, callback){
-		var str = JSON.stringify({value: value});
+		var str = JSON.stringify(value);
 		window.localStorage.setItem(key, str);
 		if (typeof callback ==='function')
 			callback();
@@ -14,9 +14,11 @@ export var Storage = {
 		var value = defaultValue;
 		if (str!==null){
 			try{
-				value = (JSON.parse(str)).value;
-			}catch(err){
-				console.log('Error extracting key '+ key +" from Storage", err );
+				value = JSON.parse(str);
+			}catch( err ){
+				setTimeout(()=>{
+					throw err;
+				})
 			}
 		}
 		if (typeof callback ==='function')
