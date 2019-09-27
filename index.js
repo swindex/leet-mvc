@@ -24,7 +24,7 @@ import { Analytics } from "./core/analytics_matomo";
 import { Touch } from "./core/Touch.js";
 
 import { OptionsDialogPage } from "./pages/OptionsDialogPage/OptionsDialogPage";
-import { Extend, GUID, Override, tryCall } from "./core/helpers";
+import { Extend, GUID, tryCall, argumentsToArray } from "./core/helpers";
 
 import { Toast, ToastPage } from "./pages/Toast/Toast"; 
 import { EnableCustomElements } from "./core/EnableCustomElements";
@@ -32,6 +32,8 @@ import { Forms } from "./components/Forms";
 import { ItemList } from "./components/ItemList";
 import { Register } from './core/Register';
 import { NumericKeyboard } from './pages/NumericKeyboard/NumericKeyboard';
+import { Override } from './core/Override';
+
 
 //Make jQuery available globally
 window["$"] = window["jQuery"] = require("jquery");

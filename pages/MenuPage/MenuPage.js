@@ -25,6 +25,11 @@ export class MenuPage extends BasePage {
 
 		this.slogan = "";
 	}
+	_onItemClicked(item,index){
+		this.destroy();
+		this.onItemClicked(item,index);	
+	}
+
 	onItemClicked(item,index){
 		console.log(item);
 		throw new Error("Override onItemClicked");
@@ -67,7 +72,7 @@ MenuPage.template = `
 		<div id="slogan" [innerhtml] = "this.slogan"></div> 
 	</div>
 	<ul class="menu-tree">
-		<li [foreach]="index in this.items as item" onclick="this.onItemClicked(item, index)" [class]="item.className" [selected]="this.isSelected(item)">
+		<li [foreach]="index in this.items as item" onclick="this._onItemClicked(item, index)" [class]="item.className" [selected]="this.isSelected(item)">
 			<span [innerhtml] = "item.label"></span>
 		</li>
 	</ul>

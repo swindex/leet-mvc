@@ -5,7 +5,7 @@ import { BaseComponent } from "./BaseComponent";
 import { isNumber, isArray, isString } from "util";
 import { DateTime } from "./../core/DateTime";
 import { Translate } from "../core/Translate";
-
+import { tryCall } from '../core/helpers';
 
 export class Forms extends BaseComponent{
 	/**
@@ -32,11 +32,17 @@ export class Forms extends BaseComponent{
 		this.attributes = attributes || {};
 		this.attrEvents = {};
 		this.types={};
+		this.arrays={};
 
-		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes);
+		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes, this.options);
 		this.validator.validateVisibility();
 		
 		this.events = {
+			input:(ev) =>{
+				setTimeout(()=>{
+					this.onInput(ev);
+				},0);
+			},
 			click:(ev)=>{
 				//notify in the next render cycle.
 				setTimeout(()=>{
@@ -61,10 +67,11 @@ export class Forms extends BaseComponent{
 			},
 		}
 
-		this.html = this.renderArray(this.formTemplate, null)
+		this.field_definitions = field_definitions;
 
+		this.html = this.renderArray(this.formTemplate, null)
 	}
-	
+
 	/** 
 	 * @param {HTMLInputElementChangeEvent} event
 	 */
@@ -72,6 +79,12 @@ export class Forms extends BaseComponent{
 
 	}
 
+	/** 
+	 * @param {HTMLInputElementChangeEvent} event
+	 */
+	onInput(event){
+
+	}
 	/** 
 	 * @param {HTMLInputElementChangeEvent} event
 	 */
@@ -169,6 +182,8 @@ export class Forms extends BaseComponent{
 		return html.join('');
 	}
 
+
+
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
@@ -178,74 +193,10 @@ export class Forms extends BaseComponent{
 		/** @type {string} */
 		el.type = el.type ? el.type.toLowerCase() : '';
 
-		switch (el.type){
-			case "form":
-				return this.addForm(el,parentPath /*? parentPath +'.' +el.name : el.name*/ );
-			case "email":
-				this.assertValidateRuleHas(el,"email");
-				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'email'})]);
-			case "file":
-				//this.assertValidateRuleHas(el,"file");
-				return this.renderFieldGroupHTML(el, [this.addFile(el)]);
-			case "text":
-				return this.renderFieldGroupHTML(el, [this.addInput(el,null)]);
-			case "date":
-				return this.renderFieldGroupHTML(el, [this.addInput(el,{date:'', format:'date'})]);	
-			case "datetime":
-				return this.renderFieldGroupHTML(el, [this.addInput(el,{dateTime:'', format:'dateTime'})]);	
-			case "time":
-				return this.renderFieldGroupHTML(el, [this.addInput(el,{time:'', format:'time'})]);	
-			case "date-time":
-				var dateEl = $.extend({}, el);
-				var timeEl = $.extend({}, el);
-				
-				//dateEl.name += "_date";
-				//dateEl.__name = dateEl._name;
-				dateEl._name += "_date";
-				//timeEl.name += "_time";
-				//timeEl.__name += timeEl._name;
-				
-				timeEl._name += "_time";
-				
-				
-				var dateTime = Objects.getPropertyByPath(this.data, el._name)
-				Objects.setPropertyByPath(this.extraData, dateEl._name, dateTime);
-				Objects.setPropertyByPath(this.extraData, timeEl._name, dateTime);
-				
-				return this.renderFieldGroupHTML(el,  [
-					'<div class="split" style="width:60%">' + this.addInput(dateEl, {date:'', format:'date', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',false)"},'extraData')+ '</div>',
-					'<div class="split" style="width:40%">' + this.addInput(timeEl, {time:'', format:'time', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',true)"},'extraData')+ '</div>',
-				]);	
-			case "number":
-				this.assertValidateRuleHas(el,"numeric");
-				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'number', pattern:"[0-9]*", novalidate: true})]);
-			case "password":
-				return this.renderFieldGroupHTML(el, [this.addPassword(el,null)]);
-			case "phone":
-				return this.renderFieldGroupHTML(el, [this.addInput(el,{type:'tel', oninput:"this._formatPhoneNumber($event)"})]);
-			case "hidden":
-				return "";
-			case "textarea":
-				return this.renderFieldGroupHTML(el, [this.addTextArea(el,null)]);	
-			case "checkbox":
-				return this.renderFieldGroupHTML(el, [this.addCheck(el,null)],true);
-			case "radio":
-				return this.addRadio(el,null);
-			case "select":
-				return this.addSelect(el,null,parentPath);
-			case "label":
-				return this.renderFieldGroupHTML(el, [this.addLabel(el)],null, true);
-			case "link":
-				return this.renderFieldGroupHTML(el, [this.addLink(el)],null, true);
-			case "button":
-				return this.renderFieldGroupHTML(el, [this.addButton(el)]);
-			case "buttons":
-				return this.renderFieldGroupHTML(el, [this.addButtons(el)]);		
-			case "html":
-				return this.addHtml(el);		
-			default:
-				throw Error("Unknown form element type:" + el.type + " in "+ JSON.stringify(el,null,'\t'));	
-
+		if (this.field_definitions[el.type]) {
+			return tryCall(this, this.field_definitions[el.type], this, el, parentPath);
+		} else {
+			throw Error("Unknown form element type:" + el.type + " in "+ JSON.stringify(el,null,'\t'));	
 		}
 	}
 
@@ -285,6 +236,65 @@ export class Forms extends BaseComponent{
 		return this.renderFormHTML(el, this.renderArray(el.items, el._name));
 	}
 
+		/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 * @param {string} [parentPath]
+	 */
+	addArray(el, parentPath){
+		//do we support nested data?
+		if (!this.options.nestedData){
+			parentPath = null;
+		}
+
+		if(parentPath && el.name){
+			el._name = parentPath + "." + el.name ;
+		}else{
+			el._name = el.name;
+		}
+		if (el._name){
+			//if create value in each structure
+			if (! Objects.getPropertyByPath(this.data, el._name))
+				Objects.setPropertyByPath(this.data, el._name, {});
+			if (! Objects.getPropertyByPath(this.errors, el._name))
+				Objects.setPropertyByPath(this.errors, el._name, {});
+			if (! Objects.getPropertyByPath(this.attributes, el._name))
+				Objects.setPropertyByPath(this.attributes, el._name, {});
+		}
+
+		this.arrays[el.name] = [""];
+
+		return this.renderArrayHTML(el, this.renderArray(el.items, el._name));
+	}
+	/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 * @param {string} childrenHTML
+	 */
+	renderArrayHTML(el, childrenHTML){
+		/** @type {FieldTemplate} */
+		var buttonEl = {
+			name: el.name + "_add_button",
+			_name: el.name + "_add_button",
+			type:"button",
+			value: el.title,
+			attributes: {
+				click: function(){
+					this.arrays[el.name].push("");
+				}
+			}
+		}
+
+		return `
+			<div>
+				${this.addButton(buttonEl)}
+				<div [foreach]="this.arrays['${el.name}']">
+				${childrenHTML}
+				</div>
+			</div>
+			`;
+	}
+
 	renderFormHTML(el, childrenHTML){
 		return `
 			<div class="${this.options.formClass}">
@@ -304,6 +314,7 @@ export class Forms extends BaseComponent{
 			${(noErrorHint ? '' : this.addErrorHint(el))}
 		</div>`; 
 	}
+
 
 	renderSelectGroupHTML(el, elHTML){
 		return `<div [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">${elHTML}</div>`; 
@@ -330,7 +341,7 @@ export class Forms extends BaseComponent{
 		);
 	}
 
-		/**
+	/**
 	 * 
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
@@ -496,9 +507,9 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addLabel(el){
-		var opt = $.extend({}, { }, el.attributes);
+		var opt = $.extend({}, {onclick:"this.onClick($event);"}, el.attributes);
 		return (`
-			<div class="label" ${this.generateAttributes(opt)} >${(el.value != null ? el.value : "")}</div>`	+
+			<div class="label" ${this.generateAttributes(opt)} name="${el._name}">${(el.value != null ? el.value : "")}</div>`	+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -510,16 +521,18 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addHtml(el){
-		return el.value;
+		var opt = $.extend({}, {onclick:"this.onClick($event);"}, el.attributes);
+		return `<div class="html" ${this.generateAttributes(opt)} name="${el._name}">${(el.value != null ? el.value : "")}</div>`;
+		//return `<div>${(el.value != null ? el.value : "")}</div>`;
 	}
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
 	 */
 	addLink(el){
-		var opt = $.extend({}, { }, el.attributes);
+		var opt = $.extend({}, {onclick:"this.onClick($event);"}, el.attributes);
 		return (`
-			<div class="link" ${this.generateAttributes(opt)} >${(el.value != null ? el.value : "")}</div>`	+
+			<div class="link" ${this.generateAttributes(opt)} name="${el._name}">${(el.value != null ? el.value : "")}</div>`	+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -531,7 +544,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addButton(el){
-		var opt = $.extend({}, { }, el.attributes);
+		var opt = $.extend({}, { name: el.name }, el.attributes);
 		return (`
 			<button class="link" ${this.generateAttributes(opt)} name="${el._name}" onclick="this.onButtonClick($event);">${el.value || ''}</button>
 		`);
@@ -590,4 +603,101 @@ export class Forms extends BaseComponent{
 		}
 		return fileName.split(/\\|\//).pop();
 	}
+}
+/** @type {{[key:string]: function(Forms, FieldTemplate, string): string}} */
+var field_definitions = {
+		form(forms, el, parentPath){
+			return forms.addForm(el,parentPath /*? parentPath +'.' +el.name : el.name*/ );
+		},
+		array(forms, el, parentPath){
+			return forms.addArray(el,parentPath /*? parentPath +'.' +el.name : el.name*/ );
+		},
+		email(forms, el, parentPath){
+			forms.assertValidateRuleHas(el,"email");
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'email'})]);
+		},
+		file(forms, el, parentPath){
+			//forms.assertValidateRuleHas(el,"file");
+			return forms.renderFieldGroupHTML(el, [forms.addFile(el)]);
+		},
+		text(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,null)]);
+		},
+		date(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{date:'', format:'date'})]);	
+		},
+		datetime(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{dateTime:'', format:'dateTime'})]);	
+		},
+		time(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{time:'', format:'time'})]);	
+		},
+		split(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el,  [
+				'<div class="split" style="width:50%">' + forms.addInput(el.items[0], { type: el.items[0].type }) + '</div>',
+				'<div class="split" style="width:50%">' + forms.addInput(el.items[1], { type: el.items[1].type })+ '</div>',
+			]);	
+		},
+		"date-time" : function (forms, el, parentPath){
+			var dateEl = $.extend({}, el);
+			var timeEl = $.extend({}, el);
+			
+			//dateEl.name += "_date";
+			//dateEl.__name = dateEl._name;
+			dateEl._name += "_date";
+			//timeEl.name += "_time";
+			//timeEl.__name += timeEl._name;
+			
+			timeEl._name += "_time";
+			
+			
+			var dateTime = Objects.getPropertyByPath(forms.data, el._name)
+			Objects.setPropertyByPath(forms.extraData, dateEl._name, dateTime);
+			Objects.setPropertyByPath(forms.extraData, timeEl._name, dateTime);
+			
+			return forms.renderFieldGroupHTML(el,  [
+				'<div class="split" style="width:60%">' + forms.addInput(dateEl, {date:'', format:'date', onchange:"forms._formatSplitDateField($event,'"+ el._name+ "',false)"},'extraData')+ '</div>',
+				'<div class="split" style="width:40%">' + forms.addInput(timeEl, {time:'', format:'time', onchange:"forms._formatSplitDateField($event,'"+ el._name+ "',true)"},'extraData')+ '</div>',
+			]);	
+		},
+		number(forms, el, parentPath){
+			forms.assertValidateRuleHas(el,"numeric");
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'number', pattern:"[0-9]*", novalidate: true})]);
+		},
+		password(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addPassword(el,null)]);
+		},
+		phone(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'tel', oninput:"forms._formatPhoneNumber($event)"})]);
+		},
+		hidden(forms, el, parentPath){
+			return "";
+		},
+		textarea(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addTextArea(el,null)]);	
+		},
+		checkbox(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addCheck(el,null)],true);
+		},
+		radio(forms, el, parentPath){
+			return forms.addRadio(el,null);
+		},
+		select(forms, el, parentPath){
+			return forms.addSelect(el,null,parentPath);
+		},
+		label(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addLabel(el)],null, true);
+		},
+		link(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addLink(el)],null, true);
+		},
+		button(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addButton(el)]);
+		},
+		buttons(forms, el, parentPath){
+			return forms.renderFieldGroupHTML(el, [forms.addButtons(el)]);		
+		},
+		html(forms, el, parentPath){
+			return forms.addHtml(el);		
+		}
 }

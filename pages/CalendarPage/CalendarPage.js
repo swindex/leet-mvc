@@ -377,10 +377,10 @@ CalendarPage.content = `
 				<div class="circle_wrapper">
 					<div class="circle">
 						<div class="hours"  [selected]="!this._minutesSelected" onclick="this.onSelectHoursClicked()">
-							<div class="hour h-12" [foreach]="this._hours as hours" onclick="this.onSetHourClicked(hours.value)" [selected]="this._d_hour==hours.title" [class]="'h-' + hours.value"><span bind="this._getHourTitle(hours)">0</span></div>
+							<div class="hour h-12" [foreach]="this._hours as hours" onclick="this.onSetHourClicked(hours.value)" [selected]="this._d_hour==hours.title"><span bind="this._getHourTitle(hours)">0</span></div>
 						</div>
 						<div class="minutes" [selected]="this._minutesSelected" onclick="this.onSelectMinutesClicked()">
-							<div class="hour h-12" [foreach]="this._minutes as minutes" onclick="this.onSetMinuteClicked(minutes.value)" [selected]="this._d_minute==minutes.title" [class]="'h-' + minutes.value"><span bind="minutes.title">12</span></div>
+							<div class="hour h-12" [foreach]="this._minutes as minutes" onclick="this.onSetMinuteClicked(minutes.value)" [selected]="this._d_minute==minutes.title"><span bind="minutes.title">12</span></div>
 						</div>
 						<div class="AMPM">
 							<div class="AM" onclick="this.onSetAMClicked(true)" [selected]="this.isAM"><span>AM</span></div>

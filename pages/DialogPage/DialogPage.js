@@ -82,6 +82,33 @@ export class DialogPage extends BasePage{
 		return this;	
 	}
 
+	addDate(name, title, value, required, attrs) {
+		var valRule = (isString(required) ? required : (required ? "required" : null));
+		this.controls.push({name: name, type: "date", title:title, validateRule: valRule, attributes:attrs});
+		this.data[name] = value;
+		this.render();
+		
+		return this;	
+	}
+
+	addDateTime(name, title, value, required, attrs) {
+		var valRule = (isString(required) ? required : (required ? "required" : null));
+		this.controls.push({name: name, type: "datetime", title:title, validateRule: valRule, attributes:attrs});
+		this.data[name] = value;
+		this.render();
+		
+		return this;	
+	}
+
+	addTime(name, title, value, required, attrs) {
+		var valRule = (isString(required) ? required : (required ? "required" : null));
+		this.controls.push({name: name, type: "time", title:title, validateRule: valRule, attributes:attrs});
+		this.data[name] = value;
+		this.render();
+		
+		return this;	
+	}
+
 	addTextArea(name, title, value, required, attrs) {
 		var valRule = (isString(required) ? required : (required ? "required" : null));
 		this.controls.push({name: name, type: "textarea", title:title, validateRule: valRule, attributes:attrs});
@@ -123,7 +150,7 @@ export class DialogPage extends BasePage{
 	}
 	
 	addHtml (value) {
-		this.controls.push({name:"label", type:'html',value:value});
+		this.controls.push({name:"html", type:'html',value:value});
 		this.render();
 		
 		return this;
