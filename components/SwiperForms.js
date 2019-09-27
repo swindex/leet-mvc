@@ -13,17 +13,17 @@ export class SwiperForms extends Forms{
 	 * @param {*} data
 	 * @param {*} [errors]
  	 * @param {*} [attrs]
-	 * @param {{navButtons?: true,submitButton?:boolean,pagination?:true, navigation?:boolean}} [options]
+	 * @param {{navButtons?: true,submitButton?:boolean,pagination?:true, navigation?:boolean, nestedData?:boolean}} [options]
 	 */
 	constructor(formTemplate, data, errors, attrs={} ,options){
-		super(formTemplate, data, errors, attrs, {formClass:'swiper-slide scroll'});
+		super(formTemplate, data, errors, attrs, {formClass:'swiper-slide scroll',nestedData:options.nestedData});
 		this.formTemplate = formTemplate;
-		this.options = options;
+		//this.options = options;
 		
 		/** @type {Swiper} */
 		this.swiper = null;
 		this.index = 0;
-		this.options = $.extend({
+		this.options = $.extend({},{
 			navButtons: false,
 			submitButton: false,
 			pagination: true,
@@ -48,12 +48,16 @@ export class SwiperForms extends Forms{
 					onclick="if (this.onBackClicked()!== false ) this.swiper.slidePrev()" name="back">Back</button>
 				<button [if]="!this.swiper.isEnd" 
 					onclick="if (this.onNextClicked()!== false ) this.swiper.slideNext()" class="item-right" name="next">Next</button>
-				<button [if]="this.swiper.isEnd && this.options.submitButton" 
+				<button [if]="this._isShowSubmitButton()" 
 					onclick="this.onSubmitClicked()" class="item-right" name="submit">Submit</button>
 			</div>
 			
 		</div>
 		`
+	}
+
+	_isShowSubmitButton(){
+		return this.swiper.isEnd && this.options.submitButton;
 	}
 
 	/**
@@ -121,9 +125,10 @@ export class SwiperForms extends Forms{
 			});
 
 			this.swiper.on('slideChange',()=>{
-				var v = this.swiper.activeIndex;
+				this.index = this.swiper.activeIndex;
+
 				//Notify listener that the page has changed
-				this.onSlideChange(v);
+				this.onSlideChange(this.index);
 			})
 			this.swiper.slideTo(0);
 		});

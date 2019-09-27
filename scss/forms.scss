@@ -353,6 +353,13 @@ button{
 	&[outline]{
 		background-color: transparent !important;
 		border: $size-border solid $color-border !important;
+		color:$color-border !important;
 		box-shadow: none !important;
 	}
+	&[link]{
+		color: $color-link !important;
+	}
 }
+
+
+

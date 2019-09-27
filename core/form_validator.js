@@ -11,8 +11,9 @@ import { isDate } from "util";
  * @param {FieldTemplate[]} [template] 
  * @param {{[key:string]:any}} [errors] 
  * @param {{[key:string]:any}} [attributes]
+ * @param {{nestedData?:boolean}} [options]
  */
-export function FormValidator(data,template,errors,attributes){
+export function FormValidator(data, template, errors, attributes, options){
 	/** @type {FormValidator} */
 	var self = this;
 	var _data = data || null;
@@ -24,6 +25,8 @@ export function FormValidator(data,template,errors,attributes){
 	var touched = [];
 
 	var _messages = FormValidator.messages;
+
+	var _options = $.extend({},{nestedData:false},options);
 
 	if (Translate('form_validator')!=='form_validator' && isObject(Translate('form_validator'))){
 		// @ts-ignore
@@ -558,7 +561,7 @@ export function FormValidator(data,template,errors,attributes){
 	 */
 	function tryDefaultForm(cName, name){
 		var p = parts(cName);
-		if (!p.form){
+		if (!p.form || !_options.nestedData){
 			var f = parts(name).form
 			if (!f)
 				return cName;
@@ -574,15 +577,15 @@ export function FormValidator(data,template,errors,attributes){
 	function getValue(object, name){
 		name = name.replace(/\/[^\/]*\//,'');
 		var p = parts(name)
-		if (!p.form) {
+		if (!p.form || !_options.nestedData) {
 			return object[p.name];	
 		}
 
 		return object[p.form][p.name];
 	}
 
-	this.getDataValue = function(name){
-		return getValue(_data, name);
+	this.getDataValue = function(name, cName=""){
+		return getValue(_data, tryDefaultForm(name, cName));
 	}
 	/**
 	 * Get value at name or form.name
@@ -614,7 +617,7 @@ export function FormValidator(data,template,errors,attributes){
 	function setValue(object, name, value){
 		name = name.replace(/\/[^\/]*\//,'');
 		var p = parts(name)
-		if (!p.form) {
+		if (!p.form || !_options.nestedData) {
 			object[name] = value;	
 			return;
 		}
@@ -629,7 +632,7 @@ export function FormValidator(data,template,errors,attributes){
 	function setAttrValue(name, value){
 
 		var p = parts(name)
-		if (!p.form) {
+		if (!p.form || !_options.nestedData) {
 			_attributes[name] = value;	
 			return;
 		}
@@ -639,8 +642,8 @@ export function FormValidator(data,template,errors,attributes){
 
 	function isAttrNull(name){
 
-		var p = parts(name)
-		if (!p.form) {
+		var p = parts(name || !_options.nestedData)
+		if (!p.form || !_options.nestedData) {
 			return _attributes[name] ? true : false ;	
 			
 		}
@@ -868,7 +871,7 @@ FormValidator.rules = {
 	},
 	true_if(value, type, conditions, validator){
 		var otherKey = conditions.shift();
-		var otherValue = validator.getDataValue(otherKey);
+		var otherValue =  validator.getDataValue(otherKey, );
 		
 		if (isNumber(otherValue)){
 			otherValue = otherValue + '';

@@ -3,8 +3,9 @@ import { BasePage } from "./../BasePage";
 import { FormValidator } from "./../../core/form_validator";
 import { Translate } from "./../../core/Translate";
 import { DeBouncer } from "./../../core/DeBouncer";
+import { HeaderPage } from "leet-mvc/pages/HeaderPage/HeaderPage";
 
-export class LoginPage extends BasePage {
+export class LoginPage extends HeaderPage {
 	constructor(){
 		super()
 
@@ -26,10 +27,13 @@ export class LoginPage extends BasePage {
 
 		this.showLanguage = false;
 		this.showLocation = false;
+		this.showRegister = false;
 		this.regionName = "";
 
 		this.isDev = false;
 		this.version = "0.0.0";
+
+		this.content = template;
 	}
 	_init(){
 		super._init(
@@ -48,7 +52,7 @@ export class LoginPage extends BasePage {
 		this.i_height = this.page.height();
 		this.i_width = this.page.width();
 
-		logo.height(this.i_height*0.35);
+		logo.height(this.i_height*0.30);
 		login.height(this.i_height);
 
 		this.backgroundSize = this.i_height*0.25+"px";
@@ -96,7 +100,7 @@ export class LoginPage extends BasePage {
 	 * ***Override***
 	 * Called when form is validated and login data can be submitted
 	 * @param {{username: string, password:string, remember: boolean}} data
-	 * */
+	 */
 	onLoginSubmit(data){
 		throw new Error("Override onLoginSubmit!");
 	}
@@ -141,8 +145,8 @@ export class LoginPage extends BasePage {
 	}
 };
 LoginPage.selector = 'page-login';
-LoginPage.template = `
-<div class="content" >
+var template = `
+<!-- <div class="content" > -->
 	<div id="logo" [style]="{backgroundSize:this.backgroundSize}">
 		<span bind="Translate('AppSlogan')"></span>
 		<div ion-fab right top [if]="this.showLanguage">
@@ -174,7 +178,10 @@ LoginPage.template = `
 				</label>
 			</div>
 			<div class="fieldgroup">
-				<button type="button"  onclick="this.onLoginClicked()"><b bind = "Translate('SIGN IN')"></b></button>
+				<button type="button"  onclick="this.onLoginClicked()" class="btn_login"><b bind = "Translate('SIGN IN')"></b></button>
+			</div>
+			<div class="fieldgroup" [if]="this.showRegister">
+				<button type="button"  onclick="this.onRegisterClicked()" class="btn_register"><b bind = "Translate('REGISTER NOW')"></b></button>
 			</div>
 			<div class="fieldgroup">
 				<label onclick="this.onForgotClicked()" class="centered" bind = "Translate('Forgot Password?')"></label>
@@ -182,5 +189,5 @@ LoginPage.template = `
 		</form>	
 	</div>
 	<div class="dev_label" [if]="this.isDev">d{{this.version}}</div>
-</div>
+<!-- </div> -->
 `;
