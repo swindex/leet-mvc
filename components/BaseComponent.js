@@ -20,12 +20,14 @@ export class BaseComponent extends ChangeWatcher{
 
 		/**@type {JQuery<HTMLElement>} */
 		this.container = null;
+
+		this.attributes = {};
 	}
 
 	/** 
 	 *  ***DO NOT OVERRIDE*** 
-	 * This functinon is called once after the container is bound to context
-	 * @param {HTMLElement} container
+	 * This function is called once after the container is bound to context
+	 * @param {HTMLElement[]} container
 	 */
 	_onInit(container){
 		this.container = $(container);

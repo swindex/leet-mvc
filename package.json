@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "karma start"
+	"test": "karma start",
+	"webpack--watch": "webpack --watch",
+	"webpack-dev-server":"webpack-dev-server"
   },
   "author": "",
   "license": "ISC",

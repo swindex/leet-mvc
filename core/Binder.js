@@ -165,6 +165,7 @@ export var Binder = function(context){
 		var rootelements = Objects.filter(handler.dom, el => el.type=='tag');
 		if (rootelements.length != 1){
 			//throw Error("Error: Template must contain exactly one root element: "+template);
+			//wrap elements in fragment			
 			return parseAST({
 				data: 'div',
 				type: 'tag',
@@ -206,6 +207,14 @@ export var Binder = function(context){
 		}else{	
 			thisSorurce = "createElement(";
 			var tag= obj.name
+
+			var componenet = tryGetComponenet(tag);
+			//add '[component]' attribute only if tag name is registered and current context is NOT the instance of that same component class (avoid callstack exception if same tag name is used inside the component.html)
+			if (componenet && !(self.context instanceof componenet) ){
+				obj.attribs['[component]'] = `Registered('${tag}')`;
+				delete obj.attribs['[directive]'];
+			}
+
 			//var attrText = "{";
 			var attributes = {};
 			if (obj.attribs){
@@ -559,8 +568,8 @@ export var Binder = function(context){
 				//attribute is not in the standard attribute list
 				if (on.getters[attribute]) {
 					//getter exists
-					var value = on.getters[attribute]( inject);
-					on.elem[attribute] = value;
+					var value = on.getters[attribute](inject);
+					//-----------Below code used to set the property of the componenet to the value returned by the getter. I dont know why. Maybe remothe the whole thing. and do nothing with custom getters....
 					if (self.context instanceof BaseComponent){
 						self.context[attribute] = value;
 					}
@@ -985,34 +994,39 @@ export var Binder = function(context){
 					component.binder = new Binder(component).setInjectVars(inj).bindElements(component.events, component.html);
 					var c_vDom = component.binder.vdom;
 
+					//link componenet properties to getter values
+					Objects.forEach( p_vDom.getters, (getter,key)=>{
+						c_vDom.getters[key] = getter;
+						component[key] = getter(inject);
+					});
+
+					var dynamicEvents = [];
+
+					//Copy over setters into the componenet
+					//Copy over 2Way binding callbacks into the componenet
+					Objects.forEach( p_vDom.setters, (setter,key)=>{
+						c_vDom.setters[key] = setter;
+						//add change listener to the context
+						if (isFunction(component[key+'Change_2'])) {
+							throw new Error(`Component can not have method ${key+'Change_2'} it is used excusively for 2-way data binding with ${key}`);
+						}
+						dynamicEvents.push(key+'Change_2');
+						component[key+'Change_2'] = function(val){
+							return c_vDom.setters[key](inject,val);
+						}
+						
+					});
+
+					//Copy over callers into the componenet
+					Objects.forEach( p_vDom.callers, (caller,key)=>{
+						if (dynamicEvents.indexOf(key) >=0 ) {
+							throw new Error(`Component ${component.constructor.name} can not override 2-way event (${key})!`);
+						}
+						c_vDom.callers[key] = component[key] = caller;
+					});
+					
+					//copy html attributes
 					if (!(c_vDom.elem instanceof DocumentFragment)) {
-
-						//$.extend(c_vDom.getters, p_vDom.getters)
-						Objects.forEach( p_vDom.getters, (getter,key)=>{
-							c_vDom.getters[key] = getter;
-						});
-
-						var dynamicEvents = [];
-
-						Objects.forEach( p_vDom.setters, (setter,key)=>{
-							c_vDom.setters[key] = setter;
-							//add change listener to the context
-							if (isFunction(component[key+'Change_2'])) {
-								throw new Error(`Component can not have method ${key+'Change_2'} it is used excusively for 2-way data binding with ${key}`);
-							}
-							dynamicEvents.push(key+'Change_2');
-							component[key+'Change_2'] = function(val){
-								return c_vDom.setters[key](inject,val);
-							}
-							
-						});
-						Objects.forEach( p_vDom.callers, (caller,key)=>{
-							if (dynamicEvents.indexOf(key) >=0 ) {
-								throw new Error(`Component ${component.constructor.name} can not override 2-way event (${key})!`);
-							}
-							c_vDom.callers[key] = component[key] = caller;
-						});
-						//copy html attributes
 						for (var ii=0 ; ii<p_vDom.elem.attributes.length; ii++ ) {
 							var attr = p_vDom.elem.attributes[ii];
 							//only overwrite non-existing clild attrs
@@ -1022,17 +1036,14 @@ export var Binder = function(context){
 								c_vDom.elem.setAttribute(attr.name,c_vDom.elem.getAttribute(attr.name) +" "+ attr.value);
 							}
 						}
-						//set plainAttrs as properties of our component instance
-						Objects.forEach( p_vDom.plainAttrs, (value,key)=>{
-							//only create property if value is not null: attribute has the value part
-							if (value !== null) {
-								component[key] = value;
-							}
-						});
-					} else {
-						console.log("Component is fragment: no props copied");
 					}
-						
+					//set plainAttrs as properties of our component instance
+					Objects.forEach( p_vDom.plainAttrs, (value,key)=>{
+						//only create property if value is not null: attribute has the value part
+						if (value !== null) {
+							component.attributes[key] = value;
+						}
+					});
 
 					var p_frag = document.createDocumentFragment();
 					
@@ -1057,8 +1068,9 @@ export var Binder = function(context){
 									
 					//call onInit method in the next frame
 					//setTimeout(function(){
-					tryCall(component,component._onInit, c_vDom.elem);
-					//});
+					if (!(c_vDom.elem instanceof DocumentFragment)) {
+						tryCall(component,component._onInit, c_vDom.elem);
+					}
 				} else {
 					//component does not have own template. Render host template
 					p_vDom = on.itemBuilder(inject);
@@ -1082,6 +1094,9 @@ export var Binder = function(context){
 						continue;
 					checkVDomNode(on.items[i], inject);
 				};
+				if (!component.container) {
+					tryCall(component,component._onInit, on.elem.parentElement);
+				}
 				if (component && component.binder){
 					tryCall(component,component.binder.updateElements);
 				}
@@ -1308,7 +1323,7 @@ export var Binder = function(context){
 			return v;
 		}
 	
-		if (!isElementSetting(elem) || empty(elem['VDOM'].setters.bind))
+		if (!isElementSetting(elem) || empty(elem['VDOM']) || empty(elem['VDOM'].setters.bind))
 			return;
 		var v;
 
@@ -1468,7 +1483,13 @@ export var Binder = function(context){
 	    var scale = Math.pow(10, decimals);
 		return Math.round(num * scale)/scale;
 	}
+
+	function tryGetComponenet(tagName){
+		return  window['LEET_REGISTER'] ? window['LEET_REGISTER'][tagName] : null;
+	}
 }
+
+
 
 export function removeDOMElement(elem){
 	if (elem.VDOM){

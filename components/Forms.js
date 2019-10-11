@@ -25,7 +25,7 @@ export class Forms extends BaseComponent{
 
 		this.errors = errors ||{};
 
-		this.options =  {nestedData:false, formClass:'formgroup', fieldClass:'fieldgroup'};
+		this.options =  {nestedData:true, formClass:'formgroup', fieldClass:'fieldgroup'};
 		$.extend(this.options, options);
 
 		
@@ -33,6 +33,8 @@ export class Forms extends BaseComponent{
 		this.attrEvents = {};
 		this.types={};
 		this.arrays={};
+
+		this.elementItems = {};
 
 		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes, this.options);
 		this.validator.validateVisibility();
@@ -67,9 +69,22 @@ export class Forms extends BaseComponent{
 			},
 		}
 
-		this.field_definitions = field_definitions;
+		this.field_definitions = Forms.field_definitions;
 
-		this.html = this.renderArray(this.formTemplate, null)
+		this.html = `<div [directive]="this.formHTML"></div>`
+		
+		
+		this.formHTML =this.renderArray(this.formTemplate, null)
+	}
+
+	updateTemplate(formTemplate){
+		this.formTemplate = formTemplate;
+		
+		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes, this.options);
+		this.validator.validateVisibility();
+
+		var html = this.renderArray(this.formTemplate, null);
+		this.formHTML = html;
 	}
 
 	/** 
@@ -130,8 +145,9 @@ export class Forms extends BaseComponent{
 			el.selectionStart = selS+dif;
 			el.selectionEnd = selE+dif;
 		},1);
-	}	
+	}
 	
+
 	/**
 	 * 
 	 * @param {FieldTemplate[]} formTemplate 
@@ -194,6 +210,9 @@ export class Forms extends BaseComponent{
 		el.type = el.type ? el.type.toLowerCase() : '';
 
 		if (this.field_definitions[el.type]) {
+			if (el.items) {
+				this.elementItems[el._name] = el.items;
+			}
 			return tryCall(this, this.field_definitions[el.type], this, el, parentPath);
 		} else {
 			throw Error("Unknown form element type:" + el.type + " in "+ JSON.stringify(el,null,'\t'));	
@@ -266,6 +285,11 @@ export class Forms extends BaseComponent{
 
 		return this.renderArrayHTML(el, this.renderArray(el.items, el._name));
 	}
+
+	getVisibleData(){
+		return this.validator.getVisibleData();
+	}
+
 	/**
 	 * 
 	 * @param {FieldTemplate} el 
@@ -297,7 +321,7 @@ export class Forms extends BaseComponent{
 
 	renderFormHTML(el, childrenHTML){
 		return `
-			<div class="${this.options.formClass}">
+			<div class="${this.options.formClass}" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
 				${this.addTitle(el)}
 				<div>
 				${childrenHTML}
@@ -308,7 +332,7 @@ export class Forms extends BaseComponent{
 
 	renderFieldGroupHTML(el, elHTML, noTitle, noErrorHint){
 		return `
-		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">
+		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
 			${(noTitle ? '' : this.addTitle(el))}
 			${isArray(elHTML) ? elHTML.join('') : elHTML}
 			${(noErrorHint ? '' : this.addErrorHint(el))}
@@ -317,8 +341,40 @@ export class Forms extends BaseComponent{
 
 
 	renderSelectGroupHTML(el, elHTML){
-		return `<div [if]="!this.attributes${this.refactorAttrName(el._name)} || !this.attributes${this.refactorAttrName(el._name)}.hidden">${elHTML}</div>`; 
+		return `<div [if]="this.getIsVisible('${el._name ? el._name : ''}')">${elHTML}</div>`; 
 	}
+
+	getPropertyByPath(object, path){
+		try {
+			var ret = Objects.getPropertyByPath(object, path);
+		} catch (ex){
+			return undefined;
+		}
+		return ret;
+	}
+
+	getIsVisible(_name){
+		if (empty(_name)) {
+			return true;
+		}
+
+		var ret = this.getPropertyByPath(this.attributes, _name)
+		if (!ret) {
+			return true;
+		}
+		return !ret.hidden;
+	}
+
+	getError(_name){
+		if (empty(_name)) {
+			return "";
+		}
+
+		var ret = this.getPropertyByPath(this.errors, _name)
+		
+		return ret;
+	}
+	
 
 	/**
 	 * 
@@ -329,7 +385,7 @@ export class Forms extends BaseComponent{
 	addInput(el, override, dataName){
 		
 		dataName = dataName || "data"
-		var opt = { name: el.name , type: "text", placeholder: el.placeholder };
+		var opt = { name: el._name , type: "text", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
@@ -350,7 +406,7 @@ export class Forms extends BaseComponent{
 	addFile(el, override, dataName){
 		
 		dataName = dataName || "data"
-		var opt = { name: el.name , type: "hidden", placeholder: el.placeholder };
+		var opt = { name: el._name , type: "hidden", placeholder: el.placeholder };
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
@@ -486,7 +542,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addErrorHint(el){
-		return `<div class="hint" [class]="this.errors${this.refactorAttrName(el._name)} ? 'error' : ''">{{ this.errors${this.refactorAttrName(el._name)} || '${ el.hint ? el.hint : '' }' }}</div>`
+		return `<div class="hint" [class]="this.getError('${el._name}') ? 'error' : ''">{{ this.getError('${el._name}') || '${ el.hint ? el.hint : '' }' }}</div>`
 	}
 
 	/**
@@ -506,10 +562,12 @@ export class Forms extends BaseComponent{
 	 * 
 	 * @param {FieldTemplate} el 
 	 */
-	addLabel(el){
-		var opt = $.extend({}, {onclick:"this.onClick($event);"}, el.attributes);
+	addLabel(el, override){
+		var opt = { onclick:"this.onClick($event);" };
+		
+		$.extend(opt, {name: el._name}, el.attributes, override);
 		return (`
-			<div class="label" ${this.generateAttributes(opt)} name="${el._name}">${(el.value != null ? el.value : "")}</div>`	+
+			<div class="label" ${this.generateAttributes(opt)}>${(el.value != null ? el.value : "")}</div>`	+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -521,8 +579,8 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addHtml(el){
-		var opt = $.extend({}, {onclick:"this.onClick($event);"}, el.attributes);
-		return `<div class="html" ${this.generateAttributes(opt)} name="${el._name}">${(el.value != null ? el.value : "")}</div>`;
+		var opt = $.extend({}, {name: el._name}, {onclick:"this.onClick($event);"}, el.attributes);
+		return `<div class="html" ${this.generateAttributes(opt)}>${(el.value != null ? el.value : "")}</div>`;
 		//return `<div>${(el.value != null ? el.value : "")}</div>`;
 	}
 	/**
@@ -605,7 +663,7 @@ export class Forms extends BaseComponent{
 	}
 }
 /** @type {{[key:string]: function(Forms, FieldTemplate, string): string}} */
-var field_definitions = {
+Forms.field_definitions = {
 		form(forms, el, parentPath){
 			return forms.addForm(el,parentPath /*? parentPath +'.' +el.name : el.name*/ );
 		},
@@ -617,7 +675,6 @@ var field_definitions = {
 			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'email'})]);
 		},
 		file(forms, el, parentPath){
-			//forms.assertValidateRuleHas(el,"file");
 			return forms.renderFieldGroupHTML(el, [forms.addFile(el)]);
 		},
 		text(forms, el, parentPath){
@@ -642,22 +699,16 @@ var field_definitions = {
 			var dateEl = $.extend({}, el);
 			var timeEl = $.extend({}, el);
 			
-			//dateEl.name += "_date";
-			//dateEl.__name = dateEl._name;
 			dateEl._name += "_date";
-			//timeEl.name += "_time";
-			//timeEl.__name += timeEl._name;
-			
 			timeEl._name += "_time";
-			
 			
 			var dateTime = Objects.getPropertyByPath(forms.data, el._name)
 			Objects.setPropertyByPath(forms.extraData, dateEl._name, dateTime);
 			Objects.setPropertyByPath(forms.extraData, timeEl._name, dateTime);
 			
 			return forms.renderFieldGroupHTML(el,  [
-				'<div class="split" style="width:60%">' + forms.addInput(dateEl, {date:'', format:'date', onchange:"forms._formatSplitDateField($event,'"+ el._name+ "',false)"},'extraData')+ '</div>',
-				'<div class="split" style="width:40%">' + forms.addInput(timeEl, {time:'', format:'time', onchange:"forms._formatSplitDateField($event,'"+ el._name+ "',true)"},'extraData')+ '</div>',
+				'<div class="split" style="width:60%">' + forms.addInput(dateEl, {date:'', format:'date', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',false)"},'extraData')+ '</div>',
+				'<div class="split" style="width:40%">' + forms.addInput(timeEl, {time:'', format:'time', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',true)"},'extraData')+ '</div>',
 			]);	
 		},
 		number(forms, el, parentPath){
@@ -668,7 +719,7 @@ var field_definitions = {
 			return forms.renderFieldGroupHTML(el, [forms.addPassword(el,null)]);
 		},
 		phone(forms, el, parentPath){
-			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'tel', oninput:"forms._formatPhoneNumber($event)"})]);
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'tel', oninput:"this._formatPhoneNumber($event)"})]);
 		},
 		hidden(forms, el, parentPath){
 			return "";

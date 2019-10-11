@@ -94,6 +94,20 @@ export function FormValidator(data, template, errors, attributes, options){
 		}
 	}
 
+	this.getVisibleData = getVisibleData;
+	function getVisibleData(){
+		
+		var obj = Objects.copy(_data);
+
+		Objects.walk2(obj,_attributes, function(ob1,ob2, path){
+			console.log(ob1,ob2, path);
+			if (ob2 && ob2[path] && ob2[path].hidden) {
+				delete ob1[path];
+			}
+		})
+		
+		return obj;
+	}
 
 	/**
 	 * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
@@ -224,10 +238,14 @@ export function FormValidator(data, template, errors, attributes, options){
 			}
 			//items of a form
 			if (obj.type =="form" && obj.items){
-				if (obj.name){
-					path.push(obj.name);
-				}	
-				e += validate_object(obj.items,path);
+				
+				var visible = !obj.displayRule || empty( is_field_invalid(obj,'displayRule'));
+				if (visible) {
+					if (obj.name){
+						path.push(obj.name);
+					}	
+					e += validate_object(obj.items,path);
+				}
 			}
 
 			//items of the select box
@@ -873,6 +891,10 @@ FormValidator.rules = {
 		var otherKey = conditions.shift();
 		var otherValue =  validator.getDataValue(otherKey, );
 		
+		if (otherValue == undefined){
+			otherValue = "null"
+		}
+
 		if (isNumber(otherValue)){
 			otherValue = otherValue + '';
 		}else if(isBoolean(otherValue)){
