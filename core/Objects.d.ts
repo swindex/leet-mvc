@@ -108,6 +108,21 @@ declare namespace ObjectsModule{
 		 * Delete all of Object's methods and properties so they can no longer be referenced
 		 */
 		strip(obj: object): void;,
+
+		/**
+		 * Walk object calling callback on every node
+		 * @param obj - object to traverse
+		 * @param callback - where first parameter is the current node and second is the key in the node
+		 */
+		walk(obj: object, callback: (node: object, key: string)=>any): void;,
+
+		/**
+		 * Walk 2 objects side by side calling callback on every node
+		 * @param obj1 - object to traverse
+		 * @param obj2 - second object that has matching keys
+		 * @param callback - where first parameter is the current node, second parameter is another objects node and third one is the key in the first node
+	 	 */
+		walk2(obj1: object, obj2: object, callback: (node1: object, node2: object, key: string)=>any): void;,
 	}
 }
 

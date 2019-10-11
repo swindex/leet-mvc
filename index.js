@@ -30,7 +30,7 @@ import { Toast, ToastPage } from "./pages/Toast/Toast";
 import { EnableCustomElements } from "./core/EnableCustomElements";
 import { Forms } from "./components/Forms";
 import { ItemList } from "./components/ItemList";
-import { Register } from './core/Register';
+import { RegisterComponent } from './core/Register';
 import { NumericKeyboard } from './pages/NumericKeyboard/NumericKeyboard';
 import { Override } from './core/Override';
 

@@ -1,10 +1,28 @@
 div#page-ToastPage {
+	position: relative;
 	opacity: 0;
+	padding: 5px 15px;
+	text-align: center;
+	pointer-events: none;
 	&[visible], &[creating]{
 		opacity: 1;
 	}
 	height: auto;
 
+	.toast-box {
+		background-color: rgba(0, 0, 0, 0.5);
+		color: white;
+		padding: 12px;
+		border-radius: 12px;
+		display: inline-block;
+		margin: auto;
+	}
+}
+
+.toastStack {
+	position: absolute;
+	width:100%;
+	max-height: 100%;
 	&.bottom{
 		bottom: 0;
 	}
@@ -13,16 +31,5 @@ div#page-ToastPage {
 	}
 	&.middle{
 		top: 45%;
-	}
-	.backdrop {
-		display: flex;
-	}
-	.toast-box {
-		background-color: rgba(0, 0, 0, 0.5);
-		color: white;
-		padding: 12px;
-		border-radius: 12px;
-		display: inline-block;
-		margin: 12px auto;
 	}
 }

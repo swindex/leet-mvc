@@ -47,7 +47,7 @@ export function NavController() {
 	this.setRoot = function(pageConstructor, parameters){
 		removeAllFrames();
 		self.onPageNavigateTo(pageConstructor.name);
-		var page = createPage(pageConstructor, argumentsToArray(arguments,1));
+		var page = createPage(pageContainer, pageConstructor, argumentsToArray(arguments,1));
 		self.onPageCreated(page);
 		return page;
 	}
@@ -64,7 +64,22 @@ export function NavController() {
 		if (currentFrame())
 			tryCall(currentFrame().page, currentFrame().page.onLeave);		
 		self.onPageNavigateTo(pageConstructor.name);
-		var page = createPage(pageConstructor, argumentsToArray(arguments,1));
+		var page = createPage(pageContainer, pageConstructor, argumentsToArray(arguments,1));
+		self.onPageCreated(page);
+		return page;
+	}
+
+	/**
+	 * Push a page on top of stack INTO a specified element
+	 * @param {HTMLElement} container
+	 * @param {object} pageConstructor 
+	 * @param {...any} [parameters]  
+	 */
+	this.pushInto = function(container, pageConstructor, parameters){
+		if (currentFrame())
+			tryCall(currentFrame().page, currentFrame().page.onLeave);		
+		self.onPageNavigateTo(pageConstructor.name);
+		var page = createPage(container, pageConstructor, argumentsToArray(arguments,2));
 		self.onPageCreated(page);
 		return page;
 	}
@@ -123,11 +138,12 @@ export function NavController() {
 	}
 	/**
 	 * Create page 
+	 * @param {HTMLElement} container
 	 * @param {any} pageConstructor 
 	 * @param {any[]} args - array of arguments to pass to the page constructor
 	 * @return {BasePage} 
 	 */
-    function createPage(pageConstructor, args) {
+    function createPage(container, pageConstructor, args) {
 
 		var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + pageConstructor.name;
 		var template = pageConstructor.template ? pageConstructor.template : null ;
@@ -150,7 +166,7 @@ export function NavController() {
 		p.addClass(className);
 		//p.css(`z-index:${(stack.length + 1)*100};`);
 
-		$(pageContainer).append(p);
+		$(container).append(p);
 
 		stack.push({name:pageConstructor.name, element: p, page: pageObject});
 		resetPagesVisibility();

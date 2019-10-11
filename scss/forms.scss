@@ -6,6 +6,7 @@ input[type=number],
 input[type=date], 
 input[type=tel], 
 select,
+select-multiple,
 .field{
     box-sizing:border-box;
     font-size: $size-f-input;
@@ -54,11 +55,11 @@ input[time]{
     background-image: url(../img/clock_ico.png);
 }
 
-select{
+select,
+select-multiple{
 	background-image: url(../img/angle-down-solid.svg);
 	background-size: $size-input-i-sm;
 }
-
 button,
 input[type=button]
 {
@@ -154,6 +155,7 @@ textarea {
 	input[type=tel],
 	textarea,
 	select,
+	select-multiple,
 	.field {
 		font-size: $size-f-input;
 		padding: $margin-md;
@@ -215,6 +217,15 @@ textarea {
 		&:last-child{
 			padding-right: 0px
 		}
+	}
+}
+//custom override for select-multiple
+select-multiple{
+	padding:0 !important;
+	>div{
+		height: 100%;
+		padding: 6px 0px;
+		margin-right: 1em;
 	}
 }
 //fildgroup with label in it

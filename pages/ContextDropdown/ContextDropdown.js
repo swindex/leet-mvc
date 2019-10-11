@@ -6,17 +6,12 @@ export class ContextDropdown extends OptionsDialogPage {
 	 * 
 	 * @param {HTMLElement} element 
 	 */
-	constructor(element){
+	constructor(){
 		super();
 
-		if (!element.parentElement){
-			this.destroy();
-			return;
-		}
 		this.buttons = null;
-		this.style.top = $(element).offset().top + $(element).outerHeight()+"px";
-		this.style.left = $(element).offset().left+"px";
-		this.style.width = $(element).width()+"px";
+		this.style.bottom ="0px";
+		this.style.width = "100%";
 		
 	}
 

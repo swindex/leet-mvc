@@ -168,6 +168,46 @@ export const Objects = {
 		}
 		return obj;
 	},
+
+	/**
+	 * Walk object calling callback on every node
+	 * @param {object} obj1 
+	 * @param {object} obj2 
+	 * @param {function(object,string):any} callback - where first parameter is the current node and second is the key in the node
+	 */
+	walk: function(obj1, callback){
+		if (isObject(obj1)) {
+			for(var i in obj1){
+				if (obj1.hasOwnProperty(i)){
+					callback(obj1, i);
+
+					if (isObject(obj1[i])){
+						Objects.walk(obj1[i], callback);
+					}
+				}
+			}
+		}
+	},
+
+	/**
+	 * Walk 2 objects side by side
+	 * @param {object} obj1 
+	 * @param {object} obj2 
+	 * @param {function(object,object,string):any} callback  where first parameter is the current node, second parameter is another objects node and third one is the key in the first node
+	 */
+	walk2: function(obj1, obj2, callback){
+		if (isObject(obj1)) {
+			for(var i in obj1){
+				if (obj1.hasOwnProperty(i)){
+					callback(obj1, obj2, i);
+
+					if (isObject(obj1[i])){
+						Objects.walk2(obj1[i], isObject(obj2) ? obj2[i] : undefined, callback );
+					}
+				}
+			}
+		}
+	},
 	
 	/**
 	 * Get object property using path

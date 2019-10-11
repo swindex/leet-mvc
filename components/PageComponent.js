@@ -2,7 +2,7 @@ import { BaseComponent } from "./BaseComponent";
 import Swiper from 'swiper';
 import { NavController } from "./../core/NavController";
 import { BasePage } from "./../pages/BasePage";
-import { argumentsToArray, Override } from "./../core/helpers";
+import { argumentsToArray } from "./../core/helpers";
 
 /**
  * @param {{navButtons?: true}} [options]
@@ -20,8 +20,7 @@ export class PageComponent extends BaseComponent{
 		/** @type {Swiper} */
 		this.swiper = null;
 		this.html=`
-			<div class="swiper-container SwiperTabs" style="height:100%;">
-				<div id="generatedpage"></div>
+			<div class="" style="height:100%;">
 			</div>	
 		`;
 		this.Nav=new NavController();

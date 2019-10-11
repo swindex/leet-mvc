@@ -9,7 +9,7 @@ export class OptionsDialogPage extends DialogPage{
 
 		/**
 		 * List items 
-		 * @type {{[x: string]: any,image?:string,icon?:string,title:string,text?:string}[]} */
+		 * @type {{[x: string]: any,image?:string,icon?:string,title:string,text?:string, selected?:boolean}[]} */
 		this.items=[];
 		this.content = `
 			<ul [class]="this.hideOverflow ? 'hideOverflow' : ''">
@@ -112,6 +112,10 @@ export class OptionsDialogPage extends DialogPage{
 	 */
 	_onOkClicked(){
 		return this.onOkClicked(Objects.filter(this.items, el => el.selected === true));
+	}
+
+	getSelectedItems(){
+		return Objects.filter(this.items, el => el.selected);
 	}
 
 	/**

@@ -2,6 +2,9 @@ import { CalendarPage } from "../pages/CalendarPage/CalendarPage";
 import { DateTime } from "./DateTime";
 import { OptionsDialogPage } from "../pages/OptionsDialogPage/OptionsDialogPage";
 import { Injector } from "./Injector";
+import { RegisterComponent } from "./Register";
+import { MultiSelect } from "./../components/MultiSelect/MultiSelect";
+import { Forms } from "../components/Forms";
 
 var Inject = Injector;
 
@@ -71,6 +74,14 @@ export function EnableCustomElements(){
 		}
 	});
 
+	//create select-multiple custom element
+	RegisterComponent(MultiSelect, 'select-multiple');
+	Forms.field_definitions["select-multiple"] = function(forms, el, parentPath){
+		return forms.renderFieldGroupHTML(el, [
+			`<select-multiple name="${el.name}" [(value)]= "this.data${forms.refactorAttrName(el._name)}" [onChange]="this.events.change" placeholder="${el.placeholder}" [items] = "this.elementItems${forms.refactorAttrName(el._name)}"></select-multiple>`
+		]);
+	},
+
 	//Override the system select drop-down with custom drop-down
 	$(document).on('mousedown focus','select', function(ev){
 		preventFocus(ev)
@@ -79,7 +90,9 @@ export function EnableCustomElements(){
 		var p = Inject.Nav.push(OptionsDialogPage);
 		p.title = el.getAttribute('placeholder');
 
-		p.icons = null;
+		p.multiple = el.getAttribute('type')=="multiple";
+		if (!p.multiple)
+			p.icons = null;
 
 		p.isSelectedItem = item => item.value === el.value;
 
