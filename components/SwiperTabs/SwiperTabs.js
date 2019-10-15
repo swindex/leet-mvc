@@ -85,7 +85,7 @@ export class SwiperTabs extends BaseComponent{
 				var v = this.swiper.realIndex;
 				if (this.pages[v]) {
 					if (!this.pages[v].onEnter.super)
-						this.pages[v].onEnter;
+						this.pages[v].onEnter();
 					this.pages[v].onEnter.super();
 					this.onTabChanged(this.pages[v],v);
 				}
