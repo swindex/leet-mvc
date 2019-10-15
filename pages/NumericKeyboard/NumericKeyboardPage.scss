@@ -28,10 +28,10 @@ $fontname: 'NumericKeyboardPage';
 		-moz-osx-font-smoothing: grayscale;
 	  }
 	  
-	  .icon-kb_delete:before {
+	  .NumericKeyboardPage-icon-kb_delete:before {
 		content: "\e900";
 	  }
-	  .icon-kb_enter:before {
+	  .NumericKeyboardPage-icon-kb_enter:before {
 		content: "\e901";
 	  }
 	  
@@ -103,30 +103,11 @@ $fontname: 'NumericKeyboardPage';
 			&:active, 
 			&.active{
 				filter: brightness(0.5);
-				//box-shadow: 0 0 3px blue;
 				background-color: #fff;
 				outline-color: transparent;
 			}
 			&.gr{
 				background-color: #B8BBBF;	
-			}
-
-			&#delete{
-				/*background-image: url('./kb_delete.png');
-				background-size: 4rem;
-				background-repeat: no-repeat;
-				background-position: 50%;*/
-				//color:red;
-			}
-		
-			&#enter{
-				/*background-image: url('./kb_enter.png');
-				background-size: 4rem;
-				background-repeat: no-repeat;
-				background-position: 50%;
-
-				float: none;*/
-				//color:green;
 			}
 		}
 	}
@@ -150,7 +131,6 @@ $fontname: 'NumericKeyboardPage';
 				&.active{
 					color: $key-color-active;
 					filter: brightness(0.5);
-					//box-shadow: 0 0 3px blue;
 					background-color: $key-background;
 					outline-color: transparent;
 				}
@@ -159,18 +139,10 @@ $fontname: 'NumericKeyboardPage';
 				}
 
 				&#delete{
-					//background-image: url('./kb_delete.png');
-					//background-size: 4rem;
-					//background-repeat: no-repeat;
-					//background-position: 50%;
 					color:red;
 				}
 			
 				&#enter{
-					//background-image: url('./kb_enter.png');
-					//background-size: 4rem;
-					//background-repeat: no-repeat;
-					//background-position: 50%;
 					color:green;
 				}
 			}
