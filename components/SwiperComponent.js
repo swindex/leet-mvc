@@ -82,9 +82,12 @@ export class SwiperComponent extends BaseComponent{
 	/**
 	 * ***Override***
 	 * Called on slide change
+	 * Return false to cancel slide change
 	 * @param {number} index 
+	 * @param {number} oldIndex 
+	 * @return {void|false} 
 	 */
-	onSlideChange(index){
+	onSlideChange(index, oldIndex){
 
 	}
 
@@ -102,10 +105,13 @@ export class SwiperComponent extends BaseComponent{
 			});
 
 			this.swiper.on('slideChange',()=>{
+				var old = this.index;
 				this.index = this.swiper.activeIndex;
 
 				//Notify listener that the page has changed
-				this.onSlideChange(this.index);
+				if (this.onSlideChange(this.index, old) ===false) {
+					this.swiper.slideTo(old);
+				}
 			})
 			this.swiper.slideTo(0);
 		});
