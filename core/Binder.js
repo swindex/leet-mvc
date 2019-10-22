@@ -1,4 +1,4 @@
-import { empty, tryCall } from "./helpers";
+import { empty, tryCall, numberFromLocaleString } from "./helpers";
 import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString } from "util";
 
@@ -88,7 +88,9 @@ export var Binder = function(context){
 					//if item is a componenet, remove its vDOM element too.
 					if (item.getters.component) {
 						var component = item.getters.component(self,{});
-						removeElement(component.binder.vdom.elem,keepEvents);
+						if (component.binder){
+							removeElement(component.binder.vdom.elem,keepEvents);
+						}
 					}
 				}
 			})
@@ -1154,6 +1156,9 @@ export var Binder = function(context){
 
 						v = round(v, parseInt(ln));
 					}
+					if (elem.getAttribute('type')!= 'number' &&  Number(v).toLocaleString) {
+						v = Number(v).toLocaleString();
+					}
 				}	
 			}
 			if (formats.length > 0 && formats[0] === "boolean") {
@@ -1282,7 +1287,8 @@ export var Binder = function(context){
 						v = null;
 					else
 					{
-						v = value * 1;
+						v = numberFromLocaleString(value);
+						//v = value * 1;
 						if (isNaN(v)) v = 0;
 						if (formats.length == 2){
 							var ln = !isNaN(formats[1]) ? formats[1] : createExecuteElemAttrGetter(elem,'format',formats[1]);

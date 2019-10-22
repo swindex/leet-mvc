@@ -20,6 +20,16 @@ export function round(value, n) {
 }
 
 /**
+ * Convert string formatted as locale number to number
+ * @param {string} stringValue 
+ */
+export function numberFromLocaleString(stringValue){
+	var parts = Number(1111.11).toLocaleString().replace(/\d+/g,'').split('');
+	
+	return Number((stringValue+"").replace(new RegExp(parts[0],'g'), '').replace(parts[1],"."));
+}
+
+/**
  * Try calling a function under context.
  * Same as Function.call but with check if callback exists
  * @param {function(*)} callback 

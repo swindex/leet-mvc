@@ -6,6 +6,7 @@ import { isNumber, isArray, isString } from "util";
 import { DateTime } from "./../core/DateTime";
 import { Translate } from "../core/Translate";
 import { tryCall } from '../core/helpers';
+import { Alert } from "leet-mvc/core/simple_confirm";
 
 export class Forms extends BaseComponent{
 	/**
@@ -333,9 +334,16 @@ export class Forms extends BaseComponent{
 	renderFieldGroupHTML(el, elHTML, noTitle, noErrorHint){
 		return `
 		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
+			<div class="fieldrow">
 			${(noTitle ? '' : this.addTitle(el))}
+			${el.info ? this.addInfo(el) : ''}
+			</div>
+			<div class="fieldrow field">
 			${isArray(elHTML) ? elHTML.join('') : elHTML}
+			</div>
+			<div class="fieldrow">
 			${(noErrorHint ? '' : this.addErrorHint(el))}
+			</div>
 		</div>`; 
 	}
 
@@ -484,19 +492,12 @@ export class Forms extends BaseComponent{
 			elems += (`
 				<label class="toggle">${item.title}
 					<input bind = "this.data${this.refactorAttrName(el._name)}" format="${el.dataType ? el.dataType : ''}" value = "${item.value !==null ? item.value : '' }" ${this.generateAttributes(opt)} />
-					<span class="slider round"></span>
+					<span class="radio round"></span>
 				</label>
 			`);
 		});
 
-		return this.renderFieldGroupHTML(
-			el,
-			(`
-				${this.addTitle(el)}
-				${elems}
-				${this.addErrorHint(el)}
-			`)
-			, true,true);
+		return elems;
 	}
 	/**
 	 * 
@@ -523,10 +524,8 @@ export class Forms extends BaseComponent{
 		
 
 		return this.renderFieldGroupHTML(el,(`
-			${this.addTitle(el)}
 			${elem}
-			${this.addErrorHint(el)}
-		`), true,true) + this.renderSelectGroupHTML(el, items_items);
+		`)) + this.renderSelectGroupHTML(el, items_items);
 	}
 
 	/**
@@ -541,8 +540,20 @@ export class Forms extends BaseComponent{
 	 * 
 	 * @param {FieldTemplate} el 
 	 */
+	addInfo(el){
+		if (!el.title) return '';
+		return `<div class="info-btn"><i class="fas fa-question-circle" onclick="this.showInfoText('${el.info}')"></i></div>`;
+	}
+	/**
+	 * 
+	 * @param {FieldTemplate} el 
+	 */
 	addErrorHint(el){
 		return `<div class="hint" [class]="this.getError('${el._name}') ? 'error' : ''">{{ this.getError('${el._name}') || '${ el.hint ? el.hint : '' }' }}</div>`
+	}
+
+	showInfoText(text) {
+		Alert(text);
 	}
 
 	/**
@@ -713,7 +724,7 @@ Forms.field_definitions = {
 		},
 		number(forms, el, parentPath){
 			forms.assertValidateRuleHas(el,"numeric");
-			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'number', pattern:"[0-9]*", novalidate: true})]);
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'text',number:"",/* pattern:"[0-9]*",*/ lang:"de-DE", novalidate: true})]);
 		},
 		password(forms, el, parentPath){
 			return forms.renderFieldGroupHTML(el, [forms.addPassword(el,null)]);
@@ -731,7 +742,7 @@ Forms.field_definitions = {
 			return forms.renderFieldGroupHTML(el, [forms.addCheck(el,null)],true);
 		},
 		radio(forms, el, parentPath){
-			return forms.addRadio(el,null);
+			return forms.renderFieldGroupHTML(el, [forms.addRadio(el,null)]);	
 		},
 		select(forms, el, parentPath){
 			return forms.addSelect(el,null,parentPath);
