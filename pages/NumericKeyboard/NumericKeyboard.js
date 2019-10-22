@@ -3,12 +3,14 @@ import './NumericKeyboardPage.scss';
 import * as template from './NumericKeyboardPage.html';
 import { BasePage } from './../BasePage'; 
 import { Injector } from "./../../core/Injector";
+import { numberFromLocaleString } from 'leet-mvc/core/helpers';
 
 export var NumericKeyboard = {
 	isEnabled: false,
 	/** @type {NumericKeyboardPage} */
 	_page:null,
 	options : {
+		/** 0 - Tall simple, 1 -Tall Full, 2 - short full */
 		layout:0,
 		selectOnFocus : false,
 		selectForeColor : 'white',
@@ -21,7 +23,7 @@ export var NumericKeyboard = {
 
 		$(document).off('focus.virtual_keyboard_c');
 
-		$(document).on('focus.virtual_keyboard_c', 'input[type=number]', (event)=> {
+		$(document).on('focus.virtual_keyboard_c', 'input[type=number], input[number]', (event)=> {
 			/** @type {HTMLInputElement} */
 			// @ts-ignore
 			var elem = event.target;
@@ -422,7 +424,7 @@ class NumericKeyboardPage extends BasePage {
 
 	setValue(t){
 		this.value = t;
-		this.old_input.value = Number(t)+"";
+		this.old_input.value = numberFromLocaleString(t);
 		var style = "";
 		if (this.isTextSelected) {
 			style = `background-color: ${this._options.selectBackColor}; color: ${this._options.selectForeColor}`;

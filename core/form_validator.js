@@ -509,9 +509,15 @@ export function FormValidator(data, template, errors, attributes, options){
 					if (c_template.items && c_template.items.length > 0){
 						var otherFieldItem = Objects.find(c_template.items,(t)=>t.value==otherFieldValue)
 						errmsg=errmsg.replace(':value', otherFieldItem ? otherFieldItem.title : "null");
-					}else
+					}else {
 						errmsg=errmsg.replace(':value', otherFieldValue);
+						errmsg=errmsg.replace(':max', otherFieldValue);
+						errmsg=errmsg.replace(':min', otherFieldValue);
+					}
 				}
+
+				
+
 				if (errmsg.indexOf(':max')>=0 && errmsg.indexOf(':max')>=0){
 					//min and max both present so split the condition string
 					if (conditions_arr.length==2){
@@ -790,7 +796,12 @@ FormValidator.rules = {
 		return true;
 	},
 	min(value, type, conditions,  validator){
-		var otherValue = Number(conditions[0]);
+		var otherValue;
+		if (!isNaN(Number(conditions[0]))){
+			otherValue = Number(conditions[0])
+		}else{
+			otherValue = validator.getDataValue(conditions[0]);
+		}
 		switch (type){
 			case 'numeric':
 				return Number(value) >= otherValue;
@@ -802,7 +813,12 @@ FormValidator.rules = {
 			}
 	},
 	max(value, type, conditions,  validator){
-		var otherValue = Number(conditions[0]);
+		var otherValue; 
+		if (!isNaN(Number(conditions[0]))){
+			otherValue = Number(conditions[0])
+		}else{
+			otherValue = validator.getDataValue(conditions[0]);
+		}
 		switch (type){
 			case 'numeric':
 				return Number(value) <= otherValue;

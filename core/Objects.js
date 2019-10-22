@@ -29,6 +29,33 @@ export const Objects = {
 		}
 		return ret;	
 	},
+	map : function (data,callback){
+		var ret
+		if(isObject(data) && !isArray(data)){
+			ret = {} //new data.constructor;
+			for (var key in data){
+				if (! data.hasOwnProperty(key)) continue;	
+					//check if out row using callback
+				var elem=data[key];
+				if (elem!=null) {
+					//copy all fields into our array
+					ret[key] = callback(elem, key);
+				}
+			}
+		}else if(isArray(data)){
+			ret = [];
+			for (var key in data){
+				if (! data.hasOwnProperty(key)) continue;	
+					//check if out row using callback
+				var elem=data[key];
+				if (elem!=null) {
+					//copy all fields into our array
+					ret.push(callback(elem, key));
+				}
+			}
+		}
+		return ret;	
+	},
 	find : function (data,callback){
 		for (var key in data){
 			if (! data.hasOwnProperty(key)) continue;	

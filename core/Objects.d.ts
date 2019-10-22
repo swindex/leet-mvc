@@ -10,6 +10,18 @@ declare namespace ObjectsModule{
 		 * @return {T}
 		 */
 		filter<T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | true): T;,
+
+		/**
+		 * A filter function, which can be used to seamlessly iterate over both objects and arrays.
+		 * Arrays and array-like objects with a length property (such as a function's arguments object) are
+		 * iterated by numeric index, from 0 to length-1. Other objects are iterated via their named properties.
+		 *
+		 * @param {object} obj The object to iterate over.
+		 * @param {function} callback The function that will be executed on every object. Return true to add it to filtered array
+		 * @return {T}
+		 */
+		map<NT, T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => NT ): NT[];,
+
 		/**
 		 * Find first element
 		 * @param obj The array of objects to find element in
