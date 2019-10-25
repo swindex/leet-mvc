@@ -1,4 +1,4 @@
-import { Watcher } from './Watcher.js';
+import { Watcher, isSkipUpdate } from './Watcher.js';
 
 export class ChangeWatcher {
 	constructor(){

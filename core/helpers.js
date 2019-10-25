@@ -23,10 +23,14 @@ export function round(value, n) {
  * Convert string formatted as locale number to number
  * @param {string} stringValue 
  */
-export function numberFromLocaleString(stringValue){
-	var parts = Number(1111.11).toLocaleString().replace(/\d+/g,'').split('');
-	
-	return Number((stringValue+"").replace(new RegExp(parts[0],'g'), '').replace(parts[1],"."));
+export function numberFromLocaleString(stringValue, locale){
+	var parts = Number(1111.11).toLocaleString(locale).replace(/\d+/g,'').split('');
+	if (stringValue === null)
+		return null;
+	if (parts.length==1) {
+		parts.unshift('');
+	}	
+	return Number(String(stringValue).replace(new RegExp(parts[0].replace(/\s/g,' '),'g'), '').replace(parts[1],"."));
 }
 
 /**

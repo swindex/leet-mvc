@@ -23,7 +23,13 @@ export var Binder = function(context){
 	/** @type {{[key:string]:any}} */ 
 	this.injectVars = {};
 
-
+	var EAttrResult = {
+		None: undefined,
+		NodeChanged: 1,
+		SkipChildren: 2,
+		NodeChangedSkipChildren: 3,
+	}
+	
 	this.eventCallbacks = {change:null, focus:null, input:null,click:null};
 
 	function insertBefore(newNode, referenceNode) {
@@ -531,7 +537,7 @@ export var Binder = function(context){
 	 */
 	function checkVDomNode(on, inject){
 		//console.log(on);
-		var nodeChanged = false;
+		var nodeChanged = EAttrResult.None;
 		if (on && on.getters){
 			for (var key in on.getters){
 				if (!on.getters.hasOwnProperty(key)){
@@ -540,18 +546,16 @@ export var Binder = function(context){
 										
 				var dirResult = executeAttribute(key, on, inject);
 				//if directives[key](on, inject) returns false, means return right away
-				if (dirResult === true)
-					nodeChanged = true;
-				if (dirResult === false){
-					return false;
-				}
+				if (dirResult === EAttrResult.SkipChildren)
+					return EAttrResult.SkipChildren;
+				
 			};
 		
 			for( var i in  on.items){
 				if (!on.items.hasOwnProperty(i))
 					continue;
-				if (checkVDomNode(on.items[i], inject) === true){
-					nodeChanged = true;
+				if (checkVDomNode(on.items[i], inject) === EAttrResult.NodeChanged){
+					nodeChanged = EAttrResult.NodeChanged;
 				}
 			};
 		}else if (!on){
@@ -582,8 +586,8 @@ export var Binder = function(context){
 			console.warn(ex);
 		//	attributes[attribute](on,inject)
 		}
-		if (old !== on.values[attribute] && ret !== false){
-			ret = true;
+		if (old !== on.values[attribute] && ret !== EAttrResult.SkipChildren){
+			ret = EAttrResult.NodeChanged;
 		}
 		return ret;
 	}
@@ -592,6 +596,38 @@ export var Binder = function(context){
 	 * Custom attribute handling goes here
 	 */
 	var attributes = {
+		'if':function(on, inject){
+			var key = "if";
+			var getter = on.getters[key];
+			var isTrue;
+			try{
+				isTrue = getter(inject);
+			}catch(ex){
+				isTrue = undefined;
+			}
+			if (on.values[key] !== isTrue){
+				on.values[key] = isTrue;
+				if (isTrue){
+					if ( on.items.length ==0){
+						//if if directive does not have any children, create them
+						vDomCreateItems(on,inject)
+					}else{
+						//if (on.items[0] instanceof DocumentFragment)
+						insertVDomItemsAfter(on.items, on.elem);
+					}
+
+				}else{
+					if ( on.items.length > 0 && on.items[0].elem.parentNode){
+						removeVDomItems(on.items, true);
+					}
+					return EAttrResult.SkipChildren;
+				}
+				
+			}
+			if (!isTrue) {
+				return EAttrResult.SkipChildren
+			}
+		},
 		'transition':function(on, inject){
 			var key = "transition";
 			var getter = on.getters[key];
@@ -649,7 +685,7 @@ export var Binder = function(context){
 							removeElement(on.items[0].elem);
 							on.items.shift();
 						},options.duration);
-						return false;
+						return EAttrResult.SkipChildren;
 					}	
 					checkVDomNode(on.items[0],{});
 				}
@@ -761,35 +797,6 @@ export var Binder = function(context){
 				on.elem.innerHTML = newValue;
 			}
 		},
-		'if':function(on, inject){
-			var key = "if";
-			var getter = on.getters[key];
-			var isTrue;
-			try{
-				isTrue = getter(inject);
-			}catch(ex){
-				isTrue = undefined;
-			}
-			if (on.values[key] !== isTrue){
-				on.values[key] = isTrue;
-				if (isTrue){
-					if ( on.items.length ==0){
-						//if if directive does not have any children, create them
-						vDomCreateItems(on,inject)
-					}else{
-						//if (on.items[0] instanceof DocumentFragment)
-						insertVDomItemsAfter(on.items, on.elem);
-					}
-
-				}else{
-					if ( on.items.length > 0 && on.items[0].elem.parentNode){
-						removeVDomItems(on.items, true);
-					}
-					return false;
-				}
-				
-			}
-		},
 		'foreach':function(on, inject){
 			var key = "foreach";
 			var getter = on.getters[key];
@@ -874,7 +881,7 @@ export var Binder = function(context){
 				console.warn("[ForEach]: element does not have a parent!",on.elem)
 			}
 
-			return false;
+			return EAttrResult.SkipChildren;
 		},
 		/**
 		 * @param {vDom} on  
@@ -947,7 +954,7 @@ export var Binder = function(context){
 				};
 			}
 			
-			return false;
+			return EAttrResult.SkipChildren;
 		},
 		/**
 		 * 
@@ -979,7 +986,7 @@ export var Binder = function(context){
 				on.values[key] = component;
 
 				if (!(component instanceof BaseComponent)){
-					return false;
+					return EAttrResult.SkipChildren;
 				}
 				
 			
@@ -1100,11 +1107,11 @@ export var Binder = function(context){
 					tryCall(component,component._onInit, on.elem.parentElement);
 				}
 				if (component && component.binder){
-					tryCall(component,component.binder.updateElements);
+					tryCall(component,component.update);
 				}
 			}
 			
-			return false;
+			return EAttrResult.SkipChildren;
 		}
 	}
 

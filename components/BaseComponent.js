@@ -55,6 +55,7 @@ export class BaseComponent extends ChangeWatcher{
 	 * Overrides ChangeWatcher.update method
 	 */
 	update(){
+		this.onBeforeUpdate();	
 		if (this.binder)
 			this.binder.updateElements();
 		this.onUpdate();	
@@ -75,6 +76,13 @@ export class BaseComponent extends ChangeWatcher{
 	 * ***Override***
 	 **/
 	onDestroy(){
+
+	}
+
+	/**
+	 * ***Override***
+	 **/
+	onBeforeUpdate(){
 
 	}
 	/**
