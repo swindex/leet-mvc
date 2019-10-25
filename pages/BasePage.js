@@ -44,6 +44,8 @@ export class BasePage extends ChangeWatcher{
 	update(){
 		if (!this.binder)
 			return;
+
+		this.onBeforeUpdated();	
 		this.binder.updateElements();
 		this.onUpdated();
 	}
@@ -123,7 +125,13 @@ export class BasePage extends ChangeWatcher{
 	onLoaded(){
 
 	}
-
+	/**
+	 * ***Override****
+	 * Called before page is updated either manually, or by watcher
+	 */
+	onBeforeUpdated(){
+		//console.log(this.constructor.name, 'updated');
+	}
 	/**
 	 * ***Override****
 	 * Called after page is updated either manually, or by watcher

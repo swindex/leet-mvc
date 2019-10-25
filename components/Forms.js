@@ -418,7 +418,7 @@ export class Forms extends BaseComponent{
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
-			<label class="field" onclick="this.transferEventToChildInput($event)">{{ this.trimDisplayFileName(this.${dataName}${this.refactorAttrName(el._name)}) || '${Translate('Select File')}' }}
+			<label class="input" onclick="this.transferEventToChildInput($event)">{{ this.trimDisplayFileName(this.${dataName}${this.refactorAttrName(el._name)}) || '${Translate('Select File')}' }}
 				<input file bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
 			</label>`+
 			(el.unit || el.icon ? `<div class="icon">
@@ -490,9 +490,10 @@ export class Forms extends BaseComponent{
 		var elems = ""
 		Objects.forEach(el.items, item=>{
 			elems += (`
-				<label class="toggle">${item.title}
+				<label class="toggle">
 					<input bind = "this.data${this.refactorAttrName(el._name)}" format="${el.dataType ? el.dataType : ''}" value = "${item.value !==null ? item.value : '' }" ${this.generateAttributes(opt)} />
 					<span class="radio round"></span>
+					${item.title}
 				</label>
 			`);
 		});
@@ -724,7 +725,8 @@ Forms.field_definitions = {
 		},
 		number(forms, el, parentPath){
 			forms.assertValidateRuleHas(el,"numeric");
-			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'text',number:"",/* pattern:"[0-9]*",*/ lang:"de-DE", novalidate: true})]);
+			var format = el.attributes && el.attributes.format ? undefined : "number:2"
+			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{type:'text',number:"", format: format, pattern:"[0-9]*", novalidate: true})]);
 		},
 		password(forms, el, parentPath){
 			return forms.renderFieldGroupHTML(el, [forms.addPassword(el,null)]);

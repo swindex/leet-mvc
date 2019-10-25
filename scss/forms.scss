@@ -6,7 +6,8 @@ input[type=number],
 input[type=date], 
 input[type=tel], 
 select,
-select-multiple
+select-multiple,
+.input
 {
     box-sizing:border-box;
     font-size: $size-f-input;
@@ -153,22 +154,19 @@ textarea {
 	input[type=tel],
 	textarea,
 	select,
-	select-multiple
+	select-multiple,
+	.input
 	{
 		font-size: $size-f-input;
-		//padding: $margin-md;
-
 		border-collapse: collapse;
 		padding-left: 0;
 		border: none;
 		border-bottom: $size-border solid $color-border;
 		-webkit-appearance: none;
-		//padding-bottom: $margin-md - $size-border ;
 		&:focus, &.focus, &.focus-blink{
 			outline: none;
 			box-shadow: none;
 			border-bottom: $size-border-active solid $color-border-active;
-			padding-bottom: $margin-md - $size-border-active ;
 		}
 		&[readonly]:focus, &.focus-blink{
 			animation: focus_blink 0.5s;
@@ -231,12 +229,12 @@ select-multiple{
 	padding:0 !important;
 	>div{
 		height: 100%;
-		padding: 6px 0px;
+		padding: 3px 0px;
 		margin-right: 1em;
 	}
 }
 //fildgroup with label in it
-.fieldgroup{
+.fieldgroup .fieldrow.field{
 	>div.label{
 		color: #333;
 		font-size: $size-f-input;
@@ -257,7 +255,7 @@ select-multiple{
 }
 //special case: label contains input[file]
 .fieldgroup {
-	label.field{
+	label.input{
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -344,12 +342,12 @@ select-multiple{
 			width: 26px;
 			min-width: 26px;
 			height: 26px;
-			margin-left: auto;
+			margin-left: 0;
 			border: 1px solid #2196f3;
 
 			border-radius: 34px;
-			margin-right: 4px;
-			padding: 2px;
+			margin-right: $margin-md;
+			padding: 4px;
 			&:before {
 				//position: absolute;
 				display: block;

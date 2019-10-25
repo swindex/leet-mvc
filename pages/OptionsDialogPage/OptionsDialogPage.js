@@ -36,6 +36,11 @@ export class OptionsDialogPage extends DialogPage{
 			deselected: 'far fa-circle',
 			disabled: '',
 		}
+		this.checkedIcons = {
+			selected: 'far fa-check-square',
+			deselected: 'far fa-square',
+			disabled: '',
+		}
 		this.multiple = false;
 		/** Should dialog close when outside of the window is clicked */
 		this.closeOnOutsideClick = true;
@@ -54,6 +59,8 @@ export class OptionsDialogPage extends DialogPage{
 				delete this.buttons['Ok'];
 			}
 		}
+
+		this.icons = this.checkedIcons;
 	}
 
 	/**

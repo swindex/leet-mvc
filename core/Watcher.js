@@ -127,6 +127,7 @@ function scheduleCallback(obj, callback){
 	obj[isSkipUpdate] = true;
 
 	setTimeout(function scheduledUpdate(){
+		obj[isSkipUpdate] = true;
 		tryCall(null,callback);
 		//Notify.call(obj);
 		obj[isSkipUpdate] = false;
