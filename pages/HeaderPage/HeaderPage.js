@@ -63,7 +63,7 @@ export class HeaderPage extends BasePage{
 	 * ***OverrideCallSuper***
 	 */
 	resize(windowSize){
-		var h = windowSize.height;
+		var h = $(this.page).height();
 		var header = this.page.find('>.header').height();
 		var footer = this.page.find('>.footer').height();
 
