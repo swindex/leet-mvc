@@ -14,7 +14,7 @@ export class SwiperComponent extends BaseComponent{
 		
 		/** @type {Swiper} */
 		this.swiper = null;
-		this.index = 0;
+		this.index= null;
 		this.options = $.extend({},{
 			navigation: true,
 			submitButton: "Submit",
@@ -29,16 +29,27 @@ export class SwiperComponent extends BaseComponent{
 			</div>
 			<div class="swiper-pagination"></div>
 			<div [if]="this.options.navigation" class="swiper-navigation">
-				<button [if]="!this.swiper.isBeginning" onclick="if (this.onBackClicked()!== false ) this.swiper.slidePrev()"
+				<button class="btn btn-primary" [if]="!this.swiper.isBeginning" onclick="if (this.onBackClicked()!== false ) this.swiper.slidePrev()"
 					name="back">Back</button>
-				<button [if]="!this.swiper.isEnd" onclick="if (this.onNextClicked()!== false ) this.swiper.slideNext()"
-					class="item-right" name="next">Next</button>
-				<button [if]="this._isShowSubmitButton()" onclick="this.onSubmitClicked()" class="item-right"
+				<button class="btn btn-primary item-right" [if]="!this.swiper.isEnd" onclick="if (this.onNextClicked()!== false ) this.swiper.slideNext()"
+					name="next">Next</button>
+				<button class="btn btn-primary item-right" [if]="this._isShowSubmitButton()" onclick="this.onSubmitClicked()"
 					name="submit">{{ Translate(this.options.submitButton) }}</button>
 			</div>
 		</div>
 		`
 	}
+
+	indexChange(value){
+		setTimeout(()=>{
+			if (!this.swiper) return;
+			this.swiper.slideTo(value, 300, false);
+		});
+	}
+
+	/*get index(){
+		return this._index;
+	}*/
 
 	
 	_isShowSubmitButton(){
@@ -106,14 +117,21 @@ export class SwiperComponent extends BaseComponent{
 
 			this.swiper.on('slideChange',()=>{
 				var old = this.index;
-				this.index = this.swiper.activeIndex;
+				var newIndex = this.swiper.activeIndex;
 
 				//Notify listener that the page has changed
-				if (this.onSlideChange(this.index, old) ===false) {
-					this.swiper.slideTo(old);
+				var ret = this.onSlideChange(newIndex, old);
+				if (ret ===false) {
+					//this.swiper.slideTo(old);
+					this.index = old;
+				} else {
+					this.index = newIndex;
 				}
+				this.swiper.slideTo(this.index);
 			})
-			this.swiper.slideTo(0);
+			
+			this.index = 0;
+			this.swiper.slideTo(this.index);
 		});
 	}
 }
