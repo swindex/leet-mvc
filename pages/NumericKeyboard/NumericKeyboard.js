@@ -244,7 +244,7 @@ class NumericKeyboardPage extends BasePage {
 				return;
 			}
 			//in clicked on another "input[number]" then trigger change event for the current field
-			if (el.tagName === "INPUT" && el.type === "number"){
+			if (el.tagName === "INPUT" && (el.type === "number" || el.getAttribute('number') != null)){
 				self.curr_input.dispatchEvent(new Event('change'));
 				return;
 			}

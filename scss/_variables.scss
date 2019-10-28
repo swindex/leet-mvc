@@ -66,3 +66,15 @@ $color-list-item-active-fg:#2196F3;
 		-webkit-overflow-scrolling:touch !important;
 	}
 }
+
+@mixin button-primary{
+	width: auto;
+	color: $color-button-fg;
+	background-color: $color-button-bg;
+	border: none;
+	border-radius: 3px;
+	padding: $margin-lg $margin-lg;
+	font-size: $size-f-input;
+	box-shadow: 0px 0px 3px 0px #000000ab;
+	-webkit-appearance: none;
+}
