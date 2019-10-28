@@ -20,6 +20,8 @@ export function NavController() {
 	/** @type {PageFrame[]} */
 	var stack = [];
 
+	var windowSize ={width:null, height:null};
+
 	var backTimeout = 300;
 	var backTimeoutRunning = false;
 	
@@ -290,7 +292,7 @@ export function NavController() {
 				//Add creating attribute ALMOST immedaitely for smooth appearance
 				setTimeout(function(){
 					element.attr('creating',"");
-					tryCall(frame.page,frame.page.resize);		
+					tryCall(frame.page,frame.page.resize, windowSize);		
 				},0);
 			}
 
@@ -382,12 +384,18 @@ export function NavController() {
 		}
 	}
 
+	//Set default window size cashe
+	windowSize.width = $(window).width();
+	windowSize.height = $(window).height();
 	//add ONE listener that will fire onResize on all pages;
 	$(window).on('resize', windowResizeHandler);
-	function windowResizeHandler (ev){ 
+	function windowResizeHandler (ev){
+		windowSize.width = $(window).width();
+		windowSize.height = $(window).height();
+		
 		for(var i=0 ; i<stack.length;i++){
 			//recalcContentHeight(stack[i].element);
-			tryCall(stack[i].page, stack[i].page.resize);
+			tryCall(stack[i].page, stack[i].page.resize, windowSize);
 		}
 	}
 

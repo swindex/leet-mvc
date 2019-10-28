@@ -19,6 +19,7 @@ export class HeaderPage extends BasePage{
 		this.content = null;
 		//footer directive
 		this.footer = null;
+		this.showFooter = false;
 
 		this.serviceProvider_id = null;
 
@@ -61,8 +62,8 @@ export class HeaderPage extends BasePage{
 	/**
 	 * ***OverrideCallSuper***
 	 */
-	resize(){
-		var h = $(this.page).height();
+	resize(windowSize){
+		var h = windowSize.height;
 		var header = this.page.find('>.header').height();
 		var footer = this.page.find('>.footer').height();
 
@@ -71,7 +72,7 @@ export class HeaderPage extends BasePage{
 
 		this.page.find('.content').css('height', h +'px');
 
-		super.resize();
+		super.resize(windowSize);
 	}
 
 }
@@ -84,7 +85,7 @@ HeaderPage.template = `
 		<div [directive] = "this.content"></div>
 	</div>
 
-	<div class="footer" [if]="this.footer">
+	<div class="footer" [if]="this.footer && this.showFooter">
 		<div [directive] = "this.footer"></div>
 	</div>
 `

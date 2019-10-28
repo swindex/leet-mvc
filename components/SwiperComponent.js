@@ -1,13 +1,13 @@
 import Swiper from 'swiper';
 import 'swiper/dist/css/swiper.css';
 
-import { BaseComponent } from "./BaseComponent";
+import { BaseComponent } from "leet-mvc/components/BaseComponent";
 
 
 
 export class SwiperComponent extends BaseComponent{
 	/**
-	 * @param {{navigation?: true,submitButton?:string,pagination?:true}} [options]
+	 * @param {{navigation?: true,submitButton?:string,pagination?:true, slidesPerView?: number|'auto' }} [options]
 	 */
 	constructor(options){
 		super();
@@ -19,6 +19,7 @@ export class SwiperComponent extends BaseComponent{
 			navigation: true,
 			submitButton: "Submit",
 			pagination: true,
+			slidesPerView: 1,
 		},options);
 
 		this.html = `
@@ -106,6 +107,13 @@ export class SwiperComponent extends BaseComponent{
 				//initialSlide:this.index,
 				noSwiping: true,
 				iOSEdgeSwipeDetection: true,
+				slidesPerView: this.options.slidesPerView,
+				/*breakpoints:{
+					640:{
+						slidesPerView: 1
+					}
+				},*/
+				centerInsufficientSlides:true,
 				pagination: $.extend({},this.options.pagination ?
 					{
 						el: '.swiper-pagination'
