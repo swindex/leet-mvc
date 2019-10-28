@@ -162,16 +162,18 @@ export class BasePage extends ChangeWatcher{
 
 	}
 	/**
-	 * ***Override****
+	 * ***Override***
+	 * @param {{width:number, height:number}} windowSize
 	 */
-	onResize(){
+	onResize(windowSize){
 
 	}
 	/**
 	 * ***OverrideCallSuper***
+	 * @param {{width:number, height:number}} windowSize
 	 */
-	resize(){
-		this.onResize();
+	resize(windowSize){
+		this.onResize(windowSize);
 	}
 
 	/**
