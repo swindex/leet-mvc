@@ -1,7 +1,7 @@
 import Swiper from 'swiper';
 import 'swiper/dist/css/swiper.css';
 
-import { BaseComponent } from "leet-mvc/components/BaseComponent";
+import { BaseComponent } from "./BaseComponent";
 
 
 
@@ -41,17 +41,14 @@ export class SwiperComponent extends BaseComponent{
 	}
 
 	indexChange(value){
-		setTimeout(()=>{
-			if (!this.swiper) return;
-			this.swiper.slideTo(value, 300, false);
-		});
+		if (!this.swiper) return;
+		this.slideTo(value, false);
 	}
 
-	/*get index(){
-		return this._index;
-	}*/
+	slideTo(index, callEvents){
+		this.swiper.slideTo(index, 300, callEvents);
+	}
 
-	
 	_isShowSubmitButton(){
 		return this.isSghowSubmitButton() && this.swiper.isEnd;
 	}
@@ -119,19 +116,22 @@ export class SwiperComponent extends BaseComponent{
 				var old = this.index;
 				var newIndex = this.swiper.activeIndex;
 
+				if (old == newIndex) {
+					return;
+				}
+
 				//Notify listener that the page has changed
 				var ret = this.onSlideChange(newIndex, old);
 				if (ret ===false) {
-					//this.swiper.slideTo(old);
-					this.index = old;
+					//this.index = old;
+					this.slideTo(this.index, false);
 				} else {
 					this.index = newIndex;
 				}
-				this.swiper.slideTo(this.index);
 			})
 			
 			this.index = 0;
-			this.swiper.slideTo(this.index);
+			this.slideTo(this.index);
 		});
 	}
 }
