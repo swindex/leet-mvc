@@ -36,6 +36,13 @@ export class OptionsDialogPage extends DialogPage{
 			deselected: 'far fa-circle',
 			disabled: '',
 		}
+		
+		this.radioIcons = {
+			selected: 'fas fa-circle',
+			deselected: 'far fa-circle',
+			disabled: '',
+		}
+
 		this.checkedIcons = {
 			selected: 'far fa-check-square',
 			deselected: 'far fa-square',
@@ -54,13 +61,15 @@ export class OptionsDialogPage extends DialogPage{
 		this._multiple = value;
 		if (value==true){
 			this.buttons['Ok'] = ()=>{this._onOkClicked()}
+			this.icons = this.checkedIcons;
 		}else{
 			if (this.buttons['Ok']){
 				delete this.buttons['Ok'];
 			}
+			this.icons = this.radioIcons;
 		}
 
-		this.icons = this.checkedIcons;
+		
 	}
 
 	/**

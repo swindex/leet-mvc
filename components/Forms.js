@@ -322,11 +322,9 @@ export class Forms extends BaseComponent{
 
 	renderFormHTML(el, childrenHTML){
 		return `
-			<div class="${this.options.formClass}" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
+			<div class="${this.options.formClass} ${el.class}" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
 				${this.addTitle(el)}
-				<div>
 				${childrenHTML}
-				</div>
 			</div>
 			`;
 	}
@@ -507,7 +505,7 @@ export class Forms extends BaseComponent{
 	 */
 	addSelect(el, override,parentPath){
 
-		var opt = { name: el._name, type: "select", bind: `this.data${this.refactorAttrName(el._name)}`, placeholder:el.placeholder};
+		var opt = { name: el._name, type: "select", format: el.dataType, bind: `this.data${this.refactorAttrName(el._name)}`, placeholder:el.placeholder};
 		$.extend(opt, override, el.attributes);
 		var elem = `<select ${this.generateAttributes(opt)}>`;
 		if (el.placeholder)
