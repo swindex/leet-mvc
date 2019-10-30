@@ -60,11 +60,15 @@ export class MenuPage extends BasePage {
 	onBackdropClicked() {
 		this.destroy();
 	}
+
+	get template (){
+		return this.extendTemplate(super.template, template);
+	}
 }
 MenuPage.visibleParent = true;
 MenuPage.selector = "page-menu";
 MenuPage.className = "page-Menu";
-MenuPage.template = `
+var template = `
 <div class="backdrop" onclick="this.onBackdropClicked()"></div>
 <div class="menu-body scroll">
 	<div class="menu-head">

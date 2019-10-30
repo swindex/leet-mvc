@@ -28,7 +28,6 @@ export class SwiperComponent extends BaseComponent{
 				<div class="swiper-wrapper" [directive]="this.templateFragment">
 				</div>
 			</div>
-			<div class="swiper-pagination"></div>
 			<div [if]="this.options.navigation" class="swiper-navigation">
 				<button class="btn btn-primary" [if]="!this.swiper.isBeginning" onclick="if (this.onBackClicked()!== false ) this.swiper.slidePrev()"
 					name="back">Back</button>
@@ -37,6 +36,7 @@ export class SwiperComponent extends BaseComponent{
 				<button class="btn btn-primary item-right" [if]="this._isShowSubmitButton()" onclick="this.onSubmitClicked()"
 					name="submit">{{ Translate(this.options.submitButton) }}</button>
 			</div>
+			<div class="swiper-pagination"></div>
 		</div>
 		`
 	}

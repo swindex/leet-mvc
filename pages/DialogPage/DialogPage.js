@@ -179,7 +179,10 @@ export class DialogPage extends BasePage{
 		this.buttons[title] = callback;
 		return this;
 	}
+
+	get template(){
+		return this.extendTemplate(super.template, template);
+	}
 }
-DialogPage.template = template;
 DialogPage.className = 'page-DialogPage';
 DialogPage.visibleParent = true;

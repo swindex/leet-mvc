@@ -55,7 +55,8 @@ export class BaseComponent extends ChangeWatcher{
 	 * Overrides ChangeWatcher.update method
 	 */
 	update(){
-		this.onBeforeUpdate();	
+		if (this.onBeforeUpdate() === false)
+			return;	
 		if (this.binder)
 			this.binder.updateElements();
 		this.onUpdate();	
@@ -81,6 +82,9 @@ export class BaseComponent extends ChangeWatcher{
 
 	/**
 	 * ***Override***
+	 * Called before UI is updated
+	 * Return false to cancel update
+	 * @return {void|boolean}
 	 **/
 	onBeforeUpdate(){
 
