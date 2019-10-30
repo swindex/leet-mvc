@@ -148,26 +148,31 @@ export function NavController() {
     function createPage(container, pageConstructor, args) {
 
 		var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + pageConstructor.name;
-		var template = pageConstructor.template ? pageConstructor.template : null ;
+		//var template = pageConstructor.template ? pageConstructor.template : null ;
 		var className = pageConstructor.className ? pageConstructor.className : "" ;
 
 		//create page object in a new scope
 		/** @type {BasePage} */
-		var pageObject = createPageInstance(pageConstructor,args);
-		pageObject.template = template;
+		var pageObject = createPageInstance(pageConstructor, args);
+		/*if (template !== null) {
+			pageObject.template = template;
+		}*/
 		pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
 		// @ts-ignore
 		pageObject.Nav = self;
-		pageObject.style.zIndex = (stack.length + 1)*100+"";
+		pageObject.style.zIndex = (stack.length + 1) * 100 + "";
 		pageObject.name = pageConstructor.name;
 
-		tryCall(pageObject, pageObject._init);
-		
-		var p = pageObject.page;
-		p.prop('id', selector);
-		p.addClass(className);
-		//p.css(`z-index:${(stack.length + 1)*100};`);
+		var classes = !empty(pageObject.className) ? (pageObject.className).split(" ") : [];
+		classes.push(className);
+		pageObject.className = classes.join(' ');
 
+		tryCall(pageObject, pageObject._init);
+				
+		var p = pageObject.page;
+
+		p.prop('id', selector);
+			
 		$(container).append(p);
 
 		stack.push({name:pageConstructor.name, element: p, page: pageObject});
@@ -175,9 +180,6 @@ export function NavController() {
 		
 		tryCall(pageObject, pageObject.onInit, p);	
 
-		//setTimeout(()=>{
-		//	tryCall(pageObject, pageObject.resize);		
-		//},0);
 		setTimeout(()=>{
 			tryCall(pageObject, pageObject.onLoaded);		
 		},1);

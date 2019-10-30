@@ -1050,6 +1050,7 @@ export var Binder = function(context){
 					Objects.forEach( p_vDom.plainAttrs, (value,key)=>{
 						//only create property if value is not null: attribute has the value part
 						if (value !== null) {
+							component[key] = value;
 							component.attributes[key] = value;
 						}
 					});

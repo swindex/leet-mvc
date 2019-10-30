@@ -78,7 +78,7 @@ export function EnableCustomElements(){
 	RegisterComponent(MultiSelect, 'select-multiple');
 	Forms.field_definitions["select-multiple"] = function(forms, el, parentPath){
 		return forms.renderFieldGroupHTML(el, [
-			`<select-multiple name="${el.name}" [(value)]= "this.data${forms.refactorAttrName(el._name)}" [onChange]="this.events.change" placeholder="${el.placeholder}" [items] = "this.elementItems${forms.refactorAttrName(el._name)}"></select-multiple>`
+			`<select-multiple name="${el.name}" [(value)]= "this.data${forms.refactorAttrName(el._name)}" placeholder="${el.placeholder}" [items] = "this.elementItems${forms.refactorAttrName(el._name)}"></select-multiple>`
 		]);
 	},
 

@@ -16,7 +16,7 @@ export class MultiSelect extends BaseComponent {
 
 		this.html=`<select-multiple class="select" onclick="this.onClick($event)">
 			<div style="margin-right:1em; overflow-x:auto;">
-				<span style="white-space:nowrap;">{{ this.getDisplayText() }}</span>
+				<span style="white-space:nowrap;display: inline-block;">{{ this.getDisplayText() }}</span>
 			</div>	
 		</select-multiple>`;
 	}
@@ -54,6 +54,10 @@ export class MultiSelect extends BaseComponent {
 		}		
 	}
 
+	/**
+	 * ***Override***
+	 * @param {*} ev 
+	 */
 	onChange(ev){
 
 	}
@@ -65,7 +69,7 @@ export class MultiSelect extends BaseComponent {
 		Objects.forEach(this.items, el => {if (this.value.indexOf(el.value)>=0) d.push(el.title);});
 
 		if (d.length==0){
-			return this.placeholder;
+			return this.placeholder || this.attributes.placeholder;
 		}
 
 		return d.join(', ');

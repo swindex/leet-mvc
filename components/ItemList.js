@@ -62,8 +62,10 @@ export class ItemList extends BaseComponent{
 
 	};
 
-	onUpdate(){
-		this.templateUpdate();
+	onBeforeUpdate(){
+		//this.templateUpdate();
+		//cancel componenet update because parent is going to do that!
+		//return false;
 	}
 
 	/**

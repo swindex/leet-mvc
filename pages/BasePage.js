@@ -29,7 +29,7 @@ export class BasePage extends ChangeWatcher{
 		this.isVisible = false;
 		this.isDeleted = false;
 
-		this.className = null;
+		this.className = "";
 		this.visibleParent = null;
 
 		//Be lazy. This allows us to directly pass page methods without having to worry about "this"
@@ -103,7 +103,7 @@ export class BasePage extends ChangeWatcher{
 	 * Initialize binder
 	 */
 	_init(binderEvent){
- 		this.template = BasePage.template.replace('/*child-template*/', this.template);
+ 		//this.template = BasePage.template.replace('/*child-template*/', this.template);
 
 		this.binder.bindElements(binderEvent, this.template);
 		this.page = $(this.binder.vdom.elem);
@@ -203,8 +203,24 @@ export class BasePage extends ChangeWatcher{
 	onBackNavigate(){
 		return true;
 	}
+
+	/**
+	 * Extend the base temblate with child template
+	 * @param {string} super_template 
+	 * @param {string} child_template 
+	 */
+	extendTemplate(super_template, child_template){
+		return super_template.replace('/*child-template*/', child_template );
+	}
+
+	/**
+	 * ***Readonly*** property that returns the template string
+	 *   You can extend base template by returning this.extendTemplate(super.template,'child template string');
+	 */
+	get template (){
+		return `<div page [class]="this.className" [style]="this.style">/*child-template*/</div>`;
+	}
 }
 BasePage.visibleParent = null;
 BasePage.selector = null;
 BasePage.className = null;
-BasePage.template = `<div page [class]="this.className" [style]="this.style">/*child-template*/</div>`;
