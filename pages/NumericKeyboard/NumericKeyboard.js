@@ -524,9 +524,12 @@ class NumericKeyboardPage extends BasePage {
 			this.onClick();
 		return false;
 	};
+
+	get template(){
+		return this.extendTemplate(super.template, template);
+	}
 }
 
-NumericKeyboardPage.template = template;
 NumericKeyboardPage.selector ="page-NumericKeyboardPage";
 NumericKeyboardPage.className ="page-NumericKeyboardPage";
 NumericKeyboardPage.visibleParent = true;
