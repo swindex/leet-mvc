@@ -23,7 +23,7 @@ export class SwiperTabs extends BaseComponent{
 		this.pages = [];
 		/** @type {Swiper} */
 		this.swiper = null;
-		this.html=`
+		this.template=`
 			<div class="swiper-container SwiperTabs" style="height:100%;" id="generatedpage">
 				<div class="swiper-wrapper">
 				</div>

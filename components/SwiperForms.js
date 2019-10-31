@@ -32,9 +32,9 @@ export class SwiperForms extends Forms{
 		},options);
 
 		/*this html comes from the Forms class*/
-		var formsHTML = this.html;
+		var formsHTML = this.template;
 
-		this.html = `
+		this.template = `
 		<div class="swiper-container" id="generatedform">
 			<div class="swiper-wrapper">
 				`+formsHTML+`
