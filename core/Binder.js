@@ -1337,7 +1337,7 @@ export var Binder = function(context){
 			return v;
 		}
 	
-		if (!isElementSetting(elem) || empty(elem['VDOM']) || empty(elem['VDOM'].setters.bind))
+		if (!isElementSetting(elem) || empty(elem['VDOM']) || empty(elem['VDOM'].setters) || empty(elem['VDOM'].setters.bind))
 			return;
 		var v;
 
