@@ -55,12 +55,15 @@ export class ToastPage extends BasePage{
 	onClosed(){
 
 	}
+
+	get template(){
+		return this.extendTemplate(super.template,`
+			<div class="toast-box">
+				<span class="message">{{this.message}}</span>
+			</div>
+		`);
+	}
 	
 }
 ToastPage.visibleParent = true;
 ToastPage.selector = "page-ToastPage";
-ToastPage.template = `
-	<div class="toast-box">
-		<span class="message">{{this.message}}</span>
-	</div>
-`

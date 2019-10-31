@@ -8,7 +8,7 @@ export class BaseComponent extends ChangeWatcher{
 		/** @type {Binder} */
 		this.binder = null;
 		/** @type {string} */
-		this.html = null;
+		this.template = null;
 		this.events = null;
 		/** fragment with children */
 		this.templateFragment = null;
