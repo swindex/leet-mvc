@@ -72,7 +72,7 @@ export class Forms extends BaseComponent{
 
 		this.field_definitions = Forms.field_definitions;
 
-		this.html = `<div [directive]="this.formHTML"></div>`
+		this.template = `<div [directive]="this.formHTML"></div>`
 		
 		
 		this.formHTML =this.renderArray(this.formTemplate, null)

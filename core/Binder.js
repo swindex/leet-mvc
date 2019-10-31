@@ -991,7 +991,7 @@ export var Binder = function(context){
 				
 			
 				var inj = $.extend({}, inject);
-				if (component.html) {
+				if (component.template) {
 					on.values[key] = component;
 					//build parent vDom in the parent scope
 					/** @type {vDom} */
@@ -1000,7 +1000,7 @@ export var Binder = function(context){
 						throw Error ( "Component container " + JSON.stringify(on.elem) + " can not be a fragment!" )
 					}
 
-					component.binder = new Binder(component).setInjectVars(inj).bindElements(component.events, component.html);
+					component.binder = new Binder(component).setInjectVars(inj).bindElements(component.events, component.template);
 					var c_vDom = component.binder.vdom;
 
 					//link componenet properties to getter values
