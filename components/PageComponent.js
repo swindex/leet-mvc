@@ -19,7 +19,7 @@ export class PageComponent extends BaseComponent{
 		this.pages = [];
 		/** @type {Swiper} */
 		this.swiper = null;
-		this.html=`
+		this.template=`
 			<div class="" style="height:100%;">
 			</div>	
 		`;

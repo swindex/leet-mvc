@@ -14,7 +14,7 @@ export class MultiSelect extends BaseComponent {
 		this.items = [];
 		this.placeholder = "";
 
-		this.html=`<select-multiple class="select" onclick="this.onClick($event)">
+		this.template=`<select-multiple class="select" onclick="this.onClick($event)">
 			<div style="margin-right:1em; overflow-x:auto;">
 				<span style="white-space:nowrap;display: inline-block;">{{ this.getDisplayText() }}</span>
 			</div>	
@@ -26,29 +26,18 @@ export class MultiSelect extends BaseComponent {
 		p.title = this.placeholder;
 		p.multiple = true;
 
-		//p.isSelectedItem = item => item.value === el.value;
-		//elementitems belongs to FORMS and changes to its will not reflect on the dialog page
-		//So we must make a copy
-		p.items = Objects.copy(this.items);
+		//convert select field items to 
+		p.items = Objects.map(this.items,el => { return {
+			value: el.value,
+			title: el.title,
+			text: el.placeholder,
+			selected: this.value.indexOf(el.value) >=0
+		}});
 		
-		if (isArray(this.value)){
-			Objects.forEach(p.items, el => { 
-				if (this.value.indexOf(el.value)>=0 ){
-					el.selected=true;
-				}
-			});
-		}
 		p.onOkClicked = (items)=>{
 			var valArray = [];
 			Objects.forEach(items, el => {if (el.selected) valArray.push(el.value); } )
 			this.value = valArray;
-			
-			//this.container.value = this.value;
-			//this.container[0].dispatchEvent(new Event('change'));
-			//var ev = new Event('change');
-			//ev.target = this;
-			
-
 
 			this.onChange({target:this});
 		}		

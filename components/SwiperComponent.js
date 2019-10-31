@@ -22,7 +22,7 @@ export class SwiperComponent extends BaseComponent{
 			slidesPerView: 1,
 		},options);
 
-		this.html = `
+		this.template = `
 		<div class="swiper-container">
 			<div class="swiper-wrapper">
 				<div class="swiper-wrapper" [directive]="this.templateFragment">
