@@ -5,8 +5,8 @@ import { BasePage } from "./pages/BasePage";
 import { Objects } from "./core/Objects";
 import { NavController } from "./core/NavController";
 import { ConfirmButtons, Alert, Confirm, ConfirmDanger } from "./core/simple_confirm";
-import { Dialog, DialogPage } from "./pages/DialogPage/DialogPage";*/
-import { Translate, ReplaceValues } from "./core/Translate";
+import { Dialog, DialogPage } from "./pages/DialogPage/DialogPage";
+import { ReplaceValues } from "./core/Translate";
 import { Injector } from "./core/Injector";
 import { SimpleTabs } from "./components/SimpleTabs/SimpleTabs";
 import { MenuPage } from "./pages/MenuPage/MenuPage";
@@ -32,8 +32,9 @@ import { Forms } from "./components/Forms";
 import { ItemList } from "./components/ItemList";
 import { RegisterComponent } from './core/Register';
 import { NumericKeyboard } from './pages/NumericKeyboard/NumericKeyboard';
-import { Override } from './core/Override';
+import { Override } from './core/Override'; /**/
 
+import { Translate } from "./core/Translate";
 
 //Make jQuery available globally
 window["$"] = window["jQuery"] = require("jquery");
