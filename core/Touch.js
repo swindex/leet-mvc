@@ -73,7 +73,8 @@ export function Touch(event, options) {
 
 	var self = {
 		onSwipe:onSwipe,
-		onTap:onTap
+        onTap:onTap,
+        start:{x: xDown, y: yDown}
 	}
 	return self;
 }
