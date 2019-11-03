@@ -1155,7 +1155,7 @@ export var Binder = function(context){
 		var format =  elem.getAttribute ? elem.getAttribute('format') : null;
 		if (format !== null) {
 			var formats = format.split(":");
-			if (formats.length > 0 && formats[0] === "number") {
+			if (formats.length > 0 && (formats[0] === "number" || formats[0] === "localenumber")) {
 				if (v!==""){	
 					v = v * 1;
 					if (isNaN(v)) v = 0;
@@ -1164,7 +1164,7 @@ export var Binder = function(context){
 
 						v = round(v, parseInt(ln));
 					}
-					if (elem.getAttribute('type')!= 'number' &&  Number(v).toLocaleString) {
+					if (formats[0] === "localenumber" && elem.getAttribute('type') != 'number' &&  Number(v).toLocaleString) {
 						v = Number(v).toLocaleString();
 					}
 				}	
@@ -1290,12 +1290,17 @@ export var Binder = function(context){
 			var v = value;
 			if(!empty(format)){
 				var formats = format.split(":");
-				if (formats.length > 0 && formats[0] === "number") {
+				if (formats.length > 0 && (formats[0] === "number" || formats[0] === "localenumber")) {
 					if (value==="" )
 						v = null;
 					else
 					{
-						v = numberFromLocaleString(value);
+						if (formats[0] === "localenumber"){
+							v = numberFromLocaleString(value);
+						} else {
+							v = Number(value)
+						}	
+
 						//v = value * 1;
 						if (isNaN(v)) v = 0;
 						if (formats.length == 2){

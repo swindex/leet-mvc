@@ -143,48 +143,75 @@ export function NavController() {
 	 * @param {HTMLElement} container
 	 * @param {any} pageConstructor 
 	 * @param {any[]} args - array of arguments to pass to the page constructor
-	 * @return {BasePage} 
+	 * @return {BasePage|Promise} 
 	 */
     function createPage(container, pageConstructor, args) {
 
-		var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + pageConstructor.name;
-		//var template = pageConstructor.template ? pageConstructor.template : null ;
-		var className = pageConstructor.className ? pageConstructor.className : "" ;
+		function insertIntoDOM(pageObject) {
+			pageObject.Nav = self;
+			pageObject.style.zIndex = (stack.length + 1) * 100 + "";
 
-		//create page object in a new scope
-		/** @type {BasePage} */
-		var pageObject = createPageInstance(pageConstructor, args);
-		/*if (template !== null) {
-			pageObject.template = template;
-		}*/
-		pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
-		// @ts-ignore
-		pageObject.Nav = self;
-		pageObject.style.zIndex = (stack.length + 1) * 100 + "";
-		pageObject.name = pageConstructor.name;
+			var classes = !empty(pageObject.className) ? (pageObject.className).split(" ") : [];
+			classes.push(className);
+			pageObject.className = classes.join(' ');
 
-		var classes = !empty(pageObject.className) ? (pageObject.className).split(" ") : [];
-		classes.push(className);
-		pageObject.className = classes.join(' ');
+			tryCall(pageObject, pageObject._init);
+					
+			var p = pageObject.page;
 
-		tryCall(pageObject, pageObject._init);
+			p.prop('id', selector);
 				
-		var p = pageObject.page;
+			$(container).append(p);
 
-		p.prop('id', selector);
+			stack.push({name:pageObject.name, element: p, page: pageObject});
+			resetPagesVisibility();
 			
-		$(container).append(p);
+			tryCall(pageObject, pageObject.onInit, p);	
 
-		stack.push({name:pageConstructor.name, element: p, page: pageObject});
-		resetPagesVisibility();
-		
-		tryCall(pageObject, pageObject.onInit, p);	
+			setTimeout(()=>{
+				tryCall(pageObject, pageObject.onLoaded);		
+			},1);
 
-		setTimeout(()=>{
-			tryCall(pageObject, pageObject.onLoaded);		
-		},1);
+			return pageObject;
+		}
 		
-		return pageObject;
+		if (pageConstructor instanceof Promise) {
+			//constructor is a promise.
+			//Resolve it!
+			return pageConstructor.then( _pageConstructor => {
+				//call it again
+				return createPage (container, _pageConstructor, args);
+			});
+		} else if (typeof pageConstructor == "function") {
+			var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + pageConstructor.name;
+			var className = pageConstructor.className ? pageConstructor.className : "" ;
+
+			//create page object in a new scope
+			/** @type {BasePage} */
+			var pageObject = createPageInstance(pageConstructor, args);
+			pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
+			pageObject.name = pageConstructor.name;
+			pageObject.className = className;
+			pageObject.selector = selector;
+			return insertIntoDOM(pageObject);
+
+		} else {
+			//create page object in a new scope
+			/** @type {BasePage} */
+			var pageObject = pageConstructor;
+			pageConstructor = pageObject.constructor;
+
+			var name = (pageConstructor.name + "").replace(/^bound /, "");
+
+			var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + name;
+			var className = pageConstructor.className ? pageConstructor.className : "" ;
+	
+			pageObject.name = name;
+			pageObject.className = className;
+			pageObject.selector = selector;
+			return insertIntoDOM(pageObject);
+		}
+		
 	}
 	/**
 	 * 
