@@ -21,6 +21,7 @@ declare namespace NavControllerModule{
 
 
 		setRoot<T>(PageObject: T): T;
+		push<T>(PageObject: T): T;
 	};
 	
 }

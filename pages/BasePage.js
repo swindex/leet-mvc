@@ -29,7 +29,9 @@ export class BasePage extends ChangeWatcher{
 		this.isVisible = false;
 		this.isDeleted = false;
 
-		this.className = "";
+		this.selector = ""
+		this.className = this.constructor.className;
+		this.classNames = [];
 		this.visibleParent = null;
 
 		//Be lazy. This allows us to directly pass page methods without having to worry about "this"
