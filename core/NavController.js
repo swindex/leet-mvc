@@ -191,7 +191,7 @@ export function NavController() {
 			var pageObject = createPageInstance(pageConstructor, args);
 			pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
 			pageObject.name = pageConstructor.name;
-			pageObject.className = className;
+			empty(pageObject.className) ? pageObject.className = className : null;
 			pageObject.selector = selector;
 			return insertIntoDOM(pageObject);
 
@@ -207,7 +207,7 @@ export function NavController() {
 			var className = pageConstructor.className ? pageConstructor.className : "" ;
 	
 			pageObject.name = name;
-			pageObject.className = className;
+			empty(pageObject.className) ? pageObject.className = className : null;
 			pageObject.selector = selector;
 			return insertIntoDOM(pageObject);
 		}

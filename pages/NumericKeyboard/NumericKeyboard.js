@@ -74,6 +74,10 @@ function getPxNumber(val){
 class NumericKeyboardPage extends BasePage {
 	constructor(options) {
 		super();
+
+		this.selector ="page-NumericKeyboardPage";
+		this.className ="page-NumericKeyboardPage";
+		this.visibleParent = true;
 	
 		/** @type {HTMLInputElement} */
 		this.old_input;
@@ -529,7 +533,3 @@ class NumericKeyboardPage extends BasePage {
 		return this.extendTemplate(super.template, template);
 	}
 }
-
-NumericKeyboardPage.selector ="page-NumericKeyboardPage";
-NumericKeyboardPage.className ="page-NumericKeyboardPage";
-NumericKeyboardPage.visibleParent = true;
