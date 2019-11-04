@@ -9,7 +9,7 @@ var toastStack={top:null,bottom:null,middle:null};
  * @param {string} message - text message to display
  * @param {number} [timeout] - timout - default 3000 ms
  * @param {function():any} [onClosed] - callback fied when toast is closed
- * @param {'top'|'botton'|'middle'} [location] - default bottom
+ * @param {'top'|'bottom'|'middle'} [location] - default bottom
  */
 export function Toast(message, timeout, onClosed, location="bottom"){
 	timeout = (timeout===undefined || timeout===null) ? 3000 : timeout;
@@ -33,7 +33,8 @@ export function Toast(message, timeout, onClosed, location="bottom"){
 		tryCall(null, onClosed);
 	};
 
-	p.show(timeout);	
+	p.show(timeout);
+	return p;	
 }
 export class ToastPage extends BasePage{
 	constructor(){
