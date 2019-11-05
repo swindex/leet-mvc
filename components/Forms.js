@@ -540,7 +540,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addInfo(el){
-		if (!el.title) return '';
+		//if (!el.title) return '';
 		return `<div class="info-btn"><i class="fas fa-question-circle" onclick="this.showInfoText('${el.info}')"></i></div>`;
 	}
 	/**

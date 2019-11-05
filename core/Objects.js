@@ -295,10 +295,13 @@ export const Objects = {
 
 	getMethods(object){
 		var methods = []
-		Object.getOwnPropertyNames(object.constructor.prototype || object.constructor).forEach((key) =>{ 
-			if(typeof object[key] === 'function')
-				methods.push(key);
-		});
+		var iObj = object;
+		do {
+			methods = methods.concat(Object.getOwnPropertyNames(iObj));
+		} while ((iObj = Object.getPrototypeOf(iObj)) && iObj != Object.prototype);
+
+		methods = Objects.filter(methods, key => typeof object[key] === 'function' );
+		
 		return methods;
 	},
 	getProperties(object){

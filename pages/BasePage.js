@@ -22,12 +22,13 @@ export class BasePage extends ChangeWatcher{
 
 		this.name = null;
 
-		this.isDeleting = false;
-		this.isCreating = false;
-		this.isHiding = false;
-		this.isShowing = false;
-		this.isVisible = false;
-		this.isDeleted = false;
+		this.isDeleting = null;
+		this.isCreating = null;
+		this.isHiding = null;
+		this.isShowing = null;
+		this.isVisible = null;
+		this.isDeleted = null;
+		this.isHidden = null;
 
 		this.selector = ""
 		this.className = this.constructor.className;
@@ -220,7 +221,7 @@ export class BasePage extends ChangeWatcher{
 	 *   You can extend base template by returning this.extendTemplate(super.template,'child template string');
 	 */
 	get template (){
-		return `<div page [class]="this.className" [style]="this.style">/*child-template*/</div>`;
+		return `<div page [class]="this.className" [style]="this.style" [attribute]="{hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}">/*child-template*/</div>`;
 	}
 }
 BasePage.visibleParent = null;

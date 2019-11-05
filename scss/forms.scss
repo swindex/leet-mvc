@@ -225,7 +225,7 @@ textarea {
 		align-items: center;
 		flex-wrap: wrap; //allow 100% wide children to form column
 		&.field >* {
-			padding-bottom: $margin-md;
+			//padding-bottom: $margin-md;
 		}
 	}
 }
