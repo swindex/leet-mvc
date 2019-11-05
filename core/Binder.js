@@ -9,6 +9,8 @@ import { isArray } from "util";
 import { isFunction } from "util";
 import { Objects } from "./Objects";
 
+var htmlparser = require("htmlparser2");
+
 /** 
  * @constructor 
  * @param {*} context
@@ -159,7 +161,7 @@ export var Binder = function(context){
 	}
 
 	function parseElement(template){
-		var htmlparser = require("htmlparser2");
+		
 		var handler = new htmlparser.DomHandler(function (error, dom) {
 			if (error){
 

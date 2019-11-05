@@ -98,8 +98,7 @@ export function NavController() {
 
 			removeLastFrame();
 			self.onPageNavigateBack(currentFrame().name);
-			resetPagesVisibility();
-			//tryCall(currentFrame().page,currentFrame().page.onEnter);		
+			resetPagesVisibility();	
 			
 			return true;
 		}
@@ -117,8 +116,6 @@ export function NavController() {
 			}
 		}
 		resetPagesVisibility();
-		//if (currentFrame())
-			//tryCall(currentFrame().page,currentFrame().page.onEnter);		
 	}
 	/**
 	 * Get a list of displayed pages
@@ -154,11 +151,10 @@ export function NavController() {
 			var classes = !empty(pageObject.className) ? (pageObject.className).split(" ") : [];
 			classes.push(className);
 			pageObject.className = classes.join(' ');
-
 			tryCall(pageObject, pageObject._init);
 					
 			var p = pageObject.page;
-
+			
 			p.prop('id', selector);
 				
 			$(container).append(p);
@@ -227,14 +223,10 @@ export function NavController() {
 
 	function removeFrameN (frameIndex){
 		var frame = stack.splice(frameIndex,1)[0];
-		//removeEvents(frame.element);
-	
+
 		tryCall(frame.page, frame.page.onLeave);
 		tryCall(frame.page, frame.page._onDestroy);		
-		//immediately disable drop all events for the page being removed
-		//$(frame.element).off();
-		hidePageElement(frame, true);
-		
+		hidePageElement(frame, true);	
 		frame = null;
 		return true;
 	}
@@ -263,17 +255,18 @@ export function NavController() {
 	/**
 	 * Set Page instance UI state value
 	 * @param {object} page 
-	 * @param {'isDeleting'|'isCreating'|'isHiding'|'isShowing'|'isVisible'} state 
+	 * @param {'isDeleting'|'isCreating'|'isHiding'|'isShowing'|'isVisible'|'isHidden'} state 
 	 */
 	function setPageState(page, state){
 		if (page[state] == true){
 			return;
 		}
-		page.isDeleting = false;
-		page.isCreating = false;
-		page.isHiding = false;
-		page.isShowing = false;
-		page.isVisible = false;
+		page.isDeleting = null;
+		page.isCreating = null;
+		page.isHiding = null;
+		page.isHidden = null;
+		page.isShowing = null;
+		page.isVisible = null;
 		
 		page[state] = true;
 	}
@@ -306,62 +299,47 @@ export function NavController() {
 	 * @param {boolean} [inactive] 
 	 */
 	function showPageElement(frame, inactive){
-		var element = frame.element;
 		window.requestAnimationFrame(function(){
-			if (typeof element.attr('deleting') !=='undefined') {
+			if (frame.page.isDeleting) {
 				return;
 			}
 			
-			if (typeof element.attr('hidden') !=='undefined') {
-				element.attr('revealing',"");
-				setPageState(frame.page,'isShowing');
-			} else if (typeof element.attr('hidden') == 'undefined' && typeof element.attr('hiding') == 'undefined'  && typeof element.attr('visible') == 'undefined'){
-				//if page is not yet have any attributes
-				setPageState(frame.page,'isCreating');
-				//Add creating attribute ALMOST immedaitely for smooth appearance
-				setTimeout(function(){
-					element.attr('creating',"");
-					tryCall(frame.page,frame.page.resize, windowSize);		
-				},0);
-			}
-
-			//immediately remove block hidden
-			element.removeAttr('hidden');
-			element.removeAttr('hiding');
-			
-			if (inactive){
-				element.attr('inactive',"");
-			} else {
-				element.removeAttr('inactive');
-			}
-
-			if (typeof element.attr('visible') == 'undefined'){
-				//fire on enter int the next frame
+			if ( frame.page.isHidden) {
 				setPageState(frame.page,'isShowing');
 				setTimeout(function(){
 					tryCall(frame.page,frame.page.onEnter);		
 				},0);
+			} else if ( !frame.page.isHidden && !frame.page.isHiding && !frame.page.isVisible){
+				//if page is not yet have any attributes
+				setPageState(frame.page,'isCreating');
+
+				//Add creating attribute ALMOST immedaitely for smooth appearance
+				setTimeout(function(){
+					tryCall(frame.page,frame.page.resize, windowSize);		
+				},0);
+
+				setTimeout(function(){
+					tryCall(frame.page,frame.page.onEnter);		
+				},0);
 			}
+			
+			if (inactive){
+				frame.page.isInactive = true;
+			} else {
+				frame.page.isInactive = null;
+			}
+
 			//Set to fully visible after 500ms delay
 			setTimeout(function(){
-				if (typeof element.attr('deleting') !=='undefined') {
+				if ( frame.page.isDeleting) {
 					return;
 				}
 				
-				setPageState(frame.page,'isVisible');
-
-				if (typeof element.attr('visible') == 'undefined') {
+				
+				if (!frame.page.isVisible) {
 					tryCall(frame.page, frame.page._onVisible);
 				}
-					
-				element.removeAttr('hidden');
-				element.removeAttr('hiding');	
-				element.removeAttr('revealing');
-				element.removeAttr('creating');
-
-				element.attr('visible','');
-
-				
+				setPageState(frame.page,'isVisible');
 			},transitionTime);	
 		});
 		
@@ -375,36 +353,25 @@ export function NavController() {
 	function hidePageElement(frame, isDeleting){
 		var element = frame.element;
 		isDeleting = isDeleting || false;
-		var isHidden = typeof element.attr('hidden') !== 'undefined';
 
-		if (typeof element.attr('deleting') !== 'undefined')
+		if (frame.page.isDeleting )
 			return;
 		function doHideElem(isDeleting){
 			window.requestAnimationFrame(function(){
-				element.removeAttr('deleting');
-				element.removeAttr('hiding');
-				element.attr('hidden','');
+				setPageState(frame.page, 'isHidden');
 				if (isDeleting){
-					//$(element).remove();
 					frame.page[isSkipUpdate] = true;
 					frame.page.Nav = null;
 					frame.page.destroy(true);
-					//removeDOMElement(element[0]);
-				} else{	
-					//element.css('display','none');
-					//console.log("Hide Element",element[0].id);
 				}
 			})
 		}
-		if(isHidden){
+		if(frame.page.isHidden){
 			doHideElem();
 		}else{
-			element.removeAttr('visible');
 			if (isDeleting){
-				element.attr('deleting',"");
 				setPageState(frame.page,'isDeleting');
 			}else{
-				element.attr('hiding',"");
 				setPageState(frame.page,'isHiding');
 			}
 			setTimeout(function(){
