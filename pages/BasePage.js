@@ -31,10 +31,11 @@ export class BasePage extends ChangeWatcher{
 		this.isHidden = null;
 		this.isRoot = null,
 
-		this.selector = ""
+		this.selector = this.constructor.selector;
 		this.className = this.constructor.className;
+		this.visibleParent = this.constructor.visibleParent;
+
 		this.classNames = [];
-		this.visibleParent = null;
 
 		//Be lazy. This allows us to directly pass page methods without having to worry about "this"
 		Objects.bindMethods(this);

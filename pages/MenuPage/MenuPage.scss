@@ -28,6 +28,18 @@ div[page].page-Menu{
 		content: ' ';
 	}
 	//Initial CSS for when the page has just been created
+	&.left {
+		.menu-body {
+			margin-left: 0;
+			transform: translate3d(-100%,0,0);
+		}
+	}
+	&.right {
+		.menu-body {
+			margin-left: auto;
+			transform: translate3d(100%,0,0);
+		}
+	}
 	.menu-body{
 		background-color: #054877;
 		width: 80%;
@@ -124,8 +136,12 @@ div[page].page-Menu{
 		}
 	}
 	&[deleting] {
-		.menu-body{
+		&.left .menu-body {
 			transform: translate3d(-100%,0,0);
+			transition: transform ease 0.3s;
+		}
+		&.right .menu-body {
+			transform: translate3d(100%,0,0);
 			transition: transform ease 0.3s;
 		}
 	}

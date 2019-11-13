@@ -8,9 +8,13 @@ import { Injector } from './../../core/Injector';
  * @param {HTMLElement} container
  */
 export class MenuPage extends BasePage {
-	constructor() {
+	constructor(position) {
 		super()
 		this.down = false;
+		this.position = position || "left";
+		if (this.position) {
+			this.className = this.className + " " + this.position
+		}
 		var st = Injector.Nav ? Injector.Nav.getPages() : null;
 
 		this.currPage = st[st.length-1].page;
