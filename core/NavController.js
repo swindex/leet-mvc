@@ -191,9 +191,9 @@ export function NavController() {
 			//create page object in a new scope
 			/** @type {BasePage} */
 			var pageObject = createPageInstance(pageConstructor, args);
-			pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
+			//pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
 			pageObject.name = pageConstructor.name;
-			empty(pageObject.className) ? pageObject.className = className : null;
+			//empty(pageObject.className) ? pageObject.className = className : null;
 			pageObject.selector = selector;
 			return insertIntoDOM(pageObject);
 
@@ -203,14 +203,14 @@ export function NavController() {
 			var pageObject = pageConstructor;
 			pageConstructor = pageObject.constructor;
 
-			var name = (pageConstructor.name + "").replace(/^bound /, "");
+			var name = (pageConstructor.name + "").replace(/bound /g, "");
 
-			var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + name;
+			//var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + name;
 			var className = pageConstructor.className ? pageConstructor.className : "" ;
 	
 			pageObject.name = name;
-			empty(pageObject.className) ? pageObject.className = className : null;
-			pageObject.selector = selector;
+			//empty(pageObject.className) ? pageObject.className = className : null;
+			//pageObject.selector = selector;
 			return insertIntoDOM(pageObject);
 		}
 		
