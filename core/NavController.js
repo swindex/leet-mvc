@@ -154,7 +154,7 @@ export function NavController() {
 			} else {			
 				tryCall(pageObject, pageObject._init);
 				var p = pageObject.page;
-				p.prop('id', selector);
+				p.prop('id', pageObject.selector);
 				$(container).append(p);
 			}
 
