@@ -691,12 +691,15 @@ Forms.field_definitions = {
 			return forms.renderFieldGroupHTML(el, [forms.addInput(el,null)]);
 		},
 		date(forms, el, parentPath){
+			el.icon = "far fa-calendar-alt"
 			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{date:'', format:'date'})]);	
 		},
 		datetime(forms, el, parentPath){
+			el.icon = "far fa-calendar-alt"
 			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{dateTime:'', format:'dateTime'})]);	
 		},
 		time(forms, el, parentPath){
+			el.icon = "far fa-clock"
 			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{time:'', format:'time'})]);	
 		},
 		split(forms, el, parentPath){
@@ -710,7 +713,9 @@ Forms.field_definitions = {
 			var timeEl = $.extend({}, el);
 			
 			dateEl._name += "_date";
+			dateEl.icon = "far fa-calendar-alt"
 			timeEl._name += "_time";
+			timeEl.icon = "far fa-clock"
 			
 			var dateTime = Objects.getPropertyByPath(forms.data, el._name)
 			Objects.setPropertyByPath(forms.extraData, dateEl._name, dateTime);
