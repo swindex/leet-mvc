@@ -1,12 +1,18 @@
 // @ts-ignore
-import * as template from './Loader.html';
 import "./Loader.scss";
 import { Translate } from './../../core/Translate';
+
+import { BasePage } from 'leet-mvc/pages/BasePage';
+
+import { Injector } from './../../core/Injector';
+
+
+
 export function Loader (){
 	function Loader(){
 		/** @type {Loader} */
-		var self = this
-		this._loaderSelector= null;
+		var self = this;
+		this.loaderInstance = null;
 		this._loaderContainer= null;
 		this._loaderTimeout= 30000;
 		this._loaderTimeoutCallback= null;
@@ -48,27 +54,19 @@ export function Loader (){
 		 * @returns {Loader}
 		 */
 		this.show= function(text){
-			self.hide();
+			
+			if (!self._loaderContainer)
+				self.loaderInstance = Injector.Nav.push(LoaderPage);
+			else 	
+				self.loaderInstance = Injector.Nav.pushInto(self._loaderContainer, LoaderPage);
 
-			text = text || Translate("Loading ...")
+			self.loaderInstance.text = text || Translate("Loading ...");
 
-			var pages = $('[page]').length;
-
-			self._loaderContainer = self._loaderContainer || 'body';
 			self._loaderTimeout = self._loaderTimeout || 0;
 			self._loaderIsTimedOut = false;
-			self._loaderSelector = $(template);
-			self._loaderSelector.css('z-index', pages * 100 + 99);
-			if (!empty(text))
-				self._loaderSelector.find('.loader-message').text(text);
-			if (!is_backdrop)	
-				self._loaderSelector.css('background-color','rgba(0,0,0,0)');
-			//append loader to container
-			$(self._loaderContainer).append(self._loaderSelector);
-
 			if (self._loaderTimeout > 0){
 				setTimeout(function(){
-						if (!self._loaderSelector)
+						if (!self.loaderInstance)
 							return;
 						self.hide();
 						self._loaderIsTimedOut = true;
@@ -76,6 +74,7 @@ export function Loader (){
 							self._loaderTimeoutCallback(self._loaderTimeout);
 					}, self._loaderTimeout);
 			}	
+			
 			return self;
 		}
 		/**
@@ -83,14 +82,12 @@ export function Loader (){
 		 * @returns {Loader}
 		 */
 		this.start= function(){
-			self.hide();
-
 			self._loaderContainer = self._loaderContainer || 'body';
 			self._loaderTimeout = self._loaderTimeout || 0;
 
 			if (self._loaderTimeout > 0){
 				setTimeout(function(){
-						if (!self._loaderSelector)
+						if (!self.loaderInstance)
 							return;
 						self.hide();
 						self._loaderIsTimedOut = true;
@@ -116,9 +113,8 @@ export function Loader (){
 			if (self._loaderIsTimedOut) 
 				return false;
 
-			if (self._loaderSelector)
-				self._loaderSelector.remove();
-			self._loaderSelector= null;
+			self.loaderInstance.destroy();
+			self.loaderInstance = null;
 
 
 			self._loaderIsTimedOut = false;
@@ -127,4 +123,20 @@ export function Loader (){
 		}
 	}	
 	return new Loader();	
+}
+
+class LoaderPage extends BasePage {
+	constructor(){
+		super();
+
+		this.text = "Loaing ...";
+	}
+	get template(){
+		return `<div class="loader-screen" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}">
+<div class="loader-box">
+<div class="loader-spinner"></div>	
+<div class="loader-message" bind="Translate(this.text)">Loading ...</div>	
+</div>
+</div>`;
+	}
 }
