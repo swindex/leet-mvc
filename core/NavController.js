@@ -159,7 +159,7 @@ export function NavController() {
 			}
 
 			pageObject.Nav = self;
-			pageObject.style.zIndex = (stack.length + 1) * 100 + "";
+			pageObject.style.zIndex = getMaxStackZIndex() + 100;
 
 			var classes = !empty(pageObject.className) ? (pageObject.className).split(" ") : [];
 			classes.push(className);
@@ -215,6 +215,16 @@ export function NavController() {
 		}
 		
 	}
+
+	function getMaxStackZIndex(){
+		var maxZ = 0;
+		for (var i=0 ; i< stack.length ; i++){
+			var frame = stack[i];
+			maxZ = Math.max(maxZ, frame.page.style.zIndex);
+		}
+		return maxZ;
+	}
+
 	/**
 	 * 
 	 * @param {any} pageConstructor 
