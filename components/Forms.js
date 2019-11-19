@@ -68,6 +68,33 @@ export class Forms extends BaseComponent{
 					this.onChange(ev);
 				},0);
 			},
+			focus:(ev)=>{
+				var _name = ev.target.name;
+				if (_name){
+					
+					var attrObj = this.getPropertyByPath(this.attributes, _name);
+					if (empty(attrObj)){
+						attrObj = {}
+					}
+					setTimeout(()=>{
+						attrObj.active = true;
+						Objects.setPropertyByPath(this.attributes, _name, attrObj);
+					})
+				}
+			},
+			blur:(ev)=>{
+				var _name = ev.target.name;
+				if (_name){
+					var attrObj = this.getPropertyByPath(this.attributes, _name);
+					if (empty(attrObj)){
+						attrObj = {}
+					}
+					setTimeout(()=>{
+						attrObj.active = undefined;
+						Objects.setPropertyByPath(this.attributes, _name, attrObj);
+					})
+				}
+			}
 		}
 
 		this.field_definitions = Forms.field_definitions;
@@ -274,11 +301,11 @@ export class Forms extends BaseComponent{
 		}
 		if (el._name){
 			//if create value in each structure
-			if (! Objects.getPropertyByPath(this.data, el._name))
+			if (! this.getPropertyByPath(this.data, el._name))
 				Objects.setPropertyByPath(this.data, el._name, {});
-			if (! Objects.getPropertyByPath(this.errors, el._name))
+			if (! this.getPropertyByPath(this.errors, el._name))
 				Objects.setPropertyByPath(this.errors, el._name, {});
-			if (! Objects.getPropertyByPath(this.attributes, el._name))
+			if (! this.getPropertyByPath(this.attributes, el._name))
 				Objects.setPropertyByPath(this.attributes, el._name, {});
 		}
 
@@ -331,17 +358,10 @@ export class Forms extends BaseComponent{
 
 	renderFieldGroupHTML(el, elHTML, noTitle, noErrorHint){
 		return `
-		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
-			<div class="fieldrow">
-			${(noTitle ? '' : this.addTitle(el))}
-			${el.info ? this.addInfo(el) : ''}
-			</div>
-			<div class="fieldrow field">
+		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [class]="this.getClassName('${el._name ? el._name : ''}')" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
+			${this.addTitle(el)}
 			${isArray(elHTML) ? elHTML.join('') : elHTML}
-			</div>
-			<div class="fieldrow">
 			${(noErrorHint ? '' : this.addErrorHint(el))}
-			</div>
 		</div>`; 
 	}
 
@@ -371,6 +391,30 @@ export class Forms extends BaseComponent{
 		return !ret.hidden;
 	}
 
+	getClassName(_name){
+		var classnames = [];
+
+		if (empty(_name)) {
+			return "";
+		}
+		
+		var ret = this.getPropertyByPath(this.errors, _name)
+		if (ret) {
+			classnames.push('error');
+		}
+
+		var ret = this.getPropertyByPath(this.data, _name)
+		if (ret !== null && ret !== undefined && ret !== "") {
+			classnames.push('filled');
+		}
+
+		var ret = this.getPropertyByPath(this.attributes, _name)
+		if (ret && ret.active) {
+			classnames.push('active');
+		}
+		return classnames.join(' ');
+	}
+
 	getError(_name){
 		if (empty(_name)) {
 			return "";
@@ -395,7 +439,7 @@ export class Forms extends BaseComponent{
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
-			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />`+
+			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" _name="${el._name}" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -439,7 +483,7 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		this.types[el._name] = "password";	
 		return (`
-			<input bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
+			<input bind="this.data${this.refactorAttrName(el._name)}" _name="${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
 			(true ? `<div class="icon" onclick="this.togglePasswordType('${el._name}')">
 				<i class="fas fa-eye" [if]="this.types['${el._name}']=='password'"></i>
 				<i class="fas fa-eye-slash" [if]="this.types['${el._name}']=='text'"></i>
@@ -532,8 +576,8 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addTitle(el){
-		if (!el.title) return '';
-		return `<label>${Translate(el.title)}</label>`;
+		if (!el.title && !el.info) return '';
+		return `<label>${Translate(el.title)}${el.info ? this.addInfo(el) : ''}</label>`;
 	}
 	/**
 	 * 
@@ -541,7 +585,7 @@ export class Forms extends BaseComponent{
 	 */
 	addInfo(el){
 		//if (!el.title) return '';
-		return `<div class="info-btn"><i class="fas fa-question-circle" onclick="this.showInfoText('${el.info}')"></i></div>`;
+		return ` <i class="fas fa-question-circle" onclick="this.showInfoText('${el.info}')"></i>`;
 	}
 	/**
 	 * 
@@ -722,8 +766,10 @@ Forms.field_definitions = {
 			Objects.setPropertyByPath(forms.extraData, timeEl._name, dateTime);
 			
 			return forms.renderFieldGroupHTML(el,  [
+				'<div style="display:flex;flex-direction:row">',
 				'<div class="split" style="width:60%">' + forms.addInput(dateEl, {date:'', format:'date', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',false)"},'extraData')+ '</div>',
 				'<div class="split" style="width:40%">' + forms.addInput(timeEl, {time:'', format:'time', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',true)"},'extraData')+ '</div>',
+				'</div>'
 			]);	
 		},
 		number(forms, el, parentPath){
