@@ -2,7 +2,7 @@ import { Objects } from "./../core/Objects";
 import { FormValidator } from "./../core/form_validator";
 import { Text } from "./../core/text";
 import { BaseComponent } from "./BaseComponent";
-import { isNumber, isArray, isString } from "util";
+import { isNumber, isArray, isString, isObject } from "util";
 import { DateTime } from "./../core/DateTime";
 import { Translate } from "../core/Translate";
 import { tryCall } from '../core/helpers';
@@ -37,8 +37,10 @@ export class Forms extends BaseComponent{
 
 		this.elementItems = {};
 
-		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes, this.options);
+		this.validator = new FormValidator(this.data, formTemplate, this.errors, this.attributes, this.options);
 		this.validator.validateVisibility();
+
+		this.fields = this.validator.fields;
 		
 		this.events = {
 			input:(ev) =>{
@@ -65,6 +67,10 @@ export class Forms extends BaseComponent{
 				}
 				//notify in the next render cycle.
 				setTimeout(()=>{
+					if (this.onChange == this.events.change) {
+						console.error(ev);
+						throw new Error("Change triggers infinite loop!")
+					}
 					this.onChange(ev);
 				},0);
 			},
@@ -111,8 +117,32 @@ export class Forms extends BaseComponent{
 		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes, this.options);
 		this.validator.validateVisibility();
 
+		this.formTemplateKeyed = Objects.keyBy(this.formTemplate, '_name');
+		
 		var html = this.renderArray(this.formTemplate, null);
 		this.formHTML = html;
+	}
+
+	///listen to attempts to overwrite onChange listener 
+	onChangeChange(value){
+		if (isObject(this.events) && value == this.events.change) {
+			console.error(value);
+		throw new Error("Attempt to override Forms.onChange callback with Forms.events.change will lead to infinite loop!")
+		}
+	}
+	///listen to attempts to overwrite onInput listener 
+	onInputChange(value){
+		if (isObject(this.events) && value == this.events.input) {
+			console.error(value);
+			throw new Error("Attempt to override Forms.onInput callback with Forms.events.input will lead to infinite loop!")
+		}
+	}
+	///listen to attempts to overwrite onClick listener 
+	onClickChange(value){
+		if (isObject(this.events) && value == this.events.click) {
+			console.error(value);
+			throw new Error("Attempt to override Forms.onClick callback with Forms.events.click will lead to infinite loop!")
+		}
 	}
 
 	/** 
@@ -585,7 +615,7 @@ export class Forms extends BaseComponent{
 	 */
 	addInfo(el){
 		//if (!el.title) return '';
-		return ` <i class="fas fa-question-circle" onclick="this.showInfoText('${el.info}')"></i>`;
+		return ` <i class="fas fa-question-circle" onclick="this.showInfoText('${el._name}')"></i>`;
 	}
 	/**
 	 * 
@@ -595,8 +625,15 @@ export class Forms extends BaseComponent{
 		return `<div class="hint" [class]="this.getError('${el._name}') ? 'error' : ''">{{ this.getError('${el._name}') || '${ el.hint ? el.hint : '' }' }}</div>`
 	}
 
-	showInfoText(text) {
-		Alert(text);
+	showInfoText(name) {
+		if (isObject(this.fields[name].info)){
+			Alert( this.fields[name].info.text, this.fields[name].info.callback, this.fields[name].info.title );
+		} else if (isString(this.fields[name].info)) {
+			Alert( this.fields[name].info );
+		} else {
+			console.error(`Forms.fields['${name}'].info value is not supported`, this.fields[name].info );
+		}
+		
 	}
 
 	/**
