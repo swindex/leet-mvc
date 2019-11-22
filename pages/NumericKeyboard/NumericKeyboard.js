@@ -428,7 +428,12 @@ class NumericKeyboardPage extends BasePage {
 
 	setValue(t){
 		this.value = t;
-		this.old_input.value = numberFromLocaleString(t);
+		var v = Number(t);
+		if (isNaN(v)) {
+			v = numberFromLocaleString(t);
+		}	
+
+		this.old_input.value = v
 		var style = "";
 		if (this.isTextSelected) {
 			style = `background-color: ${this._options.selectBackColor}; color: ${this._options.selectForeColor}`;
