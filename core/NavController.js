@@ -145,19 +145,25 @@ export function NavController() {
     function createPage(container, pageConstructor, args) {
 
 		function insertIntoDOM(pageObject) {
+			//if pbject is vue, mount it first
+			if (pageObject._isVue) {
+				var newEl = document.createElement('div');
+				$(container).append(newEl);
+				pageObject.$mount(newEl);
+				var p = pageObject.$el;
+			} else {			
+				tryCall(pageObject, pageObject._init);
+				var p = pageObject.page;
+				p.prop('id', pageObject.selector);
+				$(container).append(p);
+			}
+
 			pageObject.Nav = self;
-			pageObject.style.zIndex = (stack.length + 1) * 100 + "";
+			pageObject.style.zIndex = getMaxStackZIndex() + 100;
 
 			var classes = !empty(pageObject.className) ? (pageObject.className).split(" ") : [];
 			classes.push(className);
 			pageObject.className = classes.join(' ');
-			tryCall(pageObject, pageObject._init);
-					
-			var p = pageObject.page;
-			
-			p.prop('id', selector);
-				
-			$(container).append(p);
 
 			stack.push({name:pageObject.name, element: p, page: pageObject});
 			resetPagesVisibility();
@@ -185,9 +191,9 @@ export function NavController() {
 			//create page object in a new scope
 			/** @type {BasePage} */
 			var pageObject = createPageInstance(pageConstructor, args);
-			pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
+			//pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
 			pageObject.name = pageConstructor.name;
-			empty(pageObject.className) ? pageObject.className = className : null;
+			//empty(pageObject.className) ? pageObject.className = className : null;
 			pageObject.selector = selector;
 			return insertIntoDOM(pageObject);
 
@@ -197,18 +203,28 @@ export function NavController() {
 			var pageObject = pageConstructor;
 			pageConstructor = pageObject.constructor;
 
-			var name = (pageConstructor.name + "").replace(/^bound /, "");
+			var name = (pageConstructor.name + "").replace(/bound /g, "");
 
-			var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + name;
+			//var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + name;
 			var className = pageConstructor.className ? pageConstructor.className : "" ;
 	
 			pageObject.name = name;
-			empty(pageObject.className) ? pageObject.className = className : null;
-			pageObject.selector = selector;
+			//empty(pageObject.className) ? pageObject.className = className : null;
+			//pageObject.selector = selector;
 			return insertIntoDOM(pageObject);
 		}
 		
 	}
+
+	function getMaxStackZIndex(){
+		var maxZ = 0;
+		for (var i=0 ; i< stack.length ; i++){
+			var frame = stack[i];
+			maxZ = Math.max(maxZ, frame.page.style.zIndex);
+		}
+		return maxZ;
+	}
+
 	/**
 	 * 
 	 * @param {any} pageConstructor 
@@ -278,10 +294,11 @@ export function NavController() {
 		var hideAfter = 1;
 		for (var i = stack.length-1 ; i >=0 ; i--){
 			var frame = stack[i];
-			if (i==0)
-				frame.element.attr('root','');
-			else	
-				frame.element.removeAttr('root');
+			if (i==0) {
+				frame.page.isRoot = true;
+			} else {
+				frame.page.isRoot = null;
+			}
 			if (!empty(frame.page.visibleParent))
 				hideAfter++;
 			if (hideAfter > n){
@@ -299,7 +316,7 @@ export function NavController() {
 	 * @param {boolean} [inactive] 
 	 */
 	function showPageElement(frame, inactive){
-		window.requestAnimationFrame(function(){
+		setTimeout(function(){
 			if (frame.page.isDeleting) {
 				return;
 			}

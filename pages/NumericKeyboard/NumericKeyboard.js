@@ -140,7 +140,7 @@ class NumericKeyboardPage extends BasePage {
 			
 			isNew = false;
 		}
-
+		
 		/** @type {HTMLInputElement} */
 		this.old_input = elem;
 		
@@ -428,14 +428,7 @@ class NumericKeyboardPage extends BasePage {
 
 	setValue(t){
 		this.value = t;
-
-		var v = Number(t)
-		if (isNaN(v)){
-			v = numberFromLocaleString(value);
-		}	
-
-		this.old_input.value = v
-
+		this.old_input.value = numberFromLocaleString(t);
 		var style = "";
 		if (this.isTextSelected) {
 			style = `background-color: ${this._options.selectBackColor}; color: ${this._options.selectForeColor}`;
