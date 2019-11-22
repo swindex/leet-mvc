@@ -21,7 +21,8 @@ export function round(value, n) {
 
 /**
  * Convert string formatted as locale number to number
- * @param {string} stringValue 
+ * @param {string} stringValue
+ * @param {string} [locale]
  */
 export function numberFromLocaleString(stringValue, locale){
 	var parts = Number(1111.11).toLocaleString(locale).replace(/\d+/g,'').split('');

@@ -1297,10 +1297,9 @@ export var Binder = function(context){
 						v = null;
 					else
 					{
-						if (formats[0] === "localenumber"){
+						v = Number(value)
+						if (isNaN(v)){
 							v = numberFromLocaleString(value);
-						} else {
-							v = Number(value)
 						}	
 
 						//v = value * 1;
