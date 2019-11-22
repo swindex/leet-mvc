@@ -161,9 +161,11 @@
 		opacity:1;
 		transform: translate3d(0,0,0);
 		transition: none;
+		display: none;
 	}
 	&[hiding] {
 		opacity:1;
+		//transition: opacity 0.4s ease;
 		transform: translate3d(0px,0,0);
 	}
 	&[deleting] {

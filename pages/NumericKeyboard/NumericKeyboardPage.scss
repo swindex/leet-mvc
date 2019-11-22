@@ -90,6 +90,10 @@ $fontname: 'NumericKeyboardPage';
 		height: 100%;
 		max-width: 50rem;
 		margin: 0 auto;
+		td{
+			padding: 0;
+    		border: 1px solid #545454;
+		}
 		button{
 			font-size: 3rem;
 			box-shadow: none;
@@ -130,6 +134,7 @@ $fontname: 'NumericKeyboardPage';
 			background-color: $kb-background;
 			td{
 				padding:3px;
+				border: none;
 			}
 			button {
 				background-color: $key-background;

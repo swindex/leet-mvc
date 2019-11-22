@@ -29,11 +29,13 @@ export class BasePage extends ChangeWatcher{
 		this.isVisible = null;
 		this.isDeleted = null;
 		this.isHidden = null;
+		this.isRoot = null,
 
-		this.selector = ""
+		this.selector = this.constructor.selector;
 		this.className = this.constructor.className;
+		this.visibleParent = this.constructor.visibleParent;
+
 		this.classNames = [];
-		this.visibleParent = null;
 
 		//Be lazy. This allows us to directly pass page methods without having to worry about "this"
 		Objects.bindMethods(this);
@@ -221,7 +223,7 @@ export class BasePage extends ChangeWatcher{
 	 *   You can extend base template by returning this.extendTemplate(super.template,'child template string');
 	 */
 	get template (){
-		return `<div page [class]="this.className" [style]="this.style" [attribute]="{hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}">/*child-template*/</div>`;
+		return `<div page [class]="this.className" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}">/*child-template*/</div>`;
 	}
 }
 BasePage.visibleParent = null;

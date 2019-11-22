@@ -35,35 +35,15 @@ export function FormValidator(data, template, errors, attributes, options){
 
 	var _rules = FormValidator.rules;
 
-	set_names(_template);
+
+	var fields = this.fields = FormWalker.set_names(_template);
 
 	/**
 	 * Set _name properties in the template
 	 * @param {*} obj 
 	 * @param {string[]} [path]
 	 */
-	function set_names(obj, path){
-		if (!path)
-			path = [];
-		if (isArray(obj))
-			Objects.forEach(obj,(el)=>{
-				if (el.name){
-					var npath = path.slice();
-					npath.push(el.name);
-				}
-				set_names(el, npath);
-			});
 	
-		if (isObject(obj) && obj.name)
-			obj._name = path.slice().join('.');	
-		
-		if (isObject(obj) && obj.type=='select')
-			path.pop();	
-		
-		if (isObject(obj) && obj.items){
-			set_names(obj.items, path.slice());
-		}
-	}
 
 	this.walkElements = walkElements;
 	function walkElements(obj, callback, path){
@@ -617,7 +597,8 @@ export function FormValidator(data, template, errors, attributes, options){
 	 * @return {FieldTemplate}
 	 */
 	function getTemplateValue(name){
-		var found = null;
+		return fields[name];
+		/*var found = null;
 		function f(obj){
 			Objects.forEach(obj,(el)=>{
 				if (el._name === name){
@@ -629,7 +610,7 @@ export function FormValidator(data, template, errors, attributes, options){
 			});
 		}
 		f(_template);
-		return found;
+		return found;*/
 	}
 	this.setValue = setValue;
 	/**
@@ -933,4 +914,37 @@ FormValidator.rules = {
 	true_if_not(value, type, conditions, validator){
 		return ! FormValidator.rules.true_if(value, type, conditions, validator)
 	}
+}
+
+export const FormWalker={
+	set_names(obj){
+		var keyed = {};
+		function set_names(obj, path){
+			if (!path)
+				path = [];
+			if (isArray(obj))
+				Objects.forEach(obj,(el)=>{
+					if (el.name){
+						var npath = path.slice();
+						npath.push(el.name);
+					}
+					set_names(el, npath);
+				});
+		
+			if (isObject(obj) && obj.name) {
+				obj._name = path.slice().join('.');	
+				keyed[obj._name] = obj;
+			}
+			
+			if (isObject(obj) && obj.type=='select')
+				path.pop();	
+			
+			if (isObject(obj) && obj.items){
+				set_names(obj.items, path.slice());
+			}
+		}
+		set_names(obj);
+		return keyed;
+	}
+
 }

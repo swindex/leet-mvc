@@ -2,7 +2,7 @@ import { Objects } from "./../core/Objects";
 import { FormValidator } from "./../core/form_validator";
 import { Text } from "./../core/text";
 import { BaseComponent } from "./BaseComponent";
-import { isNumber, isArray, isString } from "util";
+import { isNumber, isArray, isString, isObject } from "util";
 import { DateTime } from "./../core/DateTime";
 import { Translate } from "../core/Translate";
 import { tryCall } from '../core/helpers';
@@ -37,8 +37,10 @@ export class Forms extends BaseComponent{
 
 		this.elementItems = {};
 
-		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes, this.options);
+		this.validator = new FormValidator(this.data, formTemplate, this.errors, this.attributes, this.options);
 		this.validator.validateVisibility();
+
+		this.fields = this.validator.fields;
 		
 		this.events = {
 			input:(ev) =>{
@@ -65,9 +67,40 @@ export class Forms extends BaseComponent{
 				}
 				//notify in the next render cycle.
 				setTimeout(()=>{
+					if (this.onChange == this.events.change) {
+						console.error(ev);
+						throw new Error("Change triggers infinite loop!")
+					}
 					this.onChange(ev);
 				},0);
 			},
+			focus:(ev)=>{
+				var _name = ev.target.name;
+				if (_name){
+					
+					var attrObj = this.getPropertyByPath(this.attributes, _name);
+					if (empty(attrObj)){
+						attrObj = {}
+					}
+					setTimeout(()=>{
+						attrObj.active = true;
+						Objects.setPropertyByPath(this.attributes, _name, attrObj);
+					})
+				}
+			},
+			blur:(ev)=>{
+				var _name = ev.target.name;
+				if (_name){
+					var attrObj = this.getPropertyByPath(this.attributes, _name);
+					if (empty(attrObj)){
+						attrObj = {}
+					}
+					setTimeout(()=>{
+						attrObj.active = undefined;
+						Objects.setPropertyByPath(this.attributes, _name, attrObj);
+					})
+				}
+			}
 		}
 
 		this.field_definitions = Forms.field_definitions;
@@ -84,8 +117,32 @@ export class Forms extends BaseComponent{
 		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes, this.options);
 		this.validator.validateVisibility();
 
+		this.formTemplateKeyed = Objects.keyBy(this.formTemplate, '_name');
+		
 		var html = this.renderArray(this.formTemplate, null);
 		this.formHTML = html;
+	}
+
+	///listen to attempts to overwrite onChange listener 
+	onChangeChange(value){
+		if (isObject(this.events) && value == this.events.change) {
+			console.error(value);
+		throw new Error("Attempt to override Forms.onChange callback with Forms.events.change will lead to infinite loop!")
+		}
+	}
+	///listen to attempts to overwrite onInput listener 
+	onInputChange(value){
+		if (isObject(this.events) && value == this.events.input) {
+			console.error(value);
+			throw new Error("Attempt to override Forms.onInput callback with Forms.events.input will lead to infinite loop!")
+		}
+	}
+	///listen to attempts to overwrite onClick listener 
+	onClickChange(value){
+		if (isObject(this.events) && value == this.events.click) {
+			console.error(value);
+			throw new Error("Attempt to override Forms.onClick callback with Forms.events.click will lead to infinite loop!")
+		}
 	}
 
 	/** 
@@ -274,11 +331,11 @@ export class Forms extends BaseComponent{
 		}
 		if (el._name){
 			//if create value in each structure
-			if (! Objects.getPropertyByPath(this.data, el._name))
+			if (! this.getPropertyByPath(this.data, el._name))
 				Objects.setPropertyByPath(this.data, el._name, {});
-			if (! Objects.getPropertyByPath(this.errors, el._name))
+			if (! this.getPropertyByPath(this.errors, el._name))
 				Objects.setPropertyByPath(this.errors, el._name, {});
-			if (! Objects.getPropertyByPath(this.attributes, el._name))
+			if (! this.getPropertyByPath(this.attributes, el._name))
 				Objects.setPropertyByPath(this.attributes, el._name, {});
 		}
 
@@ -331,17 +388,10 @@ export class Forms extends BaseComponent{
 
 	renderFieldGroupHTML(el, elHTML, noTitle, noErrorHint){
 		return `
-		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
-			<div class="fieldrow">
-			${(noTitle ? '' : this.addTitle(el))}
-			${el.info ? this.addInfo(el) : ''}
-			</div>
-			<div class="fieldrow field">
+		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [class]="this.getClassName('${el._name ? el._name : ''}')" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
+			${this.addTitle(el)}
 			${isArray(elHTML) ? elHTML.join('') : elHTML}
-			</div>
-			<div class="fieldrow">
 			${(noErrorHint ? '' : this.addErrorHint(el))}
-			</div>
 		</div>`; 
 	}
 
@@ -371,6 +421,30 @@ export class Forms extends BaseComponent{
 		return !ret.hidden;
 	}
 
+	getClassName(_name){
+		var classnames = [];
+
+		if (empty(_name)) {
+			return "";
+		}
+		
+		var ret = this.getPropertyByPath(this.errors, _name)
+		if (ret) {
+			classnames.push('error');
+		}
+
+		var ret = this.getPropertyByPath(this.data, _name)
+		if (ret !== null && ret !== undefined && ret !== "") {
+			classnames.push('filled');
+		}
+
+		var ret = this.getPropertyByPath(this.attributes, _name)
+		if (ret && ret.active) {
+			classnames.push('active');
+		}
+		return classnames.join(' ');
+	}
+
 	getError(_name){
 		if (empty(_name)) {
 			return "";
@@ -395,7 +469,7 @@ export class Forms extends BaseComponent{
 		
 		$.extend(opt, override, el.attributes);
 		return ( `
-			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />`+
+			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" _name="${el._name}" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -439,7 +513,7 @@ export class Forms extends BaseComponent{
 		$.extend(opt, override, el.attributes);
 		this.types[el._name] = "password";	
 		return (`
-			<input bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
+			<input bind="this.data${this.refactorAttrName(el._name)}" _name="${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
 			(true ? `<div class="icon" onclick="this.togglePasswordType('${el._name}')">
 				<i class="fas fa-eye" [if]="this.types['${el._name}']=='password'"></i>
 				<i class="fas fa-eye-slash" [if]="this.types['${el._name}']=='text'"></i>
@@ -532,8 +606,8 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addTitle(el){
-		if (!el.title) return '';
-		return `<label>${Translate(el.title)}</label>`;
+		if (!el.title && !el.info) return '';
+		return `<label>${Translate(el.title)}${el.info ? this.addInfo(el) : ''}</label>`;
 	}
 	/**
 	 * 
@@ -541,7 +615,7 @@ export class Forms extends BaseComponent{
 	 */
 	addInfo(el){
 		//if (!el.title) return '';
-		return `<div class="info-btn"><i class="fas fa-question-circle" onclick="this.showInfoText('${el.info}')"></i></div>`;
+		return ` <i class="fas fa-question-circle" onclick="this.showInfoText('${el._name}')"></i>`;
 	}
 	/**
 	 * 
@@ -551,8 +625,15 @@ export class Forms extends BaseComponent{
 		return `<div class="hint" [class]="this.getError('${el._name}') ? 'error' : ''">{{ this.getError('${el._name}') || '${ el.hint ? el.hint : '' }' }}</div>`
 	}
 
-	showInfoText(text) {
-		Alert(text);
+	showInfoText(name) {
+		if (isObject(this.fields[name].info)){
+			Alert( this.fields[name].info.text, this.fields[name].info.callback, this.fields[name].info.title );
+		} else if (isString(this.fields[name].info)) {
+			Alert( this.fields[name].info );
+		} else {
+			console.error(`Forms.fields['${name}'].info value is not supported`, this.fields[name].info );
+		}
+		
 	}
 
 	/**
@@ -691,12 +772,15 @@ Forms.field_definitions = {
 			return forms.renderFieldGroupHTML(el, [forms.addInput(el,null)]);
 		},
 		date(forms, el, parentPath){
+			el.icon = "far fa-calendar-alt"
 			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{date:'', format:'date'})]);	
 		},
 		datetime(forms, el, parentPath){
+			el.icon = "far fa-calendar-alt"
 			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{dateTime:'', format:'dateTime'})]);	
 		},
 		time(forms, el, parentPath){
+			el.icon = "far fa-clock"
 			return forms.renderFieldGroupHTML(el, [forms.addInput(el,{time:'', format:'time'})]);	
 		},
 		split(forms, el, parentPath){
@@ -710,15 +794,19 @@ Forms.field_definitions = {
 			var timeEl = $.extend({}, el);
 			
 			dateEl._name += "_date";
+			dateEl.icon = "far fa-calendar-alt"
 			timeEl._name += "_time";
+			timeEl.icon = "far fa-clock"
 			
 			var dateTime = Objects.getPropertyByPath(forms.data, el._name)
 			Objects.setPropertyByPath(forms.extraData, dateEl._name, dateTime);
 			Objects.setPropertyByPath(forms.extraData, timeEl._name, dateTime);
 			
 			return forms.renderFieldGroupHTML(el,  [
+				'<div style="display:flex;flex-direction:row">',
 				'<div class="split" style="width:60%">' + forms.addInput(dateEl, {date:'', format:'date', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',false)"},'extraData')+ '</div>',
 				'<div class="split" style="width:40%">' + forms.addInput(timeEl, {time:'', format:'time', onchange:"this._formatSplitDateField($event,'"+ el._name+ "',true)"},'extraData')+ '</div>',
+				'</div>'
 			]);	
 		},
 		number(forms, el, parentPath){
