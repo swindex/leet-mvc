@@ -158,9 +158,6 @@ export function NavController() {
 				var p = pageObject.page;
 				p.prop('id', pageObject.selector);
 				$(container).append(p);
-				//debug only
-				p['context'] = pageObject;
-
 			}
 
 			pageObject.Nav = self;
