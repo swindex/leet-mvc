@@ -433,7 +433,7 @@ class NumericKeyboardPage extends BasePage {
 			v = numberFromLocaleString(t);
 		}	
 
-		this.old_input.value = v
+		this.old_input.value = v;
 		var style = "";
 		if (this.isTextSelected) {
 			style = `background-color: ${this._options.selectBackColor}; color: ${this._options.selectForeColor}`;

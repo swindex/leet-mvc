@@ -934,6 +934,9 @@ export const FormWalker={
 			if (isObject(obj) && obj.name) {
 				obj._name = path.slice().join('.');	
 				keyed[obj._name] = obj;
+				if (!keyed[obj._name].attributes) {
+					keyed[obj._name].attributes = {}
+				}
 			}
 			
 			if (isObject(obj) && obj.type=='select')

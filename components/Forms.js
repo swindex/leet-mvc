@@ -77,27 +77,16 @@ export class Forms extends BaseComponent{
 			focus:(ev)=>{
 				var _name = ev.target.name;
 				if (_name){
-					
-					var attrObj = this.getPropertyByPath(this.attributes, _name);
-					if (empty(attrObj)){
-						attrObj = {}
-					}
 					setTimeout(()=>{
-						attrObj.active = true;
-						Objects.setPropertyByPath(this.attributes, _name, attrObj);
+						this.fields[_name].attributes.active = true;
 					})
 				}
 			},
 			blur:(ev)=>{
 				var _name = ev.target.name;
 				if (_name){
-					var attrObj = this.getPropertyByPath(this.attributes, _name);
-					if (empty(attrObj)){
-						attrObj = {}
-					}
 					setTimeout(()=>{
-						attrObj.active = undefined;
-						Objects.setPropertyByPath(this.attributes, _name, attrObj);
+						this.fields[_name].attributes.active = undefined;
 					})
 				}
 			}
@@ -116,6 +105,8 @@ export class Forms extends BaseComponent{
 		
 		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes, this.options);
 		this.validator.validateVisibility();
+
+		this.fields = this.validator.fields;
 
 		this.formTemplateKeyed = Objects.keyBy(this.formTemplate, '_name');
 		
@@ -438,8 +429,8 @@ export class Forms extends BaseComponent{
 			classnames.push('filled');
 		}
 
-		var ret = this.getPropertyByPath(this.attributes, _name)
-		if (ret && ret.active) {
+		
+		if (this.fields[_name] && this.fields[_name].attributes && this.fields[_name].attributes.active) {
 			classnames.push('active');
 		}
 		return classnames.join(' ');
@@ -827,7 +818,9 @@ Forms.field_definitions = {
 			return forms.renderFieldGroupHTML(el, [forms.addTextArea(el,null)]);	
 		},
 		checkbox(forms, el, parentPath){
-			return forms.renderFieldGroupHTML(el, [forms.addCheck(el,null)],true);
+			var el_ch = Objects.copy(el);
+			el_ch.title="";
+			return forms.renderFieldGroupHTML(el_ch, [forms.addCheck(el,null)],true);
 		},
 		radio(forms, el, parentPath){
 			return forms.renderFieldGroupHTML(el, [forms.addRadio(el,null)]);	

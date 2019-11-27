@@ -149,13 +149,18 @@ export function NavController() {
 			if (pageObject._isVue) {
 				var newEl = document.createElement('div');
 				$(container).append(newEl);
+				pageObject.$args = args;
 				pageObject.$mount(newEl);
 				var p = pageObject.$el;
-			} else {			
+			} else {	
+						
 				tryCall(pageObject, pageObject._init);
 				var p = pageObject.page;
 				p.prop('id', pageObject.selector);
 				$(container).append(p);
+				//debug only
+				p['context'] = pageObject;
+
 			}
 
 			pageObject.Nav = self;
@@ -383,7 +388,7 @@ export function NavController() {
 				}
 			})
 		}
-		if(frame.page.isHidden){
+		if(!isDeleting && frame.page.isHidden){
 			doHideElem();
 		}else{
 			if (isDeleting){

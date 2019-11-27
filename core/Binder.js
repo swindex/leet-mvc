@@ -1037,7 +1037,7 @@ export var Binder = function(context){
 					});
 					
 					//copy html attributes
-					if (!(c_vDom.elem instanceof DocumentFragment)) {
+					if (!(c_vDom.elem instanceof DocumentFragment) && !(c_vDom.elem instanceof Comment)) {
 						for (var ii=0 ; ii<p_vDom.elem.attributes.length; ii++ ) {
 							var attr = p_vDom.elem.attributes[ii];
 							//only overwrite non-existing clild attrs
@@ -1297,9 +1297,10 @@ export var Binder = function(context){
 						v = null;
 					else
 					{
-						v = Number(value)
-						if (isNaN(v)){
+						if (formats[0] === "localenumber"){
 							v = numberFromLocaleString(value);
+						} else {
+							v = Number(value)
 						}	
 
 						//v = value * 1;
