@@ -1,6 +1,7 @@
 import { Binder, removeVDOMElement } from "../core/Binder";
 import { ChangeWatcher } from "../core/ChangeWatcher";
 import { Objects } from "../core/Objects";
+import { tryCall } from "../core/helpers";
 
 export class BaseComponent extends ChangeWatcher{
 	constructor(){
@@ -22,6 +23,7 @@ export class BaseComponent extends ChangeWatcher{
 		this.container = null;
 
 		this.attributes = {};
+		this.components = [];
 	}
 
 	/** 
@@ -66,6 +68,17 @@ export class BaseComponent extends ChangeWatcher{
 		if (this.onDestroy) {
 			this.onDestroy();
 		}
+
+		if (this.components){
+			for (let i in this.components){
+				var comp = this.components[i];
+				if (comp instanceof BaseComponent){
+					tryCall(comp, comp.destroy);
+					delete this.components[i];
+				}
+			}
+		}
+
 		if (this.binder) {
 			this.binder.destroy();
 		}
