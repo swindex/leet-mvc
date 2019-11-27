@@ -584,10 +584,8 @@ export var Binder = function(context){
 				}
 			}
 		}catch(ex){
-			//this may cause an error
 			console.warn(ex);
-		//	attributes[attribute](on,inject)
-		}
+		}/**/
 		if (old !== on.values[attribute] && ret !== EAttrResult.SkipChildren){
 			ret = EAttrResult.NodeChanged;
 		}
