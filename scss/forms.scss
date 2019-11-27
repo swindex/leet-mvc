@@ -11,7 +11,6 @@ select-multiple,
 {
     box-sizing:border-box;
     font-size: $size-f-input;
-    padding: $margin-sm 0;
     width:100%;
     -webkit-border-radius:0; 
     border-radius:0;
@@ -25,7 +24,6 @@ select-multiple,
 	background-size: $size-input-i-md;
 	background-color: transparent;
 	color: $color-input-fg;
-	padding-right: $size-input-i-md; //this used for hiding text under icon	
 	&:focus{
 		outline:none;
 	}
@@ -143,9 +141,6 @@ textarea {
 	*{
 		box-sizing: border-box;
 	}
-	.fieldgroup:first-child{
-		padding-top: $margin-lg;
-	}
 
 	input[type=text], 
 	input[type=email], 
@@ -164,6 +159,9 @@ textarea {
 		border: none;
 		border-bottom: $size-border solid $color-border;
 		-webkit-appearance: none;
+		padding: $margin-sm 0;
+		padding-right: $size-input-i-md; //this used for hiding text under icon	
+	
 		&:focus, &.focus, &.focus-blink{
 			outline: none;
 			box-shadow: none;
@@ -251,6 +249,9 @@ select-multiple{
 		font-size: $size-f-input;
 		width: 100%;
 		align-self: center;
+		padding: $margin-sm 0;
+		padding-right: $size-input-i-md; //this used for hiding text under icon	
+	
 		&.link{
 			text-decoration: underline;
 			color: $color-link;
@@ -262,6 +263,8 @@ select-multiple{
 		text-decoration: underline;
 		color: $color-link;
 		align-self: center;
+		padding: $margin-sm 0;
+		padding-right: $size-input-i-md; //this used for hiding text under icon	
 	}
 }
 //special case: label contains input[file]

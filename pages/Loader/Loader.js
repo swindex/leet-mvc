@@ -140,3 +140,4 @@ class LoaderPage extends BasePage {
 </div>`;
 	}
 }
+LoaderPage.visibleParent = true;
