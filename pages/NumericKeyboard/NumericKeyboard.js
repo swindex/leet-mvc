@@ -528,6 +528,9 @@ class NumericKeyboardPage extends BasePage {
 		if (this.curr_input != null && typeof (this.getValue()) !== "undefined") {
 			//trigger onchange
 			this.old_input.dispatchEvent(new Event('change'));
+
+			//trigger blur
+			this.old_input.dispatchEvent(new Event('blur'));
 		}
 		if (!silent)
 			this.onClick();
