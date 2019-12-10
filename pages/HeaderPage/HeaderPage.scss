@@ -15,13 +15,11 @@
 	flex-direction: column;
 	
 	>.header {
-		-webkit-transform:translateZ(0);
-		-webkit-transform-style:preserve-3d;
-		-webkit-backface-visibility:hidden;
-		-webkit-perspective:1000;
-
+		transform:translateZ(0);
+		
 		background-color: $color-top-bar;
 		height: $height-top-bar;
+		min-height: $height-top-bar;
 		padding: 0px;
 		position: relative;
 		width: 100%;

@@ -598,7 +598,7 @@ export class Forms extends BaseComponent{
 	 */
 	addTitle(el){
 		if (!el.title && !el.info) return '';
-		return `<label>${Translate(el.title)}${el.info ? this.addInfo(el) : ''}</label>`;
+		return `<label>{{ Translate(this.fields['${el._name}'].title) }}${el.info ? this.addInfo(el) : ''}</label>`;
 	}
 	/**
 	 * 

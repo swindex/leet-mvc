@@ -917,6 +917,12 @@ FormValidator.rules = {
 }
 
 export const FormWalker={
+	/**
+	 * Walk the fieldTemplate array setting fully-qualified _name properties
+	 * Returns a flat representation of the template that should be used for binding to the view
+	 * @param {FieldTemplate[]} obj 
+	 * @return {{[key:string]:FieldTemplate}}
+	 */
 	set_names(obj){
 		var keyed = {};
 		function set_names(obj, path){
