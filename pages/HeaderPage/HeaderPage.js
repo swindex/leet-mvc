@@ -88,7 +88,7 @@ var template = `
 	</div>
 	<div class="content">
 		<div [directive] = "this.content"></div>
-		/*child-template*/
+		<!--child-template-->
 	</div>
 
 	<div class="footer" [if]="this.footer && this.showFooter">

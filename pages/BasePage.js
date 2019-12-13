@@ -108,7 +108,7 @@ export class BasePage extends ChangeWatcher{
 	 * Initialize binder
 	 */
 	_init(binderEvent){
- 		//this.template = BasePage.template.replace('/*child-template*/', this.template);
+ 		//this.template = BasePage.template.replace('<!--child-template-->', this.template);
 
 		this.binder.bindElements(binderEvent, this.template);
 		this.page = $(this.binder.vdom.elem);
@@ -210,12 +210,13 @@ export class BasePage extends ChangeWatcher{
 	}
 
 	/**
-	 * Extend the base template with child template
+	 * Extend the base template with child template.
+	 * Use <!--child-template--> to mark the slot
 	 * @param {string} super_template 
 	 * @param {string} child_template 
 	 */
 	extendTemplate(super_template, child_template){
-		return super_template.replace('/*child-template*/', child_template );
+		return super_template.replace('<!--child-template-->', child_template );
 	}
 
 	/**
@@ -223,7 +224,7 @@ export class BasePage extends ChangeWatcher{
 	 *   You can extend base template by returning this.extendTemplate(super.template,'child template string');
 	 */
 	get template (){
-		return `<div page [class]="this.className" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}">/*child-template*/</div>`;
+		return `<div page [class]="this.className" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}"><!--child-template--></div>`;
 	}
 }
 BasePage.visibleParent = null;
