@@ -3,7 +3,7 @@ import { BasePage } from "./../BasePage";
 import { FormValidator } from "./../../core/form_validator";
 import { Translate } from "./../../core/Translate";
 import { DeBouncer } from "./../../core/DeBouncer";
-import { HeaderPage } from "leet-mvc/pages/HeaderPage/HeaderPage";
+import { HeaderPage } from "./../HeaderPage/HeaderPage";
 
 export class LoginPage extends HeaderPage {
 	constructor(){

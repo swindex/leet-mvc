@@ -42,7 +42,7 @@ export class DirectionsPage extends DialogPage{
 			},
 			map_settings: {disableDefaultUI: false}
 		}
-		$.extend(this.options, options);
+		Object.assign(this.options, options);
 		
 		this.mapTabs = new SimpleTabs();
 		this.content = template;

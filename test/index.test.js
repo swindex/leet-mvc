@@ -1,4 +1,7 @@
 import './../core/polyfills.js';
+import './../scss/app.scss';
+import './../scss/forms.scss';
+
 import { Translate } from '../core/Translate.js';
 import { Injector } from '../core/Injector.js';
 import { InjectTemplate } from './InjectTemplate.js';

@@ -210,7 +210,7 @@ export class BasePage extends ChangeWatcher{
 	}
 
 	/**
-	 * Extend the base temblate with child template
+	 * Extend the base template with child template
 	 * @param {string} super_template 
 	 * @param {string} child_template 
 	 */

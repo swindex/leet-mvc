@@ -1,6 +1,7 @@
 import { tryCall, empty, argumentsToArray } from "./helpers";
 import { BasePage } from "../pages/BasePage";
 import { isSkipUpdate } from "./Watcher";
+import { Objects } from "./Objects";
 
 export function NavController() {
 	/** @type {NavController} */
@@ -123,7 +124,7 @@ export function NavController() {
 	 */
 	this.getPageNames = function(){
 		var ret = [];
-		$.each(stack,function(){ret.push(this.name)});
+		Objects.forEach(stack,function(){ret.push(this.name)});
 		return ret;
 	}
 

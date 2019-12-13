@@ -5,7 +5,7 @@
  * @param {{swipeDistance:number,tapDuration:number}} [options]
  */
 export function Touch(event, options) {
-	options = $.extend(
+	options = Object.assign(
 		{swipeDistance:40,tapDuration:100
 	},options);
 

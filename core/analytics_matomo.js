@@ -348,9 +348,9 @@ class Matomo {
 		this.options._cvar = this._createCVAR(this.UserVar);
 		
 		//set up event vars	
-		this.options.cvar = this._createCVAR( $.extend({},this.ActionVar,this.PersistentActionVar ));
+		this.options.cvar = this._createCVAR( Object.assign({},this.ActionVar,this.PersistentActionVar ));
 
-		var payload = $.extend({}, this.options,this.ActionOpts, this.EventVar, this.ActionDimension, this.VisitDimension);
+		var payload = Object.assign({}, this.options,this.ActionOpts, this.EventVar, this.ActionDimension, this.VisitDimension);
 		//clear action values right away to prevent another request picking them up before this one completes!
 		this.clearActionValues();
 		//console.log(pay);

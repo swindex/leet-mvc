@@ -10,23 +10,21 @@ import { isDate } from "util";
  * @param {{[key:string]:any}} [data] 
  * @param {FieldTemplate[]} [template] 
  * @param {{[key:string]:any}} [errors] 
- * @param {{[key:string]:any}} [attributes]
  * @param {{nestedData?:boolean}} [options]
  */
-export function FormValidator(data, template, errors, attributes, options){
+export function FormValidator(data, template, errors, options){
 	/** @type {FormValidator} */
 	var self = this;
 	var _data = data || null;
 	var _template = template || null;
 	var _errors = errors || {};
-	var _attributes = attributes || {};
 
 	var used = [];
 	var touched = [];
 
 	var _messages = FormValidator.messages;
 
-	var _options = $.extend({},{nestedData:false},options);
+	var _options = Object.assign({},{nestedData:false},options);
 
 	if (Translate('form_validator')!=='form_validator' && isObject(Translate('form_validator'))){
 		// @ts-ignore
@@ -79,9 +77,9 @@ export function FormValidator(data, template, errors, attributes, options){
 		
 		var obj = Objects.copy(_data);
 
-		Objects.walk2(obj,_attributes, function(ob1,ob2, path){
-			console.log(ob1,ob2, path);
-			if (ob2 && ob2[path] && ob2[path].hidden) {
+		Objects.walk2(obj, fields, function(ob1,ob2, path){
+			//console.log(ob1,ob2, path);
+			if (ob2 && ob2[path] && ob2[path].attributes.hidden) {
 				delete ob1[path];
 			}
 		})
@@ -90,18 +88,16 @@ export function FormValidator(data, template, errors, attributes, options){
 	}
 
 	/**
-	 * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
+	 * Validate data array according to validating rules, defined in template object, errors will be written in errors object and visibility flags written in attributes object 
 	 * @param {{[key:string]:any}} data 
 	 * @param {FieldTemplate[]} template 
 	 * @param {{[key:string]:any}} errors 
-	 * @param {{[key:string]:any}} [attributes]
 	 * @return {FormValidator}
 	 */
-	this.set = function(data,template,errors,attributes){
+	this.set = function(data,template,errors){
 		_data = data;
 		_template = template;
 		_errors = errors;
-		_attributes = attributes;
 		return self;
 	}
 	this.setData = function(data){
@@ -116,10 +112,6 @@ export function FormValidator(data, template, errors, attributes, options){
 	}
 	this.setErrors = function(errors){
 		_errors = null;
-		return self;
-	}
-	this.setAttributes = function(attributes){
-		_attributes = null;
 		return self;
 	}
 	/**
@@ -386,13 +378,16 @@ export function FormValidator(data, template, errors, attributes, options){
 				var visible = empty(is_field_invalid(obj,'displayRule'));
 				if (!visible){
 					//only reset data and error values if field name is not yet hidden
-					if (isAttrNull(obj._name)){
+					if (empty(fields[obj._name].attributes.hidden)){
 						setValue(_errors, obj._name, null);
 					}
 					//set hidden attribute
-					setAttrValue( obj._name, {hidden:true});
+					//setAttrValue( obj._name, {hidden:true});
+
+					fields[obj._name].attributes.hidden = true;
 				}else{
-					setAttrValue( obj._name, null);
+					//setAttrValue( obj._name, null);
+					delete fields[obj._name].attributes.hidden;
 				}
 			}
 		}
@@ -406,8 +401,6 @@ export function FormValidator(data, template, errors, attributes, options){
 				_data[p.form]={}
 			if(!_errors[p.form])
 				_errors[p.form]={}
-			if(!_attributes[p.form])	
-				_attributes[p.form]={}
 		}
 	}
 
@@ -628,31 +621,6 @@ export function FormValidator(data, template, errors, attributes, options){
 		}
 
 		object[p.form][p.name] = value;
-	}
-	/**
-	 * Set value at name or form.name
-	 * @param {string} name 
-	 * @param {*} value
-	 */
-	function setAttrValue(name, value){
-
-		var p = parts(name)
-		if (!p.form || !_options.nestedData) {
-			_attributes[name] = value;	
-			return;
-		}
-
-		_attributes[p.form][p.name] = value;
-	}
-
-	function isAttrNull(name){
-
-		var p = parts(name || !_options.nestedData)
-		if (!p.form || !_options.nestedData) {
-			return _attributes[name] ? true : false ;	
-			
-		}
-		return _attributes[p.form][p.name] ? true : false ;
 	}
 }
 //default english messages. Rules for some of these are not yet implemented.
