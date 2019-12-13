@@ -132,7 +132,7 @@ export var Binder = function(context){
 		if (typeof eventCallbacks === "function")
 			self.eventCallbacks.change = eventCallbacks;
 		else if (typeof eventCallbacks === "object")
-			self.eventCallbacks = $.extend(self.eventCallbacks,eventCallbacks);
+			self.eventCallbacks = Object.assign(self.eventCallbacks,eventCallbacks);
 		
 		if (!self.context.injectVars){
 			context.injectVars = {};
@@ -502,7 +502,7 @@ export var Binder = function(context){
 				elem[attr.name] = null;
 				$(elem).on(attr.name.substr(2), function(evt){
 					updateBoundContextProperty(evt.target);
-					var inj = $.extend({}, self.injectVars,{'$event':evt},inject, findElemInject(elem));
+					var inj = Object.assign({}, self.injectVars,{'$event':evt},inject, findElemInject(elem));
 					var c = createCaller(attr.value, inj);
 					c(inj);
 				});
@@ -638,7 +638,7 @@ export var Binder = function(context){
 				options = {};
 			}
 
-			options = $.extend({
+			options = Object.assign({
 				trigger:null,
 				duration: 0,
 				enter:'enter',
@@ -719,7 +719,7 @@ export var Binder = function(context){
 			var getter = on.getters[key];
 			var newValue = getter(inject); 
 			if (typeof newValue =='object'){
-				$.each(newValue,function(i,prop){
+				Objects.forEach(newValue,function(prop, i){
 					if (prop!==null)
 						on.elem.style[i] = prop;
 					else
@@ -732,7 +732,7 @@ export var Binder = function(context){
 			var getter = on.getters[key];
 			var newValue = getter(inject); 
 			if (typeof newValue =='object'){
-				$.each(newValue,function(i,prop){
+				Objects.forEach(newValue,function(prop, i){
 					if (prop!==null)
 						on.elem.setAttribute(i,prop);
 					else
@@ -835,7 +835,7 @@ export var Binder = function(context){
 				var inj = {}
 				inj[parts.index] = index;
 				inj[parts.item] = item;
-				inj = $.extend({},inject,inj);
+				inj = Object.assign({},inject,inj);
 				if (!on.items.hasOwnProperty(index)){
 					//a new item appeared
 					if (!hasNew){
@@ -990,7 +990,7 @@ export var Binder = function(context){
 				}
 				
 			
-				var inj = $.extend({}, inject);
+				var inj = Object.assign({}, inject);
 				if (component.template) {
 					on.values[key] = component;
 					//build parent vDom in the parent scope
@@ -1370,7 +1370,7 @@ export var Binder = function(context){
 			default:
 				v = elem.value;
 		}
-		var inj = $.extend({}, self.injectVars, findElemInject(elem));
+		var inj = Object.assign({}, self.injectVars, findElemInject(elem));
 
 		var domElVal = elem['VDOM'].getters.bind(inj);
 		var vDomdomElVal = elem['VDOM'].values.bind;

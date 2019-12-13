@@ -23,7 +23,7 @@ export class SwiperForms extends Forms{
 		/** @type {Swiper} */
 		this.swiper = null;
 		this.index = 0;
-		this.options = $.extend({},{
+		this.options = Object.assign({},{
 			navButtons: false,
 			submitButton: false,
 			pagination: true,
@@ -118,7 +118,7 @@ export class SwiperForms extends Forms{
 				//initialSlide:this.index,
 				noSwiping: true,
 				iOSEdgeSwipeDetection: true,
-				pagination: $.extend({},this.options.pagination ?
+				pagination: Object.assign({},this.options.pagination ?
 					{
 						el: '.swiper-pagination'
 					} : null),

@@ -15,7 +15,7 @@ export class SwiperComponent extends BaseComponent{
 		/** @type {Swiper} */
 		this.swiper = null;
 		this.index= null;
-		this.options = $.extend({},{
+		this.options = Object.assign({},{
 			navigation: true,
 			submitButton: "Submit",
 			pagination: true,
@@ -114,7 +114,7 @@ export class SwiperComponent extends BaseComponent{
 					}
 				},*/
 				centerInsufficientSlides:true,
-				pagination: $.extend({},this.options.pagination ?
+				pagination: Object.assign({},this.options.pagination ?
 					{
 						el: '.swiper-pagination'
 					} : null),

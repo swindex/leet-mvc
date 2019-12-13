@@ -2,7 +2,7 @@
 import "./Loader.scss";
 import { Translate } from './../../core/Translate';
 
-import { BasePage } from 'leet-mvc/pages/BasePage';
+import { BasePage } from './../BasePage';
 
 import { Injector } from './../../core/Injector';
 
@@ -129,7 +129,7 @@ class LoaderPage extends BasePage {
 	constructor(){
 		super();
 
-		this.text = "Loaing ...";
+		this.text = "Loading ...";
 	}
 	get template(){
 		return `<div class="loader-screen" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}">

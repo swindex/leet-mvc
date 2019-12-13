@@ -6,7 +6,7 @@ import { isNumber, isArray, isString, isObject } from "util";
 import { DateTime } from "./../core/DateTime";
 import { Translate } from "../core/Translate";
 import { tryCall } from '../core/helpers';
-import { Alert } from "leet-mvc/core/simple_confirm";
+import { Alert } from "../core/simple_confirm";
 
 export class Forms extends BaseComponent{
 	/**
@@ -14,10 +14,9 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate[]} formTemplate 
 	 * @param {*} [data]
 	 * @param {*} [errors]
-	 * @param {*} [attributes]
 	 * @param {{nestedData?:boolean, formClass?:string, fieldClass?:string}} [options]
 	 */
-	constructor(formTemplate, data, errors, attributes, options){
+	constructor(formTemplate, data, errors, options){
 		super()
 		this.formTemplate = formTemplate;
 		this.data = data|| {};
@@ -27,17 +26,15 @@ export class Forms extends BaseComponent{
 		this.errors = errors ||{};
 
 		this.options =  {nestedData:true, formClass:'formgroup', fieldClass:'fieldgroup'};
-		$.extend(this.options, options);
+		Object.assign(this.options, options);
 
-		
-		this.attributes = attributes || {};
 		this.attrEvents = {};
 		this.types={};
 		this.arrays={};
 
 		this.elementItems = {};
 
-		this.validator = new FormValidator(this.data, formTemplate, this.errors, this.attributes, this.options);
+		this.validator = new FormValidator(this.data, formTemplate, this.errors, this.options);
 		this.validator.validateVisibility();
 
 		this.fields = this.validator.fields;
@@ -103,7 +100,7 @@ export class Forms extends BaseComponent{
 	updateTemplate(formTemplate){
 		this.formTemplate = formTemplate;
 		
-		this.validator = new FormValidator(this.data,formTemplate,this.errors,this.attributes, this.options);
+		this.validator = new FormValidator(this.data,formTemplate,this.errors, this.options);
 		this.validator.validateVisibility();
 
 		this.fields = this.validator.fields;
@@ -259,6 +256,9 @@ export class Forms extends BaseComponent{
 		el.type = el.type ? el.type.toLowerCase() : '';
 
 		if (this.field_definitions[el.type]) {
+			if (this.fields[el._name] && el.attributes){
+				Object.assign(this.fields[el._name].attributes, el.attributes);
+			}
 			if (el.items) {
 				this.elementItems[el._name] = el.items;
 			}
@@ -297,8 +297,6 @@ export class Forms extends BaseComponent{
 				Objects.setPropertyByPath(this.data, el._name, {});
 			if (! Objects.getPropertyByPath(this.errors, el._name))
 				Objects.setPropertyByPath(this.errors, el._name, {});
-			if (! Objects.getPropertyByPath(this.attributes, el._name))
-				Objects.setPropertyByPath(this.attributes, el._name, {});
 		}
 
 		return this.renderFormHTML(el, this.renderArray(el.items, el._name));
@@ -326,8 +324,6 @@ export class Forms extends BaseComponent{
 				Objects.setPropertyByPath(this.data, el._name, {});
 			if (! this.getPropertyByPath(this.errors, el._name))
 				Objects.setPropertyByPath(this.errors, el._name, {});
-			if (! this.getPropertyByPath(this.attributes, el._name))
-				Objects.setPropertyByPath(this.attributes, el._name, {});
 		}
 
 		this.arrays[el.name] = [""];
@@ -404,12 +400,7 @@ export class Forms extends BaseComponent{
 		if (empty(_name)) {
 			return true;
 		}
-
-		var ret = this.getPropertyByPath(this.attributes, _name)
-		if (!ret) {
-			return true;
-		}
-		return !ret.hidden;
+		return !this.fields[_name].attributes.hidden;
 	}
 
 	getClassName(_name){
@@ -458,9 +449,10 @@ export class Forms extends BaseComponent{
 		dataName = dataName || "data"
 		var opt = { name: el._name , type: "text", placeholder: el.placeholder };
 		
-		$.extend(opt, override, el.attributes);
+		Object.assign(opt, override, el.attributes);
+		//${this.generateAttributes(opt)}
 		return ( `
-			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" _name="${el._name}" ${this.generateAttributes(opt)} />`+
+			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" name="${el._name}" [attributes]="this.getFieldAttributes('${el._name}')" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -479,7 +471,7 @@ export class Forms extends BaseComponent{
 		dataName = dataName || "data"
 		var opt = { name: el._name , type: "hidden", placeholder: el.placeholder };
 		
-		$.extend(opt, override, el.attributes);
+		Object.assign(opt, override, el.attributes);
 		return ( `
 			<label class="input" onclick="this.transferEventToChildInput($event)">{{ this.trimDisplayFileName(this.${dataName}${this.refactorAttrName(el._name)}) || '${Translate('Select File')}' }}
 				<input file bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
@@ -501,10 +493,10 @@ export class Forms extends BaseComponent{
 		
 		var opt = { name: el._name, autocorrect:"off", autocapitalize:"off" };
 		
-		$.extend(opt, override, el.attributes);
+		Object.assign(opt, override, el.attributes);
 		this.types[el._name] = "password";	
 		return (`
-			<input bind="this.data${this.refactorAttrName(el._name)}" _name="${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
+			<input bind="this.data${this.refactorAttrName(el._name)}" name="${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
 			(true ? `<div class="icon" onclick="this.togglePasswordType('${el._name}')">
 				<i class="fas fa-eye" [if]="this.types['${el._name}']=='password'"></i>
 				<i class="fas fa-eye-slash" [if]="this.types['${el._name}']=='text'"></i>
@@ -520,7 +512,7 @@ export class Forms extends BaseComponent{
 		
 		var opt = { name: el._name, type: "text" };
 		
-		$.extend(opt, override, el.attributes);
+		Object.assign(opt, override, el.attributes);
 		return `
 			<textarea bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)}></textarea>
 		`;
@@ -532,7 +524,7 @@ export class Forms extends BaseComponent{
 	 */
 	addCheck(el, override){
 		var opt = { name: el._name, type: "checkbox" };
-		$.extend(opt, override, el.attributes);
+		Object.assign(opt, override, el.attributes);
 		return (`
 			<label class="toggle">${el.title}
 				<input bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
@@ -548,7 +540,7 @@ export class Forms extends BaseComponent{
 	 */
 	addRadio(el, override){
 		var opt = { name: el._name, type: "radio" };
-		$.extend(opt, override, el.attributes);
+		Object.assign(opt, override, el.attributes);
 
 		var elems = ""
 		Objects.forEach(el.items, item=>{
@@ -571,13 +563,13 @@ export class Forms extends BaseComponent{
 	addSelect(el, override,parentPath){
 
 		var opt = { name: el._name, type: "select", format: el.dataType, bind: `this.data${this.refactorAttrName(el._name)}`, placeholder:el.placeholder};
-		$.extend(opt, override, el.attributes);
+		Object.assign(opt, override, el.attributes);
 		var elem = `<select ${this.generateAttributes(opt)}>`;
 		if (el.placeholder)
 			elem = elem+ `<option>${el.placeholder}</option>`;
 
 		var items_items = "";	
-		$.each(el.items,  (index, option)=>{
+		Objects.forEach(el.items,  (option)=>{
 			elem = elem+ `<option value="${ option.value===null ? '' : option.value }" title="${ option.placeholder || '' }">${option.title}</option>`;
 			if (option.items){
 				items_items += `<div [if]="this.data${this.refactorAttrName(el._name)} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.renderArray(option.items,parentPath) + `</div>`;
@@ -647,7 +639,7 @@ export class Forms extends BaseComponent{
 	addLabel(el, override){
 		var opt = { onclick:"this.onClick($event);" };
 		
-		$.extend(opt, {name: el._name}, el.attributes, override);
+		Object.assign(opt, {name: el._name}, el.attributes, override);
 		return (`
 			<div class="label" ${this.generateAttributes(opt)}>${(el.value != null ? el.value : "")}</div>`	+
 			(el.unit || el.icon ? `<div class="icon">
@@ -661,7 +653,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addHtml(el){
-		var opt = $.extend({}, {name: el._name}, {onclick:"this.onClick($event);"}, el.attributes);
+		var opt = Object.assign({}, {name: el._name}, {onclick:"this.onClick($event);"}, el.attributes);
 		return `<div class="html" ${this.generateAttributes(opt)}>${(el.value != null ? el.value : "")}</div>`;
 		//return `<div>${(el.value != null ? el.value : "")}</div>`;
 	}
@@ -670,7 +662,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addLink(el){
-		var opt = $.extend({}, {onclick:"this.onClick($event);"}, el.attributes);
+		var opt = Object.assign({}, {onclick:"this.onClick($event);"}, el.attributes);
 		return (`
 			<div class="link" ${this.generateAttributes(opt)} name="${el._name}">${(el.value != null ? el.value : "")}</div>`	+
 			(el.unit || el.icon ? `<div class="icon">
@@ -684,7 +676,7 @@ export class Forms extends BaseComponent{
 	 * @param {FieldTemplate} el 
 	 */
 	addButton(el){
-		var opt = $.extend({}, { name: el.name }, el.attributes);
+		var opt = Object.assign({}, { name: el.name }, el.attributes);
 		return (`
 			<button class="link" ${this.generateAttributes(opt)} name="${el._name}" onclick="this.onButtonClick($event);">${el.value || ''}</button>
 		`);
@@ -711,15 +703,21 @@ export class Forms extends BaseComponent{
 		else
 			this.types[name]="text";
 	}
+
+	getFieldAttributes(_name){
+		if (empty(_name)) return null
+
+		return this.fields[_name] ? this.fields[_name].attributes : {}
+	}
 	
 	generateAttributes(opt){
 		var strOpts="";
 		var name = opt.name;
-		$.each(opt, (key, val)=> {
+		Objects.forEach(opt, (val, key)=> {
 			if (key !== "input" && key !== "click" && key !== "change") {
-				if (val !== null && val !== undefined)
+				if (val !== null && val !== undefined && key != "hidden")
 					strOpts += key + '="' + val + '" ';
-			} else{
+			} else {
 				!this.attrEvents[name] ? this.attrEvents[name] = {} : null;
 				this.attrEvents[name][key] = val;
 				strOpts += 'on'+key + `="this.attrEvents['${name}']['${key}']()"`;
@@ -781,8 +779,8 @@ Forms.field_definitions = {
 			]);	
 		},
 		"date-time" : function (forms, el, parentPath){
-			var dateEl = $.extend({}, el);
-			var timeEl = $.extend({}, el);
+			var dateEl = Object.assign({}, el);
+			var timeEl = Object.assign({}, el);
 			
 			dateEl._name += "_date";
 			dateEl.icon = "far fa-calendar-alt"

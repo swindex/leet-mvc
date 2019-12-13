@@ -3,7 +3,7 @@ import './NumericKeyboardPage.scss';
 import * as template from './NumericKeyboardPage.html';
 import { BasePage } from './../BasePage'; 
 import { Injector } from "./../../core/Injector";
-import { numberFromLocaleString } from 'leet-mvc/core/helpers';
+import { numberFromLocaleString } from './../../core/helpers';
 
 export var NumericKeyboard = {
 	isEnabled: false,

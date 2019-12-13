@@ -1,4 +1,4 @@
-import { BaseComponent } from "leet-mvc/components/BaseComponent";
+import { BaseComponent } from "./../components/BaseComponent";
 
 /**
  * Register a component name or get registered component by name

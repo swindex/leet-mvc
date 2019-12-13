@@ -364,7 +364,7 @@ export var MapElement = function(API_KEY,API_VERSION,LANGUAGE){
 			}else{
 				if (!noLoader)
 					var loader = Loader().container(self.directionsHtmlElement.parentElement).timeout(5000).show();
-				directionsService.route($.extend({
+				directionsService.route(Object.assign({
 						origin: start,
 						destination: end,
 						travelMode: google.maps.TravelMode.DRIVING
@@ -465,7 +465,7 @@ export var MapElement = function(API_KEY,API_VERSION,LANGUAGE){
 			GoogleMapsLoader.load(function(_google) {
 				google = _google;
 
-				options = $.extend({
+				options = Object.assign({
 					zoom: 12,
 					center:  new google.maps.LatLng(10, 10),
 					mapTypeControlOptions : {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
