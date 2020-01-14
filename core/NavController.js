@@ -354,12 +354,12 @@ export function NavController() {
 				if ( frame.page.isDeleting) {
 					return;
 				}
-				
-				
+								
 				if (!frame.page.isVisible) {
+					setPageState(frame.page,'isVisible');
 					tryCall(frame.page, frame.page._onVisible);
 				}
-				setPageState(frame.page,'isVisible');
+				
 			},transitionTime);	
 		});
 		
