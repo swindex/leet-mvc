@@ -328,7 +328,7 @@ class Matomo {
 		var uv = Object.keys(cvarObj);
 		var cv = {};
 		for (var i=0; i<uv.length; i++){
-			if (cvarObj[uv[i]]!==null)
+			//if (cvarObj[uv[i]]!==null)
 				cv[i+1]=[uv[i],cvarObj[uv[i]]];
 		}
 		var ret = JSON.stringify( cv );	
