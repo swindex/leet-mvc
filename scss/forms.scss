@@ -39,10 +39,15 @@ select-multiple,
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	
+	padding-left: inherit;
+	padding-right: inherit;
+	
 	&[onclick]{
 		pointer-events: all;
 	}
 }
+
 input[date]{
     //background-image: url(../img/calendar_ico.png);
 }
@@ -161,7 +166,11 @@ textarea {
 		-webkit-appearance: none;
 		padding: $margin-sm 0;
 		padding-right: $size-input-i-md; //this used for hiding text under icon	
-	
+		
+		&[disabled]{
+			border-bottom: $size-border solid $color-border-disabled;
+		}
+
 		&:focus, &.focus, &.focus-blink{
 			outline: none;
 			box-shadow: none;
@@ -427,6 +436,3 @@ button{
 		color: $color-link !important;
 	}
 }
-
-
-
