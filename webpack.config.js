@@ -16,6 +16,16 @@ const path = require('path');
 
 //--env.build = production
 
+/*
+//Use the following path overrides for debuging.
+"sourceMapPathOverrides": {
+	"webpack:///src/*": "${workspaceFolder}/src/*",
+	"webpack:///./src/*": "${workspaceFolder}/src/*",
+	"webpack-generated:///src/*": "${workspaceFolder}/src/*",
+	"webpack:///node_modules/*": "${workspaceFolder}/node_modules/*",
+}
+*/
+
 module.exports = env => {
 	env = env || {};
 
@@ -68,7 +78,13 @@ module.exports = env => {
 		output: {
 			path: path.resolve(__dirname, 'dist-test'),
 			filename: env.build != "production" ? 'bundle.js' : 'bundle.js?c=[chunkhash]',
-			devtoolModuleFilenameTemplate: ".[resource-path]?[loaders]",
+			devtoolModuleFilenameTemplate: (info) => {
+				const isGeneratedDuplicate = info.resourcePath.match(/\.vue$/) && info.allLoaders;
+				if (isGeneratedDuplicate) {
+				  return `webpack-generated:///${info.resourcePath}?${info.hash}`;
+				}
+				return `webpack:///${path.normalize(info.resourcePath)}`;
+			},
 		},
 		module: {
 			rules: [

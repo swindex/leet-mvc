@@ -34,6 +34,15 @@ export function FormValidator(data, template, errors, options){
 	var _rules = FormValidator.rules;
 
 
+	var isValid = null;
+	this.isValid = null;
+	this.__defineGetter__("isValid", function(){
+		if (isValid===null){
+			isValid = self.validate()
+		}
+		return isValid;
+    });
+
 	var fields = this.fields = FormWalker.set_names(_template);
 
 	/**
@@ -41,8 +50,6 @@ export function FormValidator(data, template, errors, options){
 	 * @param {*} obj 
 	 * @param {string[]} [path]
 	 */
-	
-
 	this.walkElements = walkElements;
 	function walkElements(obj, callback, path){
 		if (!path){
@@ -144,9 +151,12 @@ export function FormValidator(data, template, errors, options){
 		template = template || _template;
 		//return validate_template(_template);
 		used=[];
-		return validate_object( template )==0;
+		isValid = validate_object( template )==0;
+		return isValid;
 	}
 
+	
+	
 	this.clearErrors= function(){
 		used=[];
 		Objects.clear(_errors);
@@ -169,7 +179,8 @@ export function FormValidator(data, template, errors, options){
 
 		validate_visibility(_template);
 		execute_field_action(getTemplateValue(name),'setField');
-		return r==0;
+		isValid = r == 0;
+		return isValid;
 	}
 
 	function parts(name){
@@ -540,7 +551,7 @@ export function FormValidator(data, template, errors, options){
 		if (typeof(value)=='undefined') value = null;
 
 		if (_rules[key]){
-			var ret =_rules[key](value, type , conditions, self); 
+			var ret =_rules[key](value, type , conditions, self, name); 
 			if (ret===false ||ret ===true){
 				return !ret;
 			}
@@ -697,10 +708,12 @@ FormValidator.messages = {
 	"true_if":"The :other must be true",
 	"true_if_not":"The :other must be not be true",
 	"unique":"The :attribute has already been taken.",
-	"url":"The :attribute format is invalid."
+	"url":"The :attribute format is invalid.",
+	"isValid":"The :attribute is not invalid."
+	//"phone":"The :attribute format is invalid."
 };
 
-/** @type {{[key:string]:function(any, 'string'|'array'|'numeric'|'select', string[], FormValidator):boolean}} */
+/** @type {{[key:string]:function(any, 'string'|'array'|'numeric'|'select', string[], FormValidator, string):boolean}} */
 FormValidator.rules = {
 	unique(value, type, conditions,  validator){
 		return true;
@@ -833,7 +846,7 @@ FormValidator.rules = {
 	numeric(value, type, conditions, validator){
 		return !isNaN(parseFloat(value));
 	},
-	integer(value, type, conditions, otherValue, validator){
+	integer(value, type, conditions, validator){
 		var x = parseFloat(value);
 		return !isNaN(value) && (x | 0) === x;
 	},
@@ -841,6 +854,15 @@ FormValidator.rules = {
 		var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		return re.test(value);
 	},
+
+	isValid(value, type, conditions, validator, name){
+		return validator.fields[name].attributes.isValid;
+	},
+	
+	/*phone(value, type, conditions, validator){
+		var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		return re.test(value);
+	},*/
 	regex(value, type, conditions, validator){
 		if (empty(value)) value="";
 		var condition=conditions[0].replace(/^\/|\/$/g, '');
