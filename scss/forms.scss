@@ -63,9 +63,6 @@ select-multiple{
 	background-image: url(../img/angle-down-solid.svg);
 	background-size: $size-input-i-sm;
 }
-.formgroup .field {
-	position: relative;
-}
 .formgroup {
 	button,
 	input[type=button]
@@ -235,6 +232,7 @@ textarea {
 			}
 		}
 	}
+
 	.fieldrow {
 		position: relative;
 		display: flex;
