@@ -63,6 +63,9 @@ select-multiple{
 	background-image: url(../img/angle-down-solid.svg);
 	background-size: $size-input-i-sm;
 }
+.formgroup .field {
+	position: relative;
+}
 .formgroup {
 	button,
 	input[type=button]
@@ -258,7 +261,7 @@ select-multiple{
 		font-size: $size-f-input;
 		width: 100%;
 		align-self: center;
-		padding: $margin-sm 0;
+		//padding: $margin-sm 0;
 		padding-right: $size-input-i-md; //this used for hiding text under icon	
 	
 		&.link{
@@ -436,3 +439,6 @@ button{
 		color: $color-link !important;
 	}
 }
+
+
+

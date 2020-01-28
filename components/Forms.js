@@ -452,11 +452,13 @@ export class Forms extends BaseComponent{
 		Object.assign(opt, override, el.attributes);
 		//${this.generateAttributes(opt)}
 		return ( `
+			<div class="field">
 			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" name="${el._name}" [attributes]="this.getFieldAttributes('${el._name}')" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
-			</div>` : '')
+			</div>` : '')+
+			`</div>`
 		);
 	}
 
