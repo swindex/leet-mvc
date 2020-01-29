@@ -30,6 +30,9 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	/**@type {google.maps.Marker} */
 	var startMarker=null;
 
+	var circleClusterremove = [];
+	var buffer_circle = null;
+
 	var markers = [];
 
 	/** @type {google.maps.DirectionsRenderer} */
@@ -217,7 +220,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 	/**
 	 * Set Destination location by its string address
 	 * @param {string} address 
-	 * @param {function(google.maps.LatLng)} [callback]
+	 * @param {function(google.maps.LatLng):any} [callback]
 	 */
 	this.setEndAddress = function(address, callback){
 		addWorker(function(){
@@ -273,6 +276,42 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 		});
 		return this;
 	}
+
+	this.drawCircleAtStart = function(rad) {
+		addWorker(function(){
+			//var rad = "5"; // can input dynamically
+			//rad *= 1000; // convert to meters if in miles
+			if (buffer_circle != null) {
+				buffer_circle.setMap(null);
+			}
+			buffer_circle = new google.maps.Circle({
+				center: start,
+				radius: rad,
+				strokeColor: "#2196f3",
+				strokeOpacity: 1,
+				strokeWeight: 1,
+				fillColor: "#638fab",
+				fillOpacity: 0.1,
+				map: map
+			});
+			circleClusterremove.push(buffer_circle);
+			nextWorker();
+		});
+		return this;
+	}
+
+	this.removeCircle = function () {
+		try {
+			for (var i = 0; i < circleClusterremove.length; i++) {
+				circleClusterremove[i].setMap(null);
+			}
+			circleClusterremove = [];
+		}
+		catch (Error) {
+		}
+	}
+
+
 
 	/**
 	 * Create marker on map
