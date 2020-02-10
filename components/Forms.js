@@ -453,7 +453,7 @@ export class Forms extends BaseComponent{
 		//${this.generateAttributes(opt)}
 		return ( `
 			<div class="fieldrow">
-			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" name="${el._name}" [attributes]="this.getFieldAttributes('${el._name}')" ${this.generateAttributes(opt)} />`+
+			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" name="${el._name}" [attribute]="this.getFieldAttributes('${el._name}')" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
