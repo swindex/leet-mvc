@@ -581,6 +581,10 @@ export var Binder = function(context){
 					if (self.context instanceof BaseComponent){
 						self.context[attribute] = value;
 					}
+					//set attribute of the HTML element to the value;
+					if (on.elem) {
+						on.elem[attribute] = value;
+					}
 				}
 			}
 		}catch(ex){
