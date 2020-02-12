@@ -61,8 +61,8 @@ export class CalendarPage extends DialogPage{
 			return { value: i+1, title: moment(i+1, 'MM').format('MMMM')};
 		});
 
-		this._years = Array.apply(null, Array(10)).map(function (_, i) {
-			var v = moment().add(i-5,"years").format('YYYY');
+		this._years = Array.apply(null, Array(200)).map(function (_, i) {
+			var v = moment().add(i-100,"years").format('YYYY');
 			return { value: v, title: v};
 		});
 
