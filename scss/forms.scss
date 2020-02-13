@@ -63,7 +63,7 @@ select-multiple{
 	background-image: url(../img/angle-down-solid.svg);
 	background-size: $size-input-i-sm;
 }
-.formgroup {
+/*.formgroup {
 	button,
 	input[type=button]
 	{
@@ -83,7 +83,7 @@ select-multiple{
 		outline: none;
 		box-shadow: none;
 	}
-}
+}*/
 
 input[type=button]:focus ,button:focus{
 	outline: none;
@@ -308,7 +308,7 @@ select-multiple{
 				&+.slider {
 					background-color: #2196F3;
 					&:before {
-						transform: translateX(30px);
+						transform: translateX(1.75em);
 					}
 				}
 				&+.radio {
@@ -334,24 +334,23 @@ select-multiple{
 			cursor: pointer;
 			background-color: #ccc;
 			transition: .4s;
-			width: 55px; 
-			min-width: 55px;
-			height: 22px; 
+			width: 3em; 
+			min-width: 3em;
+			height: 1.375em; 
 			margin-left: auto;
 			&:before {
 				position: absolute;
 				content: "";
-				height: 26px;
-				width: 26px;
+				height: 1.5em;
+				width: 1.5em;
 				left: -1px;
-				bottom: -1px;
-				top: -2px;
+				top: -0.05em;
 				background-color: white;
 				transition: .2s;
 				box-shadow: 0 0px 2px #333;
 			}
 			&.round {
-				border-radius: 34px;
+				border-radius: 1em;
 				margin-right: 4px;
 				&:before {
 					border-radius: 50%;
