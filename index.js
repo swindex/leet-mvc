@@ -1,6 +1,6 @@
 import './core/polyfills';
 
-/*import { MapElement } from "./core/MapElement";
+import { MapElement } from "./core/MapElement";
 import { BasePage } from "./pages/BasePage";
 import { Objects } from "./core/Objects";
 import { NavController } from "./core/NavController";

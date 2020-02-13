@@ -528,7 +528,7 @@ export class Forms extends BaseComponent{
 		var opt = { name: el._name, type: "checkbox" };
 		Object.assign(opt, override, el.attributes);
 		return (`
-			<label class="toggle">${el.title}
+			<label class="toggle"><span class="text">${el.title}</span>
 				<input bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
 				<span class="slider round"></span>
 			</label>
