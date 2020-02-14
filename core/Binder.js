@@ -334,12 +334,12 @@ export var Binder = function(context){
 				if (tag == "#text"){
 					if (isString(createElements)){
 						elem = document.createTextNode(createElements);
-						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
+						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context};
 
 					}else{
 						elem = document.createTextNode("");
 						getters = {'bind':createGetter(attributes['bind'],inject)}
-						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
+						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context};
 						executeAttribute('bind', vdom,inject);
 					}
 									
@@ -418,7 +418,7 @@ export var Binder = function(context){
 					}
 				}
 
-				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, callers:callers, plainAttrs:plainAttrs, fragment:null, elem:elem, items:vdomItems, itemBuilder:null};
+				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, callers:callers, plainAttrs:plainAttrs, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context};
 				elem['VDOM'] = vdom;
 				
 				for (var ii =0; ii < renderImmediately.length; ii++){
