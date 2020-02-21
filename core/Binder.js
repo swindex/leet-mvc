@@ -1,6 +1,6 @@
 import { empty, tryCall, numberFromLocaleString } from "./helpers";
 import { BaseComponent } from "../components/BaseComponent";
-import { isObject, isString } from "util";
+import { isObject, isString, isBoolean } from "util";
 
 import * as $ from 'jquery';
 import { isSkipUpdate } from "./Watcher";
@@ -1223,7 +1223,11 @@ export var Binder = function(context){
 			case "INPUT":
 				switch (elem.type) {
 					case "radio":
-						elem.checked = (v == elem.value || (v === null && elem.value == "" ));
+						var cv = elem.value;
+						if (isBoolean(v)){
+							cv = elem.value == "true";
+						} 
+						elem.checked = (v == cv || (v === null && elem.value == "" ));
 						break;
 					case "checkbox":
 						elem.checked = v;
@@ -1289,8 +1293,10 @@ export var Binder = function(context){
 				return false;
 		}
 	}
-	function updateBoundContextProperty(elem, skipUpdate ){
-		function formatValue(value, format){
+
+	function formatValueToElem(elem, value){
+		var format = elem.getAttribute('format');
+
 			var v = value;
 			if(!empty(format)){
 				var formats = format.split(":");
@@ -1322,7 +1328,12 @@ export var Binder = function(context){
 						else
 							v = parseInt(value) != 0;
 					}else {
-						v = parseInt(value) != 0;
+						if (value=="true")
+							v=true;
+						else if (value=="false")
+							v=false;
+						else
+							v = parseInt(value) != 0;
 					}
 				}
 				if (formats.length > 0 && formats[0] === "dateTime") {
@@ -1344,7 +1355,10 @@ export var Binder = function(context){
 				v = value;
 			}
 			return v;
-		}
+	}
+
+	function updateBoundContextProperty(elem, skipUpdate ){
+		
 	
 		if (!isElementSetting(elem) || empty(elem['VDOM']) || empty(elem['VDOM'].setters) || empty(elem['VDOM'].setters.bind))
 			return;
@@ -1357,7 +1371,7 @@ export var Binder = function(context){
 			case "SELECT":
 				var sel = $(elem).find("option:selected");
 				if (sel[0]) {
-					v = formatValue(sel[0].getAttribute('value'),format);
+					v = formatValueToElem(elem, sel[0].getAttribute('value'));
 				}
 				break;
 			case "OPTION":
@@ -1367,7 +1381,7 @@ export var Binder = function(context){
 						v= elem.checked;
 						break;
 					default:
-						v = formatValue(elem.value,format);
+						v = formatValueToElem(elem, elem.value);
 						break;	
 				}
 				break;
