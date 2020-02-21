@@ -271,9 +271,13 @@ export const Objects = {
 			}
 		}
 
-		if (pathArray.length>1)
-			Objects.setPropertyByPath(obj[pathArray.shift()],pathArray, value);
-		else
+		if (pathArray.length>1){
+			var shft = pathArray.shift();
+			if (obj[shft] == undefined){
+				obj[shft] = {}
+			}
+			Objects.setPropertyByPath(obj[shft],pathArray, value);
+		} else
 			obj[pathArray.shift()] = value;
 	},
 		/**
