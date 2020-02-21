@@ -626,13 +626,18 @@ export class Forms extends BaseComponent{
 	 * @param {string} name 
 	 */
 	refactorAttrName(name){
-		var p = name.split('.');
+		/*var p = name.split('.');
 		p[p.length-1] = "['" + p[p.length-1] + "']"
 		if (p.length==1)
 			return p[p.length-1];
 
 		var ret =  '.'+p.join('.').replace('.[','[');
-		return ret;
+		return ret;*/
+		//if name contains .number parts, replace them with array notation
+		return "."+name.replace(/\.(\d+)/,function(a,b,c,d){
+			//console.log(arguments);
+			return `[${b}]`
+		});
 	}
 	/**
 	 * 
@@ -680,7 +685,7 @@ export class Forms extends BaseComponent{
 	addButton(el){
 		var opt = Object.assign({}, { name: el.name }, el.attributes);
 		return (`
-			<button class="link" ${this.generateAttributes(opt)} name="${el._name}" onclick="this.onButtonClick($event);">${el.value || ''}</button>
+			<button ${this.generateAttributes(opt)} name="${el._name}" onclick="this.onButtonClick($event);">${(el.icon ? `<i class="${el.icon}"></i>` : '') }${el.value || ''}</button>
 		`);
 	}	
 	/**

@@ -296,8 +296,12 @@ export function FormValidator(data, template, errors, options){
 							});
 						}else if (isArray(item.items)){
 							Objects.forEach(item.items,(el)=>{
-								Objects.deletePropertyByPath(data, el._name);
-								Objects.deletePropertyByPath(errors, el._name);
+								try {
+									Objects.deletePropertyByPath(data, el._name);
+									Objects.deletePropertyByPath(errors, el._name);
+								} catch(ex){
+
+								}
 								touched = touched.filter(el2 => el2 !== el._name)
 							});
 						}
@@ -406,12 +410,11 @@ export function FormValidator(data, template, errors, options){
 	}
 
 	function prepField(name){
-		var p = parts(name);
-		if (p.form){
-			if (!_data[p.form])
-				_data[p.form]={}
-			if(!_errors[p.form])
-				_errors[p.form]={}
+		if (name){
+			if (getValue(_data, name) == undefined )
+				setValue(_data, name, null);
+			if(!getValue(_errors, name) == undefined)
+				setValue(_data, name, null);
 		}
 	}
 
@@ -583,13 +586,11 @@ export function FormValidator(data, template, errors, options){
 	 * @param {string} name 
 	 */
 	function getValue(object, name){
-		name = name.replace(/\/[^\/]*\//,'');
-		var p = parts(name)
-		if (!p.form || !_options.nestedData) {
-			return object[p.name];	
+		try {
+			return Objects.getPropertyByPath(object, name);
+		} catch(ex){
+			return undefined;
 		}
-
-		return object[p.form][p.name];
 	}
 
 	this.getDataValue = function(name, cName=""){
@@ -602,19 +603,6 @@ export function FormValidator(data, template, errors, options){
 	 */
 	function getTemplateValue(name){
 		return fields[name];
-		/*var found = null;
-		function f(obj){
-			Objects.forEach(obj,(el)=>{
-				if (el._name === name){
-					found = el;
-					return false;
-				}else if (isObject(el) && el.items){
-					f(el.items);
-				}
-			});
-		}
-		f(_template);
-		return found;*/
 	}
 	this.setValue = setValue;
 	/**
@@ -624,14 +612,7 @@ export function FormValidator(data, template, errors, options){
 	 * @param {*} value
 	 */
 	function setValue(object, name, value){
-		name = name.replace(/\/[^\/]*\//,'');
-		var p = parts(name)
-		if (!p.form || !_options.nestedData) {
-			object[name] = value;	
-			return;
-		}
-
-		object[p.form][p.name] = value;
+		Objects.setPropertyByPath(object, name, value);
 	}
 }
 //default english messages. Rules for some of these are not yet implemented.

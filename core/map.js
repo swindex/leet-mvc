@@ -70,7 +70,10 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 			tryCall(null,callback, map);
 			nextWorker();
 		});
+		return map;
 	}
+
+	
 
 	/**
 	 * Get Map Markers object
@@ -508,7 +511,7 @@ export var Map = function(API_KEY,API_VERSION,LANGUAGE){
 					mapTypeId : google.maps.MapTypeId.ROADMAP,
 				},options);
 
-				map = new google.maps.Map(element, options); 
+				self.map = map = new google.maps.Map(element, options); 
 				directionsDisplay = new google.maps.DirectionsRenderer(directionsRendererOptions);
 				directionsService = new google.maps.DirectionsService;
 				directionsDisplay.setMap(map);

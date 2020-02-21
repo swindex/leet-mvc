@@ -86,8 +86,11 @@ var template = `
 	<div class="header" [if]="this.header">
 		<div [directive] = "this.header"></div>
 	</div>
+	
 	<div class="content">
+		<!--default-template-begin-->
 		<div [directive] = "this.content"></div>
+		<!--default-template-end-->
 		<!--child-template-->
 	</div>
 
