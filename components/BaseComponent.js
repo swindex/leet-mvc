@@ -1,4 +1,4 @@
-import { Binder, removeVDOMElement } from "../core/Binder";
+import { Binder } from "../core/Binder";
 import { ChangeWatcher } from "../core/ChangeWatcher";
 import { Objects } from "../core/Objects";
 import { tryCall } from "../core/helpers";

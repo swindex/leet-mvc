@@ -1,6 +1,6 @@
 import { isNumber, isBoolean, isObject,isArray, isString } from "util";
 import { Objects } from "./Objects";
-import { empty, tryCall } from "./helpers";
+import { empty, tryCall, GUID } from "./helpers";
 import { Translate } from "./Translate";
 import { Parser } from 'expr-eval';
 import { isDate } from "util";
@@ -702,9 +702,12 @@ FormValidator.rules = {
 	accepted(value, type, conditions,  validator){
 		return value !== "" && value != null && value != false;
 	},
-	required(value, type, conditions,  validator){
+	required(value, type, conditions,  validator, name){
 		if (type == "select"){
 			return value !== null;
+		}
+		if (validator.fields[name].attributes.isValid != undefined) {
+			//return validator.fields[name].attributes.isValid
 		}
 		return value !== "" && value != null && value != false;
 	},
@@ -897,17 +900,29 @@ export const FormWalker={
 	set_names(obj){
 		var keyed = {};
 		function set_names(obj, path){
-			if (!path)
+			if (!path){
 				path = [];
-			if (isArray(obj))
+			}
+
+			if (obj.type && obj.type!="form" && obj.type!="array" && !obj.name){
+				obj.name = GUID();
+			}
+		
+			if (isArray(obj)){
 				Objects.forEach(obj,(el)=>{
-					if (el.name){
+					if (el.type && el.type!="form" && el.type!="array" && !el.name){
+						el.name = GUID();
+					}
+
+					if (el.name) {
 						var npath = path.slice();
 						npath.push(el.name);
 					}
+					
 					set_names(el, npath);
 				});
-		
+			}
+			
 			if (isObject(obj) && obj.name) {
 				obj._name = path.slice().join('.');	
 				keyed[obj._name] = obj;

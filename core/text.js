@@ -67,5 +67,17 @@ export var Text = {
 			
 		});
 		return path;
+	},
+
+	/**
+	 * Capitalize text
+	 * @param {string} value 
+	 */
+	capitalize(value){
+		if (empty(value)) return "";
+		value = value+"";
+		return (value.toLowerCase()).replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
 	}
+
+
 }

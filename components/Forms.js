@@ -254,7 +254,7 @@ export class Forms extends BaseComponent{
 	render_field(el,parentPath){
 		/** @type {string} */
 		el.type = el.type ? el.type.toLowerCase() : '';
-
+		
 		if (this.field_definitions[el.type]) {
 			if (this.fields[el._name] && el.attributes){
 				Object.assign(this.fields[el._name].attributes, el.attributes);
@@ -374,8 +374,10 @@ export class Forms extends BaseComponent{
 	}
 
 	renderFieldGroupHTML(el, elHTML, noTitle, noErrorHint){
+		var isRequired = el.validateRule ? el.validateRule.includes('required') : null;
+
 		return `
-		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''}" [class]="this.getClassName('${el._name ? el._name : ''}')" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
+		<div class="${this.options.fieldClass} ${el.class ?' '+ el.class:''} ${isRequired ? 'required' : ''}" [class]="this.getClassName('${el._name ? el._name : ''}')" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
 			${this.addTitle(el)}
 			${isArray(elHTML) ? elHTML.join('') : elHTML}
 			${(noErrorHint ? '' : this.addErrorHint(el))}
@@ -442,18 +444,16 @@ export class Forms extends BaseComponent{
 	 * 
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
-	 * @param {string} [dataName] name of the data property
 	 */
-	addInput(el, override, dataName){
+	addInput(el, override){
 		
-		dataName = dataName || "data"
 		var opt = { name: el._name , type: "text", placeholder: el.placeholder };
 		
 		Object.assign(opt, override, el.attributes);
 		//${this.generateAttributes(opt)}
 		return ( `
 			<div class="fieldrow">
-			<input bind="this.${dataName}${this.refactorAttrName(el._name)}" name="${el._name}" [attribute]="this.getFieldAttributes('${el._name}')" ${this.generateAttributes(opt)} />`+
+			<input bind="${this.refactorAttrName('this.data.' + el._name)}" name="${el._name}" [attribute]="this.getFieldAttributes('${el._name}')" ${this.generateAttributes(opt)} />`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
@@ -466,17 +466,15 @@ export class Forms extends BaseComponent{
 	 * 
 	 * @param {FieldTemplate} el 
 	 * @param {KeyValuePair} [override]
-	 * @param {string} [dataName] name of the data property
 	 */
-	addFile(el, override, dataName){
-		
-		dataName = dataName || "data"
+	addFile(el, override){
+	
 		var opt = { name: el._name , type: "hidden", placeholder: el.placeholder };
 		
 		Object.assign(opt, override, el.attributes);
 		return ( `
-			<label class="input" onclick="this.transferEventToChildInput($event)">{{ this.trimDisplayFileName(this.${dataName}${this.refactorAttrName(el._name)}) || '${Translate('Select File')}' }}
-				<input file bind="this.${dataName}${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
+			<label class="input" onclick="this.transferEventToChildInput($event)">{{ this.trimDisplayFileName(${this.refactorAttrName('this.data.' + el._name)}) || '${Translate('Select File')}' }}
+				<input file bind="${this.refactorAttrName('this.data.' + el._name)}" ${this.generateAttributes(opt)} />
 			</label>`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
@@ -498,7 +496,7 @@ export class Forms extends BaseComponent{
 		Object.assign(opt, override, el.attributes);
 		this.types[el._name] = "password";	
 		return (`
-			<input bind="this.data${this.refactorAttrName(el._name)}" name="${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
+			<input bind="${this.refactorAttrName('this.data.' + el._name)}" name="${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
 			(true ? `<div class="icon" onclick="this.togglePasswordType('${el._name}')">
 				<i class="fas fa-eye" [if]="this.types['${el._name}']=='password'"></i>
 				<i class="fas fa-eye-slash" [if]="this.types['${el._name}']=='text'"></i>
@@ -516,7 +514,7 @@ export class Forms extends BaseComponent{
 		
 		Object.assign(opt, override, el.attributes);
 		return `
-			<textarea bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)}></textarea>
+			<textarea bind="${this.refactorAttrName('this.data.' + el._name)}" ${this.generateAttributes(opt)}></textarea>
 		`;
 	}
 	/**
@@ -529,7 +527,7 @@ export class Forms extends BaseComponent{
 		Object.assign(opt, override, el.attributes);
 		return (`
 			<label class="toggle"><span class="text">${el.title}</span>
-				<input bind="this.data${this.refactorAttrName(el._name)}" ${this.generateAttributes(opt)} />
+				<input bind="${this.refactorAttrName('this.data.' + el._name)}" ${this.generateAttributes(opt)} />
 				<span class="slider round"></span>
 			</label>
 		`);
@@ -548,7 +546,7 @@ export class Forms extends BaseComponent{
 		Objects.forEach(el.items, item=>{
 			elems += (`
 				<label class="toggle">
-					<input bind = "this.data${this.refactorAttrName(el._name)}" format="${el.dataType ? el.dataType : ''}" value = "${item.value !==null ? item.value : '' }" ${this.generateAttributes(opt)} />
+					<input bind = "${this.refactorAttrName('this.data.' + el._name)}" format="${el.dataType ? el.dataType : ''}" value = "${item.value !==null ? item.value : '' }" ${this.generateAttributes(opt)} />
 					<span class="radio round"></span>
 					${item.title}
 				</label>
@@ -564,7 +562,7 @@ export class Forms extends BaseComponent{
 	 */
 	addSelect(el, override,parentPath){
 
-		var opt = { name: el._name, type: "select", format: el.dataType, bind: `this.data${this.refactorAttrName(el._name)}`, placeholder:el.placeholder};
+		var opt = { name: el._name, type: "select", format: el.dataType, bind: `${this.refactorAttrName('this.data.' + el._name)}`, placeholder:el.placeholder};
 		Object.assign(opt, override, el.attributes);
 		var elem = `<select ${this.generateAttributes(opt)}>`;
 		if (el.placeholder)
@@ -574,7 +572,7 @@ export class Forms extends BaseComponent{
 		Objects.forEach(el.items,  (option)=>{
 			elem = elem+ `<option value="${ option.value===null ? '' : option.value }" title="${ option.placeholder || '' }">${option.title}</option>`;
 			if (option.items){
-				items_items += `<div [if]="this.data${this.refactorAttrName(el._name)} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.renderArray(option.items,parentPath) + `</div>`;
+				items_items += `<div [if]="${this.refactorAttrName('this.data.' + el._name)} == ${(isNumber(option.value)|| option.value==null ? option.value : "'"+option.value+"'")}">` + this.renderArray(option.items,parentPath) + `</div>`;
 			}
 		});
 		elem = elem + "</select>";
@@ -626,17 +624,10 @@ export class Forms extends BaseComponent{
 	 * @param {string} name 
 	 */
 	refactorAttrName(name){
-		/*var p = name.split('.');
-		p[p.length-1] = "['" + p[p.length-1] + "']"
-		if (p.length==1)
-			return p[p.length-1];
-
-		var ret =  '.'+p.join('.').replace('.[','[');
-		return ret;*/
 		//if name contains .number parts, replace them with array notation
-		return "."+name.replace(/\.(\d+)/,function(a,b,c,d){
+		return name.replace(/\.(\d{1}[^\.]*)/, function(a,b,c,d){
 			//console.log(arguments);
-			return `[${b}]`
+			return `['${b}']`
 		});
 	}
 	/**

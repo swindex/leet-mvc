@@ -37,8 +37,8 @@ export class DialogPage extends BasePage{
 		this.content= new Forms(this.controls,this.data,this.errors);
 	}
 
-	onResize(){
-		super.onResize();
+	onResize(windowSize){
+		super.onResize(windowSize);
 		var h = (this.page.height() - 150);
 		this.dialog_content_max_height = h+"px";
 	}
@@ -120,13 +120,13 @@ export class DialogPage extends BasePage{
 	}
 
 	addLabel (title, value, attrs) {
-		this.controls.push({name:"label", type:'label', title:title, value:value, attributes:attrs});
+		this.controls.push({type:'label', title:title, value:value, attributes:attrs});
 		this.render();
 		
 		return this;
 	}
 	addLink (title, value, attrs) {
-		this.controls.push({name:"link", type:'link', title:title, value:value, attributes:attrs});
+		this.controls.push({type:'link', title:title, value:value, attributes:attrs});
 		this.render();
 		
 		return this;
@@ -147,7 +147,7 @@ export class DialogPage extends BasePage{
 	}
 	
 	addHtml (value) {
-		this.controls.push({name:"html", type:'html',value:value});
+		this.controls.push({type:'html',value:value});
 		this.render();
 		
 		return this;
