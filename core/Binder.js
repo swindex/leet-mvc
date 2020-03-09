@@ -2,12 +2,12 @@ import { empty, tryCall, numberFromLocaleString } from "./helpers";
 import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString, isBoolean } from "util";
 
-import * as $ from 'jquery';
 import { isSkipUpdate } from "./Watcher";
 import { DateTime } from "./DateTime";
 import { isArray } from "util";
 import { isFunction } from "util";
 import { Objects } from "./Objects";
+import { DOM } from "./DOM";
 
 var htmlparser = require("htmlparser2");
 
@@ -82,7 +82,8 @@ export var Binder = function(context){
 				elem.parentNode.removeChild(elem);
 			}
 		} else {
-			$(elem).remove();
+			removeDOMElement(elem)
+			//$(elem).remove();
 		}
 	}
 
@@ -303,7 +304,8 @@ export var Binder = function(context){
 					var items = createElements(inject);
 					if (items[0] && items[0].elem.getAttribute && items[0].elem.getAttribute("fragment")!==null) {
 						var frag = document.createDocumentFragment();
-						$(frag).append(items[0].elem.childNodes);
+						DOM(frag).append(items[0].elem.childNodes);
+						//$(frag).append(items[0].elem.childNodes);
 						items[0].elem = frag;
 					} 
 					return items[0];
@@ -334,12 +336,12 @@ export var Binder = function(context){
 				if (tag == "#text"){
 					if (isString(createElements)){
 						elem = document.createTextNode(createElements);
-						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context};
+						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context, events:{}};
 
 					}else{
 						elem = document.createTextNode("");
 						getters = {'bind':createGetter(attributes['bind'],inject)}
-						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context};
+						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context, events:{}};
 						executeAttribute('bind', vdom,inject);
 					}
 									
@@ -418,7 +420,7 @@ export var Binder = function(context){
 					}
 				}
 
-				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, callers:callers, plainAttrs:plainAttrs, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context};
+				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, callers:callers, plainAttrs:plainAttrs, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context, events:{}};
 				elem['VDOM'] = vdom;
 				
 				for (var ii =0; ii < renderImmediately.length; ii++){
@@ -500,12 +502,23 @@ export var Binder = function(context){
 			if (typeof elem[attr.name] == 'function'){
 				//var inject = self.injectVars;
 				elem[attr.name] = null;
-				$(elem).on(attr.name.substr(2), function(evt){
+				
+				let s_name = attr.name.substr(2)
+
+				let handler = function(evt){
 					updateBoundContextProperty(evt.target);
 					var inj = Object.assign({}, self.injectVars,{'$event':evt},inject, findElemInject(elem));
 					var c = createCaller(attr.value, inj);
 					c(inj);
-				});
+				};
+
+				DOM(elem).addEventListener(s_name, handler);
+				/*$(elem).on(attr.name.substr(2), function(evt){
+					updateBoundContextProperty(evt.target);
+					var inj = Object.assign({}, self.injectVars,{'$event':evt},inject, findElemInject(elem));
+					var c = createCaller(attr.value, inj);
+					c(inj);
+				});*/
 			}	
 		});
 	}
@@ -662,29 +675,30 @@ export var Binder = function(context){
 					if (options.duration){
 						vDomCreateItems(on,inject)
 
-						$(on.items[1].elem).addClass(options.enter_active);
-						$(on.items[0].elem).addClass(options.leave_active);
+						on.items[1].elem.classList.add(options.enter_active);
+						on.items[1].elem.classList.ddd(options.enter_active);
+						on.items[0].elem.classList.ddd(options.leave_active);
 
-						$(on.items[1].elem).addClass(options.enter);
-						$(on.items[0].elem).addClass(options.leave);
+						on.items[1].elem.classList.ddd(options.enter);
+						on.items[0].elem.classList.ddd(options.leave);
 
 						setTimeout(function(){
-							$(on.items[1].elem).scrollTop($(on.items[0].elem).scrollTop());
+							//$(on.items[1].elem).scrollTop($(on.items[0].elem).scrollTop());
 
-							$(on.items[1].elem).removeClass(options.enter);
-							$(on.items[0].elem).removeClass(options.leave);
+							on.items[1].elem.classList.remove(options.enter);
+							on.items[0].elem.classList.remove(options.leave);
 							
-							$(on.items[1].elem).addClass(options.enter_to);
-							$(on.items[0].elem).addClass(options.leave_to);
+							on.items[1].elem.classList.add(options.enter_to);
+							on.items[0].elem.classList.add(options.leave_to);
 
 						},0);
 						//discard vDom nodes of the element that will be removed
 						on.items[0].items=[];
 						setTimeout(function(){
-							$(on.items[1].elem).removeClass(options.enter_active);
-							$(on.items[0].elem).removeClass(options.leave_active);
-							$(on.items[1].elem).removeClass(options.enter_to);
-							$(on.items[0].elem).removeClass(options.leave_to);
+							on.items[1].elem.classList.remove(options.enter_active);
+							on.items[0].elem.classList.remove(options.leave_active);
+							on.items[1].elem.classList.remove(options.enter_to);
+							on.items[0].elem.classList.remove(options.leave_to);
 
 							removeElement(on.items[0].elem);
 							on.items.shift();
@@ -1063,7 +1077,9 @@ export var Binder = function(context){
 					
 					//move host children to temp fragment
 					// @ts-ignore
-					$(p_frag).append(p_vDom.elem.childNodes);
+					DOM(p_frag).append(p_vDom.elem.childNodes);
+					//$(p_frag).append(p_vDom.elem.childNodes);
+					
 				
 					component.parentPage = self.context;
 					//let component decide where to put parent's children
@@ -1121,7 +1137,8 @@ export var Binder = function(context){
 	}
 
 	function applyCallBack(elem, context, evName, callback, cancelUIUpdate){
-		$(elem).on(evName, function(event){	
+		//$(elem).on(evName, function(event){	
+		DOM(elem).addEventListener(evName, function(event){	
 			updateBoundContextProperty(event.target, cancelUIUpdate); //skip formatting for input event
 			if ( callback && tryCall(context, callback, event) && event.target['parentNode'])
 				repaint(event.target['parentNode']);
@@ -1195,29 +1212,34 @@ export var Binder = function(context){
 		}
 		switch (elem.tagName) {
 			case "SELECT":
-				$(elem).find("option").removeAttr('selected');
-				setTimeout(()=>{
+				//DOM(elem).find("option").forEach((e)=>{e.selected = false});
+				//setTimeout(()=>{
+					/** @type {HTMLOptionElement} */
+					// @ts-ignore
+					let firstOption =  DOM(elem).find("option")[0];
 					if (v===null || v === undefined){
-						var firstOption = $(elem).find("option").first();
-						firstOption.attr('selected',"");
-						var fVal = firstOption.val();
+						/** @type {HTMLOptionElement} */
+						// @ts-ignore
+						firstOption.selected = true;
+						var fVal = firstOption.value;
 						if (fVal !== null){
 							elem.value = fVal;
 							updateBoundContextProperty(elem);
 						}
 					} else {
-						var sel = $(elem).find("option[value='"+ v +"']").first();
-						if (sel.length){
-							sel.attr('selected',"");
+						/** @type {HTMLOptionElement} */
+						// @ts-ignore
+						let sel = DOM(elem).find("option[value='"+ v +"']")[0];
+						if (sel){
+							sel.selected = true;
 							elem.value = v; //this is important
 						}else{
-							//select we are trying to set does not have that option!
-							$(elem).find("option[value='']").first().attr('selected',"");
+							firstOption.selected = true;
 							//opdate data property to keep it in sync with element; 
 							updateBoundContextProperty(elem);
 						}
 					}
-				});
+				//});
 				break;
 			case "OPTION":
 			case "INPUT":
@@ -1369,9 +1391,9 @@ export var Binder = function(context){
 
 		switch (elem.tagName) {
 			case "SELECT":
-				var sel = $(elem).find("option:selected");
-				if (sel[0]) {
-					v = formatValueToElem(elem, sel[0].getAttribute('value'));
+				let sel = DOM(elem).find("option:checked")[0];
+				if (sel) {
+					v = formatValueToElem(elem, sel.getAttribute('value'));
 				}
 				break;
 			case "OPTION":
@@ -1533,8 +1555,14 @@ export function removeDOMElement(elem){
 		removeVDOMElement(elem.VDOM);
 		delete elem.VDOM;
 		delete elem.INJECT;
+
+		return;
 	}
-	$(elem).remove();
+
+	if(elem.parentNode) {
+		elem.parentNode.removeChild(elem);
+	}
+	//$(elem).remove();
 }
 /**
  * 
@@ -1545,10 +1573,18 @@ export function removeVDOMElement(en){
 		en.items.forEach(item => removeVDOMElement(item));
 		delete en.items;
 	}
+
+	for (var i in en.events) {
+		en.elem.removeEventListener(i, en.events[i]);
+		delete en.events[i];
+	}
+
 	delete en.elem.VDOM;
 	delete en.elem.INJECT;
 	
-	$(en.elem).remove();
+	DOM(en.elem).remove();
+
+	//$(en.elem).remove();
 	delete en.elem;
 	delete en.fragment;
 	delete en.getters;
@@ -1558,4 +1594,5 @@ export function removeVDOMElement(en){
 
 	delete en.values;
 	delete en.valuesD;
+	delete en.events;
 }

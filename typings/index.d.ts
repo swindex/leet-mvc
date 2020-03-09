@@ -47,4 +47,5 @@ interface vDom {
 	itemBuilder:function,
 	inject:{},
 	fragment: DocumentFragment
+	events: {[string]:function};
 };
