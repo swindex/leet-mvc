@@ -39,7 +39,7 @@ div[page].page-Menu{
 			margin-left: auto;
 			transform: translate3d(100%,0,0);
 		}
-	}
+	}	
 	.menu-body{
 		background-color: #054877;
 		width: 80%;
@@ -51,7 +51,7 @@ div[page].page-Menu{
 			border-radius: 1px;
 			background-color: #fff;
 			color: #11497f;
-			font-size: 1.2em;
+			font-size: 1.75rem;
 			padding: 5rem 1rem;
 			#logo{  
 				display: flex;
@@ -88,7 +88,7 @@ div[page].page-Menu{
 				align-items: center;
 				margin-left: 1em;
 				//@include effect-tap-ripple;
-				font-size: 1.3em;
+				font-size: $size-f-md;
 			}
 			li > span{
 				display: block;
