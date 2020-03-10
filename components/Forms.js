@@ -496,11 +496,13 @@ export class Forms extends BaseComponent{
 		Object.assign(opt, override, el.attributes);
 		this.types[el._name] = "password";	
 		return (`
+			<div class="fieldrow">
 			<input bind="${this.refactorAttrName('this.data.' + el._name)}" name="${el._name}" ${this.generateAttributes(opt)} [attribute]="{type: this.types['${el._name}']}"/>`+
 			(true ? `<div class="icon" onclick="this.togglePasswordType('${el._name}')">
 				<i class="fas fa-eye" [if]="this.types['${el._name}']=='password'"></i>
 				<i class="fas fa-eye-slash" [if]="this.types['${el._name}']=='text'"></i>
-			</div>` : '')
+			</div>` : '')+
+			'</div>'
 		);
 	}
 	/**
