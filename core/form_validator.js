@@ -447,6 +447,9 @@ export function FormValidator(data, template, errors, options){
 		if (rules.indexOf('digits')!=-1){
 			type='string';
 		}
+		if (rules.indexOf('boolean')!=-1){
+			type='boolean';
+		}
 		
 
 		if (type == 'string' && (f.type =="select" /*|| f.type =="radio"*/)){
@@ -705,6 +708,9 @@ FormValidator.rules = {
 	required(value, type, conditions,  validator, name){
 		if (type == "select"){
 			return value !== null;
+		}
+		if (type == "boolean"){
+			return value !== null && value !== undefined;
 		}
 		if (validator.fields[name].attributes.isValid != undefined) {
 			//return validator.fields[name].attributes.isValid
