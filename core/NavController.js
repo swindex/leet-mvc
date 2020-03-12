@@ -49,9 +49,9 @@ export function NavController() {
 	 */
 	this.setRoot = function(pageConstructor, parameters){
 		removeAllFrames();
-		self.onPageNavigateTo(pageConstructor.name);
+		//self.onPageNavigateTo(pageConstructor.name);
 		var page = createPage(pageContainer, pageConstructor, argumentsToArray(arguments,1));
-		self.onPageCreated(page);
+		//self.onPageCreated(page);
 		return page;
 	}
 	/**
@@ -66,9 +66,10 @@ export function NavController() {
 	this.push = function(pageConstructor, parameters){
 		if (currentFrame())
 			tryCall(currentFrame().page, currentFrame().page.onLeave);		
-		self.onPageNavigateTo(pageConstructor.name);
+		//self.onPageNavigateTo(pageConstructor.name);
 		var page = createPage(pageContainer, pageConstructor, argumentsToArray(arguments,1));
-		self.onPageCreated(page);
+		//self.onPageCreated(page);
+		//pushState(pageConstructor.name);
 		return page;
 	}
 
@@ -81,9 +82,9 @@ export function NavController() {
 	this.pushInto = function(container, pageConstructor, parameters){
 		if (currentFrame())
 			tryCall(currentFrame().page, currentFrame().page.onLeave);		
-		self.onPageNavigateTo(pageConstructor.name);
+		//self.onPageNavigateTo(pageConstructor.name);
 		var page = createPage(container, pageConstructor, argumentsToArray(arguments,2));
-		self.onPageCreated(page);
+		//self.onPageCreated(page);
 		return page;
 	}
 	/**
@@ -146,6 +147,12 @@ export function NavController() {
     function createPage(container, pageConstructor, args) {
 
 		function insertIntoDOM(pageObject) {
+			self.onPageNavigateTo(pageObject.name, args);
+			if (stack.length ==0 ){
+				//history.setRoot(null, pageObject.name, "#" + pageObject.name );
+			} else {
+				//history.push(null, pageObject.name, "#" + pageObject.name );
+			}
 			//if pbject is vue, mount it first
 			if (pageObject._isVue) {
 				var newEl = document.createElement('div');
@@ -167,7 +174,8 @@ export function NavController() {
 			var classes = !empty(pageObject.className) ? (pageObject.className).split(" ") : [];
 			classes.push(className);
 			pageObject.className = classes.join(' ');
-
+			
+			self.onPageCreated(pageObject);
 			stack.push({name:pageObject.name, element: p, page: pageObject});
 			resetPagesVisibility();
 			
@@ -244,8 +252,10 @@ export function NavController() {
 		var frame = stack.splice(frameIndex,1)[0];
 
 		tryCall(frame.page, frame.page.onLeave);
-		tryCall(frame.page, frame.page._onDestroy);		
+		tryCall(frame.page, frame.page._onDestroy);
 		hidePageElement(frame, true);	
+		//history.pop();		
+		
 		frame = null;
 		return true;
 	}
@@ -441,8 +451,9 @@ export function NavController() {
 	 * ***Override***
 	 * Callback fired on page forward
 	 * @param {string} name 
+	 * @param {any[]} args
 	 */
-	this.onPageNavigateTo = function (name){}
+	this.onPageNavigateTo = function (name, args){}
 
 	/**
 	 * ***Override***
@@ -455,3 +466,43 @@ export function NavController() {
 	 */
 	this.onPageNavigateBack = function (name){}
 }
+
+ function History(){
+	var _stack = [];
+
+	//window.history.replaceState({initialized:true}, "" );
+	//window.history.pushState(null, "initial", "#initial");
+
+	function getCurrentState(){
+		return window.history.state;
+	}
+	function push(state, title, url){
+		_stack.push({state, title, url});
+		window.history.pushState(state, title, url );
+	}
+	function pop(){
+		_stack.pop();
+		if (_stack.length > 0){
+			window.history.go(-1);
+		}
+	}
+
+	function resetHistory(){
+		if (_stack.length > 1){
+			window.history.go(-_stack.length );
+		}
+		_stack = [];
+	}
+	
+	function setRoot(state, title, url){
+		resetHistory();
+		//push(state, title, url);
+		window.history.replaceState(state, title, url );
+	}
+	return {
+		push,
+		setRoot,
+		pop
+	};
+}
+var history = History();

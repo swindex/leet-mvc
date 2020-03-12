@@ -9,14 +9,13 @@
 			"request": "launch",
 			"name": "Launch Chrome against localhost",
 			"url": "http://localhost:9000/",
-			"webRoot": "${workspaceFolder}/dist-test"
-		},
-		{
-			"type": "chrome",
-			"request": "launch",
-			"name": "Launch Chrome against LiveServer",
-			"url": "http://127.0.0.1:5500/dist-test/",
-			"webRoot": "${workspaceFolder}/dist-test"
+			"webRoot": "${workspaceFolder}/dist-test",
+			"sourceMapPathOverrides": {
+				"webpack:///*": "${workspaceFolder}/*",
+				"webpack:///./*": "${workspaceFolder}/*",
+				"webpack-generated:///*": "${workspaceFolder}/*",
+				"webpack:///node_modules/*": "${workspaceFolder}/node_modules/*",
+			}
 		}
 	]
 }
