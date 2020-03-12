@@ -83,7 +83,6 @@ export var Binder = function(context){
 			}
 		} else {
 			removeDOMElement(elem)
-			//$(elem).remove();
 		}
 	}
 
@@ -337,12 +336,12 @@ export var Binder = function(context){
 				if (tag == "#text"){
 					if (isString(createElements)){
 						elem = document.createTextNode(createElements);
-						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context, events:{}};
+						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context};
 
 					}else{
 						elem = document.createTextNode("");
 						getters = {'bind':createGetter(attributes['bind'],inject)}
-						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context, events:{}};
+						var vdom ={ values:{},valuesD:{}, getters: getters, setters:setters, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context};
 						executeAttribute('bind', vdom,inject);
 					}
 									
@@ -421,7 +420,7 @@ export var Binder = function(context){
 					}
 				}
 
-				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, callers:callers, plainAttrs:plainAttrs, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context, events:{}};
+				var vdom = { values:{},valuesD:{}, getters: getters, setters:setters, callers:callers, plainAttrs:plainAttrs, fragment:null, elem:elem, items:vdomItems, itemBuilder:null, context:self.context};
 				elem['VDOM'] = vdom;
 				
 				for (var ii =0; ii < renderImmediately.length; ii++){
@@ -887,6 +886,10 @@ export var Binder = function(context){
 					on.items[index] = vdom;
 					fo1.appendChild(on.items[index].fragment || on.items[index].elem); 
 				} else {
+					if (!on.items[index].elem.parentElement){
+						//Items have been removed from DOM
+						return EAttrResult.SkipChildren;
+					}
 					insertBefore(fo1, on.items[index].elem);
 					if (checkVDomNode(on.items[index], inj)===true){
 						hasChanges ++;
@@ -901,11 +904,6 @@ export var Binder = function(context){
 					continue;	
 				if (touchedKeys.hasOwnProperty(index))
 					continue;
-				/*} else {
-					//if object, then check if its inject data is in "touched"
-					if (touchedObjects.indexOf(on.items[index].INJECT)==-1)
-						continue;
-				}*/	
 					
 				hasDeleted = true;	
 				if (on.items[index].elem == null || on.items[index].elem instanceof DocumentFragment) {
@@ -1576,21 +1574,14 @@ export var Binder = function(context){
 	}
 }
 
-
-
 export function removeDOMElement(elem){
 	if (elem.VDOM){
 		removeVDOMElement(elem.VDOM);
 		delete elem.VDOM;
-		//delete elem.INJECT;
-
 		return;
+	} else {
+		DOM(elem).remove();
 	}
-
-	if(elem.parentNode) {
-		elem.parentNode.removeChild(elem);
-	}
-	//$(elem).remove();
 }
 /**
  * 
@@ -1601,18 +1592,10 @@ export function removeVDOMElement(en){
 		en.items.forEach(item => removeVDOMElement(item));
 		delete en.items;
 	}
-
-	for (var i in en.events) {
-		en.elem.removeEventListener(i, en.events[i]);
-		delete en.events[i];
-	}
-
 	delete en.elem.VDOM;
-	//delete en.elem.INJECT;
 	
 	DOM(en.elem).remove();
 
-	//$(en.elem).remove();
 	delete en.elem;
 	delete en.fragment;
 	delete en.getters;
@@ -1622,5 +1605,4 @@ export function removeVDOMElement(en){
 
 	delete en.values;
 	delete en.valuesD;
-	delete en.events;
 }
