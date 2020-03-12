@@ -1,4 +1,4 @@
-import { empty, tryCall, numberFromLocaleString } from "./helpers";
+import { empty, tryCall, numberFromLocaleString, isObjLiteral } from "./helpers";
 import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString, isBoolean } from "util";
 
@@ -307,7 +307,8 @@ export var Binder = function(context){
 						DOM(frag).append(items[0].elem.childNodes);
 						//$(frag).append(items[0].elem.childNodes);
 						items[0].elem = frag;
-					} 
+					}
+					items[0].INJECT = inject;
 					return items[0];
 				};
 				var vdom ={ values:{}, getters: getters, setters:{}, callers:{}, fragment:directiveFragment, elem:elem, items:[], itemBuilder:itemBuilder};
@@ -528,8 +529,8 @@ export var Binder = function(context){
 	 */
 	
 	function findElemInject(elem){
-		if (elem['INJECT']){
-			return elem['INJECT'];
+		if (elem.VDOM && elem.VDOM.INJECT){
+			return elem.VDOM.INJECT;
 		}
 		if (elem.parentNode){
 			return findElemInject(elem.parentNode);
@@ -815,6 +816,11 @@ export var Binder = function(context){
 				on.elem.innerHTML = newValue;
 			}
 		},
+		/**
+		 * 
+		 * @param {vDom} on 
+		 * @param {*} inject 
+		 */
 		'foreach':function(on, inject){
 			var key = "foreach";
 			var getter = on.getters[key];
@@ -828,7 +834,7 @@ export var Binder = function(context){
 			
 
 			var touchedKeys = {};
-			
+			//var touchedObjects = [];
 			//remove all items temporarely (not right away)
 			function moveAllToFragment(){
 				for (var index in on.items){
@@ -849,12 +855,28 @@ export var Binder = function(context){
 				var item = data[index];	
 				if (item === undefined)
 					continue;
-				touchedKeys[index]=null;
+				touchedKeys[index] = null;
 				var inj = {}
 				inj[parts.index] = index;
 				inj[parts.item] = item;
 				inj = Object.assign({},inject,inj);
-				if (!on.items.hasOwnProperty(index)){
+
+				if (on.items[index] && isObject(item) && !isObjLiteral(item)) {
+					//it is some sort of complex object. Handle it differently
+					if (on.items[index].INJECT[parts.item] != item) {
+						//element's injected item is not the same as current item (can not hot-swap complex instances!)
+						//delete object
+						hasDeleted = true;	
+						if (on.items[index].elem == null || on.items[index].elem instanceof DocumentFragment) {
+							removeVDomItems(on.items[index].items);
+						}
+						removeElement(on.items[index].elem);
+						delete on.items[index];
+					}
+				}
+
+				if (!on.items.hasOwnProperty(index) /*||
+					on.items[index].INJECT[parts.item] != item*/){
 					//a new item appeared
 					if (!hasNew){
 						hasNew = true;
@@ -863,11 +885,9 @@ export var Binder = function(context){
 
 					var vdom = on.itemBuilder(inj);
 					on.items[index] = vdom;
-					on.items[index].elem['INJECT'] = inj;
 					fo1.appendChild(on.items[index].fragment || on.items[index].elem); 
 				} else {
 					insertBefore(fo1, on.items[index].elem);
-					on.items[index].elem['INJECT'] = inj;
 					if (checkVDomNode(on.items[index], inj)===true){
 						hasChanges ++;
 					}
@@ -875,10 +895,18 @@ export var Binder = function(context){
 			};
 			//delete vdom.items that were not in the data object
 			for (var index in on.items){
+
+				//if (!isObject(on.items[index].INJECT)){
 				if (!on.items.hasOwnProperty(index))
 					continue;	
 				if (touchedKeys.hasOwnProperty(index))
 					continue;
+				/*} else {
+					//if object, then check if its inject data is in "touched"
+					if (touchedObjects.indexOf(on.items[index].INJECT)==-1)
+						continue;
+				}*/	
+					
 				hasDeleted = true;	
 				if (on.items[index].elem == null || on.items[index].elem instanceof DocumentFragment) {
 					removeVDomItems(on.items[index].items);
@@ -1554,7 +1582,7 @@ export function removeDOMElement(elem){
 	if (elem.VDOM){
 		removeVDOMElement(elem.VDOM);
 		delete elem.VDOM;
-		delete elem.INJECT;
+		//delete elem.INJECT;
 
 		return;
 	}
@@ -1580,7 +1608,7 @@ export function removeVDOMElement(en){
 	}
 
 	delete en.elem.VDOM;
-	delete en.elem.INJECT;
+	//delete en.elem.INJECT;
 	
 	DOM(en.elem).remove();
 
