@@ -1,7 +1,7 @@
-import { BasePage } from "../../pages/BasePage";
 import { Forms } from "../../components/Forms";
+import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 
-export class TestArrayPage extends BasePage {
+export class TestArrayPage extends HeaderPage {
 	constructor(){
 		super();
 
