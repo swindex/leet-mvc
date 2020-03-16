@@ -1,9 +1,10 @@
+
+
 /**
  * jQuery replacement
- * @param {HTMLElement|DocumentFragment|Element} elem 
+ * @param {HTMLElement|DocumentFragment|Element|string} elem 
  */
 export function DOM(elem){
-
 	const self = {
 		/**
 		 * Remove element and their children from DOM
@@ -109,6 +110,14 @@ export function DOM(elem){
 			return elems;
 		}
 	
+	}
+
+	if (elem == null){
+		elem = document;
+	}
+
+	if (typeof elem == "string" || typeof elem == "number"){
+		return Array.from(document.querySelectorAll( elem ));
 	}
 
 	return self;

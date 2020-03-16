@@ -5,8 +5,10 @@ import { BaseComponent } from "./BaseComponent";
 import { isNumber, isArray, isString, isObject } from "util";
 import { DateTime } from "./../core/DateTime";
 import { Translate } from "../core/Translate";
-import { tryCall } from '../core/helpers';
+import { tryCall, round } from '../core/helpers';
 import { Alert } from "../core/simple_confirm";
+import { DOM } from "../core/DOM";
+import { FileAccess } from "../core/FileAccess";
 
 export class Forms extends BaseComponent{
 	/**
@@ -161,6 +163,7 @@ export class Forms extends BaseComponent{
 	}
 
 	_formatSplitDateField(evt, name , isTime){
+		/** @type {HTMLInputElement} */
 		var el = evt.target;
 		//console.log(evt, name, isTime);
 		var date = null;
@@ -168,9 +171,9 @@ export class Forms extends BaseComponent{
 		
 		if (isTime){
 			date = Objects.getPropertyByPath(this.data, name);
-			time = DateTime.fromHumanTime($(el).val().toString());
+			time = DateTime.fromHumanTime(el.value);
 		}else{
-			date = DateTime.fromHumanDate($(el).val().toString()); 
+			date = DateTime.fromHumanDate(el.value); 
 			time = Objects.getPropertyByPath(this.data, name);
 		}
 
@@ -469,17 +472,23 @@ export class Forms extends BaseComponent{
 	 */
 	addFile(el, override){
 	
-		var opt = { name: el._name , type: "hidden", placeholder: el.placeholder };
+		var opt = { name: el._name, type:"file", placeholder: el.placeholder };
 		
 		Object.assign(opt, override, el.attributes);
+		if (!el.icon) {
+			el.icon = "fas fa-upload";
+		}
+		// bind="${this.refactorAttrName('this.data.' + el._name + '.name')}"
 		return ( `
-			<label class="input" onclick="this.transferEventToChildInput($event)">{{ this.trimDisplayFileName(${this.refactorAttrName('this.data.' + el._name)}) || '${Translate('Select File')}' }}
-				<input file bind="${this.refactorAttrName('this.data.' + el._name)}" ${this.generateAttributes(opt)} />
+		<div class="fieldrow">
+			<label class="input file" onclick="this.transferEventToChildInput($event)">{{ this.getFileFieldFileName('${el._name}') || '${Translate(el.placeholder || 'No file chosen')}' }}
+				<input type="file" ${this.generateAttributes(opt)} onchange="this.onFileFieldChanged('${el._name}', $event)"/>
 			</label>`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
-			</div>` : '')
+			</div>` : '')+
+			`</div>`
 		);
 	}
 
@@ -732,7 +741,7 @@ export class Forms extends BaseComponent{
 	 */
 	transferEventToChildInput(event){
 		var el = event.target;
-		$(el).find('input')[0].dispatchEvent(new Event(event.type));
+		DOM(el).find('input')[0].dispatchEvent(new Event(event.type));
 	}
 
 	trimDisplayFileName(fileName){
@@ -740,6 +749,33 @@ export class Forms extends BaseComponent{
 			return "";
 		}
 		return fileName.split(/\\|\//).pop();
+	}
+
+	getFileFieldFileName(name){
+		var v = Objects.getPropertyByPath(this.data, name);
+		if (v && v.name){
+			return `${v.name} (${round(v.size/1024)} kB)`  ;
+		}
+		return ""
+	}
+
+	onFileFieldChanged(name, event){
+		if (!FileAccess.isSupported){
+			console.warn("File upload is not supported!");
+			return;
+		}
+
+		/** @type {HTMLInputElement} */
+		var fileFiled = event.target
+		var file = fileFiled.files[0];
+
+		//var name = fileFiled.getAttribute("bind");
+
+		FileAccess.ReadFile(fileFiled.files[0]).DataURL().then( dataURL =>{
+			Objects.setPropertyByPath(this.data, name, {name: file.name, type:file.type, dataURL: dataURL, size:file.size});
+		}).catch(err=>{
+			console.warn(err);
+		});
 	}
 }
 /** @type {{[key:string]: function(Forms, FieldTemplate, string): string}} */

@@ -38,8 +38,11 @@ export function FormValidator(data, template, errors, options){
 	this.isValid = null;
 	this.__defineGetter__("isValid", function(){
 		if (isValid===null){
-			isValid = self.validate()
-		}
+			return null;
+		} 
+
+		isValid = self.validate();
+
 		return isValid;
     });
 

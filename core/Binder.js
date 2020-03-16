@@ -581,7 +581,7 @@ export var Binder = function(context){
 
 	function executeAttribute(attribute, on, inject){
 		var old = on.values[attribute];
-		try{
+		//try{
 			//if a built-in attribute
 			if (attributes[attribute]){
 				var ret = attributes[attribute](on,inject)
@@ -600,7 +600,7 @@ export var Binder = function(context){
 					}
 				}
 			}
-		}catch(ex){
+		/*}catch(ex){
 			console.warn(ex);
 		}/**/
 		if (old !== on.values[attribute] && ret !== EAttrResult.SkipChildren){
@@ -1428,6 +1428,9 @@ export var Binder = function(context){
 					case 'checkbox':
 						v= elem.checked;
 						break;
+					case 'file':
+						v= elem.value;
+						break;	
 					default:
 						v = formatValueToElem(elem, elem.value);
 						break;	
@@ -1573,6 +1576,8 @@ export var Binder = function(context){
 		return  window['LEET_REGISTER'] ? window['LEET_REGISTER'][tagName] : null;
 	}
 }
+
+
 
 export function removeDOMElement(elem){
 	if (elem.VDOM){
