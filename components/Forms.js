@@ -481,14 +481,14 @@ export class Forms extends BaseComponent{
 		// bind="${this.refactorAttrName('this.data.' + el._name + '.name')}"
 		return ( `
 		<div class="fieldrow">
-			<label class="input file" onclick="this.transferEventToChildInput($event)">{{ this.getFileFieldFileName('${el._name}') || '${Translate(el.placeholder || 'No file chosen')}' }}
+			<label class="input file">{{ this.getFileFieldFileName('${el._name}') || '${Translate(el.placeholder || 'No file chosen')}' }}
 				<input type="file" ${this.generateAttributes(opt)} onchange="this.onFileFieldChanged('${el._name}', $event)"/>
 			</label>`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
 				${el.icon ? `<i class="${el.icon}"></i>` :''}
 			</div>` : '')+
-			`</div>`
+		`</div>`
 		);
 	}
 
@@ -741,7 +741,9 @@ export class Forms extends BaseComponent{
 	 */
 	transferEventToChildInput(event){
 		var el = event.target;
-		DOM(el).find('input')[0].dispatchEvent(new Event(event.type));
+		var input = DOM(el).find('input')[0];
+		
+		input.dispatchEvent(new Event(event.type));
 	}
 
 	trimDisplayFileName(fileName){
