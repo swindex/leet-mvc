@@ -772,11 +772,16 @@ export class Forms extends BaseComponent{
 		var file = fileFiled.files[0];
 
 		//var name = fileFiled.getAttribute("bind");
+		if (!file){
+			Objects.setPropertyByPath(this.data, name, null);
+			return;
+		}
 
 		FileAccess.ReadFile(fileFiled.files[0]).DataURL().then( dataURL =>{
 			Objects.setPropertyByPath(this.data, name, {name: file.name, type:file.type, dataURL: dataURL, size:file.size});
 		}).catch(err=>{
 			console.warn(err);
+			Objects.setPropertyByPath(this.data, name, null);
 		});
 	}
 }
