@@ -36,8 +36,6 @@ import { Override } from './core/Override'; /**/
 
 import { Translate } from "./core/Translate";
 
-//Make jQuery available globally
-window["$"] = window["jQuery"] = require("jquery");
 window['Translate'] = Translate;
 
 import './scss/app.scss';
