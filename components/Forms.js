@@ -479,10 +479,11 @@ export class Forms extends BaseComponent{
 			el.icon = "fas fa-upload";
 		}
 		// bind="${this.refactorAttrName('this.data.' + el._name + '.name')}"
+		Objects.setPropertyByPath(this.data, this.refactorAttrName(el._name + '.name'),null);
 		return ( `
 		<div class="fieldrow">
 			<label class="input file">{{ this.getFileFieldFileName('${el._name}') || '${Translate(el.placeholder || 'No file chosen')}' }}
-				<input type="file" ${this.generateAttributes(opt)} onchange="this.onFileFieldChanged('${el._name}', $event)"/>
+				<input type="file" bind="${this.refactorAttrName('this.data.' + el._name + '.name')}" ${this.generateAttributes(opt)} onchange="this.onFileFieldChanged('${el._name}', $event)"/>
 			</label>`+
 			(el.unit || el.icon ? `<div class="icon">
 				${el.unit ? el.unit :''}
@@ -756,7 +757,7 @@ export class Forms extends BaseComponent{
 	getFileFieldFileName(name){
 		var v = Objects.getPropertyByPath(this.data, name);
 		if (v && v.name){
-			return `${v.name} (${round(v.size/1024)} kB)`  ;
+			return `${this.trimDisplayFileName(v.name)} (${round(v.size/1024)} kB)`  ;
 		}
 		return ""
 	}
@@ -773,15 +774,17 @@ export class Forms extends BaseComponent{
 
 		//var name = fileFiled.getAttribute("bind");
 		if (!file){
-			Objects.setPropertyByPath(this.data, name, null);
+			Objects.setPropertyByPath(this.data, name, {name: null});
 			return;
 		}
 
 		FileAccess.ReadFile(fileFiled.files[0]).DataURL().then( dataURL =>{
 			Objects.setPropertyByPath(this.data, name, {name: file.name, type:file.type, dataURL: dataURL, size:file.size});
+			this.events.change(event);
 		}).catch(err=>{
 			console.warn(err);
-			Objects.setPropertyByPath(this.data, name, null);
+			Objects.setPropertyByPath(this.data, name, {name: null});
+			this.events.change(event);
 		});
 	}
 }
