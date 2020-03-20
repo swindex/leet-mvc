@@ -1334,6 +1334,7 @@ export var Binder = function(context){
 			case "INPUT:datetime":
 			case "INPUT:date":
 			case "INPUT:color":
+			case "INPUT:file":
 			case "TEXTAREA":
 
 				return true;

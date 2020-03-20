@@ -13,7 +13,7 @@ export class TestFileUploadPage extends HeaderPage {
 		this.fileFieldFileData = null;
 		this.formData = {};
 		this.form = new Forms([
-			{ type:"file", name: "file1", title: "Select File" },
+			{ type:"file", name: "file1", title: "Select File", validateRule:"required|max:500|min:50|mimes:jpg,jpeg,png,pdf,doc,docx" },
 		], this.formData)
 	}
 
@@ -123,5 +123,6 @@ var template = `
 	<div class = "fieldgroup">
 		<button type="button" onclick = "this.formUploadClicked()">Upload!</button>
 	</div>
+	<button onclick="this.form.validator.validate()">Validate</button
 </div>	
 `;

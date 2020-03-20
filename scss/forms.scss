@@ -327,6 +327,7 @@ select-multiple{
 						opacity: 1;
 					}
 				}
+
 			}
 			&:focus {
 				&+.slider {
@@ -364,6 +365,13 @@ select-multiple{
 					border-radius: 50%;
 				}
 			}
+			&.square {
+				border-radius: 0em;
+				margin-right: 4px;
+				&:before {
+					border-radius: 0%;
+				}
+			}
 		}
 		.radio {
 			position: relative;
@@ -376,7 +384,7 @@ select-multiple{
 			margin-left: 0;
 			border: 1px solid #2196f3;
 
-			border-radius: 34px;
+			//
 			margin-right: $margin-md;
 			padding: 4px;
 			&:before {
@@ -387,7 +395,19 @@ select-multiple{
 				width: 100%;
 				transition: 0.3s;
 				opacity: 0;
+				//border-radius: 50%;
+			}
+			&.round {
 				border-radius: 50%;
+				&:before {
+					border-radius: 50%;
+				}
+			}
+			&.square {
+				border-radius: 0;
+				&:before {
+					border-radius: 0;
+				}
 			}
 		}
 	}

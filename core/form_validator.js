@@ -1,9 +1,10 @@
 import { isNumber, isBoolean, isObject,isArray, isString } from "util";
 import { Objects } from "./Objects";
-import { empty, tryCall, GUID } from "./helpers";
+import { empty, tryCall, GUID, round } from "./helpers";
 import { Translate } from "./Translate";
 import { Parser } from 'expr-eval';
 import { isDate } from "util";
+import { Text } from "./text";
 
 /**
  * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
@@ -458,6 +459,9 @@ export function FormValidator(data, template, errors, options){
 		if (type == 'string' && (f.type =="select" /*|| f.type =="radio"*/)){
 			type='select';
 		}
+		if (type == 'string' && (f.type =="file")){
+			type='file';
+		}
 		
 		//iterate through rules
 		for (var r in rules) {
@@ -715,6 +719,9 @@ FormValidator.rules = {
 		if (type == "boolean"){
 			return value !== null && value !== undefined;
 		}
+		if (type == "file"){
+			return !empty(value) && !empty(value.name);
+		}
 		if (validator.fields[name].attributes.isValid != undefined) {
 			//return validator.fields[name].attributes.isValid
 		}
@@ -762,10 +769,27 @@ FormValidator.rules = {
 				return Number(value) >= otherValue;
 			case 'array':
 				return true;
+			case 'file':
+				return (!empty(value) && !empty(value.size)) ? round(Number(value.size)/1024) >= otherValue : false;
 			case 'string':
 			default:
 					return (value+"").length >= otherValue;
 			}
+	},
+	mimes(value, type, conditions,  validator){
+		if (empty(value) || empty(value.name)){
+			return false;
+		}
+		var chVal = ""; 
+		if (type == "file"){
+			chVal = Text.fileExtension(value.name);
+		} else {
+			chVal = value;
+		}
+		
+		return conditions.indexOf(chVal)>=0;
+
+
 	},
 	max(value, type, conditions,  validator){
 		var otherValue; 
@@ -779,6 +803,8 @@ FormValidator.rules = {
 				return Number(value) <= otherValue;
 			case 'array':
 				return true;
+			case 'file':
+				return (!empty(value) && !empty(value.size)) ? round(Number(value.size)/1024) <= otherValue : false;	
 			case 'string':
 			default:
 				return (value+"").length <= otherValue;
@@ -791,6 +817,8 @@ FormValidator.rules = {
 				return Number(value) == otherValue;
 			case 'array':
 				return true;
+			case 'file':
+				return (!empty(value) && !empty(value.size)) ? round(Number(value.size)/1024) == otherValue : false;	
 			case 'string':
 			default:
 				return (value+"").length == otherValue;
