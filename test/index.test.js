@@ -8,10 +8,10 @@ import { Injector } from '../core/Injector.js';
 import { InjectTemplate } from './InjectTemplate.js';
 import { NavController } from '../core/NavController.js';
 import { RootPage } from './Pages/RootPage.js';
+import { DOM } from '../core/DOM.js';
 
-//Make jQuery available globally
-//window["$"] = window["jQuery"] = require("jquery");
 window['Translate'] = Translate;
+window['DOM'] = DOM;
 
 var Inject = Injector.implement(InjectTemplate);
 Inject.Nav = new NavController();

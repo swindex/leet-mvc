@@ -37,7 +37,7 @@ module.exports = env => {
 
 	var plugins = [
 		new ProgressBarPlugin(),
-		new BundleAnalyzerPlugin(),
+		//new BundleAnalyzerPlugin(),
 		new MomentLocalesPlugin({
             localesToKeep: ['fr','es'],
         }),
@@ -47,16 +47,8 @@ module.exports = env => {
 	plugins.push( new HtmlWebpackPlugin({template: './test/index.html'}));
 
 	//if production, use additional plugins
-	if (env.build === "production"){
+	if (mode === "production"){
 		plugins.push(new WebpackCleanupPlugin(['dist-test']));
-		/*plugins.push(new UglifyJsPlugin(
-			{
-				uglifyOptions:{
-					keep_fnames: true, //DO NOT mangle function names: used for page tracking. also do not pass -p into the webpack
-					keep_classnames: true
-				}
-			}
-		));*/
 	}
 
 
@@ -70,7 +62,7 @@ module.exports = env => {
 			port: 9000,
 			disableHostCheck: true
 		 },
-		devtool: env.build != "production" ? "inline-source-map": false,
+		devtool: mode != "production" ? "inline-source-map": false,
 		output: {
 			path: path.resolve(__dirname, 'dist-test'),
 			filename: 'bundle.js',

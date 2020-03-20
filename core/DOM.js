@@ -18,22 +18,7 @@ export function DOM(elemOrQuery){
 			return [children];
 		}
 	}
-
-	/** @type {HTMLElement[]} */
-	var elemArray;
-
-	if (elemOrQuery == null){
-		throw new Error("elemOrQuery can not be empty!");
-	}
 	
-	if (typeof elemOrQuery == "string" || typeof elemOrQuery == "number"){
-		elemArray = Array.from(document.querySelectorAll( elemOrQuery ))
-	} else if (typeof elemOrQuery == "object" ) {
-		elemArray = getArray(elemOrQuery);
-	} else {
-		throw new Error("Not Implemented");
-	}
-
 	const self = {
 		/**
 		 * Iterate ove reach element of the set
@@ -329,5 +314,25 @@ export function DOM(elemOrQuery){
 	
 	}
 
-	return self;
+	if (elemOrQuery == null){
+		throw new Error("elemOrQuery can not be empty!");
+	}
+
+	/** @type {HTMLElement[]} */
+	var instance = Object.create(self);
+
+	 /** @type {HTMLElement[]} */
+	var elemArray =[];
+	
+	if (typeof elemOrQuery == "string" || typeof elemOrQuery == "number"){
+		elemArray = Array.from(document.querySelectorAll( elemOrQuery ))
+	} else if (typeof elemOrQuery == "object" ) {
+		elemArray = getArray(elemOrQuery);
+	} else {
+		throw new Error("Not Implemented");
+	}
+
+	instance.length = elemArray.length;
+
+	return Object.assign(instance,elemArray);
 }  
