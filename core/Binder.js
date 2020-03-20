@@ -304,7 +304,6 @@ export var Binder = function(context){
 					if (items[0] && items[0].elem.getAttribute && items[0].elem.getAttribute("fragment")!==null) {
 						var frag = document.createDocumentFragment();
 						DOM(frag).append(items[0].elem.childNodes);
-						//$(frag).append(items[0].elem.childNodes);
 						items[0].elem = frag;
 					}
 					items[0].INJECT = inject;
@@ -513,12 +512,6 @@ export var Binder = function(context){
 				};
 
 				DOM(elem).addEventListener(s_name, handler);
-				/*$(elem).on(attr.name.substr(2), function(evt){
-					updateBoundContextProperty(evt.target);
-					var inj = Object.assign({}, self.injectVars,{'$event':evt},inject, findElemInject(elem));
-					var c = createCaller(attr.value, inj);
-					c(inj);
-				});*/
 			}	
 		});
 	}
@@ -683,14 +676,11 @@ export var Binder = function(context){
 						on.items[0].elem.classList.ddd(options.leave);
 
 						setTimeout(function(){
-							//$(on.items[1].elem).scrollTop($(on.items[0].elem).scrollTop());
-
 							on.items[1].elem.classList.remove(options.enter);
 							on.items[0].elem.classList.remove(options.leave);
 							
 							on.items[1].elem.classList.add(options.enter_to);
 							on.items[0].elem.classList.add(options.leave_to);
-
 						},0);
 						//discard vDom nodes of the element that will be removed
 						on.items[0].items=[];
@@ -1104,7 +1094,6 @@ export var Binder = function(context){
 					//move host children to temp fragment
 					// @ts-ignore
 					DOM(p_frag).append(p_vDom.elem.childNodes);
-					//$(p_frag).append(p_vDom.elem.childNodes);
 					
 				
 					component.parentPage = self.context;
@@ -1163,7 +1152,6 @@ export var Binder = function(context){
 	}
 
 	function applyCallBack(elem, context, evName, callback, cancelUIUpdate){
-		//$(elem).on(evName, function(event){	
 		DOM(elem).addEventListener(evName, function(event){	
 			updateBoundContextProperty(event.target, cancelUIUpdate); //skip formatting for input event
 			if ( callback && tryCall(context, callback, event) && event.target['parentNode'])

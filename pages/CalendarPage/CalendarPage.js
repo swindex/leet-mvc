@@ -4,6 +4,7 @@ import * as moment from "moment";
 import './CalendarPage.scss';
 import { OptionsDialogPage } from "./../OptionsDialogPage/OptionsDialogPage";
 import { Objects } from "./../../core/Objects";
+import { DOM } from "../../core/DOM";
 
 export class CalendarPage extends DialogPage{
 	constructor(startDate){
@@ -166,13 +167,13 @@ export class CalendarPage extends DialogPage{
 			clock.find('.hour').each((n,el)=>{
 				var x = Math.sin((2*Math.PI/12)*n - dA)*r -hr + d/2 -2
 				var y = Math.cos((2*Math.PI/12)*n - dA)*r -hr + d/2 -2
-				$(el).css({top: x, left:y});
+				DOM(el).css({top: x, left:y});
 			})
 
 			clock.find('.minute').each((n,el)=>{
 				var x = Math.sin((2*Math.PI/12)*n - dA)*r -hr + d/2 -2
 				var y = Math.cos((2*Math.PI/12)*n - dA)*r -hr + d/2 -2
-				$(el).css({top: x, left:y});
+				DOM(el).css({top: x, left:y});
 			})
 
 		},100);

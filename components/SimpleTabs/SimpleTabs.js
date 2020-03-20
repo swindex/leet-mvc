@@ -1,5 +1,6 @@
 import { BaseComponent } from "./../BaseComponent";
 import './SimpleTabs.scss';
+import { DOM } from "../../core/DOM";
 /**
  * Simple tabs directive. 
  */
@@ -22,8 +23,8 @@ export class SimpleTabs extends BaseComponent{
 
 	_unSelectAll(){
 		var self = this;
-		$(this.container).find('li').each(function(){
-			var t = $(this);
+		DOM(this.container).find('li').each(function(el){
+			var t = DOM(el);
 			self._getTab(t).removeAttr('selected');
 			t.removeAttr('selected')}
 		);
@@ -31,12 +32,12 @@ export class SimpleTabs extends BaseComponent{
 
 	/** @param {HTMLElement} elem */
 	_getTabLabel(elem){
-		return $(elem).attr('for');
+		return DOM(elem).attr('for');
 	}
 
 	_getTab(target){
 		var tab_id = this._getTabLabel(target);
-		return this.container.find('#'+tab_id);
+		return DOM(this.container).find('#'+tab_id);
 	}
 
 	_select(target){
@@ -47,13 +48,13 @@ export class SimpleTabs extends BaseComponent{
 		}
 		this._currentTabLabel = label;
 
-		$(target).attr('selected','');
+		DOM(target).attr('selected','');
 		this._getTab(target).attr('selected','');
 	}
 
 	select(forLabel){
 		if (this.container){
-			var t = this.container.find("[for='"+ forLabel+"']");
+			var t = DOM(this.container).find("[for='"+ forLabel+"']");
 			if (t.length==1){
 				this._unSelectAll();
 				this._select(t);
@@ -76,20 +77,20 @@ export class SimpleTabs extends BaseComponent{
 	}
 	
 	onInit(container){
-		$(container).find('li').on('click',(ev)=>{
+		DOM(container).find('li').addEventListener('click',(ev)=>{
 			var t = ev.currentTarget;
 			if (this._getTab(t).length>0){
 				this._unSelectAll();
 				this._select(t);
 			}else{
-				$(t).attr('selected','');
+				DOM(t).attr('selected','');
 				setTimeout(()=>{
-					$(t).removeAttr('selected');
+					DOM(t).removeAttr('selected');
 				},500);
 			}
 
 		})	
-		var sel = $(container).find('li[selected]').get(0);
+		var sel = DOM(container).find('li[selected]').get(0);
 		this._unSelectAll();
 		if (sel)
 			this._select(sel);
@@ -97,7 +98,7 @@ export class SimpleTabs extends BaseComponent{
 			if (this._currentTabLabel){
 				this.select(this._currentTabLabel);
 			}else{
-				this._select($(container).find('li').first());
+				this._select(DOM(container).find('li').first());
 			}
 		}
 	}

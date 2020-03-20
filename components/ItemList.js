@@ -1,4 +1,5 @@
 import { BaseComponent } from "./BaseComponent";
+import { DOM } from "../core/DOM";
 
 /**
  * Buffered ItemList component
@@ -99,12 +100,12 @@ export class ItemList extends BaseComponent{
 		this._renderItems = this._items.slice(0,this._displayTo);
 	}
 	scrollTotop(){
-		this.scollParent.animate({ scrollTop: 0 }, 'ease-in');	
+		this.scollParent.scrollTop(0)	
 	}
 	scrollToBottom(){
 		setTimeout(()=>{
-			var vh = this.scollParent.outerHeight();
-			var ch = this.container.outerHeight();
+			var vh = this.scollParent.first().offsetHeight;
+			var ch = this.container.scrollHeight;
 			if(ch > vh){
 				this.scollParent.animate({ scrollTop: ch }, 'ease-in');	
 			}
@@ -113,17 +114,15 @@ export class ItemList extends BaseComponent{
 
 	onInit(container){
 		super.onInit(container);
-		//this.container
 		//attach scroll event to the closest parent with touch-scroll class
-		this.container = $(container);
 		//append parent template contents here
-		this.container.append(this.templateFragment);
+		DOM(container).append(this.templateFragment);
 		window.requestAnimationFrame(()=>{
-			this.scollParent = $($(container).closest('.touch-scroll, .scroll').get(0));
+			this.scollParent = DOM(DOM(container).closest('.touch-scroll, .scroll').get(0));
 			this.scollParent.on("scroll", (e)=>{
-				var el = $(e.target);
+				var el = DOM(e.target);
 				var top = el.scrollTop();
-				var max = el[0].scrollHeight - el[0].clientHeight;
+				var max = el.first().scrollHeight - el.first().clientHeight;
 				this.onScroll(top, max);
 				if (this._items && max-top<10 && this._displayTo < this._items.length){
 					this._displayTo += this.perPage;

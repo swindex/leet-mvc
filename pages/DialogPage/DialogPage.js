@@ -39,7 +39,7 @@ export class DialogPage extends BasePage{
 
 	onResize(windowSize){
 		super.onResize(windowSize);
-		var h = (this.page.height() - 150);
+		var h = this.page.offsetHeight - 150;
 		this.dialog_content_max_height = h+"px";
 	}
 

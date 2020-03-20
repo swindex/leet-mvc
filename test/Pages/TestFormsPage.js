@@ -1,9 +1,8 @@
 import { BasePage } from "../../pages/BasePage";
 import { Forms } from "../../components/Forms";
-import { Objects } from "../../core/Objects";
-import { isObject } from "util";
 import { Alert } from "../../core/simple_confirm";
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
+import { NumericKeyboard } from "../../pages/NumericKeyboard/NumericKeyboard";
 
 export class TestFormsPage extends HeaderPage {
 	constructor(){
@@ -13,6 +12,8 @@ export class TestFormsPage extends HeaderPage {
 		this.form1attributes = {};
 
 		this.form1template = [
+			{type:"number", name:"number1", title:"Enter Number 1"},
+			{type:"number", name:"number2", title:"Enter Number 2"},
 			{type:"checkbox", name:"checkbox1",title:"Show text1"},
 			{type:"text", name:"text1",title:"text1", validateRule:"required", displayRule:"true_if:checkbox1,true" , attributes:{ onclick: "this.onClicked()" }},
 			
@@ -23,6 +24,7 @@ export class TestFormsPage extends HeaderPage {
 			{type:"form", name:null, title:"form2", items:[
 				{type:"text", name:"text3",title:"text3", validateRule:"required"},
 			]},
+			{type:"number", name:"number3", title:"Enter Number 3"},
 		];
 
 		this.form1 = new Forms(this.form1template, this.form1data, this.form1errors, {nestedData:true});
@@ -40,6 +42,8 @@ export class TestFormsPage extends HeaderPage {
 		console.log(typeof (BasePage.prototype));
 		console.log(typeof ((new BasePage().prototype))) ;
 		
+		NumericKeyboard.enable();
+		NumericKeyboard.options.layout = 1;
 	}
 
 	onClicked(){

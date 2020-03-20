@@ -3,6 +3,7 @@ import Swiper from 'swiper';
 import { NavController } from "./../core/NavController";
 import { BasePage } from "./../pages/BasePage";
 import { argumentsToArray } from "./../core/helpers";
+import { Objects } from "../core/Objects";
 
 /**
  * @param {{navButtons?: true}} [options]

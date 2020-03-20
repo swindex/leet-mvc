@@ -16,10 +16,14 @@ export function Toast(message, timeout, onClosed, location="bottom"){
 
 	//try creating toast stack
 	if (!toastStack[location]){
-		var container = $(`<div class="toastStack ${location} scroll"></div>`);
-		toastStack[location] = $(`<div class="toastStack-container"></div>`);
+		var container = document.createElement('div');
+		container.className = `toastStack ${location} scroll`
+
+		toastStack[location] = document.createElement('div');
+		toastStack[location].className = `toastStack-container`
+
 		container.append(toastStack[location]);
-		 $('body').append(container);
+		document.body.append(container);
 	}
 
 	/** @type {ToastPage} */

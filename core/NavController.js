@@ -2,6 +2,7 @@ import { tryCall, empty, argumentsToArray } from "./helpers";
 import { BasePage } from "../pages/BasePage";
 import { isSkipUpdate } from "./Watcher";
 import { Objects } from "./Objects";
+import { DOM } from "./DOM";
 
 export function NavController() {
 	/** @type {NavController} */
@@ -37,7 +38,7 @@ export function NavController() {
 		pageContainer = container
 		//if container is not document, remove the back button handler
 		if (pageContainer != document.body && !listenTobBackButton){
-			$(document).off('backbutton',documentBackButtonHandler);
+			DOM(document).off('backbutton',documentBackButtonHandler);
 		}
 	}
 
@@ -156,7 +157,7 @@ export function NavController() {
 			//if pbject is vue, mount it first
 			if (pageObject._isVue) {
 				var newEl = document.createElement('div');
-				$(container).append(newEl);
+				container.append(newEl);
 				pageObject.$args = args;
 				pageObject.$mount(newEl);
 				var p = pageObject.$el;
@@ -164,8 +165,8 @@ export function NavController() {
 						
 				tryCall(pageObject, pageObject._init);
 				var p = pageObject.page;
-				p.prop('id', pageObject.selector);
-				$(container).append(p);
+				p.setAttribute('id', pageObject.selector);
+				container.append(p);
 			}
 
 			pageObject.Nav = self;
@@ -411,13 +412,13 @@ export function NavController() {
 	}
 
 	//Set default window size cashe
-	windowSize.width = $(window).width();
-	windowSize.height = $(window).height();
+	windowSize.width = window.innerWidth;
+	windowSize.height = window.innerHeight;
 	//add ONE listener that will fire onResize on all pages;
-	$(window).on('resize', windowResizeHandler);
+	DOM(window).addEventListener('resize', windowResizeHandler);
 	function windowResizeHandler (ev){
-		windowSize.width = $(window).width();
-		windowSize.height = $(window).height();
+		windowSize.width = window.innerWidth;
+		windowSize.height = window.innerHeight;
 		
 		for(var i=0 ; i<stack.length;i++){
 			//recalcContentHeight(stack[i].element);
@@ -425,7 +426,7 @@ export function NavController() {
 		}
 	}
 
-	$(document).on("backbutton", documentBackButtonHandler);
+	DOM(document).addEventListener("backbutton", documentBackButtonHandler);
 	function documentBackButtonHandler(e) {
 		var cf = currentFrame();
 		if (cf && tryCall(cf.page, cf.page.onBackNavigate)!== false && tryCall(cf.page, cf.page.onBeforeDestroy)!== false && self.back()===null){
@@ -437,8 +438,8 @@ export function NavController() {
 	 * Delete Event handlers that were created by the Nav instance
 	 */
 	this.destroy = function(){
-		$(window).off('resize',windowResizeHandler);
-		$(document).off('backbutton',documentBackButtonHandler);
+		DOM(window).removeEventListener('resize'/*,windowResizeHandler*/);
+		DOM(document).removeEventListener('backbutton'/*,documentBackButtonHandler*/);
 	}
 
 	/**

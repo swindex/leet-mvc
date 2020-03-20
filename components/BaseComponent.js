@@ -19,7 +19,7 @@ export class BaseComponent extends ChangeWatcher{
 		/** reference to the parent page */
 		this.parentPage = null;
 
-		/**@type {JQuery<HTMLElement>} */
+		/**@type {HTMLElement} */
 		this.container = null;
 
 		this.attributes = {};
@@ -29,10 +29,10 @@ export class BaseComponent extends ChangeWatcher{
 	/** 
 	 *  ***DO NOT OVERRIDE*** 
 	 * This function is called once after the container is bound to context
-	 * @param {HTMLElement[]} container
+	 * @param {HTMLElement} container
 	 */
 	_onInit(container){
-		this.container = $(container);
+		this.container = container;
 		super.startWatch();
 		//register my self with the basePage components, so it knows what to destroy later
 		if (this.parentPage){
@@ -47,7 +47,7 @@ export class BaseComponent extends ChangeWatcher{
 	/** 
 	 *  ***Override*** 
 	 * This functinon is called once after the container is bound to context
-	 * @param {JQuery<HTMLElement>} container
+	 * @param {HTMLElement} container
 	 */
 	onInit(container){
 

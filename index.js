@@ -1,4 +1,4 @@
-import './core/polyfills';
+import './core/polyfill';
 
 import { MapElement } from "./core/MapElement";
 import { BasePage } from "./pages/BasePage";

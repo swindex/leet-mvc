@@ -5,70 +5,73 @@ import { Injector } from "./Injector";
 import { RegisterComponent } from "./Register";
 import { MultiSelect } from "./../components/MultiSelect/MultiSelect";
 import { Forms } from "../components/Forms";
+import { DOM } from "./DOM";
 
 var Inject = Injector;
 
 export function EnableCustomElements(){
 	function preventFocus(ev){
 		ev.preventDefault();
+		/** @type {HTMLElement} */
 		var evt  = ev.target;
 		evt.blur();
-		$(evt).addClass('focus-blink');
+		evt.classList.add('focus-blink');
 		setTimeout(()=>{
 			window.focus();
 			
 		},1);
 		setTimeout(()=>{
-			$(evt).removeClass('focus-blink');
+			evt.classList.remove('focus-blink');
 		},600);
 	}
 
 	//mobile IOS hack to make sure :active works on buttons					
-	$(document).on('touchstart',function(ev){
+	DOM(document).on('touchstart',function(ev){
 		
 	});
 
 	//override default behavior of form elements					
-	$(document).on('mousedown focus','input[readonly]', function(ev){
+	DOM(document).on('mousedown focus','input[readonly]', function(ev){
 		preventFocus(ev)
 	});
 
-	$(document).on('mousedown focus','input[date]', function(ev){
+	DOM(document).on('mousedown focus','input[date]', function(ev){
 		preventFocus(ev)
+		/** @type {HTMLInputElement} */
 		var el = ev.target;
-		var date = DateTime.fromHumanDate($(el).val().toString());
+		var date = DateTime.fromHumanDate(el.value.toString());
 		var p = Inject.Nav.push(CalendarPage,date);
 		p.showClock = false;
 		p.onDateTimeSelected = (_date)=>{
-			$(el).val(DateTime.toHumanDate(_date));
+			el.value=DateTime.toHumanDate(_date);
 			el.dispatchEvent(new Event('change'));
 			return true;
 		}
 	});
-	$(document).on('mousedown focus','input[datetime]', function(ev){
+	DOM(document).on('mousedown focus','input[datetime]', function(ev){
 		preventFocus(ev)
 		var el = ev.target;
-		var date = DateTime.fromHumanDateTime($(el).val().toString());
+		var date = DateTime.fromHumanDateTime(el.value.toString());
 		var p = Inject.Nav.push(CalendarPage,date);
 		
 		p.onDateTimeSelected = (_date)=>{
-			$(el).val(DateTime.toHumanDateTime(_date));
+			el.value = DateTime.toHumanDateTime(_date);
 			el.dispatchEvent(new Event('change'));
 			return true;
 		}
 	});
 
-	$(document).on('mousedown focus','input[time]', function(ev){
+	DOM(document).on('mousedown focus','input[time]', function(ev){
 		preventFocus(ev)
 		var el = ev.target;
-		var date = DateTime.fromHumanTime($(el).val().toString());
+		var date = DateTime.fromHumanTime(el.value.toString());
 		var p = Inject.Nav.push(CalendarPage,date); 
 		p.title = "Select time"
 		//p.showClock = true;
 		p.showCalendar = false;
 		
 		p.onDateTimeSelected = (_date)=>{
-			$(el).val(DateTime.toHumanTime(_date));
+			el.value = (DateTime.toHumanTime(_date));
 			el.dispatchEvent(new Event('change'));
 			return true;
 		}
@@ -87,7 +90,7 @@ export function EnableCustomElements(){
 	},
 
 	//Override the system select drop-down with custom drop-down
-	$(document).on('mousedown focus','select', function(ev){
+	DOM(document).on('mousedown focus','select', function(ev){
 		preventFocus(ev)
 		/** @type {HTMLSelectElement} */
 		var el = ev.target;
@@ -100,7 +103,7 @@ export function EnableCustomElements(){
 
 		p.isSelectedItem = item => item.value === el.value;
 
-		$(el).find('option').each(function(index, option){
+		DOM(el).find('option').each(function(option){
 			var value = option.getAttribute('value');
 			var text = option.getAttribute('title');
 			if (value !== null || !p.title){
@@ -109,7 +112,7 @@ export function EnableCustomElements(){
 		})
 		
 		p.onItemClicked = (item)=>{
-			$(el).val(item.value);
+			el.value = item.value;
 			el.dispatchEvent(new Event('change'));
 		}
 	});
