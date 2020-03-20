@@ -1,14 +1,16 @@
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin'); //installed via npm
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
-const extractSass = new ExtractTextPlugin({
-    filename: "generated.css",
-    //disable: process.env.NODE_ENV === "development"
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const extractSass = new MiniCssExtractPlugin({
+	filename: "[name].bundle.[contenthash].css",
+	ignoreOrder: false
 });
 const webpack = require('webpack'); //to access built-in plugins
 
@@ -27,7 +29,7 @@ const path = require('path');
 */
 
 module.exports = env => {
-	env = env || {};
+	var mode = (env && env.build) ? env.build : 'development';
 
 	
 	//if (env.build != "production")
@@ -35,7 +37,7 @@ module.exports = env => {
 
 	var plugins = [
 		new ProgressBarPlugin(),
-		//new BundleAnalyzerPlugin(),
+		new BundleAnalyzerPlugin(),
 		new MomentLocalesPlugin({
             localesToKeep: ['fr','es'],
         }),
@@ -47,26 +49,20 @@ module.exports = env => {
 	//if production, use additional plugins
 	if (env.build === "production"){
 		plugins.push(new WebpackCleanupPlugin(['dist-test']));
-		plugins.push(new webpack.optimize.UglifyJsPlugin(
+		/*plugins.push(new UglifyJsPlugin(
 			{
-				compress: {
-					unused: true,
-					dead_code: true,
-					warnings: false,
-					keep_fnames: true //DO NOT mangle function names: used for page tracking. also do not pass -p into the webpack
-				},
-				mangle: {
-					keep_fnames: true //DO NOT mangle function names: used for page tracking. also do not pass -p into the webpack
-				},
-				parallel: 4,
-				modules:false
+				uglifyOptions:{
+					keep_fnames: true, //DO NOT mangle function names: used for page tracking. also do not pass -p into the webpack
+					keep_classnames: true
+				}
 			}
-		));
+		));*/
 	}
 
 
 
 	return {
+		mode:mode,
 		entry: ['./test/index.test.js'],
 		devServer: {
 			contentBase: path.join(__dirname, 'dist-test'),
@@ -77,7 +73,7 @@ module.exports = env => {
 		devtool: env.build != "production" ? "inline-source-map": false,
 		output: {
 			path: path.resolve(__dirname, 'dist-test'),
-			filename: env.build != "production" ? 'bundle.js' : 'bundle.js?c=[chunkhash]',
+			filename: 'bundle.js',
 			devtoolModuleFilenameTemplate: (info) => {
 				const isGeneratedDuplicate = info.resourcePath.match(/\.vue$/) && info.allLoaders;
 				if (isGeneratedDuplicate) {
@@ -85,6 +81,11 @@ module.exports = env => {
 				}
 				return `webpack:///${path.normalize(info.resourcePath)}`;
 			},
+		},
+		optimization: {
+			usedExports: true,
+			//sideEffects: true,
+			minimizer: [new UglifyJsPlugin(), new OptimizeCSSAssetsPlugin({})],
 		},
 		module: {
 			rules: [
@@ -94,9 +95,13 @@ module.exports = env => {
 				},
 				{
 					test: /\.js$/,
-					//exclude: /(jquery|loadash)/,
-					loader: 'babel-loader'
+					exclude: /@babel(?:\/|\\{1,2})runtime|core-js/,
+					loader: 'babel-loader',
 				},
+				/*{
+					test: /\.vue$/,
+					loader: ['vue-loader']
+				},*/
 				{
 					test: /\.html$/,
 					oneOf:[
@@ -114,41 +119,40 @@ module.exports = env => {
 				{ test: /\.(jpg|png|gif)$/, loader: "file-loader", options:{name:'[name].[ext]', outputPath: 'img/'} },
 				{
 					test: /\.(scss|css)$/,
-					use: extractSass.extract({
-						use:[
-							{
-								loader:"css-loader",
-								options: {
-									minimize: env.build != "production" ? true: false,
-									importLoaders: 3,
-									sourceMap: env.build != "production" ? true: false
-								}
-							},
-							{
-								loader: 'external-loader'
-							},
-							{
-								loader: 'postcss-loader',
-								options: {
-									ident: 'postcss',
-									plugins: [
-										autoprefixer({
+					use: [
+						{
+							loader: MiniCssExtractPlugin.loader,
+						},
+						{
+							loader: 'css-loader',
+							options: {
+							  importLoaders: 1,
+							  minimize: mode != "production" ? true: false,
+							}
+						},
+						{
+							loader: 'external-downloader'
+						},
+						{
+							loader: 'postcss-loader',
+							options: {
+								ident: 'postcss',
+								plugins: [
+									autoprefixer({
 
-											browsers:['Android >= 4', 'iOS >=4']
-										}),
-										cssnano({})
-									],
-								}
-							},
-							{
-								loader: 'sass-loader',
-								options: {
-									sourceMap: env.build != "production" ? true: false
-								}
-							},							
-							
-						]
-					})
+										browsers:['Android >= 7', 'iOS >=9']
+									}),
+									cssnano({})
+								],
+							}
+						},
+						{
+							loader: 'sass-loader',
+							options: {
+								sourceMap: mode != "production" ? true: false
+							}
+						},							
+					]
 				},
 				{ test: /\.(woff|woff2|eot|ttf|svg)$/, loader: 'file-loader', options:{name:'[name].[ext]', outputPath: 'fonts/'} },
 

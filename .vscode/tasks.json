@@ -13,6 +13,11 @@
 			"type": "npm",
 			"script": "webpack-dev-server",
 			"problemMatcher": []
+		},
+		{
+			"type": "npm",
+			"script": "webpack--prod",
+			"problemMatcher": []
 		}
 	]
 }

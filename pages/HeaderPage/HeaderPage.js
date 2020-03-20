@@ -62,24 +62,6 @@ export class HeaderPage extends BasePage{
 	get template(){
 		return this.extendTemplate(super.template, template);
 	}
-
-	/**
-	 * ***OverrideCallSuper***
-	 */
-	/*resize(windowSize){
-		var h = $(this.page).height();
-		var header = this.page.find('>.header').height();
-		var footer = this.page.find('>.footer').height();
-
-		h -= !empty(header) ? header : 0 ;
-		h -= !empty(footer) ? footer : 0 ;
-
-		this.page.find('.content').css('height', h +'px');
-
-		super.resize(windowSize);
-	}*/
-
-
 }
 HeaderPage.className = 'page-HeaderPage';
 var template = `

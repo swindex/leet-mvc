@@ -86,24 +86,42 @@ export class TestFileUploadPage extends HeaderPage {
 		formData.append("fileFieldFileData", this.fileFieldFileData);
 		//formData.append('fileFieldFileData', this.fileFieldFileData);
 
-		$.ajax(
-			"http://mg.zero-divide.net/api/dump/",
-			{
-				method: "POST",
-				data: JSON.stringify(data),
-				//contentType: "application/json",
-				dataType:"json",
-				processData: false
-			})
-		.done(data=>{
-			if (data.success) {
+		window.fetch("http://mg.zero-divide.net/api/dump/",
+		{
+			method: "POST",
+			mode: 'cors', // no-cors, *cors, same-origin
+			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+			redirect: 'follow',
+    		headers:new Headers([
+				['Content-Type', 'application/json']
+			]),
+			body: JSON.stringify(data)
+		}).then(ret=>{
+			console.log(ret)
+			if (ret.status == 200) {
 				alert('Your file was successfully uploaded!');
 			} else {
 				alert('There was an error uploading your file!');
 			}
-		}).fail(err=>{
-			console.log(err)
-		})
+		});
+		// $.ajax(
+		// 	"http://mg.zero-divide.net/api/dump/",
+		// 	{
+		// 		method: "POST",
+		// 		data: JSON.stringify(data),
+		// 		//contentType: "application/json",
+		// 		dataType:"json",
+		// 		processData: false
+		// 	})
+		// .done(data=>{
+		// 	if (data.success) {
+		// 		alert('Your file was successfully uploaded!');
+		// 	} else {
+		// 		alert('There was an error uploading your file!');
+		// 	}
+		// }).fail(err=>{
+		// 	console.log(err)
+		// })
 	}
 }
 

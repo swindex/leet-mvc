@@ -7,6 +7,7 @@ import { MapElement } from "./../../core/MapElement.js";
 import img_house from './m_house.png';
 import './DirectionsPage.scss'
 import { Translate } from "./../../core/Translate";
+import { DOM } from "../../core/DOM";
 
 //var Inject = Injector.implement(InjectTemplate)
 //Google maps leak memory as hell. Cache the map element, so at least we do not do it every time we load the page
@@ -55,10 +56,10 @@ export class DirectionsPage extends DialogPage{
 	}
 
 	onInit(){
-		var maph = Math.floor($(window).innerHeight()/1.75);
-		if ( maph < 205 )
-			maph= 205;
-		$('#map-tabs').css('height', maph);
+		var mapH = Math.floor(window.innerHeight/1.75);
+		if ( mapH < 205 )
+			mapH= 205;
+		DOM('#map-tabs').css('height', mapH + "px");
 	}
 
 	onLoaded(){
@@ -67,7 +68,7 @@ export class DirectionsPage extends DialogPage{
 	initMap(){
 		if (!map){
 			map = new MapElement(this.options.API.KEY, this.options.API.VERSION, this.options.language);
-			map.init($('#mapDiv')[0]); 
+			map.init(DOM('#mapDiv').first()); 
 			map.setDirectionsOptions(this.options.directions_settings);
 			map.setOptions(this.options.map_settings);
 			
@@ -76,11 +77,11 @@ export class DirectionsPage extends DialogPage{
 				map.setStartGps();
 			}
 
-			map.setDirections($('#directionsDiv')[0]);
+			map.setDirections(DOM('#directionsDiv').first());
 			map.startWorkers();
 		}else{
-			$('#mapDiv').replaceWith(map.mapHtmlElement);
-			$('#directionsDiv').replaceWith(map.directionsHtmlElement);
+			DOM('#mapDiv').replaceWith(map.mapHtmlElement);
+			DOM('#directionsDiv').replaceWith(map.directionsHtmlElement);
 			
 			if (this.options.isShowPropertyDirections) {
 				map.setStartGps();
@@ -111,7 +112,7 @@ export class DirectionsPage extends DialogPage{
 	onDestroy(){		
 		if (map)
 			map.destroy();
-		$('#mapDiv').detach();	
+		DOM('#mapDiv').first().remove();	
 	};
 	onMapSettingsButtonClicked(){
 		map.showMapSettings((map_settings,directions_settings)=>{

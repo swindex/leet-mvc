@@ -2,6 +2,7 @@ import './MenuPage.scss';
 import { BasePage } from "./../BasePage"; 
 import { isFunction } from 'util';
 import { Injector } from './../../core/Injector';
+import { DOM } from '../../core/DOM';
 
 
 /**
@@ -41,7 +42,7 @@ export class MenuPage extends BasePage {
 
 	onDestroy() {
 		super.onDestroy();
-		$('body').removeClass('menu-shown');
+		DOM('body').first().classList.remove('menu-shown');
 	};
 
 	/**
@@ -58,7 +59,7 @@ export class MenuPage extends BasePage {
 	}
 
 	onInit() {
-		$('body').addClass('menu-shown');
+		DOM('body').first().classList.add('menu-shown');
 	};
 
 	onBackdropClicked() {

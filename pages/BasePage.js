@@ -8,7 +8,7 @@ import { Objects } from '../core/Objects';
 export class BasePage extends ChangeWatcher{
 	constructor(){
 		super();
-		/** {@type {JQuery<HTMLElement>}*/
+		/** @type {HTMLElement}*/
 		this.page = null;
 		/** @type {NavController} */
 		this.Nav;
@@ -111,14 +111,14 @@ export class BasePage extends ChangeWatcher{
  		//this.template = BasePage.template.replace('<!--child-template-->', this.template);
 
 		this.binder.bindElements(binderEvent, this.template);
-		this.page = $(this.binder.vdom.elem);
+		this.page = this.binder.vdom.elem;
 		super.startWatch();
 	}
 
 	/**
 	 * ***Override***
 	 * Called after page is created and inserted into the document but before it is rendered
-	 * @param {JQuery<HTMLElement>} page 
+	 * @param {HTMLElement} page 
 	 */
 	onInit(page){
 		

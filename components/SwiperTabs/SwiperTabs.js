@@ -7,6 +7,7 @@ import { DeBouncer } from "./../../core/DeBouncer";
 import './SwiperTabs.scss';
 import 'swiper/dist/css/swiper.css';
 import { Objects } from "./../../core/Objects";
+import { DOM } from "../../core/DOM";
 
 /**
  * @param {{navButtons?: true}} [options]
@@ -127,9 +128,9 @@ export class SwiperTabs extends BaseComponent{
 	onInit(container){
 		super.onInit(container);
 		this.container = container;
-		this.Nav.setContainer($(container).find('.swiper-wrapper')[0]);
+		this.Nav.setContainer(DOM(container).find('.swiper-wrapper').first());
 		if (this.tempContainer)
-			$(container).find('.swiper-wrapper').append(this.tempContainer);
+			DOM(container).find('.swiper-wrapper').append(this.tempContainer);
 		
 		this.swiper = new Swiper(container,{
 			threshold:50,
@@ -137,7 +138,7 @@ export class SwiperTabs extends BaseComponent{
 			iOSEdgeSwipeDetection: true,
 		});
 
-		this.swiper.on('slideChange',()=>{
+		DOM(this.swiper).on('slideChange',()=>{
 			var v = this.swiper.activeIndex;
 			this.binder.updateElements();
 			//call the overridden onEnter call
