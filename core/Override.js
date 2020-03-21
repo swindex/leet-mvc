@@ -8,12 +8,12 @@ import { argumentsToArray } from "./helpers";
  * @returns function
  */
 export function Override(originalContext, originalFunction, overrideFunction){
-	return function(){
-		var args = arguments;
-		var argsWithNext = argumentsToArray(arguments);
-		argsWithNext.unshift(function(){
-			return originalFunction.apply(originalContext, arguments.length > 0 ? arguments : args );
-		});
-		return overrideFunction.apply( originalContext, argsWithNext );
-	}
+  return function(){
+    var args = arguments;
+    var argsWithNext = argumentsToArray(arguments);
+    argsWithNext.unshift(function(){
+      return originalFunction.apply(originalContext, arguments.length > 0 ? arguments : args );
+    });
+    return overrideFunction.apply( originalContext, argsWithNext );
+  };
 }
