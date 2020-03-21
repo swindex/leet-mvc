@@ -13,7 +13,7 @@ export class HeaderPage extends BasePage{
 		this.refreshButton = false;
 		this.searchButton = false;
 		
-		this.title = null;
+		this.title = "";
 
 		//content directive
 		this.content = null;

@@ -5,7 +5,7 @@ import { isObject, isArray } from "util";
  * @returns {boolean}
  */
 export function empty(value){
-	return typeof value === "undefined" || value === 0 || value === null || value === "" || value === false;// || (typeof value == 'object' && Object.getOwnPropertyNames(value).length === 0) ;
+  return typeof value === "undefined" || value === 0 || value === null || value === "" || value === false;// || (typeof value == 'object' && Object.getOwnPropertyNames(value).length === 0) ;
 }
 
 /**
@@ -14,9 +14,9 @@ export function empty(value){
  * @param {number} [n] = 0
  */
 export function round(value, n) {
-	n = n || 0;
-	var scale = Math.pow(10, n);
-	return Math.round(value * scale)/scale;
+  n = n || 0;
+  var scale = Math.pow(10, n);
+  return Math.round(value * scale)/scale;
 }
 
 /**
@@ -24,13 +24,13 @@ export function round(value, n) {
  * @param {string} stringValue 
  */
 export function numberFromLocaleString(stringValue, locale){
-	var parts = Number(1111.11).toLocaleString(locale).replace(/\d+/g,'').split('');
-	if (stringValue === null)
-		return null;
-	if (parts.length==1) {
-		parts.unshift('');
-	}	
-	return Number(String(stringValue).replace(new RegExp(parts[0].replace(/\s/g,' '),'g'), '').replace(parts[1],"."));
+  var parts = Number(1111.11).toLocaleString(locale).replace(/\d+/g,'').split('');
+  if (stringValue === null)
+    return null;
+  if (parts.length==1) {
+    parts.unshift('');
+  }	
+  return Number(String(stringValue).replace(new RegExp(parts[0].replace(/\s/g,' '),'g'), '').replace(parts[1],"."));
 }
 
 /**
@@ -40,9 +40,9 @@ export function numberFromLocaleString(stringValue, locale){
  * @return {any}
  */
 export function tryCall(context, callback){
-	if (typeof callback !== 'function')
-		return;
-	return callback.apply(context, argumentsToArray(arguments,2));
+  if (typeof callback !== 'function')
+    return;
+  return callback.apply(context, argumentsToArray(arguments,2));
 }
 
 /**
@@ -52,8 +52,8 @@ export function tryCall(context, callback){
 * @return {any[]}
 */
 export function argumentsToArray(args,nStart){
-   nStart = nStart || 0;
-   return Array.prototype.slice.call(args).slice(nStart);
+  nStart = nStart || 0;
+  return Array.prototype.slice.call(args).slice(nStart);
 }
 
 
@@ -65,14 +65,14 @@ export function argumentsToArray(args,nStart){
  * @returns function
  */
 export function Override(originalContext, originalFunction, overrideFunction){
-	return function(){
-		var args = arguments;
-		var argsWithNext = argumentsToArray(arguments);
-		argsWithNext.unshift(function(){
-			return originalFunction.apply(originalContext, arguments.length > 0 ? arguments : args );
-		});
-		return overrideFunction.apply( originalContext, argsWithNext );
-	}
+  return function(){
+    var args = arguments;
+    var argsWithNext = argumentsToArray(arguments);
+    argsWithNext.unshift(function(){
+      return originalFunction.apply(originalContext, arguments.length > 0 ? arguments : args );
+    });
+    return overrideFunction.apply( originalContext, argsWithNext );
+  };
 }
 
 /**	
@@ -85,40 +85,40 @@ export function Override(originalContext, originalFunction, overrideFunction){
  * @param {*} childConstructor 	
  */	
 export function Extend( parentConstructor, childConstructor ){	
-	childConstructor.prototype = Object.create( parentConstructor.prototype );	
-	childConstructor.prototype.constructor = childConstructor;	
-	childConstructor.prototype.super = function(){return parentConstructor.apply(this,arguments);};	
-	return childConstructor;	
+  childConstructor.prototype = Object.create( parentConstructor.prototype );	
+  childConstructor.prototype.constructor = childConstructor;	
+  childConstructor.prototype.super = function(){return parentConstructor.apply(this,arguments);};	
+  return childConstructor;	
 }
 
 export function GUID() {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-		var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-		return v.toString(16);
-	});
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 }
 
 export function isObjLiteral(_obj) {
-	var _test  = _obj;
-	return (  typeof _obj !== 'object' || _obj === null ?
-				false :  
-				(
+  var _test  = _obj;
+  return (  typeof _obj !== 'object' || _obj === null ?
+    false :  
+    (
 				  (function () {
-					while (!false) {
+        while (!false) {
 					  if (  Object.getPrototypeOf( _test = Object.getPrototypeOf(_test)  ) === null) {
-						break;
+            break;
 					  }      
-					}
-					return Object.getPrototypeOf(_obj) === _test;
+        }
+        return Object.getPrototypeOf(_obj) === _test;
 				  })()
-				)
-			);
-  }
+    )
+  );
+}
 
 export function isIterable(obj) {
-	// checks for null and undefined
-	if (obj == null) {
-		return false;
-	}
-	return typeof obj[Symbol.iterator] === 'function';
+  // checks for null and undefined
+  if (obj == null) {
+    return false;
+  }
+  return typeof obj[Symbol.iterator] === 'function';
 }

@@ -538,6 +538,10 @@ export function FormValidator(data, template, errors, options){
 					}
 					errmsg=errmsg.replace(':date',new Date(otherFieldValue).toLocaleString());
 				}
+
+				if (errmsg.indexOf(':values')>=0){
+					errmsg=errmsg.replace(':values', conditions);
+				}
 			
 				var result = validate_isfail(name,rr[0],type, conditions_arr);
 		

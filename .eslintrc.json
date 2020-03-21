@@ -1,0 +1,14 @@
+{
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": false
+        }
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+		"semi": "error",
+		"indent": ["error", 2]
+    }
+}

@@ -1,9 +1,10 @@
 import "./LoginPage.scss";
+import { BasePage } from "./../BasePage";
 import { FormValidator } from "./../../core/form_validator";
 import { Translate } from "./../../core/Translate";
 import { DeBouncer } from "./../../core/DeBouncer";
 import { HeaderPage } from "./../HeaderPage/HeaderPage";
-import { DOM } from "./../../core/DOM";
+import { DOM } from "leet-mvc/core/DOM";
 
 export class LoginPage extends HeaderPage {
 	constructor(){

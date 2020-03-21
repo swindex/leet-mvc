@@ -10,13 +10,13 @@ const Inject = Injector;
  * @param {...string|number} [replaceValues]
  */
 export var ReplaceValues = function(LangConstText, replaceValues){
-	var args = arguments;
-	if (args.length==1)
-		return LangConstText;
-	return LangConstText.replace(/\{(\d+)\}/g, function(match, contents, offset, input_string){
-		return args[contents];
-	})
-}
+  var args = arguments;
+  if (args.length==1)
+    return LangConstText;
+  return LangConstText.replace(/\{(\d+)\}/g, function(match, contents, offset, input_string){
+    return args[contents];
+  });
+};
 
 /**
  * 
@@ -25,15 +25,15 @@ export var ReplaceValues = function(LangConstText, replaceValues){
  * @return {string}
  */
 export function Translate(keyOrText, replaceValues){
-	if (!Inject['LNG'])
-		return keyOrText;
+  if (!Inject['LNG'])
+    return keyOrText;
 
-	var ret = Inject['LNG'][keyOrText] ? Inject['LNG'][keyOrText] : keyOrText;
-	if (replaceValues && isString(ret)){
-		var args = argumentsToArray(arguments);
-		args[0] = ret;
-		return ReplaceValues.apply(null,args);
+  var ret = Inject['LNG'][keyOrText] ? Inject['LNG'][keyOrText] : keyOrText;
+  if (replaceValues && isString(ret)){
+    var args = argumentsToArray(arguments);
+    args[0] = ret;
+    return ReplaceValues.apply(null,args);
 		
-	}
-	return ret;
+  }
+  return ret;
 }
