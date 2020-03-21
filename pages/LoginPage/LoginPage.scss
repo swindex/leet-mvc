@@ -1,5 +1,8 @@
 @import './../../scss/_variables';
 #page-login{
+	.content{
+		transition: margin-top 0.5s ease;
+	}
 	//header with only button visible
 	.header{
 		position: absolute;

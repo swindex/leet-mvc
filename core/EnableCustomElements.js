@@ -31,11 +31,11 @@ export function EnableCustomElements(){
 	});
 
 	//override default behavior of form elements					
-	DOM(document).on('mousedown focus','input[readonly]', function(ev){
+	DOM(document).onChild('mousedown focus','input[readonly]', function(ev){
 		preventFocus(ev)
 	});
 
-	DOM(document).on('mousedown focus','input[date]', function(ev){
+	DOM(document).onChild('mousedown focus','input[date]', function(ev){
 		preventFocus(ev)
 		/** @type {HTMLInputElement} */
 		var el = ev.target;
@@ -48,7 +48,7 @@ export function EnableCustomElements(){
 			return true;
 		}
 	});
-	DOM(document).on('mousedown focus','input[datetime]', function(ev){
+	DOM(document).onChild('mousedown focus','input[datetime]', function(ev){
 		preventFocus(ev)
 		var el = ev.target;
 		var date = DateTime.fromHumanDateTime(el.value.toString());
@@ -61,7 +61,7 @@ export function EnableCustomElements(){
 		}
 	});
 
-	DOM(document).on('mousedown focus','input[time]', function(ev){
+	DOM(document).onChild('mousedown focus','input[time]', function(ev){
 		preventFocus(ev)
 		var el = ev.target;
 		var date = DateTime.fromHumanTime(el.value.toString());
@@ -90,7 +90,7 @@ export function EnableCustomElements(){
 	},
 
 	//Override the system select drop-down with custom drop-down
-	DOM(document).on('mousedown focus','select', function(ev){
+	DOM(document).onChild('mousedown focus','select', function(ev){
 		preventFocus(ev)
 		/** @type {HTMLSelectElement} */
 		var el = ev.target;

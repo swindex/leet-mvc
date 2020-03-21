@@ -1,7 +1,7 @@
 import Swiper from 'swiper';
 import 'swiper/dist/css/swiper.css';
 
-import { BaseComponent } from "leet-mvc/components/BaseComponent";
+import { BaseComponent } from "./BaseComponent";
 
 
 
@@ -102,7 +102,7 @@ export class SwiperComponent extends BaseComponent{
 
 	onInit(container){
 		setTimeout(()=>{
-			this.swiper = new Swiper(this.container[0],{
+			this.swiper = new Swiper(this.container,{
 				threshold: 50,
 				//initialSlide:this.index,
 				noSwiping: true,

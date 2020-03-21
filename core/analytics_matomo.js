@@ -354,10 +354,15 @@ class Matomo {
 		//clear action values right away to prevent another request picking them up before this one completes!
 		this.clearActionValues();
 		//console.log(pay);
-		$.post(this._URL, payload ,null, 'json')
-			.done((ret)=>{
+		window.fetch(this._URL,
+			{
+				method: 'POST',
+				headers: new Headers([['Content-Type','application/json']]),
+				mode:'navigate',
+				body: JSON.stringify(payload)
+			}).then((ret)=>{
 				//console.log("SPY OK");
-			}).fail((err)=>{
+			}).catch((err)=>{
 				//console.log("SPY Err:" + JSON.stringify(this._URL)+ JSON.stringify(payload) + JSON.stringify(err));
 			});
 	}
