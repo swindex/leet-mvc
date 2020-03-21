@@ -1,8 +1,10 @@
 import { isObject, isArray, isSymbol, isDate } from "util";
 
 let isProxy = Symbol("isProxy");
-let isDeleted = Symbol("isDeleted");
+let isWatched = Symbol("isDeleted");
 
+let propertyChangeCallbacks = Symbol("propertyChangeCallbacks");
+let objectChangeCallbacks = Symbol("objectChangeCallbacks");
 //window['Proxy'] = null; //comment out to test dirty checking on chrome
 
 export var isSkipUpdate = Symbol("isSkipUpdate");
@@ -12,7 +14,7 @@ export var isSkipUpdate = Symbol("isSkipUpdate");
  */
 export var Watcher={
   skip: isSkipUpdate,
-  deleted: isDeleted,
+  watched: isWatched,
   /**
    * Watch for object changes. 
 	 * @param {object} object - object to watch for changes
@@ -22,16 +24,99 @@ export var Watcher={
 	 */
   on: function(object, onPropertyChangeCallback, onObjectChangeCallback, ignoreProperties){
     ignoreProperties = ignoreProperties || [];
-    object[isDeleted] = false;
+    object[isWatched] = true;
+
+    if (!object[propertyChangeCallbacks]){
+      object[propertyChangeCallbacks] = [];
+    }
+    if (!object[objectChangeCallbacks]){
+      object[objectChangeCallbacks] = [];
+    }
+
+    object[propertyChangeCallbacks].push(onPropertyChangeCallback);
+    object[objectChangeCallbacks].push(onObjectChangeCallback);
+
+    let callbackScheduled = false;
 
     function propertyChangeHandler(target, property, value ){
-      if (onPropertyChangeCallback) {
-        let isSkip = object[isSkipUpdate];
-        //skip any subsequent updates triggered by all onChange Callbacks
-        object[isSkipUpdate] = true;
-        onPropertyChangeCallback(target, property, value);
-        object[isSkipUpdate] = isSkip;
+      let isSkip = object[isSkipUpdate];
+      //skip any subsequent updates triggered by all onChange Callbacks
+      object[isSkipUpdate] = true;
+      object[propertyChangeCallbacks].forEach(function(onPropertyChangeCallback){
+        try {
+          onPropertyChangeCallback(target, property, value);
+        } catch (ex){
+          console.warn(ex);
+        }
+      });
+      if (target[propertyChangeCallbacks] && target[isWatched]){
+        let isSkip2 = target[isSkipUpdate];
+        target[isSkipUpdate] = true;
+        target[propertyChangeCallbacks].forEach(function(onPropertyChangeCallback){
+          try {
+            onPropertyChangeCallback(target, property, value);
+          } catch (ex){
+            console.warn(ex);
+          }
+          });
+        target[isSkipUpdate] = isSkip2;
       }
+      object[isSkipUpdate] = isSkip;
+    }
+
+    function scheduleCallback(target){
+      scheduleTargetCallback(target)
+      if (object[isSkipUpdate] || !object[isWatched]){
+        return;
+      }
+
+      object[isSkipUpdate] = true;
+    
+      setTimeout(function scheduledUpdate(){
+        if (!object[isWatched]) {
+          return;
+        }
+    
+        //prevent changes in object from calling other updates while onUpdateCallback is executing
+        object[isSkipUpdate] = true;
+          object[objectChangeCallbacks].forEach(function(onUpdateCallback){
+            try {
+              onUpdateCallback();
+            } catch (ex){
+              console.warn(ex);
+            }
+          });
+          object[isSkipUpdate] = false;
+      },0);
+    }
+
+    function scheduleTargetCallback(target){
+      if (target[isSkipUpdate] || !target[isWatched] || !target[objectChangeCallbacks]){
+        return;
+      }
+
+      target[isSkipUpdate] = true;
+    
+      setTimeout(function scheduledUpdate(){
+        if (!target[isWatched]) {
+          return;
+        }
+    
+        //prevent changes in object from calling other updates while onUpdateCallback is executing
+        target[isSkipUpdate] = true;
+        
+          if (target[objectChangeCallbacks]){
+
+            target[objectChangeCallbacks].forEach(function(onUpdateCallback){
+              try {
+                onUpdateCallback();
+              } catch (ex){
+                console.warn(ex);
+              }
+            });
+          }
+          target[isSkipUpdate] = false;
+      },0);
     }
 
     if (window['Proxy'] && window['Reflect']){
@@ -69,7 +154,7 @@ export var Watcher={
 						target[property] === value ||
 						isSymbol(property) ||
 						property === isSkipUpdate ||
-						object[isDeleted] ||
+						!object[isWatched] ||
 						ignoreProperties.indexOf(property) >= 0  ){
 
             return Reflect.set(target, property, value);
@@ -77,14 +162,14 @@ export var Watcher={
           
           propertyChangeHandler(target, property, value );
 
-          scheduleCallback(object, onObjectChangeCallback);
+          scheduleCallback(target);
           
           return Reflect.set(target, property, value);
         },
         defineProperty(target, property, descriptor) {
           propertyChangeHandler(target, property, descriptor );
           if (property !== isSkipUpdate && ignoreProperties.indexOf(property)<=0 ){
-            scheduleCallback(object, onObjectChangeCallback);
+            scheduleCallback(target);
           }
           return Reflect.defineProperty(target, property, descriptor);
         },
@@ -92,7 +177,7 @@ export var Watcher={
           propertyChangeHandler(target, property, undefined );
           
           if (property !== isSkipUpdate && ignoreProperties.indexOf(property)<=0 ) {
-            scheduleCallback(object, onObjectChangeCallback);
+            scheduleCallback(target);
           }
           return Reflect.deleteProperty(target, property);
         }
@@ -104,38 +189,20 @@ export var Watcher={
         (target, property, value)=>{ //property changed callback
           propertyChangeHandler(target, property, value );
 
-          scheduleCallback(object, onObjectChangeCallback);
+          scheduleCallback(target);
         }, ignoreProperties
       );
       return object;
-    }	
+    }
+    
+    
   },
   off: function( object ){
-    object[isDeleted] = true;
+    delete object[isWatched];
+    delete object[propertyChangeCallbacks];
+    delete object[objectChangeCallbacks];
   }
 };
-
-function scheduleCallback(obj, onUpdateCallback){
-  if (obj[isSkipUpdate] || obj[isDeleted] || !onUpdateCallback){
-    return;
-  }
-
-  obj[isSkipUpdate] = true;
-
-  setTimeout(function scheduledUpdate(){
-    if (obj[isDeleted]) {
-      return;
-    }
-
-    //prevent changes in object from calling other updates while onUpdateCallback is executing
-    obj[isSkipUpdate] = true;
-    try {
-      onUpdateCallback();
-    } finally {
-      obj[isSkipUpdate] = false;
-    }
-  },0);
-}
 
 function isObjLiteral(_obj) {
   var _test  = _obj;
@@ -172,7 +239,7 @@ export function onObjectDirtyChange(object, onPropertyChangeCallback, ignoreProp
     setTimeout(function(){
       var checked = objectCloneCompare(refObject, object, onPropertyChangeCallback, ignoreProperties);
 			
-      if (!object[isDeleted]){
+      if (object[isWatched]){
         refObject = checked;
         window.requestAnimationFrame(checkHash);
       }
