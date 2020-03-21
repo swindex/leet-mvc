@@ -5,6 +5,7 @@ import { Watcher, isSkipUpdate } from './Watcher.js';
 export class ChangeWatcher {
   constructor(){
     this[Watcher.skip] = true;
+
     return Watcher.on(this,
       (target, property, value)=>{
         if (target===this){
