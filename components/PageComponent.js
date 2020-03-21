@@ -72,6 +72,6 @@ export class PageComponent extends BaseComponent{
 	onInit(container){
 		super.onInit(container);
 		this.container = container;
-		this.Nav.setContainer(this.container[0]);
+		this.Nav.setContainer(this.container);
 	}
 }

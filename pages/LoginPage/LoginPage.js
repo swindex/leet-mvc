@@ -1,9 +1,9 @@
 import "./LoginPage.scss";
-import { BasePage } from "./../BasePage";
 import { FormValidator } from "./../../core/form_validator";
 import { Translate } from "./../../core/Translate";
 import { DeBouncer } from "./../../core/DeBouncer";
 import { HeaderPage } from "./../HeaderPage/HeaderPage";
+import { DOM } from "./../../core/DOM";
 
 export class LoginPage extends HeaderPage {
 	constructor(){
@@ -47,10 +47,10 @@ export class LoginPage extends HeaderPage {
 	}
 
 	onInit(){
-		var logo = this.page.find('#logo');
-		var login = this.page.find('#login');
-		this.i_height = this.page.height();
-		this.i_width = this.page.width();
+		var logo = DOM(this.page).find('#logo');
+		var login = DOM(this.page).find('#login');
+		this.i_height = DOM(this.page).height();
+		this.i_width = DOM(this.page).width();
 
 		logo.height(this.i_height*0.30);
 		login.height(this.i_height);
@@ -63,20 +63,22 @@ export class LoginPage extends HeaderPage {
 	}
 
 	onResize(){
-		var h = this.page.height();
-		var w = this.page.width();
-		var logo = this.page.find('#logo');
-		var dc = this.page.find('.content');
+		var h = DOM(this.page).height();
+		var w = DOM(this.page).width();
+		var logo = DOM(this.page).find('#logo');
+		var dc = DOM(this.page).find('.content');
 			
 		if (h < this.i_height && w === this.i_width){
 			//use debounce, so it does not fire too often
 			this.debouncer1(()=>{
-				dc.animate({ 'margin-top': -logo.height() }, 500 );	
+				//dc.animate({ 'margin-top': -logo.height() }, 500 );	
+				dc.css({ 'margin-top': -logo.height() + "px" });
 			})
 		}else{ 
 			//use debounce, so it does not fire too often
 			this.debouncer2(()=>{
-				dc.animate({ 'margin-top': 0 }, 500 );	
+				//dc.animate({ 'margin-top': 0 }, 500 );
+				dc.css({ 'margin-top': 0 });	
 			})
 		}
 	}

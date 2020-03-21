@@ -61,10 +61,11 @@ export class SwiperTabs extends BaseComponent{
 			this.Nav.setContainer(this.tempContainer);
 		}
 
+		/** @type {BasePage} */
 		var inst = this.Nav.push.apply(this, argumentsToArray(arguments));
 
 		inst.className = 'swiper-slide'
-		inst.page.addClass('swiper-slide');
+		inst.page.classList.add('swiper-slide');
 		
 		inst.visibleParent = true;
 		
@@ -138,7 +139,7 @@ export class SwiperTabs extends BaseComponent{
 			iOSEdgeSwipeDetection: true,
 		});
 
-		DOM(this.swiper).on('slideChange',()=>{
+		this.swiper.on('slideChange',()=>{
 			var v = this.swiper.activeIndex;
 			this.binder.updateElements();
 			//call the overridden onEnter call

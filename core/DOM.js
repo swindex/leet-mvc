@@ -12,11 +12,17 @@ export function DOM(elemOrQuery){
 	 * @return {object[]}
 	 */
 	function getArray(children){
-		if (isIterable(children)){
+		if (isIterable(children) && !(children instanceof HTMLElement)){
 			return Array.prototype.slice.call(children);
 		} else {
 			return [children];
 		}
+	}
+
+	function addPx(value){
+		if (isNaN(value))
+			return value;
+		return ("" + value + "").replace(/px/,"")+"px";
 	}
 	
 	const self = {
@@ -221,6 +227,14 @@ export function DOM(elemOrQuery){
 		off(event, handler){
 			return self.removeEventListener(event, handler);
 		},
+
+		onChild(event, query , handler){
+			return self.addEventListener(event, (event)=>{
+				if (event.target instanceof HTMLElement && event.target.matches(query)){
+					handler(event);
+				}
+			}, true);
+		},
 		
 	
 		/**
@@ -242,6 +256,7 @@ export function DOM(elemOrQuery){
 		 * //@vvreturn {HTMLElement[]|HTMLOptionElement[]|Element[]}
 		 */
 		closest(query){
+			if (elemArray[0] == undefined) return DOM([]);
 			var elements = [elemArray[0].closest( query )];
 			// @ts-ignore
 			return DOM(elements);
@@ -252,29 +267,46 @@ export function DOM(elemOrQuery){
 		 * //@vvreturn {HTMLElement[]|HTMLOptionElement[]|Element[]}
 		 */
 		find(query){
+			if (elemArray[0] == undefined) return DOM([]);
 			var elems = Array.from(elemArray[0].querySelectorAll( query ));
 			// @ts-ignore
 			return DOM(elems);
 		},
-		width(){
+		width(value = undefined){
+			if (elemArray[0] == undefined) return 0;
 			/** @type {HTMLElement} */
 			var elem = elemArray[0];
-			return elem.offsetWidth;
+			if (value === undefined)
+				return elem.offsetWidth;
+			elem.style.width = addPx(value)	
 		},
-		height(){
+		height(value = undefined){
+			if (elemArray[0] == undefined) return 0;
 			/** @type {HTMLElement} */
 			var elem = elemArray[0];
-			return elem.offsetHeight;
+
+			if (value === undefined)
+				return elem.offsetHeight;
+			
+			elem.style.height = addPx(value)
 		},
 		scrollTop(offset = undefined){
+			if (elemArray[0] == undefined) return 0;
 			/** @type {HTMLElement} */
 			var elem = elemArray[0];
 			if (offset == undefined)
 				return elem.scrollTop;
 
-			elem.scrollTop = 0;
+			elem.scrollTop = addPx(offset);
+		},
+		offset(){
+			return {
+				top: self.offsetTop(),
+				left: self.offsetLeft(),
+			};
 		},
 		offsetTop() {
+			if (elemArray[0] == undefined) return 0;
 			// Set our distance placeholder
 			var distance = 0;
 			var elem = elemArray[0];
@@ -290,6 +322,7 @@ export function DOM(elemOrQuery){
 			return distance < 0 ? 0 : distance;
 		},
 		offsetLeft() {
+			if (elemArray[0] == undefined) return 0;
 			// Set our distance placeholder
 			var distance = 0;
 			var elem = elemArray[0];
@@ -309,6 +342,7 @@ export function DOM(elemOrQuery){
 		 * @param {{behavior?:'auto'|'smooth', top?: number, left?:number}} options 
 		 */
 		scrollTo(options){
+			if (elemArray[0] == undefined) return 0;
 			elemArray[0].scrollTo(options);
 		}
 	
@@ -318,7 +352,7 @@ export function DOM(elemOrQuery){
 		throw new Error("elemOrQuery can not be empty!");
 	}
 
-	/** @type {HTMLElement[]} */
+	/** @type {self} */
 	var instance = Object.create(self);
 
 	 /** @type {HTMLElement[]} */
