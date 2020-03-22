@@ -5,7 +5,7 @@ import { MapElement } from "./../../core/MapElement.js";
 
 // @ts-ignore
 import img_house from './m_house.png';
-import './DirectionsPage.scss'
+import './DirectionsPage.scss';
 import { Translate } from "./../../core/Translate";
 import { DOM } from "../../core/DOM";
 
@@ -15,141 +15,141 @@ import { DOM } from "../../core/DOM";
 var map = null;
 
 export class DirectionsPage extends DialogPage{
-	/**
+  /**
 	 * 
 	 * @param {*} p 
 	 * @param {{isShowPropertyDirections: boolean, language: string, lat: number,lng: number,address: string, API:{ KEY: string, VERSION: string, Location:{lat: number,lng: number}}, map_settings:{}, direction_settings : {}}} options 
 	 */
-	constructor(options){
-		super();
-		this.options = {
-			isShowPropertyDirections: false,
-			language:null,
-			lat: null,
-			lng: null,
-			address: null,
-			API: {
-				KEY : null,
-				VERSION : '3.34',
-				Location: { lat: 43.46098192313348, lng: -80.5188529417726 }
-			},
-			directions_settings : {
-				travelMode: 'DRIVING',
-				unitSystem: 0,
-				avoidTolls: false,
-				avoidHighways: false,
-				avoidFerries: false,
-				provideRouteAlternatives: false
-			},
-			map_settings: {disableDefaultUI: false}
-		}
-		Object.assign(this.options, options);
+  constructor(options){
+    super();
+    this.options = {
+      isShowPropertyDirections: false,
+      language:null,
+      lat: null,
+      lng: null,
+      address: null,
+      API: {
+        KEY : null,
+        VERSION : '3.34',
+        Location: { lat: 43.46098192313348, lng: -80.5188529417726 }
+      },
+      directions_settings : {
+        travelMode: 'DRIVING',
+        unitSystem: 0,
+        avoidTolls: false,
+        avoidHighways: false,
+        avoidFerries: false,
+        provideRouteAlternatives: false
+      },
+      map_settings: {disableDefaultUI: false}
+    };
+    Object.assign(this.options, options);
 		
-		this.mapTabs = new SimpleTabs();
-		this.content = template;
+    this.mapTabs = new SimpleTabs();
+    this.content = template;
 
-		this.title = Translate("Property Directions");
+    this.title = Translate("Property Directions");
 
-		this.buttons = {
-			Close: null
-		}
-	}
+    this.buttons = {
+      Close: null
+    };
+  }
 
-	onInit(){
-		var mapH = Math.floor(window.innerHeight/1.75);
-		if ( mapH < 205 )
-			mapH= 205;
-		DOM('#map-tabs').css('height', mapH + "px");
-	}
+  onInit(){
+    var mapH = Math.floor(window.innerHeight/1.75);
+    if ( mapH < 205 )
+      mapH= 205;
+    DOM('#map-tabs').css('height', mapH + "px");
+  }
 
-	onLoaded(){
-		this.initMap();
-	}
-	initMap(){
-		if (!map){
-			map = new MapElement(this.options.API.KEY, this.options.API.VERSION, this.options.language);
-			map.init(DOM('#mapDiv').first()); 
-			map.setDirectionsOptions(this.options.directions_settings);
-			map.setOptions(this.options.map_settings);
+  onLoaded(){
+    this.initMap();
+  }
+  initMap(){
+    if (!map){
+      map = new MapElement(this.options.API.KEY, this.options.API.VERSION, this.options.language);
+      map.init(DOM('#mapDiv').first()); 
+      map.setDirectionsOptions(this.options.directions_settings);
+      map.setOptions(this.options.map_settings);
 			
-			map.centerOn(this.options.API.Location);
-			if (this.options.isShowPropertyDirections) {
-				map.setStartGps();
-			}
+      map.centerOn(this.options.API.Location);
+      if (this.options.isShowPropertyDirections) {
+        map.setStartGps();
+      }
 
-			map.setDirections(DOM('#directionsDiv').first());
-			map.startWorkers();
-		}else{
-			DOM('#mapDiv').replaceWith(map.mapHtmlElement);
-			DOM('#directionsDiv').replaceWith(map.directionsHtmlElement);
+      map.setDirections(DOM('#directionsDiv').first());
+      map.startWorkers();
+    }else{
+      DOM('#mapDiv').replaceWith(map.mapHtmlElement);
+      DOM('#directionsDiv').replaceWith(map.directionsHtmlElement);
 			
-			if (this.options.isShowPropertyDirections) {
-				map.setStartGps();
-			}	
-			map.clearRoute(); 
-		}
+      if (this.options.isShowPropertyDirections) {
+        map.setStartGps();
+      }	
+      map.clearRoute(); 
+    }
 
-		if (!map.setEndLocation(this.options.lat, this.options.lng)){
-			map.setEndAddress(this.options.address);
-		}
-		map.centerEnd();
+    if (!map.setEndLocation(this.options.lat, this.options.lng)){
+      map.setEndAddress(this.options.address);
+    }
+    map.centerEnd();
 
-		if (this.options.isShowPropertyDirections){
-			map.generateRoute();
-			//default markers will be used
-		}else{
-			map.showEndMarker(img_house);	
-		}
-	}
-	onUpdated(){
+    if (this.options.isShowPropertyDirections){
+      map.generateRoute();
+      //default markers will be used
+    }else{
+      map.showEndMarker(img_house);	
+    }
+  }
+  onUpdated(){
 
-		if (this.options.isShowPropertyDirections)
-			this.mapTabs.setTabVisibility("directions", true);
-		else	
-			this.mapTabs.setTabVisibility("directions", false);
-		this.mapTabs.update();
-	}
-	onDestroy(){		
-		if (map)
-			map.destroy();
-		DOM('#mapDiv').first().remove();	
-	};
-	onMapSettingsButtonClicked(){
-		map.showMapSettings((map_settings,directions_settings)=>{
-			this.onUpdatedMapSettings(map_settings, directions_settings);
-			if (this.options.isShowPropertyDirections){
-				map.generateRoute(directions_settings);
-			}
-		});
-	}
-	onNavigationButtonClicked(){
-		Confirm(Translate('Launch default navigation app?'), ()=>{
-			this.onLaunchedNavigator(this.options.address); 
-			//Inject.SPY.logEvent(Analytics.Event.LAUNCH_NAVIGATOR, {order_id:this.options.appraisal_id});
-			var addr= encodeURIComponent(this.options.address);
-			if (window['device'] && window['device'].platform.toLowerCase() == 'ios'){
-				window.open("http://maps.apple.com/?q="+ addr, '_system', 'location=yes') 
-			}else{
-				window.open("https://www.google.com/maps/dir/?api=1&destination="+addr, "_system",'location=yes' );
-			}
-		}, Translate('Navigation'));
-	}
+    if (this.options.isShowPropertyDirections)
+      this.mapTabs.setTabVisibility("directions", true);
+    else	
+      this.mapTabs.setTabVisibility("directions", false);
+    this.mapTabs.update();
+  }
+  onDestroy(){		
+    if (map)
+      map.destroy();
+    DOM('#mapDiv').first().remove();	
+  }
+  onMapSettingsButtonClicked(){
+    map.showMapSettings((map_settings,directions_settings)=>{
+      this.onUpdatedMapSettings(map_settings, directions_settings);
+      if (this.options.isShowPropertyDirections){
+        map.generateRoute(directions_settings);
+      }
+    });
+  }
+  onNavigationButtonClicked(){
+    Confirm(Translate('Launch default navigation app?'), ()=>{
+      this.onLaunchedNavigator(this.options.address); 
+      //Inject.SPY.logEvent(Analytics.Event.LAUNCH_NAVIGATOR, {order_id:this.options.appraisal_id});
+      var addr= encodeURIComponent(this.options.address);
+      if (window['device'] && window['device'].platform.toLowerCase() == 'ios'){
+        window.open("http://maps.apple.com/?q="+ addr, '_system', 'location=yes'); 
+      }else{
+        window.open("https://www.google.com/maps/dir/?api=1&destination="+addr, "_system",'location=yes' );
+      }
+    }, Translate('Navigation'));
+  }
 
-	/**
+  /**
 	 * ***Overwrite***
 	 * @param {object} map_settings 
 	 * @param {object} directions_settings 
 	 */
-	onUpdatedMapSettings(map_settings, directions_settings){
-		console.log("Override me: onUpdatedMapSettings");
-	}
-	/**
+  onUpdatedMapSettings(map_settings, directions_settings){
+    console.log("Override me: onUpdatedMapSettings");
+  }
+  /**
 	 * ***Overwrite***
 	 * @param {string} address 
 	 */
-	onLaunchedNavigator(address){
-		console.log("Override me: onUpdatedMapSettings");
-	}
+  onLaunchedNavigator(address){
+    console.log("Override me: onUpdatedMapSettings");
+  }
 }
 DirectionsPage.selector = "page-DirectionsPage";
 var template =`
@@ -181,4 +181,4 @@ var template =`
 		</li>
 	</ul>
 </div>
-`
+`;

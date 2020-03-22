@@ -7,146 +7,146 @@ import { HeaderPage } from "./../HeaderPage/HeaderPage";
 import { DOM } from "leet-mvc/core/DOM";
 
 export class LoginPage extends HeaderPage {
-	constructor(){
-		super()
+  constructor(){
+    super();
 
-		this.passwordType = "password";
+    this.passwordType = "password";
 
-		this.form={
-			user:null, pass:null, remember: false
-		};
+    this.form={
+      user:null, pass:null, remember: false
+    };
 
-		/** @type {FieldTemplate[]} */
-		this.rules=[
-			{name:"user", title:Translate('User_Name'), type:"text", validateRule:'required|min:2'},
-			{name:'pass', title:Translate('Password'), type:"text", validateRule:'required|min:5'}
-		]
-		this.error={};
+    /** @type {FieldTemplate[]} */
+    this.rules=[
+      {name:"user", title:Translate('User_Name'), type:"text", validateRule:'required|min:2'},
+      {name:'pass', title:Translate('Password'), type:"text", validateRule:'required|min:5'}
+    ];
+    this.error={};
 
-		this.validator = new FormValidator(this.form, this.rules, this.error,{});
-		this.validateChanges = false;
+    this.validator = new FormValidator(this.form, this.rules, this.error,{});
+    this.validateChanges = false;
 
-		this.showLanguage = false;
-		this.showLocation = false;
-		this.showRegister = false;
-		this.regionName = "";
+    this.showLanguage = false;
+    this.showLocation = false;
+    this.showRegister = false;
+    this.regionName = "";
 
-		this.isDev = false;
-		this.version = "0.0.0";
+    this.isDev = false;
+    this.version = "0.0.0";
 
-		this.content = template;
-	}
-	_init(){
-		super._init(
-			{
-				change:(ev)=>{
-					if (ev.target.name)
-						this.validator.validateField(ev.target.name);
-				}
-			}
-		);
-	}
+    this.content = template;
+  }
+  _init(){
+    super._init(
+      {
+        change:(ev)=>{
+          if (ev.target.name)
+            this.validator.validateField(ev.target.name);
+        }
+      }
+    );
+  }
 
-	onInit(){
-		var logo = DOM(this.page).find('#logo');
-		var login = DOM(this.page).find('#login');
-		this.i_height = DOM(this.page).height();
-		this.i_width = DOM(this.page).width();
+  onInit(){
+    var logo = DOM(this.page).find('#logo');
+    var login = DOM(this.page).find('#login');
+    this.i_height = DOM(this.page).height();
+    this.i_width = DOM(this.page).width();
 
-		logo.height(this.i_height*0.30);
-		login.height(this.i_height);
+    logo.height(this.i_height*0.30);
+    login.height(this.i_height);
 
-		this.backgroundSize = this.i_height*0.25+"px";
+    this.backgroundSize = this.i_height*0.25+"px";
 
-		//create 2 debouncers, so they do not cancel each other
-		this.debouncer1 = DeBouncer.timeoutFirst(500);
-		this.debouncer2 = DeBouncer.timeoutFirst(500);
-	}
+    //create 2 debouncers, so they do not cancel each other
+    this.debouncer1 = DeBouncer.timeoutFirst(500);
+    this.debouncer2 = DeBouncer.timeoutFirst(500);
+  }
 
-	onResize(){
-		var h = DOM(this.page).height();
-		var w = DOM(this.page).width();
-		var logo = DOM(this.page).find('#logo');
-		var dc = DOM(this.page).find('.content');
+  onResize(){
+    var h = DOM(this.page).height();
+    var w = DOM(this.page).width();
+    var logo = DOM(this.page).find('#logo');
+    var dc = DOM(this.page).find('.content');
 			
-		if (h < this.i_height && w === this.i_width){
-			//use debounce, so it does not fire too often
-			this.debouncer1(()=>{
-				//dc.animate({ 'margin-top': -logo.height() }, 500 );	
-				dc.css({ 'margin-top': -logo.height() + "px" });
-			})
-		}else{ 
-			//use debounce, so it does not fire too often
-			this.debouncer2(()=>{
-				//dc.animate({ 'margin-top': 0 }, 500 );
-				dc.css({ 'margin-top': 0 });	
-			})
-		}
-	}
-	validateForm(){
-		this.validator.clearErrors();
-		if (!this.validator.validate()){
-			return false;
-		}
-		return true;
-	}
+    if (h < this.i_height && w === this.i_width){
+      //use debounce, so it does not fire too often
+      this.debouncer1(()=>{
+        //dc.animate({ 'margin-top': -logo.height() }, 500 );	
+        dc.css({ 'margin-top': -logo.height() + "px" });
+      });
+    }else{ 
+      //use debounce, so it does not fire too often
+      this.debouncer2(()=>{
+        //dc.animate({ 'margin-top': 0 }, 500 );
+        dc.css({ 'margin-top': 0 });	
+      });
+    }
+  }
+  validateForm(){
+    this.validator.clearErrors();
+    if (!this.validator.validate()){
+      return false;
+    }
+    return true;
+  }
 
-	onLoginClicked(__e){
-		if (!this.validateForm()){
-			return;
-		}
+  onLoginClicked(__e){
+    if (!this.validateForm()){
+      return;
+    }
 
-		this.onLoginSubmit({username:this.form.user,password: this.form.pass,remember: this.form.remember});
-	};
+    this.onLoginSubmit({username:this.form.user,password: this.form.pass,remember: this.form.remember});
+  }
 
-	/** 
+  /** 
 	 * ***Override***
 	 * Called when form is validated and login data can be submitted
 	 * @param {{username: string, password:string, remember: boolean}} data
 	 */
-	onLoginSubmit(data){
-		throw new Error("Override onLoginSubmit!");
-	}
+  onLoginSubmit(data){
+    throw new Error("Override onLoginSubmit!");
+  }
 
-	onForgotClicked(){
-		this.validator.clearErrors();
-		this.onForgotSubmit({username:this.form.user,password: this.form.pass,remember: this.form.remember});
-	};
+  onForgotClicked(){
+    this.validator.clearErrors();
+    this.onForgotSubmit({username:this.form.user,password: this.form.pass,remember: this.form.remember});
+  }
 	
-	/** 
+  /** 
 	 * ***Override***
 	 * Called when Forgot Password is clicked
 	 * @param {{username: string, password:string, remember: boolean}} data
 	 * */
-	onForgotSubmit(data){
+  onForgotSubmit(data){
 
-	}
+  }
 
-	/** 
+  /** 
 	 * ***Override***
 	 * Called when Register is clicked
 	 */
-	onRegisterClicked(){
-		//this.Nav.push(RegisterPage);
-	}
+  onRegisterClicked(){
+    //this.Nav.push(RegisterPage);
+  }
 
-	/** 
+  /** 
 	 * ***Override***
 	 * Called when Language is clicked
 	 */
-	onLanguageClicked(){
+  onLanguageClicked(){
 
-	}
-	/**
+  }
+  /**
 	 * ***Override***
 	 * Called when location is clicked
 	 */
-	onLocationClicked(){}
+  onLocationClicked(){}
 
-	togglePasswordType(){
-		this.passwordType = this.passwordType==="text" ? "password" : "text";
-	}
-};
+  togglePasswordType(){
+    this.passwordType = this.passwordType==="text" ? "password" : "text";
+  }
+}
 LoginPage.selector = 'page-login';
 var template = `
 <!-- <div class="content" > -->

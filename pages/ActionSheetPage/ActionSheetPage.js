@@ -6,46 +6,46 @@ import { BasePage } from './../BasePage';
  */
 export class ActionSheetPage extends BasePage {
 
-	constructor(){
-		super();
-		/** @type {{image:string,icon:string,title:string}[]} */
-		this.items = null;
-	}
-	/**
+  constructor(){
+    super();
+    /** @type {{image:string,icon:string,title:string}[]} */
+    this.items = null;
+  }
+  /**
 	 * @param {*} d 
 	 */
-	slideDirection(d){
-		this.page.removeClass('direction-0');
-		this.page.removeClass('direction-1');
-		this.page.removeClass('direction-2');
-		this.page.removeClass('direction-3');
+  slideDirection(d){
+    this.page.removeClass('direction-0');
+    this.page.removeClass('direction-1');
+    this.page.removeClass('direction-2');
+    this.page.removeClass('direction-3');
 		
-		this.page.addClass('direction-'+d);
-	}
+    this.page.addClass('direction-'+d);
+  }
 
-	onBackdropClicked(){
-		this.destroy();
-	}
+  onBackdropClicked(){
+    this.destroy();
+  }
 
-	_onItemClicked(item){
-		this.destroy()
-	}
+  _onItemClicked(item){
+    this.destroy();
+  }
 
-	onItemClicked(item){
-		throw new Error('Overwrite onItemClicked');
-	}
+  onItemClicked(item){
+    throw new Error('Overwrite onItemClicked');
+  }
 
-	/**
+  /**
 	 * Callback Returns true if the passed item is to be marker 'selected' in the list
 	 * @param {*} item 
 	 * @return {boolean}
 	 */
-	isSelectedItem(item){
-		return false;
-	}
+  isSelectedItem(item){
+    return false;
+  }
 
-	get template() {
-		return this.extendTemplate(super.template,`
+  get template() {
+    return this.extendTemplate(super.template,`
 			<div class="backdrop" onclick="this.onBackdropClicked()"></div>
 			<div class="menu-body" onclick="this.onBackdropClicked()">
 				<ul class="menu-tree">
@@ -57,13 +57,13 @@ export class ActionSheetPage extends BasePage {
 				</ul>
 			</div>
 		`);
-	}
+  }
 }
 ActionSheetPage.Direction={
-	Left: 0,
-	Top: 1,
-	Right: 2,
-	Up: 3,
+  Left: 0,
+  Top: 1,
+  Right: 2,
+  Up: 3,
 };
 ActionSheetPage.visibleParent = true;
 ActionSheetPage.className = "page-ActionSheetPage";

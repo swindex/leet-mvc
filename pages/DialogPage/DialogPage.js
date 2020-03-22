@@ -14,175 +14,175 @@ import { Objects } from "../../core/Objects";
  * @param {string} title 
  */
 export function Dialog(title){
-	/** @type {NavController} */
-	var nav = Injector.Nav;
-	var d = nav.push(DialogPage);
-	d.title = title;
-	return d;
+  /** @type {NavController} */
+  var nav = Injector.Nav;
+  var d = nav.push(DialogPage);
+  d.title = title;
+  return d;
 }
 
 export class DialogPage extends BasePage{
-	constructor(title){
-		super();
-		/** @type {KeyValuePair} */
-		this.buttons = {};
-		this.title= title;
-		this.prompt= null;
-		this.dialog_content_max_height = "100%";
-		this.controls=[];
-		this.data = {};
-		this.errors={};
+  constructor(title){
+    super();
+    /** @type {KeyValuePair} */
+    this.buttons = {};
+    this.title= title;
+    this.prompt= null;
+    this.dialog_content_max_height = "100%";
+    this.controls=[];
+    this.data = {};
+    this.errors={};
 
-		/** @type {Forms} */
-		this.content= new Forms(this.controls,this.data,this.errors);
-	}
+    /** @type {Forms} */
+    this.content= new Forms(this.controls,this.data,this.errors);
+  }
 
-	onResize(windowSize){
-		super.onResize(windowSize);
-		var h = this.page.offsetHeight - 150;
-		this.dialog_content_max_height = h+"px";
-	}
+  onResize(windowSize){
+    super.onResize(windowSize);
+    var h = this.page.offsetHeight - 150;
+    this.dialog_content_max_height = h+"px";
+  }
 
-	onButtonClicked(button_title){
-		if (tryCall(this, this.buttons[button_title], this) != false)
-			this.destroy();
-	}
+  onButtonClicked(button_title){
+    if (tryCall(this, this.buttons[button_title], this) != false)
+      this.destroy();
+  }
 
-	render(){
-		this.content.updateTemplate(this.controls);
-	}
+  render(){
+    this.content.updateTemplate(this.controls);
+  }
 
-	addCheck(name, title, value, required, attrs) {
-		var valRule = (isString(required) ? required : (required ? "required" : null));
-		this.controls.push({name: name, type:'checkbox', title:title, validateRule: valRule, attributes:attrs});
-		this.data[name] = value;
-		this.render();
-		return this;
+  addCheck(name, title, value, required, attrs) {
+    var valRule = (isString(required) ? required : (required ? "required" : null));
+    this.controls.push({name: name, type:'checkbox', title:title, validateRule: valRule, attributes:attrs});
+    this.data[name] = value;
+    this.render();
+    return this;
 			
-	}
+  }
 
-	addSelect(name, title, value, required, items, attrs) {
-		var valRule = (isString(required) ? required : (required ? "required" : null));
-		this.controls.push({name: name, type: "select", title: title, validateRule: valRule, items: items, attributes:attrs});
-		this.data[name] = value;
-		this.render();
+  addSelect(name, title, value, required, items, attrs) {
+    var valRule = (isString(required) ? required : (required ? "required" : null));
+    this.controls.push({name: name, type: "select", title: title, validateRule: valRule, items: items, attributes:attrs});
+    this.data[name] = value;
+    this.render();
 		
-		return this;	
-	}
+    return this;	
+  }
 	
-	addInput(name, title, type, value, required, attrs) {
-		var valRule = (isString(required) ? required : (required ? "required" : null));
-		this.controls.push({name: name, type: type, title:title, validateRule: valRule, attributes:attrs});
-		this.data[name] = value;
-		this.render();
+  addInput(name, title, type, value, required, attrs) {
+    var valRule = (isString(required) ? required : (required ? "required" : null));
+    this.controls.push({name: name, type: type, title:title, validateRule: valRule, attributes:attrs});
+    this.data[name] = value;
+    this.render();
 		
-		return this;	
-	}
+    return this;	
+  }
 
-	addDate(name, title, value, required, attrs) {
-		var valRule = (isString(required) ? required : (required ? "required" : null));
-		this.controls.push({name: name, type: "date", title:title, validateRule: valRule, attributes:attrs});
-		this.data[name] = value;
-		this.render();
+  addDate(name, title, value, required, attrs) {
+    var valRule = (isString(required) ? required : (required ? "required" : null));
+    this.controls.push({name: name, type: "date", title:title, validateRule: valRule, attributes:attrs});
+    this.data[name] = value;
+    this.render();
 		
-		return this;	
-	}
+    return this;	
+  }
 
-	addDateTime(name, title, value, required, attrs) {
-		var valRule = (isString(required) ? required : (required ? "required" : null));
-		this.controls.push({name: name, type: "datetime", title:title, validateRule: valRule, attributes:attrs});
-		this.data[name] = value;
-		this.render();
+  addDateTime(name, title, value, required, attrs) {
+    var valRule = (isString(required) ? required : (required ? "required" : null));
+    this.controls.push({name: name, type: "datetime", title:title, validateRule: valRule, attributes:attrs});
+    this.data[name] = value;
+    this.render();
 		
-		return this;	
-	}
+    return this;	
+  }
 
-	addTime(name, title, value, required, attrs) {
-		var valRule = (isString(required) ? required : (required ? "required" : null));
-		this.controls.push({name: name, type: "time", title:title, validateRule: valRule, attributes:attrs});
-		this.data[name] = value;
-		this.render();
+  addTime(name, title, value, required, attrs) {
+    var valRule = (isString(required) ? required : (required ? "required" : null));
+    this.controls.push({name: name, type: "time", title:title, validateRule: valRule, attributes:attrs});
+    this.data[name] = value;
+    this.render();
 		
-		return this;	
-	}
+    return this;	
+  }
 
-	addTextArea(name, title, value, required, attrs) {
-		var valRule = (isString(required) ? required : (required ? "required" : null));
-		this.controls.push({name: name, type: "textarea", title:title, validateRule: valRule, attributes:attrs});
-		this.data[name] = value;
-		this.render();
+  addTextArea(name, title, value, required, attrs) {
+    var valRule = (isString(required) ? required : (required ? "required" : null));
+    this.controls.push({name: name, type: "textarea", title:title, validateRule: valRule, attributes:attrs});
+    this.data[name] = value;
+    this.render();
 		
-		return this;	
-	}
+    return this;	
+  }
 
-	addText (name, title, value, required, attrs) {
-		return this.addInput(name, title,"text", value, required, attrs);
-	}
+  addText (name, title, value, required, attrs) {
+    return this.addInput(name, title,"text", value, required, attrs);
+  }
 
-	addLabel (title, value, attrs) {
-		this.controls.push({type:'label', title:title, value:value, attributes:attrs});
-		this.render();
+  addLabel (title, value, attrs) {
+    this.controls.push({type:'label', title:title, value:value, attributes:attrs});
+    this.render();
 		
-		return this;
-	}
-	addLink (title, value, attrs) {
-		this.controls.push({type:'link', title:title, value:value, attributes:attrs});
-		this.render();
+    return this;
+  }
+  addLink (title, value, attrs) {
+    this.controls.push({type:'link', title:title, value:value, attributes:attrs});
+    this.render();
 		
-		return this;
-	}
+    return this;
+  }
 
-	addPassword (name, title, value, required, attrs) {
-		return this.addInput(name, title,"password", value, required, attrs);
-	}
+  addPassword (name, title, value, required, attrs) {
+    return this.addInput(name, title,"password", value, required, attrs);
+  }
 
 
-	removeField(name){
-		this.controls = Objects.filter(this.controls, el => el.name != name );
+  removeField(name){
+    this.controls = Objects.filter(this.controls, el => el.name != name );
 
-		if (this.data[name])
-			delete this.data[name];
+    if (this.data[name])
+      delete this.data[name];
 
-		this.render();
-	}
+    this.render();
+  }
 	
-	addHtml (value) {
-		this.controls.push({type:'html',value:value});
-		this.render();
+  addHtml (value) {
+    this.controls.push({type:'html',value:value});
+    this.render();
 		
-		return this;
-	}
+    return this;
+  }
 
 	
-	addSplit (items) {
-		this.controls.push({name:"split", type:'split', title:null, value:null, items: items});
-		this.render();
+  addSplit (items) {
+    this.controls.push({name:"split", type:'split', title:null, value:null, items: items});
+    this.render();
 		
-		return this;
-	}
+    return this;
+  }
 
-	/**
+  /**
 	 * Validate the content form
 	 */
-	validate(){
-		if (this.content instanceof Forms)
-			return this.content.validator.validate();
-	}
+  validate(){
+    if (this.content instanceof Forms)
+      return this.content.validator.validate();
+  }
 
-	/**
+  /**
 	 * Add Action Button to the dialog
 	 * @param {string} title
 	 * @param {function(DialogPage)} callback - fired when button is clicked. Return false to stop dialog from closing
 	 */
-	addActionButton(title, callback) {
-		callback = callback || null;
-		this.buttons[title] = callback;
-		return this;
-	}
+  addActionButton(title, callback) {
+    callback = callback || null;
+    this.buttons[title] = callback;
+    return this;
+  }
 
-	get template(){
-		return this.extendTemplate(super.template, template);
-	}
+  get template(){
+    return this.extendTemplate(super.template, template);
+  }
 }
 DialogPage.className = 'page-DialogPage';
 DialogPage.visibleParent = true;

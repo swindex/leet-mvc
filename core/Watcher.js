@@ -1,7 +1,7 @@
 import { isObject, isArray, isSymbol, isDate } from "util";
 
 let isProxy = Symbol("isProxy");
-let isWatched = Symbol("isDeleted");
+let isWatched = Symbol("isWatched");
 
 let propertyChangeCallbacks = Symbol("propertyChangeCallbacks");
 let objectChangeCallbacks = Symbol("objectChangeCallbacks");
@@ -15,30 +15,39 @@ export var isSkipUpdate = Symbol("isSkipUpdate");
 export var Watcher={
   skip: isSkipUpdate,
   watched: isWatched,
+
   /**
    * Watch for object changes. 
 	 * @param {object} object - object to watch for changes
 	 * @param {function(object, string, any):void} [onPropertyChangeCallback] - called for each changed property
- 	 * @param {function():void} [onObjectChangeCallback] - timeout 0 de-bounced callback. called on the next frame after all onPropertyChangeCallbacks are executed
-	 * @param {string[]} [ignoreProperties]
+   * @param {function():void} [onObjectChangeCallback] - timeout 0 de-bounced callback. called on the next frame after all onPropertyChangeCallbacks are executed
+   * @param {string[]} [ignoreProperties]
 	 */
-  on: function(object, onPropertyChangeCallback, onObjectChangeCallback, ignoreProperties){
-    ignoreProperties = ignoreProperties || [];
+  on(object, onPropertyChangeCallback, onObjectChangeCallback, ignoreProperties ){
+    
     object[isWatched] = true;
 
     if (!object[propertyChangeCallbacks]){
       object[propertyChangeCallbacks] = [];
     }
-    if (!object[objectChangeCallbacks]){
-      object[objectChangeCallbacks] = [];
+    object[propertyChangeCallbacks].push(onPropertyChangeCallback);
+   
+    if (onObjectChangeCallback){
+      if (!object[objectChangeCallbacks]){
+        object[objectChangeCallbacks] = [];
+      }
+      object[objectChangeCallbacks].push(onObjectChangeCallback);
     }
 
-    object[propertyChangeCallbacks].push(onPropertyChangeCallback);
-    object[objectChangeCallbacks].push(onObjectChangeCallback);
-
-    let callbackScheduled = false;
-
     function propertyChangeHandler(target, property, value ){
+      if (//value === isSkipUpdate ||
+        target[property] === value ||
+        isSymbol(property) ||
+        //property === isSkipUpdate ||
+        !object[isWatched]){
+
+        return; 
+      }
       let isSkip = object[isSkipUpdate];
       //skip any subsequent updates triggered by all onChange Callbacks
       object[isSkipUpdate] = true;
@@ -49,7 +58,9 @@ export var Watcher={
           console.warn(ex);
         }
       });
-      if (target[propertyChangeCallbacks] && target[isWatched]){
+      object[isSkipUpdate] = isSkip;
+
+      if (target !== object && target[propertyChangeCallbacks] && target[isWatched]){
         let isSkip2 = target[isSkipUpdate];
         target[isSkipUpdate] = true;
         target[propertyChangeCallbacks].forEach(function(onPropertyChangeCallback){
@@ -58,14 +69,17 @@ export var Watcher={
           } catch (ex){
             console.warn(ex);
           }
-          });
+        });
         target[isSkipUpdate] = isSkip2;
       }
-      object[isSkipUpdate] = isSkip;
+      if (onObjectChangeCallback && !object[isSkipUpdate]){
+        scheduleCallback(target);
+      }
     }
-
     function scheduleCallback(target){
-      scheduleTargetCallback(target)
+      if (target !== object){
+        scheduleTargetCallback(target);
+      }
       if (object[isSkipUpdate] || !object[isWatched]){
         return;
       }
@@ -79,14 +93,14 @@ export var Watcher={
     
         //prevent changes in object from calling other updates while onUpdateCallback is executing
         object[isSkipUpdate] = true;
-          object[objectChangeCallbacks].forEach(function(onUpdateCallback){
-            try {
-              onUpdateCallback();
-            } catch (ex){
-              console.warn(ex);
-            }
-          });
-          object[isSkipUpdate] = false;
+        object[objectChangeCallbacks].forEach(function(onUpdateCallback){
+          try {
+            onUpdateCallback();
+          } catch (ex){
+            console.warn(ex);
+          }
+        });
+        object[isSkipUpdate] = false;
       },0);
     }
 
@@ -105,104 +119,98 @@ export var Watcher={
         //prevent changes in object from calling other updates while onUpdateCallback is executing
         target[isSkipUpdate] = true;
         
-          if (target[objectChangeCallbacks]){
+        if (target[objectChangeCallbacks]){
 
-            target[objectChangeCallbacks].forEach(function(onUpdateCallback){
-              try {
-                onUpdateCallback();
-              } catch (ex){
-                console.warn(ex);
-              }
-            });
-          }
-          target[isSkipUpdate] = false;
+          target[objectChangeCallbacks].forEach(function(onUpdateCallback){
+            try {
+              onUpdateCallback();
+            } catch (ex){
+              console.warn(ex);
+            }
+          });
+        }
+        target[isSkipUpdate] = false;
       },0);
     }
-
-    if (window['Proxy'] && window['Reflect']){
-      const handler = {
-        get(target, property, receiver) {
-          if (property == isProxy)
-            return true;
-
-          const value = Reflect.get(target, property, receiver);
-
-          //return as-is if its a primitive	
-          if (! isObject(value))
-            return value;
-          if (value && isObject(value) && value[isProxy])
-            return value;
-					
-
-          //return non-modifiable objects as-is
-          const desc = Object.getOwnPropertyDescriptor(target, property);
-          if (desc && !desc.writable && !desc.configurable) return value;
-
-          //return objects, instantiated with `new` as-is
-          if (! isArray(value) && isObject(value) && !isObjLiteral(value))
-            return value;
-					
-          try {
-            return new Proxy(target[property], handler);
-          } catch (error) {
-            return value;
-          }
-        },
-        set(target, property, value) {
-          //do nothing if value is already the same
-          if (value === isSkipUpdate ||
-						target[property] === value ||
-						isSymbol(property) ||
-						property === isSkipUpdate ||
-						!object[isWatched] ||
-						ignoreProperties.indexOf(property) >= 0  ){
-
-            return Reflect.set(target, property, value);
-          }
-          
-          propertyChangeHandler(target, property, value );
-
-          scheduleCallback(target);
-          
-          return Reflect.set(target, property, value);
-        },
-        defineProperty(target, property, descriptor) {
-          propertyChangeHandler(target, property, descriptor );
-          if (property !== isSkipUpdate && ignoreProperties.indexOf(property)<=0 ){
-            scheduleCallback(target);
-          }
-          return Reflect.defineProperty(target, property, descriptor);
-        },
-        deleteProperty(target, property) {
-          propertyChangeHandler(target, property, undefined );
-          
-          if (property !== isSkipUpdate && ignoreProperties.indexOf(property)<=0 ) {
-            scheduleCallback(target);
-          }
-          return Reflect.deleteProperty(target, property);
-        }
-      };
-			
-      return new Proxy(object, handler);
-    }else{
-      onObjectDirtyChange(object ,
-        (target, property, value)=>{ //property changed callback
-          propertyChangeHandler(target, property, value );
-
-          scheduleCallback(target);
-        }, ignoreProperties
-      );
-      return object;
-    }
-    
-    
+    return getWatchedObject(object, propertyChangeHandler, ignoreProperties);
   },
-  off: function( object ){
-    delete object[isWatched];
-    delete object[propertyChangeCallbacks];
-    delete object[objectChangeCallbacks];
+  off: function( object, handler ){
+    if (!handler) {
+      delete object[isWatched];
+      delete object[propertyChangeCallbacks];
+      delete object[objectChangeCallbacks];
+    } else {
+      for (let i in object[propertyChangeCallbacks]) {
+        if (object[propertyChangeCallbacks][i])
+          object[propertyChangeCallbacks].splice(i,1);
+      }
+      for (let i in object[objectChangeCallbacks]) {
+        if (object[objectChangeCallbacks][i])
+          object[objectChangeCallbacks].splice(i,1);
+      }
+    }
   }
 };
+
+function getWatchedObject(object, onPropertyChange, ignoreProperties){
+  ignoreProperties = ignoreProperties || [];
+  if (window['Proxy'] && window['Reflect']){
+    const handler = {
+      get(target, property, receiver) {
+        if (property == isProxy)
+          return true;
+
+        const value = Reflect.get(target, property, receiver);
+
+        //return as-is if its a primitive	
+        if (! isObject(value))
+          return value;
+        if (value && isObject(value) && value[isProxy])
+          return value;
+        
+
+        //return non-modifiable objects as-is
+        const desc = Object.getOwnPropertyDescriptor(target, property);
+        if (desc && !desc.writable && !desc.configurable) return value;
+
+        //return objects, instantiated with `new` as-is
+        if (! isArray(value) && isObject(value) && !isObjLiteral(value))
+          return value;
+        
+        try {
+          return new Proxy(target[property], handler);
+        } catch (error) {
+          return value;
+        }
+      },
+      set(target, property, value) {
+        if (ignoreProperties.indexOf(property) < 0)
+          onPropertyChange(target, property, value );
+     
+        return Reflect.set(target, property, value);
+      },
+      defineProperty(target, property, descriptor) {
+        if (ignoreProperties.indexOf(property) < 0)
+          onPropertyChange(target, property, descriptor );
+        return Reflect.defineProperty(target, property, descriptor);
+      },
+      deleteProperty(target, property) {
+        if (ignoreProperties.indexOf(property) < 0)
+          onPropertyChange(target, property, undefined );
+        return Reflect.deleteProperty(target, property);
+      }
+    };
+    
+    return new Proxy(object, handler);
+  }else{
+    onObjectDirtyChange(object ,
+      (target, property, value)=>{ //property changed callback
+        onPropertyChange(target, property, value );
+      }, ignoreProperties
+    );
+    return object;
+  }
+}
 
 function isObjLiteral(_obj) {
   var _test  = _obj;

@@ -2,29 +2,43 @@ import { isObject, isArray, isFunction, isSymbol, isDate } from "util";
 
 import { Watcher, isSkipUpdate } from './Watcher.js';
 
+const propChangeHanler = Symbol('propChangeHanler');
+const objectChangeHanler = Symbol('objectChangeHanler');
 export class ChangeWatcher {
   constructor(){
     this[Watcher.skip] = true;
 
-    return Watcher.on(this,
-      (target, property, value)=>{
-        if (target===this){
-          if (isFunction(this[property+"Change_2"])) {
-            this[isSkipUpdate] = true;
-            this[property+"Change_2"](value);
-            this[isSkipUpdate] = false;
-          }
-          if (isFunction(this[property+"Change"])) {
-            this[isSkipUpdate] = true;
-            this[property+"Change"](value);
-            this[isSkipUpdate] = false;
-          }
+
+    //var updateRequested = false;
+    this[propChangeHanler] = (target,property,value)=>{
+      if (target===this){
+        if (isFunction(this[property+"Change_2"])) {
+          this[property+"Change_2"](value);
         }
-      },
-      ()=>{
-        this.update();
-      },
-      ['injectVars']);
+        if (isFunction(this[property+"Change"])) {
+          this[property+"Change"](value);
+        }
+      }
+      /*if (!updateRequested){
+        updateRequested = true;
+        setTimeout(() => {
+          if (this[Watcher.watched]){
+            this.update();
+          }
+          updateRequested = false;
+        }, 0);
+      }*/
+    };
+
+    this[objectChangeHanler] = ()=>{
+      this.update();
+    };
+
+    var object = Watcher.on(this, this[propChangeHanler],this[objectChangeHanler], ['injectVars']);
+
+    //object = Watcher.onObjectChange(object, this[objectChangeHanler], ['injectVars']);
+
+    return object;
   }
 
   startWatch(){
@@ -32,7 +46,8 @@ export class ChangeWatcher {
   }
 
   stopWatch(){
-    Watcher.off(this);
+    Watcher.off(this, this[propChangeHanler]);
+    Watcher.off(this, this[objectChangeHanler]);
   }
 
   /**

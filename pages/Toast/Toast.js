@@ -1,7 +1,7 @@
 import { BasePage } from "./../BasePage";
 import { Injector } from "./../../core/Injector";
 import { tryCall } from "./../../core/helpers";
-import './Toast.scss'
+import './Toast.scss';
 
 var toastStack={top:null,bottom:null,middle:null};
 /**
@@ -12,62 +12,62 @@ var toastStack={top:null,bottom:null,middle:null};
  * @param {'top'|'bottom'|'middle'} [location] - default bottom
  */
 export function Toast(message, timeout, onClosed, location="bottom"){
-	timeout = (timeout===undefined || timeout===null) ? 3000 : timeout;
+  timeout = (timeout===undefined || timeout===null) ? 3000 : timeout;
 
-	//try creating toast stack
-	if (!toastStack[location]){
-		var container = document.createElement('div');
-		container.className = `toastStack ${location} scroll`
+  //try creating toast stack
+  if (!toastStack[location]){
+    var container = document.createElement('div');
+    container.className = `toastStack ${location} scroll`;
 
-		toastStack[location] = document.createElement('div');
-		toastStack[location].className = `toastStack-container`
+    toastStack[location] = document.createElement('div');
+    toastStack[location].className = `toastStack-container`;
 
-		container.append(toastStack[location]);
-		document.body.append(container);
-	}
+    container.append(toastStack[location]);
+    document.body.append(container);
+  }
 
-	/** @type {ToastPage} */
-	var p = Injector.Nav.pushInto(toastStack[location], ToastPage);
-	p.message = message;
-	p.className = location;
+  /** @type {ToastPage} */
+  var p = Injector.Nav.pushInto(toastStack[location], ToastPage);
+  p.message = message;
+  p.className = location;
 
 	
 
-	p.onClosed=()=>{
-		tryCall(null, onClosed);
-	};
+  p.onClosed=()=>{
+    tryCall(null, onClosed);
+  };
 
-	p.show(timeout);
-	return p;	
+  p.show(timeout);
+  return p;	
 }
 export class ToastPage extends BasePage{
-	constructor(){
-		super();
-		this.message = "";
-	}
-	show(timeout){
-		setTimeout(()=>{
-			this.destroy();
-		},timeout);
-	}
-	onDestroy(){
-		super.onDestroy();
-		this.onClosed();
-	}
-	/**
+  constructor(){
+    super();
+    this.message = "";
+  }
+  show(timeout){
+    setTimeout(()=>{
+      this.destroy();
+    },timeout);
+  }
+  onDestroy(){
+    super.onDestroy();
+    this.onClosed();
+  }
+  /**
 	 * ***Override***
 	 */
-	onClosed(){
+  onClosed(){
 
-	}
+  }
 
-	get template(){
-		return this.extendTemplate(super.template,`
+  get template(){
+    return this.extendTemplate(super.template,`
 			<div class="toast-box">
 				<span class="message">{{this.message}}</span>
 			</div>
 		`);
-	}
+  }
 	
 }
 ToastPage.visibleParent = true;
