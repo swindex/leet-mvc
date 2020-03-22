@@ -9,66 +9,66 @@ import { DOM } from '../../core/DOM';
  * @param {HTMLElement} container
  */
 export class MenuPage extends BasePage {
-	constructor(position) {
-		super()
-		this.down = false;
-		this.position = position || "left";
-		if (this.position) {
-			this.className = this.className + " " + this.position
-		}
-		var st = Injector.Nav ? Injector.Nav.getPages() : null;
+  constructor(position) {
+    super();
+    this.down = false;
+    this.position = position || "left";
+    if (this.position) {
+      this.className = this.className + " " + this.position;
+    }
+    var st = Injector.Nav ? Injector.Nav.getPages() : null;
 
-		this.currPage = st[st.length-1].page;
+    this.currPage = st[st.length-1].page;
 
-		/** @type {{action:Page|string,label:string,className?:string}[]}*/
-		this.items = [];
+    /** @type {{action:Page|string,label:string,className?:string}[]}*/
+    this.items = [];
 
-		/**
+    /**
 		 * HTML text to put in logo
 		 */
-		this.logo="";
+    this.logo="";
 
-		this.slogan = "";
-	}
-	_onItemClicked(item,index){
-		this.destroy();
-		this.onItemClicked(item,index);	
-	}
+    this.slogan = "";
+  }
+  _onItemClicked(item,index){
+    this.destroy();
+    this.onItemClicked(item,index);	
+  }
 
-	onItemClicked(item,index){
-		console.log(item);
-		throw new Error("Override onItemClicked");
-	}
+  onItemClicked(item,index){
+    console.log(item);
+    throw new Error("Override onItemClicked");
+  }
 
-	onDestroy() {
-		super.onDestroy();
-		DOM('body').first().classList.remove('menu-shown');
-	};
+  onDestroy() {
+    super.onDestroy();
+    DOM('body').first().classList.remove('menu-shown');
+  }
 
-	/**
+  /**
 	 * Check if the item is selected
 	 * @param {{action:any,label:string}} item
 	 * @return {boolean}
 	 */
-	isSelected(item){
-		return (isFunction(item.action) && this.currPage instanceof item.action);
-	}
+  isSelected(item){
+    return (isFunction(item.action) && this.currPage instanceof item.action);
+  }
 
-	onVisible(){
-		console.log("");
-	}
+  onVisible(){
+    console.log("");
+  }
 
-	onInit() {
-		DOM('body').first().classList.add('menu-shown');
-	};
+  onInit() {
+    DOM('body').first().classList.add('menu-shown');
+  }
 
-	onBackdropClicked() {
-		this.destroy();
-	}
+  onBackdropClicked() {
+    this.destroy();
+  }
 
-	get template (){
-		return this.extendTemplate(super.template, template);
-	}
+  get template (){
+    return this.extendTemplate(super.template, template);
+  }
 }
 MenuPage.visibleParent = true;
 MenuPage.selector = "page-menu";

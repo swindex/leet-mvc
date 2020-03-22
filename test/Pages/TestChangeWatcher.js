@@ -63,7 +63,7 @@ export class TestChangeWatcher extends HeaderPage{
                 this.hookWatchers();
                 this.mutate();
                 this.log = `New Counter: ${this.object.counter}\n`
-            }, 0);
+            }, 1);
         }
         //this.log += `New Counter: ${this.object.counter}\n`
 
