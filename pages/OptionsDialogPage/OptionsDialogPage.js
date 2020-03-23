@@ -2,6 +2,7 @@ import './OptionsDialogPage.scss';
 import { DialogPage } from "../DialogPage/DialogPage";
 import { isObject } from 'util';
 import { Objects } from '../../core/Objects';
+import { DOM } from '../../core/DOM';
 
 export class OptionsDialogPage extends DialogPage{
   constructor(){
@@ -82,8 +83,9 @@ export class OptionsDialogPage extends DialogPage{
   onLoaded(){
     //Scroll to the selected item
     setTimeout(()=>{
-      if(this.page.find('[selected]').length>0 && this.page.find('[selected]')[0].scrollIntoView){
-        this.page.find('[selected]')[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      var selected = DOM(this.page).find('[selected]')[0];
+      if(selected && selected.scrollIntoView){
+        selected.scrollIntoView({ behavior: 'auto', block: 'center' });
       }
     },100);
   }

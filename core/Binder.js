@@ -849,7 +849,7 @@ export var Binder = function(context){
         inj[parts.index] = index;
         inj[parts.item] = item;
         inj = Object.assign({},inject,inj);
-
+        
         if (on.items[index] && isObject(item) && !isObjLiteral(item)) {
           //it is some sort of complex object. Handle it differently
           if (on.items[index].INJECT[parts.item] != item) {
@@ -880,6 +880,7 @@ export var Binder = function(context){
             //Items have been removed from DOM
             return EAttrResult.SkipChildren;
           }
+          on.items[index].INJECT = inj;
           insertBefore(fo1, on.items[index].elem);
           if (checkVDomNode(on.items[index], inj)===true){
             hasChanges ++;
