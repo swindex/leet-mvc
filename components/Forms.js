@@ -778,14 +778,16 @@ export class Forms extends BaseComponent{
 			return;
 		}
 
-		FileAccess.ReadFile(fileFiled.files[0]).DataURL().then( dataURL =>{
-			Objects.setPropertyByPath(this.data, name, {name: file.name, type:file.type, dataURL: dataURL, size:file.size});
+		Objects.setPropertyByPath(this.data, name, {name: file.name, type:file.type, /*dataURL: dataURL,*/ fileBlob:file, size:file.size});
+			
+		/*FileAccess.ReadFile(fileFiled.files[0]).DataURL().then( dataURL =>{
+			Objects.setPropertyByPath(this.data, name, {name: file.name, type:file.type, dataURL: dataURL, fileBlob:file, size:file.size});
 			this.events.change(event);
 		}).catch(err=>{
 			console.warn(err);
 			Objects.setPropertyByPath(this.data, name, {name: null});
 			this.events.change(event);
-		});
+		});*/
 	}
 }
 /** @type {{[key:string]: function(Forms, FieldTemplate, string): string}} */
