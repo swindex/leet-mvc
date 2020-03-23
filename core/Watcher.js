@@ -73,9 +73,9 @@ export var Watcher={
         target[isSkipUpdate] = isSkip2;
       }
       scheduleTargetCallback(target);
-      scheduleCallback(target);
+      scheduleCallback();
     }
-    function scheduleCallback(target){
+    function scheduleCallback(){
       if (object[isSkipUpdate] || !object[isWatched]){
         return;
       }
