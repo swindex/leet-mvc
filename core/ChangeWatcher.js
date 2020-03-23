@@ -19,15 +19,6 @@ export class ChangeWatcher {
           this[property+"Change"](value);
         }
       }
-      /*if (!updateRequested){
-        updateRequested = true;
-        setTimeout(() => {
-          if (this[Watcher.watched]){
-            this.update();
-          }
-          updateRequested = false;
-        }, 0);
-      }*/
     };
 
     this[objectChangeHanler] = ()=>{
