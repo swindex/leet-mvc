@@ -72,14 +72,10 @@ export var Watcher={
         });
         target[isSkipUpdate] = isSkip2;
       }
-      if (onObjectChangeCallback && !object[isSkipUpdate]){
-        scheduleCallback(target);
-      }
+      scheduleTargetCallback(target);
+      scheduleCallback(target);
     }
     function scheduleCallback(target){
-      if (target !== object){
-        scheduleTargetCallback(target);
-      }
       if (object[isSkipUpdate] || !object[isWatched]){
         return;
       }
@@ -105,6 +101,10 @@ export var Watcher={
     }
 
     function scheduleTargetCallback(target){
+      if (target == object){
+        return;
+      }
+
       if (target[isSkipUpdate] || !target[isWatched] || !target[objectChangeCallbacks]){
         return;
       }
