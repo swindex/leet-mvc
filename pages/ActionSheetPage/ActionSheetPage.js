@@ -15,12 +15,12 @@ export class ActionSheetPage extends BasePage {
 	 * @param {*} d 
 	 */
   slideDirection(d){
-    this.page.removeClass('direction-0');
-    this.page.removeClass('direction-1');
-    this.page.removeClass('direction-2');
-    this.page.removeClass('direction-3');
+    this.page.classList.remove('direction-0');
+    this.page.classList.remove('direction-1');
+    this.page.classList.remove('direction-2');
+    this.page.classList.remove('direction-3');
 		
-    this.page.addClass('direction-'+d);
+    this.page.classList.add('direction-'+d);
   }
 
   onBackdropClicked(){

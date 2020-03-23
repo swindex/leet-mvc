@@ -1,9 +1,11 @@
 import { isIterable } from './helpers';
 import { Objects } from './Objects';
 
+const identitySymbol = Symbol('identitySymbol');
+//Window|HTMLElement|DocumentFragment|Element|string
 /**
  * jQuery replacement
- * @param {Window|HTMLElement|DocumentFragment|Element|string} elemOrQuery 
+ * @param {any} elemOrQuery 
  */
 export function DOM(elemOrQuery){
 
@@ -26,6 +28,7 @@ export function DOM(elemOrQuery){
   }
 	
   const self = {
+    identity: identitySymbol,
     /**
 		 * Iterate ove reach element of the set
 		 * @param {function(HTMLElement):void} callback 
@@ -40,6 +43,7 @@ export function DOM(elemOrQuery){
       return elemArray[0];
     },
     attr(key, value = undefined){
+      if (elemArray[0] == undefined) return null;
       //remove children
       if (value == undefined){
         return elemArray[0].getAttribute(key);
@@ -48,12 +52,19 @@ export function DOM(elemOrQuery){
         elem.setAttribute(key,value);
       });
     },
+    removeAttr(key){
+      elemArray.forEach( elem => {
+        elem.removeAttribute(key);
+      });
+    },
     /**
 		 * Apply CSS rule to all elements
 		 * @param {{[key:string]:string}|string[]|string} styles - if styles is array, return the specified css properties
 		 * @param {string} [value]
 		 */
     css(styles, value){
+      if (elemArray[0] == undefined) return null;
+
       if (empty(styles)){
         return getComputedStyle(elemArray[0]);
       }
@@ -61,7 +72,7 @@ export function DOM(elemOrQuery){
         if (value === undefined)
           return getComputedStyle(elemArray[0])[styles];
 				
-        elemArray[0][styles] = value;
+        elemArray[0].style[styles] = value;
         return;
       }
       if (Array.isArray(styles)){
@@ -82,10 +93,19 @@ export function DOM(elemOrQuery){
         });
       }
     },
-    removeAttr(key, value){
-      //remove children
+    addClass(className){
       elemArray.forEach( elem => {
-        elem.removeAttribute(key);
+        elem.classList.add(className)
+      });
+    },
+    removeClass(className){
+      elemArray.forEach( elem => {
+        elem.classList.remove(className)
+      });
+    },
+    toggleClass(className){
+      elemArray.forEach( elem => {
+        elem.classList.toggle(className)
       });
     },
     /**
@@ -297,7 +317,14 @@ export function DOM(elemOrQuery){
       if (offset == undefined)
         return elem.scrollTop;
 
-      elem.scrollTop = addPx(offset);
+      elem.scrollTop = offset;
+    },
+    position(){
+      if (elemArray[0] == undefined) return {top:0,left:0};
+      return {
+        top: elemArray[0].offsetTop,
+        left: elemArray[0].offsetLeft,
+      }
     },
     offset(){
       return {
@@ -352,19 +379,25 @@ export function DOM(elemOrQuery){
     throw new Error("elemOrQuery can not be empty!");
   }
 
-  /** @type {self} */
-  var instance = Object.create(self);
-
 	 /** @type {HTMLElement[]} */
   var elemArray =[];
 	
   if (typeof elemOrQuery == "string" || typeof elemOrQuery == "number"){
     elemArray = Array.from(document.querySelectorAll( elemOrQuery ));
   } else if (typeof elemOrQuery == "object" ) {
+    //if passed element is already DOM object, then return it as-is
+    if (elemOrQuery.identity == identitySymbol){
+      /** @type {self} */
+      var ret = elemOrQuery
+      return ret;
+    }
     elemArray = getArray(elemOrQuery);
   } else {
     throw new Error("Not Implemented");
   }
+
+  /** @type {self} */
+  var instance = Object.create(self);
 
   instance.length = elemArray.length;
 
