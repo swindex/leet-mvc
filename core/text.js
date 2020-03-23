@@ -54,6 +54,19 @@ export var Text = {
   },
 
   /**
+	 * Get File Name without Extension
+	 * @param {string} fName
+	 * @return {string}
+	 */
+  fileName: function(fileName){
+    fileName = fileName || "";
+    if (!fileName || !isString(fileName)){
+      return "";
+    }
+    return fileName.split(/\\|\//).pop().split('.').shift();
+  },
+
+  /**
 	 * Join file path bits making sure there is / between them and no duplicates
 	 * @param {string[]} args
 	 */

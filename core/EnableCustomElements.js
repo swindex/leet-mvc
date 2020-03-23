@@ -82,6 +82,7 @@ export function EnableCustomElements(){
   Forms.field_definitions["select-multiple"] = function(forms, el, parentPath){
     return forms.renderFieldGroupHTML(el, [
       `<select-multiple name="${el.name}"
+        (onChange)="this.events.change.apply(null,arguments)"
 				[(value)]= "${forms.refactorAttrName('this.data.' + el._name)}"
 				placeholder="${el.placeholder}"
 				[items] = "${forms.refactorAttrName('this.fields.' + el._name + '.items')}">
