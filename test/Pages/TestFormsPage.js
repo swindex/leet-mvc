@@ -18,7 +18,7 @@ export class TestFormsPage extends HeaderPage {
 			{type:"text", name:"text1",title:"text1", validateRule:"required", displayRule:"true_if:checkbox1,true" , attributes:{ onclick: "this.onClicked()" }},
 			
 			{type:"checkbox", name:"checkbox2",title:"Show form1", validateRule:"required",},
-			{type:"form", name:"form1",title:"form1", displayRule:"true_if:checkbox2,true",items:[
+			{type:"form", /*name:"form1"*/ title:"form1", displayRule:"true_if:checkbox2,true",items:[
 				{type:"text", name:"text2",title:"text2", validateRule:"required"},
 			]},
 			{type:"form", name:null, title:"form2", items:[
