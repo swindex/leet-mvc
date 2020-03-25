@@ -90,7 +90,7 @@ export function FormValidator(data, template, errors, options){
 
 		Objects.walk2(obj, fields, function(ob1,ob2, path){
 			//console.log(ob1,ob2, path);
-			if (ob2 && ob2[path] && (ob2[path].attributes.hidden || ob2[path].attributes.data != false)) {
+			if (ob2 && ob2[path] && (ob2[path].attributes.hidden || ob2[path].attributes.data === false || !ob2[path].name)) {
 				delete ob1[path];
 			}
 		})
@@ -154,7 +154,13 @@ export function FormValidator(data, template, errors, options){
 	this.validate = function( ){
 		
 		used=[];
-		isValid = validate_object( fields )==0;
+		isValid = true;
+		Objects.forEach(fields, field => {
+			if (validate_object( field ) > 0){
+				isValid	= false	
+			}
+		})
+		//isValid = validate_object( fields )==0;
 		return isValid;
 	}
 
@@ -227,10 +233,10 @@ export function FormValidator(data, template, errors, options){
 				
 				var visible = is_field_visible(obj);
 				if (visible) {
-					if (obj.name){
+					/*if (obj.name){
 						path.push(obj.name);
-					}	
-					e += validate_object(obj.items,path);
+					}	*/
+					e += validate_object(obj.items/*,path*/);
 				}
 			}
 
@@ -240,19 +246,19 @@ export function FormValidator(data, template, errors, options){
 				Objects.forEach(obj.items,(el)=>{
 					//only validate items of the selected item!
 					if (el.value == v){
-						e += validate_object(el.items, path);
+						e += validate_object(el.items/*, path*/);
 					}
 				});
 			}
 			//items of the selected item
 			if (obj.type == undefined && obj.items){
-				e += validate_object(obj.items,path);
+				e += validate_object(obj.items/*,path*/);
 			}
 		}
 		//Object is an array FieldTemplate[]
 		if (isArray(obj)){	
 			Objects.forEach(obj,(el)=>{
-				e += validate_object(el, path);
+				e += validate_object(el/*, path*/);
 			});
 		}	
 			
