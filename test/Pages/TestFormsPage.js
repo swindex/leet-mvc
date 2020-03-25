@@ -13,7 +13,7 @@ export class TestFormsPage extends HeaderPage {
 
 		this.form1template = [
 			{type:"number", name:"number1", title:"Enter Number 1"},
-			{type:"number", name:"number2", title:"Enter Number 2"},
+			{type:"number", name:"number2", title:"Enter Number 2", validateRule:"required"},
 			{type:"checkbox", name:"checkbox1",title:"Show text1"},
 			{type:"text", name:"text1",title:"text1", validateRule:"required", displayRule:"true_if:checkbox1,true" , attributes:{ onclick: "this.onClicked()" }},
 			
@@ -21,7 +21,7 @@ export class TestFormsPage extends HeaderPage {
 			{type:"form", /*name:"form1"*/ title:"form1", displayRule:"true_if:checkbox2,true",items:[
 				{type:"text", name:"text2",title:"text2", validateRule:"required"},
 			]},
-			{type:"form", name:null, title:"form2", items:[
+			{type:"form", name:"someForm11", title:"form2", items:[
 				{type:"text", name:"text3",title:"text3", validateRule:"required"},
 			]},
 			{type:"number", name:"number3", title:"Enter Number 3"},
