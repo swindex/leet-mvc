@@ -413,7 +413,7 @@ select-multiple{
 		
 	}
 	&.required {
-		>label:first-child:after {
+		>label.toggle:first-child:after {
 			display: none;
 		}
 		>label>span.text:after {
@@ -475,6 +475,3 @@ button{
 		color: $color-link !important;
 	}
 }
-
-
-
