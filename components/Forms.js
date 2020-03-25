@@ -214,19 +214,19 @@ export class Forms extends BaseComponent{
 						html.push(ret);
 					}
 				}else{
-					if ((el.name == null || el.name==undefined)){
+					/*if ((el.name == null || el.name==undefined)){
 						el.name = i;
-					}
+					}*/
 					//do we support nested data?
 					if (!this.options.nestedData){
 						parentPath = null;
 					}
 		
 					if(parentPath && el.name){
-						el._name = parentPath + "." + el.name ;
+						//el._name = parentPath + "." + el.name ;
 						//el._parent = Objects.getPropertyByPath(this.formTemplate, el._name);
 					}else{
-						el._name = el.name;
+						//el._name = el.name;
 					}
 					//create value in each structure
 					/*if (! Objects.getPropertyByPath(this.data, el._name))
@@ -290,9 +290,9 @@ export class Forms extends BaseComponent{
 		}
 
 		if(parentPath && el.name){
-			el._name = parentPath + "." + el.name ;
+			//el._name = parentPath + "." + el.name ;
 		}else{
-			el._name = el.name;
+			//el._name = el.name;
 		}
 		if (el._name){
 			//if create value in each structure

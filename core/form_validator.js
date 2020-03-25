@@ -90,7 +90,7 @@ export function FormValidator(data, template, errors, options){
 
 		Objects.walk2(obj, fields, function(ob1,ob2, path){
 			//console.log(ob1,ob2, path);
-			if (ob2 && ob2[path] && ob2[path].attributes.hidden) {
+			if (ob2 && ob2[path] && (ob2[path].attributes.hidden || ob2[path].attributes.data != false)) {
 				delete ob1[path];
 			}
 		})
@@ -151,11 +151,10 @@ export function FormValidator(data, template, errors, options){
 	 * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
 	 * @return {boolean}
 	 */
-	this.validate = function( template ){
-		template = template || _template;
-		//return validate_template(_template);
+	this.validate = function( ){
+		
 		used=[];
-		isValid = validate_object( template )==0;
+		isValid = validate_object( fields )==0;
 		return isValid;
 	}
 
@@ -181,7 +180,7 @@ export function FormValidator(data, template, errors, options){
 			r += validate_field(getTemplateValue(n));
 		} )
 
-		validate_visibility(_template);
+		validate_visibility(fields);
 		execute_field_action(getTemplateValue(name),'setField');
 		isValid = r == 0;
 		return isValid;
@@ -200,7 +199,7 @@ export function FormValidator(data, template, errors, options){
 	 * Set element visibility according to displayRule
 	 */
 	this.validateVisibility = function(){
-		validate_visibility(_template);
+		validate_visibility(fields);
 	}
 
 	/**
@@ -385,13 +384,14 @@ export function FormValidator(data, template, errors, options){
 			Objects.forEach(obj,(el)=>{
 				var key = null;
 				if (obj.type =='form')
-					key = obj.name;
+					key = obj._name;
 				else 
 					key = path;	
-				e += validate_visibility(el,key);
+				e += validate_visibility(el);
 			});
 		}else{
-			obj._name = path && obj.name.indexOf('.')==-1 ? path + "." + obj.name : obj.name;
+			//if (!obj._name)
+			//	obj._name = path && obj.name.indexOf('.')==-1 ? path + "." + obj.name : obj.name;
 			prepField(obj._name);
 			if ( obj.displayRule ){ 
 				var visible = is_field_visible(obj);
@@ -979,14 +979,14 @@ export const FormWalker={
 				path = [];
 			}
 
-			if (obj.type && obj.type!="form" && obj.type!="array" && !obj.name){
-				obj.name = GUID();
+			if (obj.type && !obj.name){
+					obj._name = GUID(); //form and arrays do noyt get postable dynamic name!
 			}
-		
+
 			if (isArray(obj)){
 				Objects.forEach(obj,(el)=>{
-					if (el.type && el.type!="form" && el.type!="array" && !el.name){
-						el.name = GUID();
+					if (el.type && !el.name){
+							el._name = GUID(); //form and arrays do noyt get postable dynamic name!
 					}
 
 					if (el.name) {
@@ -998,8 +998,9 @@ export const FormWalker={
 				});
 			}
 			
-			if (isObject(obj) && obj.name) {
-				obj._name = path.slice().join('.');	
+			if (isObject(obj) && (obj._name || obj.name)) {
+				if (!obj._name)
+					obj._name = path.slice().join('.');	
 				keyed[obj._name] = obj;
 				if (!keyed[obj._name].attributes) {
 					keyed[obj._name].attributes = {}
