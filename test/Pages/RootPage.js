@@ -3,6 +3,7 @@ import { TestFormsPage } from "./TestFormsPage";
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { TestFileUploadPage } from "./TestFileUploadPage";
 import { TestChangeWatcher } from "./TestChangeWatcher";
+import { TestFormsVisiblePage } from "./TestFormsVisiblePage";
 
 export class RootPage extends HeaderPage{
 	constructor(){
@@ -14,7 +15,7 @@ export class RootPage extends HeaderPage{
 			{page: TestFileUploadPage, name: "Test File upload"},
 
 			{page: TestChangeWatcher, name: "Test Change Watcher"},
-			
+			{page: TestFormsVisiblePage, name: "Test Forms Visible"},
 		]
 
 	}

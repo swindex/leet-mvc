@@ -226,7 +226,7 @@ export function FormValidator(data, template, errors, options){
 			//items of a form
 			if (obj.type =="form" && obj.items){
 				
-				var visible = !obj.displayRule || empty( is_field_invalid(obj,'displayRule'));
+				var visible = is_field_visible(obj);
 				if (visible) {
 					if (obj.name){
 						path.push(obj.name);
@@ -394,7 +394,7 @@ export function FormValidator(data, template, errors, options){
 			obj._name = path && obj.name.indexOf('.')==-1 ? path + "." + obj.name : obj.name;
 			prepField(obj._name);
 			if ( obj.displayRule ){ 
-				var visible = empty(is_field_invalid(obj,'displayRule'));
+				var visible = is_field_visible(obj);
 				if (!visible){
 					//only reset data and error values if field name is not yet hidden
 					if (empty(fields[obj._name].attributes.hidden)){
@@ -420,6 +420,40 @@ export function FormValidator(data, template, errors, options){
 			if(!getValue(_errors, name) == undefined)
 				setValue(_data, name, null);
 		}
+	}
+
+	/**
+	 * 
+	 * @param {FieldTemplate} f 
+	 */
+	function is_field_visible(f){
+		if (empty(f.displayRule)) {
+			return true;
+		}
+
+		var [rule, parts] = f.displayRule.split(':');
+		var otherfieldCompareValues = parts.split(',');
+		var otherFieldName = otherfieldCompareValues.shift();
+
+		var otherFieldValue = self.getDataValue(otherFieldName);
+		if (otherFieldValue === undefined || otherFieldValue===null ){
+			otherFieldValue = "null"
+		}
+		otherFieldValue = "" + otherFieldValue;
+
+		if (rule=="true_if") {
+			if (fields[otherFieldName].attributes.hidden){
+				return otherfieldCompareValues.indexOf("null")>=0;
+			}
+
+			return otherfieldCompareValues.indexOf(otherFieldValue)>=0;
+		} else if(rule=="true_if_not"){
+			if (fields[otherFieldName].attributes.hidden){
+				return otherfieldCompareValues.indexOf("null") < 0;
+			}
+			return otherfieldCompareValues.indexOf(otherFieldValue) < 0;
+		}
+	
 	}
 
 	/**
@@ -700,8 +734,8 @@ FormValidator.messages = {
 	},
 	"string":"The :attribute must be a string.",
 	"timezone":"The :attribute must be a valid zone.",
-	"true_if":"The :other must be true",
-	"true_if_not":"The :other must be not be true",
+	//"true_if":"The :other must be true",
+	//"true_if_not":"The :other must be not be true",
 	"unique":"The :attribute has already been taken.",
 	"url":"The :attribute format is invalid.",
 	"isValid":"The :attribute is not invalid."
@@ -899,9 +933,9 @@ FormValidator.rules = {
 		}
 		return true;
 	},
-	true_if(value, type, conditions, validator){
+	/*true_if(value, type, conditions, validator){
 		var otherKey = conditions.shift();
-		var otherValue =  validator.getDataValue(otherKey, );
+		var otherValue =  validator.getDataValue(otherKey );
 		
 		if (otherValue == undefined){
 			otherValue = "null"
@@ -928,7 +962,7 @@ FormValidator.rules = {
 	},
 	true_if_not(value, type, conditions, validator){
 		return ! FormValidator.rules.true_if(value, type, conditions, validator)
-	}
+	}*/
 }
 
 export const FormWalker={
