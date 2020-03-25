@@ -1016,7 +1016,7 @@ export const FormWalker={
 			if (isObject(obj) && obj.type=='select')
 				path.pop();	
 			
-			if (isObject(obj) && obj.items){
+			if (isObject(obj) && obj.items && (obj.type=="form")){
 				set_names(obj.items, path.slice());
 			}
 		}

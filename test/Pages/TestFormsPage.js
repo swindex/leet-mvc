@@ -14,6 +14,7 @@ export class TestFormsPage extends HeaderPage {
 		this.form1template = [
 			{type:"number", name:"number1", title:"Enter Number 1"},
 			{type:"number", name:"number2", title:"Enter Number 2", validateRule:"required"},
+
 			{type:"checkbox", name:"checkbox1",title:"Show text1"},
 			{type:"text", name:"text1",title:"text1", validateRule:"required", displayRule:"true_if:checkbox1,true" , attributes:{ onclick: "this.onClicked()" }},
 			
@@ -64,9 +65,9 @@ const template = `
 <div class="scroll fill">
 	<div [component] = "this.form1"></div>
 	<button onclick="this.validate()">Validate {{ this.isValid ? 'VALID' : 'INVALID'}}</button>
-	<hr>
+	<!-- <hr>
 	form1template
-	<pre>{{ JSON.stringify(this.form1template,null,'  ') }}</pre>
+	<pre>{{ JSON.stringify(this.form1template,null,'  ') }}</pre> -->
 	<hr>
 	form1data
 	<pre>{{ JSON.stringify(this.form1data,null,'  ') }}</pre>
