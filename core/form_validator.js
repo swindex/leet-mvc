@@ -271,7 +271,7 @@ export function FormValidator(data, template, errors, options){
 		
 		if (!empty(t)){
 			prepField(t._name);
-			var visible = !t.displayRule || empty( is_field_invalid(t,'displayRule'));
+			var visible = is_field_visible(t);
 		
 			if ( t.validateRule && visible){
 				var err = is_field_invalid(t,'validateRule');
