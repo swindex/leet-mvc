@@ -38,11 +38,11 @@ export function FormValidator(data, template, errors, options){
 	var isValid = null;
 	this.isValid = null;
 	this.__defineGetter__("isValid", function(){
-		if (isValid===null){
+		/*if (isValid===null){
 			return null;
-		} 
+		} */
 
-		isValid = self.validate();
+		isValid = self.validate( false );
 
 		return isValid;
     });
@@ -151,12 +151,12 @@ export function FormValidator(data, template, errors, options){
 	 * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
 	 * @return {boolean}
 	 */
-	this.validate = function( ){
+	this.validate = function( showErrors = true ){
 		
 		used=[];
 		isValid = true;
 		Objects.forEach(fields, field => {
-			if (validate_object( field ) > 0){
+			if (validate_object( field, showErrors ) > 0){
 				isValid	= false	
 			}
 		})
@@ -213,20 +213,16 @@ export function FormValidator(data, template, errors, options){
 	 * @param {FieldTemplate|FieldTemplate[]} obj - FieldTemplate or array to validate
 	 * @param {string[]} [path]
 	 */
-	function validate_object(obj, path){
+	function validate_object(obj, showErrors = true){
 		var e = 0;
 		if (!isArray(obj) && !isObject(obj)){
 			return 0;
 		}	
 
-		if (!path){
-			path=[];
-		}
-
 		//object is FieldTemplate
 		if (isObject(obj) && !isArray(obj)){	
 			if (obj.validateRule){
-				e += validate_field(obj);
+				e += validate_field(obj, showErrors);
 			}
 			//items of a form
 			if (obj.type =="form" && obj.items){
@@ -236,7 +232,7 @@ export function FormValidator(data, template, errors, options){
 					/*if (obj.name){
 						path.push(obj.name);
 					}	*/
-					e += validate_object(obj.items/*,path*/);
+					e += validate_object(obj.items, showErrors);
 				}
 			}
 
@@ -246,19 +242,19 @@ export function FormValidator(data, template, errors, options){
 				Objects.forEach(obj.items,(el)=>{
 					//only validate items of the selected item!
 					if (el.value == v){
-						e += validate_object(el.items/*, path*/);
+						e += validate_object(el.items, showErrors);
 					}
 				});
 			}
 			//items of the selected item
 			if (obj.type == undefined && obj.items){
-				e += validate_object(obj.items/*,path*/);
+				e += validate_object(obj.items, showErrors);
 			}
 		}
 		//Object is an array FieldTemplate[]
 		if (isArray(obj)){	
 			Objects.forEach(obj,(el)=>{
-				e += validate_object(el/*, path*/);
+				e += validate_object(el, showErrors);
 			});
 		}	
 			
@@ -271,7 +267,7 @@ export function FormValidator(data, template, errors, options){
 	 * @param {FieldTemplate} t 
 	 * @return {number}
 	 */
-	function validate_field(t){
+	function validate_field(t, showErrors = true){
 		var e =0;
 		
 		if (!empty(t)){
@@ -281,7 +277,8 @@ export function FormValidator(data, template, errors, options){
 			if ( t.validateRule && visible){
 				var err = is_field_invalid(t,'validateRule');
 				if (!empty(err)){
-					setValue(_errors, t._name, err);
+					if (showErrors)
+						setValue(_errors, t._name, err);
 					e++;	
 				}else{
 					setValue(_errors, t._name, null);
