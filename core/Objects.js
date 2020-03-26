@@ -243,8 +243,11 @@ export const Objects = {
 	 * @return {any}
 	 */
   getPropertyByPath(obj, pathArray){
-    if (typeof pathArray == 'string'){
-      pathArray = pathArray.replace(/\]./g , '.').replace(/\]/g , '.').replace(/\[/g , '.');
+    if (pathArray === "" || pathArray === null || pathArray === undefined ){
+      throw new Error(`Property path in object ${JSON.stringify(obj)} can not be empty!`)
+    }
+    if (!Array.isArray(pathArray)){
+      pathArray = (""+pathArray).replace(/\]./g , '.').replace(/\]/g , '.').replace(/\[/g , '.');
       pathArray = pathArray.split('.');
       if (pathArray[pathArray.length-1] === ''){
         pathArray.pop();
@@ -263,8 +266,11 @@ export const Objects = {
 	 * @param {any} value
 	 */
   setPropertyByPath(obj, pathArray, value){
-    if (typeof pathArray == 'string'){
-      pathArray = pathArray.replace(/\]./g , '.').replace(/\]/g , '.').replace(/\[/g , '.');
+    if (pathArray === "" || pathArray === null || pathArray === undefined ){
+      throw new Error(`Property path in object ${JSON.stringify(obj)} can not be empty!`)
+    }
+    if (!Array.isArray(pathArray)){
+      pathArray = (""+pathArray).replace(/\]./g , '.').replace(/\]/g , '.').replace(/\[/g , '.');
       pathArray = pathArray.split('.');
       if (pathArray[pathArray.length-1] === ''){
         pathArray.pop();
@@ -273,7 +279,7 @@ export const Objects = {
 
     if (pathArray.length>1){
       var shft = pathArray.shift();
-      if (obj[shft] == undefined){
+      if (!isObject(obj[shft])){
         obj[shft] = {};
       }
       Objects.setPropertyByPath(obj[shft],pathArray, value);
@@ -287,8 +293,11 @@ export const Objects = {
 	 * @param {any} value
 	 */
   deletePropertyByPath(obj, pathArray){
-    if (typeof pathArray == 'string'){
-      pathArray = pathArray.split('.');
+    if (pathArray === "" || pathArray === null || pathArray === undefined ){
+      throw new Error(`Property path in object ${JSON.stringify(obj)} can not be empty!`)
+    }
+    if (!Array.isArray(pathArray)){
+      pathArray = (""+pathArray).split('.');
     }
 
     if (pathArray.length>1)
