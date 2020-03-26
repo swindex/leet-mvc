@@ -977,19 +977,20 @@ export const FormWalker={
 	 */
 	set_names(obj){
 		var keyed = {};
+		var index = 1;
 		function set_names(obj, path){
 			if (!path){
 				path = [];
 			}
 
-			if (obj.type && !obj.name){
-					obj._name = GUID(); //form and arrays do noyt get postable dynamic name!
+			if (obj.type && !obj.name && (obj.displayRule || obj.validateRule )){
+					obj._name = index++// GUID(); //form and arrays do noyt get postable dynamic name!
 			}
 
 			if (isArray(obj)){
 				Objects.forEach(obj,(el)=>{
-					if (el.type && !el.name){
-							el._name = GUID(); //form and arrays do noyt get postable dynamic name!
+					if (el.type && !el.name && (el.displayRule || el.validateRule )){
+							el._name = index++//GUID(); //form and arrays do noyt get postable dynamic name!
 					}
 
 					if (el.name) {
@@ -1020,5 +1021,4 @@ export const FormWalker={
 		set_names(obj);
 		return keyed;
 	}
-
 }
