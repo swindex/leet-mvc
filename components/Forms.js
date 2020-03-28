@@ -35,12 +35,7 @@ export class Forms extends BaseComponent{
 		this.arrays={};
 
 		this.elementItems = {};
-
-		this.validator = new FormValidator(this.data, formTemplate, this.errors, this.options);
-		this.validator.validateVisibility();
-
-		this.fields = this.validator.fields;
-		
+	
 		this.events = {
 			input:(ev) =>{
 				setTimeout(()=>{
@@ -95,20 +90,32 @@ export class Forms extends BaseComponent{
 
 		this.template = `<div [directive]="this.formHTML"></div>`
 		
-		
-		this.formHTML =this.renderArray(this.formTemplate, null)
+		this.updateTemplate(formTemplate);
+	}
+
+	setDataValuesFromFields(){
+		Objects.forEach(this.fields, (field,key) =>{
+			try {
+				var currentValue = Objects.getPropertyByPath(this.data, key)
+
+				if (field.value !== undefined && currentValue == undefined){
+					Objects.setPropertyByPath(this.data, key, field.value)
+				}
+			} catch (err) {
+
+			}
+		});
 	}
 
 	updateTemplate(formTemplate){
 		this.formTemplate = formTemplate;
 		
 		this.validator = new FormValidator(this.data,formTemplate,this.errors, this.options);
+		this.fields = this.validator.fields;
+		this.setDataValuesFromFields();
 		this.validator.validateVisibility();
 
-		this.fields = this.validator.fields;
-
-		this.formTemplateKeyed = Objects.keyBy(this.formTemplate, '_name');
-		
+			
 		var html = this.renderArray(this.formTemplate, null);
 		this.formHTML = html;
 	}
@@ -554,7 +561,7 @@ export class Forms extends BaseComponent{
 		var opt = { name: el._name, type: "radio" };
 		Object.assign(opt, override, el.attributes);
 
-		var elems = ""
+		var elems = `<div class="fieldrow">`
 		Objects.forEach(el.items, item=>{
 			elems += (`
 				<label class="toggle">
@@ -564,6 +571,8 @@ export class Forms extends BaseComponent{
 				</label>
 			`);
 		});
+
+		elems +="</div>"
 
 		return elems;
 	}

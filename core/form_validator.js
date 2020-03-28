@@ -1,6 +1,6 @@
-import { isNumber, isBoolean, isObject,isArray, isString } from "util";
+import { isBoolean, isObject,isArray, isString } from "util";
 import { Objects } from "./Objects";
-import { empty, tryCall, GUID, round } from "./helpers";
+import { empty, tryCall, round } from "./helpers";
 import { Translate } from "./Translate";
 import { Parser } from 'expr-eval';
 import { isDate } from "util";
@@ -38,10 +38,6 @@ export function FormValidator(data, template, errors, options){
 	var isValid = null;
 	this.isValid = null;
 	this.__defineGetter__("isValid", function(){
-		/*if (isValid===null){
-			return null;
-		} */
-
 		isValid = self.validate( false );
 
 		return isValid;
@@ -152,7 +148,6 @@ export function FormValidator(data, template, errors, options){
 	 * @return {boolean}
 	 */
 	this.validate = function( showErrors = true ){
-		
 		used=[];
 		isValid = true;
 		Objects.forEach(fields, field => {
@@ -160,11 +155,8 @@ export function FormValidator(data, template, errors, options){
 				isValid	= false	
 			}
 		})
-		//isValid = validate_object( fields )==0;
 		return isValid;
 	}
-
-	
 	
 	this.clearErrors= function(){
 		used=[];
@@ -229,9 +221,6 @@ export function FormValidator(data, template, errors, options){
 				
 				var visible = is_field_visible(obj);
 				if (visible) {
-					/*if (obj.name){
-						path.push(obj.name);
-					}	*/
 					e += validate_object(obj.items, showErrors);
 				}
 			}
@@ -393,8 +382,6 @@ export function FormValidator(data, template, errors, options){
 				e += validate_visibility(el);
 			});
 		}else{
-			//if (!obj._name)
-			//	obj._name = path && obj.name.indexOf('.')==-1 ? path + "." + obj.name : obj.name;
 			prepField(obj._name);
 			if ( obj.displayRule ){ 
 				var visible = is_field_visible(obj);
@@ -403,12 +390,8 @@ export function FormValidator(data, template, errors, options){
 					if (empty(fields[obj._name].attributes.hidden)){
 						setValue(_errors, obj._name, null);
 					}
-					//set hidden attribute
-					//setAttrValue( obj._name, {hidden:true});
-
 					fields[obj._name].attributes.hidden = true;
 				}else{
-					//setAttrValue( obj._name, null);
 					delete fields[obj._name].attributes.hidden;
 				}
 			}
@@ -737,8 +720,6 @@ FormValidator.messages = {
 	},
 	"string":"The :attribute must be a string.",
 	"timezone":"The :attribute must be a valid zone.",
-	//"true_if":"The :other must be true",
-	//"true_if_not":"The :other must be not be true",
 	"unique":"The :attribute has already been taken.",
 	"url":"The :attribute format is invalid.",
 	"isValid":"The :attribute is not invalid."
@@ -936,36 +917,6 @@ FormValidator.rules = {
 		}
 		return true;
 	},
-	/*true_if(value, type, conditions, validator){
-		var otherKey = conditions.shift();
-		var otherValue =  validator.getDataValue(otherKey );
-		
-		if (otherValue == undefined){
-			otherValue = "null"
-		}
-
-		if (isNumber(otherValue)){
-			otherValue = otherValue + '';
-		}else if(isBoolean(otherValue)){
-			if (otherValue===true)
-				otherValue	= "true";
-			else 
-				otherValue	= "false";
-		}
-
-		if (conditions.indexOf(otherValue)>=0){
-			return true;
-		}
-		if (conditions.length>0)
-			//if matches no conditions, then it is NOT required
-			return false;
-		
-		//in the end just check if the
-		return !empty(otherValue);	
-	},
-	true_if_not(value, type, conditions, validator){
-		return ! FormValidator.rules.true_if(value, type, conditions, validator)
-	}*/
 }
 
 export const FormWalker={
