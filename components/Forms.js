@@ -623,7 +623,6 @@ ${item.title}
       Alert(this.fields[name].info);
     } else {
       console.error(`Forms.fields['${name}'].info value is not supported`, this.fields[name].info);
-
     }
   }
 
@@ -833,10 +832,10 @@ Forms.field_definitions = {
     Objects.setPropertyByPath(forms.extraData, timeEl._name, dateTime);
 
     return forms.renderFieldGroupHTML(el, [
-      '<div style="display:flex;flex-direction:row">',
-      '<div class="split" style="width:60%">' + forms.addInput(dateEl, { date: '', format: 'date', onchange: "this._formatSplitDateField($event,'" + el._name + "',false)" }, 'extraData') + '</div>',
-      '<div class="split" style="width:40%">' + forms.addInput(timeEl, { time: '', format: 'time', onchange: "this._formatSplitDateField($event,'" + el._name + "',true)" }, 'extraData') + '</div>',
-      '</div>'
+      /*html*/`<div style="display:flex;flex-direction:row">`,
+      /*html*/`<div class="split" style="width:60%">` + forms.addInput(dateEl, { date: '', format: 'date', onchange: "this._formatSplitDateField($event,'" + el._name + "',false)" }, 'extraData') + '</div>',
+      /*html*/`<div class="split" style="width:40%">` + forms.addInput(timeEl, { time: '', format: 'time', onchange: "this._formatSplitDateField($event,'" + el._name + "',true)" }, 'extraData') + '</div>',
+      /*html*/`</div>`
     ]);
   },
   number(forms, el, parentPath) {
