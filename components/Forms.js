@@ -80,7 +80,7 @@ export class Forms extends BaseComponent {
         var _name = ev.target.name;
         if (_name) {
           setTimeout(() => {
-            this.fields[_name].attributes.active = undefined;
+            this.fields[_name].attributes.active = null;
           });
         }
       }
@@ -575,21 +575,47 @@ ${item.title}
   addSelect(el, override, parentPath) {
 
     var opt = { name: el._name, type: "select", format: el.dataType, bind: `${this.refactorAttrName('this.data.' + el._name)}`, placeholder: el.placeholder };
-    Object.assign(opt, override, el.attributes);
+    Object.assign(opt, override, el.attributes, { onchange: `this._onSelectBoxChanged('${el._name}')` });
     var elem = `<select ${this.generateAttributes(opt)}>`;
     if (el.placeholder)
       elem = elem + `<option>${el.placeholder}</option>`;
 
     var items_items = "";
+
+    var hasSubItems = false;
     Objects.forEach(el.items, (option) => {
       elem = elem + `<option value="${option.value === null ? '' : option.value}" title="${option.placeholder || ''}">${option.title}</option>`;
       if (option.items) {
-        items_items += `<div [if]="${this.refactorAttrName('this.data.' + el._name)} == ${(isNumber(option.value) || option.value == null ? option.value : "'" + option.value + "'")}">` + this.renderArray(option.items, parentPath) + `</div>`;
+        hasSubItems = true;
+        items_items += `
+        <div [if]="${this.refactorAttrName('this.data.' + el._name)} == ${(isNumber(option.value) || option.value == null ? option.value : "'" + option.value + "'")}">
+         ${this.renderArray(option.items, parentPath)}
+        </div>`;
+
+        /*if (!this.fields[el._name].component) {
+          this.fields[el._name].component = new Forms(option.items, this.data);
+        }
+
+        items_items += `
+        <div [if]="${this.refactorAttrName('this.data.' + el._name)} == ${(isNumber(option.value) || option.value == null ? option.value : "'" + option.value + "'")}">
+          <div [component]="${this.refactorAttrName('this.fields.' + el._name + '.component')}"></div>
+        </div>`
+        */
       }
     });
     elem = elem + "</select>";
 
+    if (hasSubItems) {
+      //this.fields[el._name].component = new Forms([], this.data);
+      //items_items += '<div>Sub items go here</div>';
+      //items_items += `<div [directive] = "${this.refactorAttrName('this.fields.' + el._name + '.subitems')}" >Sub items go here</div>`;
+    }
+
     return this.renderFieldGroupHTML(el, elem) + this.renderSelectGroupHTML(el, items_items);
+  }
+
+  _onSelectBoxChanged(_name) {
+    //if (this.fields[_name].i)
   }
 
   /**

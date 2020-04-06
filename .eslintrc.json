@@ -1,14 +1,22 @@
 {
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "jsx": false
-        }
-    },
-    "extends": "eslint:recommended",
-    "rules": {
-		"semi": "error",
-		"indent": ["error", 2]
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": false
     }
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "semi": "error",
+    "indent": [
+      "error",
+      2
+    ],
+    "no-console":"warn"
+  }
 }

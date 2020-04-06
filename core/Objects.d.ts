@@ -124,7 +124,7 @@ declare namespace ObjectsModule{
 		 * @param obj - object to traverse
 		 * @param callback - where first parameter is the current node and second is the key in the node
 		 */
-		walk(obj: object, callback: (node: object, key: string)=>any): void;,
+		walk<T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (node: T[K], key: K)=>any): void;,
 
 		/**
 		 * Walk 2 objects side by side calling callback on every node
