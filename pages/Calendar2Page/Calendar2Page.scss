@@ -65,6 +65,7 @@
 			}
 		}
 		button{
+      border: none;
 			background-color: transparent;
 			box-shadow: none;
 		}
@@ -303,7 +304,8 @@
 		button{
 			color: $c_f_tab;
 			border-radius: 50%;
-			background-color: transparent;
+      background-color: transparent;
+      border: none;
 			width: 2.5em;
 			height: 2.5em;
 			padding: .5em;
@@ -317,6 +319,7 @@
 			margin:auto;
 			//padding:1em;
 			&>button{
+        border: none;
 				width: auto;
 				border-radius: $margin-sm;
 			}
@@ -327,5 +330,5 @@
 				margin-right: 0;
 			}
 		}
-	}
+  }
 }

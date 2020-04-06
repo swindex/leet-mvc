@@ -1,7 +1,11 @@
 @import './../../scss/variables';
 #page-DirectionsPage{
+  .popup{
+   width: 90%;
+  }
 	.dialog-content{
-		padding: $margin-sm;
+    padding: $margin-sm;
+
 	}
 	.tab-buttons{
 		margin-top: $margin-lg;

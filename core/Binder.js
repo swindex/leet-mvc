@@ -669,11 +669,10 @@ export var Binder = function (context) {
             vDomCreateItems(on, inject);
 
             on.items[1].elem.classList.add(options.enter_active);
-            on.items[1].elem.classList.ddd(options.enter_active);
-            on.items[0].elem.classList.ddd(options.leave_active);
+            on.items[0].elem.classList.add(options.leave_active);
 
-            on.items[1].elem.classList.ddd(options.enter);
-            on.items[0].elem.classList.ddd(options.leave);
+            on.items[1].elem.classList.add(options.enter);
+            on.items[0].elem.classList.add(options.leave);
 
             setTimeout(function () {
               on.items[1].elem.classList.remove(options.enter);
@@ -1594,11 +1593,13 @@ export function removeVDOMElement(en) {
     en.items.forEach(item => removeVDOMElement(item));
     delete en.items;
   }
-  delete en.elem.VDOM;
 
-  DOM(en.elem).remove();
+  if (en.elem) {
+    delete en.elem.VDOM;
+    DOM(en.elem).remove();
+    delete en.elem;
+  }
 
-  delete en.elem;
   delete en.fragment;
   delete en.getters;
   delete en.setters;

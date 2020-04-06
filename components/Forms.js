@@ -854,13 +854,13 @@ Forms.field_definitions = {
     timeEl.icon = "far fa-clock";
 
     var dateTime = Objects.getPropertyByPath(forms.data, el._name);
-    Objects.setPropertyByPath(forms.extraData, dateEl._name, dateTime);
-    Objects.setPropertyByPath(forms.extraData, timeEl._name, dateTime);
+    Objects.setPropertyByPath(forms.data, dateEl._name, dateTime);
+    Objects.setPropertyByPath(forms.data, timeEl._name, dateTime);
 
     return forms.renderFieldGroupHTML(el, [
       /*html*/`<div style="display:flex;flex-direction:row">`,
-      /*html*/`<div class="split" style="width:60%">` + forms.addInput(dateEl, { date: '', format: 'date', onchange: "this._formatSplitDateField($event,'" + el._name + "',false)" }, 'extraData') + '</div>',
-      /*html*/`<div class="split" style="width:40%">` + forms.addInput(timeEl, { time: '', format: 'time', onchange: "this._formatSplitDateField($event,'" + el._name + "',true)" }, 'extraData') + '</div>',
+      /*html*/`<div class="split" style="width:60%">` + forms.addInput(dateEl, { date: '', format: 'date', onchange: "this._formatSplitDateField($event,'" + el._name + "',false)" }) + '</div>',
+      /*html*/`<div class="split" style="width:40%">` + forms.addInput(timeEl, { time: '', format: 'time', onchange: "this._formatSplitDateField($event,'" + el._name + "',true)" }) + '</div>',
       /*html*/`</div>`
     ]);
   },

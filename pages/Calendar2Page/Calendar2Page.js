@@ -12,33 +12,34 @@ import { Translate } from "./../../core/Translate";
 import { Injector } from "./../../core/Injector";
 import { ConfirmDanger } from "./../../core/simple_confirm";
 import { isArray, isFunction } from "util";
+import { DOM } from "leet-mvc/core/DOM";
 
-export class Calendar2Page extends HeaderPage{
-  constructor(startDate){
+export class Calendar2Page extends HeaderPage {
+  constructor(startDate) {
     super();
     this.backButton = true;
     this.content = template;
 
     this._tabs = new SimpleTabs();
-    this._tabs.onTabChanged = (label)=>{
+    this._tabs.onTabChanged = (label) => {
       if (label == 'day') { this.scrollDayToFirstEvent(); }
     };
     this._currDate = moment(startDate || new Date());
     this._currMonth = this._currDate.clone().startOf('month');
     this.events_year != this._currMonth.get('year');
 
-    /** @type {Calendar2Calendar[]} */ 
-    this.calendars=[];
+    /** @type {Calendar2Calendar[]} */
+    this.calendars = [];
 
     this.defaultCalendarId = null;
 
     /** @type {Calendar2Event[]} */
-    this.events=[];
+    this.events = [];
     /** @type {Calendar2Event[]} */
-    this.unscheduledEvents=[];
- 
+    this.unscheduledEvents = [];
+
     /** @type {Calendar2DaySlots} */
-    this.dayEventSlots = {}; 
+    this.dayEventSlots = {};
 
     this.events_year = null;
 
@@ -51,30 +52,30 @@ export class Calendar2Page extends HeaderPage{
     });
 
     this._24hours = [
-      { value: 0,  title: 12, amLabel:"AM", title_24: 0},
-      { value: 1,  title: 1,  amLabel:"AM", title_24: 1},
-      { value: 2,  title: 2,  amLabel:"AM", title_24: 2},
-      { value: 3,  title: 3,  amLabel:"AM", title_24: 3},
-      { value: 4,  title: 4,  amLabel:"AM", title_24: 4},
-      { value: 5,  title: 5,  amLabel:"AM", title_24: 5},
-      { value: 6,  title: 6,  amLabel:"AM", title_24: 6},
-      { value: 7,  title: 7,  amLabel:"AM", title_24: 7},
-      { value: 8,  title: 8,  amLabel:"AM", title_24: 8},
-      { value: 9,  title: 9,  amLabel:"AM", title_24: 9},
-      { value: 10, title: 10, amLabel:"AM", title_24: 10},
-      { value: 11, title: 11, amLabel:"AM", title_24: 11},
-      { value: 12, title: 12, amLabel:"PM", title_24: 12},
-      { value: 13, title: 1,  amLabel:"PM", title_24: 13},
-      { value: 14, title: 2,  amLabel:"PM", title_24: 14},
-      { value: 15, title: 3,  amLabel:"PM", title_24: 15},
-      { value: 16, title: 4,  amLabel:"PM", title_24: 16},
-      { value: 17, title: 5,  amLabel:"PM", title_24: 17},
-      { value: 18, title: 6,  amLabel:"PM", title_24: 18},
-      { value: 19, title: 7,  amLabel:"PM", title_24: 19},
-      { value: 20, title: 8,  amLabel:"PM", title_24: 20},
-      { value: 21, title: 9,  amLabel:"PM", title_24: 21},
-      { value: 22, title: 10, amLabel:"PM", title_24: 22},
-      { value: 23, title: 11, amLabel:"PM", title_24: 23},
+      { value: 0, title: 12, amLabel: "AM", title_24: 0 },
+      { value: 1, title: 1, amLabel: "AM", title_24: 1 },
+      { value: 2, title: 2, amLabel: "AM", title_24: 2 },
+      { value: 3, title: 3, amLabel: "AM", title_24: 3 },
+      { value: 4, title: 4, amLabel: "AM", title_24: 4 },
+      { value: 5, title: 5, amLabel: "AM", title_24: 5 },
+      { value: 6, title: 6, amLabel: "AM", title_24: 6 },
+      { value: 7, title: 7, amLabel: "AM", title_24: 7 },
+      { value: 8, title: 8, amLabel: "AM", title_24: 8 },
+      { value: 9, title: 9, amLabel: "AM", title_24: 9 },
+      { value: 10, title: 10, amLabel: "AM", title_24: 10 },
+      { value: 11, title: 11, amLabel: "AM", title_24: 11 },
+      { value: 12, title: 12, amLabel: "PM", title_24: 12 },
+      { value: 13, title: 1, amLabel: "PM", title_24: 13 },
+      { value: 14, title: 2, amLabel: "PM", title_24: 14 },
+      { value: 15, title: 3, amLabel: "PM", title_24: 15 },
+      { value: 16, title: 4, amLabel: "PM", title_24: 16 },
+      { value: 17, title: 5, amLabel: "PM", title_24: 17 },
+      { value: 18, title: 6, amLabel: "PM", title_24: 18 },
+      { value: 19, title: 7, amLabel: "PM", title_24: 19 },
+      { value: 20, title: 8, amLabel: "PM", title_24: 20 },
+      { value: 21, title: 9, amLabel: "PM", title_24: 21 },
+      { value: 22, title: 10, amLabel: "PM", title_24: 22 },
+      { value: 23, title: 11, amLabel: "PM", title_24: 23 },
     ];
 
     this.ingoingSlideClass = null;
@@ -82,29 +83,29 @@ export class Calendar2Page extends HeaderPage{
     this.daySlideTrigger = 0;
     this.monthSlideTrigger = 0;
     this.allowPastInternalAppointmentDate = false;
-		
+
     this._minutes = Array.apply(null, Array(12)).map(function (_, i) {
-      return { value: i*5, title: moment(i*5, 'm').startOf('hour').minute(i*5).format('mm')};
+      return { value: i * 5, title: moment(i * 5, 'm').startOf('hour').minute(i * 5).format('mm') };
     });
 
     this._months = Array.apply(null, Array(12)).map(function (_, i) {
-      return { value: i+1, title: moment(i+1, 'MM').format('MMMM')};
+      return { value: i + 1, title: moment(i + 1, 'MM').format('MMMM') };
     });
 
     this._years = Array.apply(null, Array(10)).map(function (_, i) {
-      var v = moment().add(i-5,"years").format('YYYY');
-      return { value: v, title: v};
+      var v = moment().add(i - 5, "years").format('YYYY');
+      return { value: v, title: v };
     });
 
     this.hasMeridiem = moment.localeData().longDateFormat('LT').toLowerCase().indexOf('a') >= 0;
 
     this.calendarInfo = {
-      height:null,
-      width:null,
-      cell:{
-        dateHeight:19,
-        height:null,
-        width:null,
+      height: null,
+      width: null,
+      cell: {
+        dateHeight: 19,
+        height: null,
+        width: null,
       }
     };
 
@@ -114,35 +115,35 @@ export class Calendar2Page extends HeaderPage{
     this.onAddressLabelClicked = null;
   }
 
-  _allDayEvents(){
+  _allDayEvents() {
     var day = this._currDate.clone().startOf('day');
     var day_y = getDayNumber(day);
     var ret = [];
-    Objects.forEach(this.dayEventSlots[day_y],(el)=>{
+    Objects.forEach(this.dayEventSlots[day_y], (el) => {
       if (el.allday) {
-        ret.push({event:el, class: ""});
+        ret.push({ event: el, class: "" });
       }
     });
     return ret;
   }
 
-  _hourEvents(hourValue){
-    var hour = this._currDate.clone().startOf('day').add(hourValue,'hour');
-		
+  _hourEvents(hourValue) {
+    var hour = this._currDate.clone().startOf('day').add(hourValue, 'hour');
+
     var day = hour.clone().startOf('day');
     var day_e = hour.clone().endOf('day');
-		
+
     var hour_e = hour.clone().endOf('hour');
     var day_y = getDayNumber(day);
-		
+
     var apts = [];
 
-    Objects.forEach(this.dayEventSlots[day_y],(el, slot)=>{
+    Objects.forEach(this.dayEventSlots[day_y], (el, slot) => {
       slot = parseInt(slot);
 
       var ev_st = el.startDate;
-      var ev_end =el.endDate;
-		
+      var ev_end = el.endDate;
+
       var minuteOffset = ev_st.get('minute');
       var minuteLength;
       if (ev_st.isSameOrAfter(day)) {
@@ -150,16 +151,16 @@ export class Calendar2Page extends HeaderPage{
       } else {
         minuteLength = ev_end.diff(day, 'minute');
       }
-      if (minuteLength+minuteOffset+hourValue*60 > 24 * 60) {
-        minuteLength = 24 * 60 - minuteOffset - hourValue*60;
+      if (minuteLength + minuteOffset + hourValue * 60 > 24 * 60) {
+        minuteLength = 24 * 60 - minuteOffset - hourValue * 60;
       }
 
-      var className = []; 
+      var className = [];
       if (el.internalEventInfo) {
         className.push('internal');
-        if (this.appraisalEvent && el.internalEventInfo.id == this.appraisalEvent.internalEventInfo.id && el.internalEventInfo.schema_name == this.appraisalEvent.internalEventInfo.schema_name ){
+        if (this.appraisalEvent && el.internalEventInfo.id == this.appraisalEvent.internalEventInfo.id && el.internalEventInfo.schema_name == this.appraisalEvent.internalEventInfo.schema_name) {
           className.push('current');
-        }	
+        }
       }
 
       var evWidth = el.overlaps + 1;
@@ -167,15 +168,15 @@ export class Calendar2Page extends HeaderPage{
       var overlapOffset = 100 / (evWidth) * el.overlapShift;
       var overlapLength = 100 / (evWidth);
 
-			
+
       if (
         (!el.allday && ev_st.isSameOrAfter(hour) && ev_st.isSameOrBefore(hour_e)) || //event fits completely
-				(!el.allday && hourValue == 0 && ev_st.isBefore(day) && ev_end.isBefore(day_e)) //event started yesterday and ends today
+        (!el.allday && hourValue == 0 && ev_st.isBefore(day) && ev_end.isBefore(day_e)) //event started yesterday and ends today
       ) {
         apts.push({
-          event:el, 
+          event: el,
           minuteOffset: minuteOffset,
-          minuteLength:minuteLength, 
+          minuteLength: minuteLength,
           overlapOffset: overlapOffset,
           overlapLength: overlapLength,
           class: className.join(' ')
@@ -185,63 +186,63 @@ export class Calendar2Page extends HeaderPage{
     return apts;
   }
 
-  _weekDays(weekNumber){
+  _weekDays(weekNumber) {
     var _weekDays = [];
-    var cMonth= this._currMonth.month();
+    var cMonth = this._currMonth.month();
     var cDayF = this._currDate.format('YYY-MM-DD');
 
-    var week = this._currMonth.clone().startOf('month').add(weekNumber,'week');
+    var week = this._currMonth.clone().startOf('month').add(weekNumber, 'week');
 
     var maxEventsPerDay = Math.floor((this.calendarInfo.cell.height - this.calendarInfo.cell.dateHeight) / 15);
 
-    for (var i = 1; i<=7 ; i++) {
+    for (var i = 1; i <= 7; i++) {
       var day = week.clone().isoWeekday(i);
       var day_e = day.clone().endOf('day');
       var week_e = day.clone().endOf('isoWeek');
       var day_y = getDayNumber(day);
       var D = day.format('DD');
       var dayF = day.format('YYY-MM-DD');
-			
+
       var apts = [];
       var extraEventsCounter = 0;
 
-      Objects.forEach(this.dayEventSlots[day_y],(el, slot)=>{
+      Objects.forEach(this.dayEventSlots[day_y], (el, slot) => {
         slot = parseInt(slot);
-        if (slot+1 > maxEventsPerDay) {
-          extraEventsCounter ++;
+        if (slot + 1 > maxEventsPerDay) {
+          extraEventsCounter++;
           return;
         }
 
         var ev_st = el.startDate;
         var ev_end = el.endDate;
-				
 
-        var className = []; 
-        className.push('slot-'+slot);
+
+        var className = [];
+        className.push('slot-' + slot);
         if (el.internalEventInfo) {
           className.push('internal');
           if (this.appraisalEvent && el.internalEventInfo.id == this.appraisalEvent.internalEventInfo.id && el.internalEventInfo.schema_name == this.appraisalEvent.internalEventInfo.schema_name) {
             className.push('current');
-          }	
+          }
         }
 
         //event fits completely
         if (ev_st >= day && ev_st <= day_e && ev_end >= day && ev_end <= day_e) {
-          apts.push({dateTime:el.startDate,title: el.title, class: className.join(' ')});
+          apts.push({ dateTime: el.startDate, title: el.title, class: className.join(' ') });
         } else {
           //event covers several days
-          if (day.isBetween(ev_st,ev_end) || day_e.isBetween(ev_st,ev_end)) {
+          if (day.isBetween(ev_st, ev_end) || day_e.isBetween(ev_st, ev_end)) {
             //first day of a long event
             if (day.get('dayOfYear') == ev_st.get('dayOfYear')) {
-              let daysWLong = Math.min( week_e.diff(day,'days')+1, ev_end.diff(day,'days'));
-              className.push("expand-"+daysWLong);
-              apts.push({dateTime:el.startDate,title: el.title, class: className.join(' ') });
+              let daysWLong = Math.min(week_e.diff(day, 'days') + 1, ev_end.diff(day, 'days'));
+              className.push("expand-" + daysWLong);
+              apts.push({ dateTime: el.startDate, title: el.title, class: className.join(' ') });
             } else {
               //week or month break
-              if (day.get('isoWeekday')==1 || day.get('date')==1){
-                let daysWLong = Math.min( week_e.diff(day,'days')+1, ev_end.diff(day,'days')+1);
-                className.push("expand-"+daysWLong);
-                apts.push({dateTime:el.startDate,title: el.title, class: className.join(' ')});
+              if (day.get('isoWeekday') == 1 || day.get('date') == 1) {
+                let daysWLong = Math.min(week_e.diff(day, 'days') + 1, ev_end.diff(day, 'days') + 1);
+                className.push("expand-" + daysWLong);
+                apts.push({ dateTime: el.startDate, title: el.title, class: className.join(' ') });
               }
             }
           }
@@ -249,22 +250,22 @@ export class Calendar2Page extends HeaderPage{
       });
 
       if (day.month() !== cMonth) {
-        _weekDays.push({day: "",dayNum:0, date:null, selected:false,events:[]});
+        _weekDays.push({ day: "", dayNum: 0, date: null, selected: false, events: [] });
       } else {
         var selected = dayF == cDayF;
-        _weekDays.push({day: D, dayNum: Number(D), date: day.toDate(), selected:selected,events:apts, extraEvents:extraEventsCounter});
+        _weekDays.push({ day: D, dayNum: Number(D), date: day.toDate(), selected: selected, events: apts, extraEvents: extraEventsCounter });
       }
     }
 
     return _weekDays;
 
   }
-  _getCalendarEvents(){
+  _getCalendarEvents() {
     this.events_year = this._currMonth.get('year');
     var dayEventSlots = { 0: null };
 
-    var calEvents=[];
-    Objects.forEach(this.events,(el)=>{
+    var calEvents = [];
+    Objects.forEach(this.events, (el) => {
       calEvents.push(parseNativeCalendarEvent(el));
     });
 
@@ -272,53 +273,53 @@ export class Calendar2Page extends HeaderPage{
     //so we add 0ms delay to run it in a next frame.
 
     calendarGetCalendars()
-    //.then(x => new Promise(resolve => setTimeout(() => resolve(x), 50))) //add 0ms delay after getting calendars
-      .then((calendars)=>{
+      //.then(x => new Promise(resolve => setTimeout(() => resolve(x), 50))) //add 0ms delay after getting calendars
+      .then((calendars) => {
         this.calendars = calendars;
         //Calendar plugin freaks out when Promise.all is used and all getEvents calls are done aynchronously.
         //so use this recursive resolver to resolve the promises for each calendar one-by-one
         var index = 0;
         var list = [];
-        var resolver = ()=>{
+        var resolver = () => {
           var calendar = calendars[index];
-          return calendarGetEvents(this._currMonth.clone().startOf('year').toDate(),this._currMonth.clone().endOf('year').toDate(), calendar.name,calendar.id)
-          //.then(x => new Promise(resolve => setTimeout(() => resolve(x), 50))) //add 0ms delay
-            .then(function(ret){
+          return calendarGetEvents(this._currMonth.clone().startOf('year').toDate(), this._currMonth.clone().endOf('year').toDate(), calendar.name, calendar.id)
+            //.then(x => new Promise(resolve => setTimeout(() => resolve(x), 50))) //add 0ms delay
+            .then(function (ret) {
               list = list.concat(ret);
               index++;
               if (index < calendars.length) {
                 return resolver();
               } else {
-                return Promise.resolve(list);		
+                return Promise.resolve(list);
               }
             });
         };
         return resolver();
-			
-			
-      }).then((list)=>{
-        Objects.forEach(list,(el)=>{
+
+
+      }).then((list) => {
+        Objects.forEach(list, (el) => {
           calEvents.push(parseNativeCalendarEvent(el));
         });
 
         calEvents.sort(eventSortCallback);
         //populate events list into day EventSlots
-        Objects.forEach(calEvents,(evt)=>{
-          populateDayEventSlots(evt, dayEventSlots);	
+        Objects.forEach(calEvents, (evt) => {
+          populateDayEventSlots(evt, dayEventSlots);
         });
         this.dayEventSlots = dayEventSlots;
-      }).catch(()=>{
+      }).catch(() => {
         calEvents.sort(eventSortCallback);
         //populate events list into day EventSlots
-        Objects.forEach(calEvents,(evt)=>{
-          populateDayEventSlots(evt, dayEventSlots);	
+        Objects.forEach(calEvents, (evt) => {
+          populateDayEventSlots(evt, dayEventSlots);
         });
         this.dayEventSlots = dayEventSlots;
       });
   }
 
-  _setProps(){
-    this._currDate.startOf( 'minute' ); 
+  _setProps() {
+    this._currDate.startOf('minute');
 
     //this.title = this._currDate.format('dddd');
     this._d_monthName = this._currMonth.format('MMMM');
@@ -331,10 +332,10 @@ export class Calendar2Page extends HeaderPage{
     }
   }
 
-  _measure(){
-    var calendar = this.page.find('div.calendar');
+  _measure() {
+    var calendar = DOM(this.page).find('div.calendar');
     var tbody = calendar.find('tbody');
-		
+
     this.calendarInfo.height = tbody.height();
     this.calendarInfo.width = tbody.width();
 
@@ -342,93 +343,93 @@ export class Calendar2Page extends HeaderPage{
     this.calendarInfo.cell.width = this.calendarInfo.width / 7;
   }
 
-  onLoaded(){
-    if (this._weeks.length==0) {
-      this._weeks = [0,1,2,3,4,5];
+  onLoaded() {
+    if (this._weeks.length == 0) {
+      this._weeks = [0, 1, 2, 3, 4, 5];
     }
     this._setProps();
   }
 
-  onEnter(){
+  onEnter() {
     this._measure();
     this._getCalendarEvents();
   }
 
-  onResize(){
+  onResize() {
     this._measure();
   }
-	
-  _onNextMonthClicked(){
+
+  _onNextMonthClicked() {
     this.ingoingSlideClass = "slidefromright";
     this.outgoingSlideClass = "slidetoleft";
-    this.monthSlideTrigger ++;
+    this.monthSlideTrigger++;
 
-    this._currMonth.add(1,'month');
+    this._currMonth.add(1, 'month');
     this._setProps();
   }
 
-  _onPrevMonthClicked(){
+  _onPrevMonthClicked() {
     this.ingoingSlideClass = "slidefromleft";
     this.outgoingSlideClass = "slidetoright";
-    this.monthSlideTrigger ++;
+    this.monthSlideTrigger++;
 
-    this._currMonth.subtract(1,'month');
+    this._currMonth.subtract(1, 'month');
     this._setProps();
   }
 
-  setYear(y){
-    this._currMonth.set('year',y);		
+  setYear(y) {
+    this._currMonth.set('year', y);
     this._setProps();
   }
 
-  setMonth(m){
-    this._currMonth.set('month',m-1);		
+  setMonth(m) {
+    this._currMonth.set('month', m - 1);
     this._setProps();
   }
 
-  _onPrevDayClicked(){
+  _onPrevDayClicked() {
     this.ingoingSlideClass = "slidefromleft";
     this.outgoingSlideClass = "slidetoright";
     this.daySlideTrigger++;
-    this._currDate.subtract(1,'day');
+    this._currDate.subtract(1, 'day');
     this._currMonth = this._currDate.clone().startOf('month');
     this._setProps();
   }
 
-  _onNextDayClicked(){
+  _onNextDayClicked() {
     this.ingoingSlideClass = "slidefromright";
     this.outgoingSlideClass = "slidetoleft";
     this.daySlideTrigger++;
-    this._currDate.add(1,'day');
+    this._currDate.add(1, 'day');
     this._currMonth = this._currDate.clone().startOf('month');
     this._setProps();
   }
 
-  _onMonthDayClicked(){
+  _onMonthDayClicked() {
     var p = Injector.Nav.push(CalendarPage, this._currDate);
     p.showClock = false;
-    p.onDateSelected = (date)=>{
+    p.onDateSelected = (date) => {
       this.setDate(date);
       p.destroy();
     };
     p.buttons.Ok = undefined;
   }
-	
-  setDate(date){
+
+  setDate(date) {
     var cH = this._currDate.hour();
     var cM = this._currDate.minute();
     //var cS = this._currDate.second();
 
     this._currDate = moment(date);
-    this._currDate.set('hour',cH);
-    this._currDate.set('minute',cM);
+    this._currDate.set('hour', cH);
+    this._currDate.set('minute', cM);
     this._currDate.startOf('minute');
-		
+
     this._currMonth = this._currDate.clone().startOf('month');
     this._setProps();
   }
 
-  _onCalendarDateClicked(date){
+  _onCalendarDateClicked(date) {
     if (!date) {
       return;
     }
@@ -438,20 +439,20 @@ export class Calendar2Page extends HeaderPage{
     this.scrollDayToFirstEvent();
   }
 
-  scrollDayToFirstEvent(){
+  scrollDayToFirstEvent() {
     //do it in next frame after page is updated
-    setTimeout(()=>{
-      var list = this.page.find('.day-events');
+    setTimeout(() => {
+      var list = DOM(this.page).find('.day-events');
       if (list.length) {
         var firstEvent = list.find('.event').get(0);
         if (firstEvent) {
           firstEvent.scrollIntoView();
         }
       }
-    },0);
+    }, 0);
   }
 
-  showDayEvents(date){
+  showDayEvents(date) {
     var m_date = moment(date);
     var d = getDayNumber(m_date);
 
@@ -463,54 +464,56 @@ export class Calendar2Page extends HeaderPage{
     p.title = m_date.format('ll');
     p.icons = null;
 
-    Objects.forEach(this.dayEventSlots[d],(el)=>{
-      p.items.push({ title:el.title, text: DateTime.smartFormat(el.startDate) + ' - ' + DateTime.smartFormat(el.endDate) , event:el});
+    Objects.forEach(this.dayEventSlots[d], (el) => {
+      p.items.push({ title: el.title, text: DateTime.smartFormat(el.startDate) + ' - ' + DateTime.smartFormat(el.endDate), event: el });
     });
 
-    p.onItemClicked = (item)=>{
+    p.onItemClicked = (item) => {
       p.destroy();
       this.viewEvent(item.event);
     };
 
     p.buttons = {
-      'Add':()=>this.createBlankEvent(),
-      'Close':null
+      'Add': () => this.createBlankEvent(),
+      'Close': null
     };
   }
 
-  toHumanTime(t){
+  toHumanTime(t) {
     return DateTime.toHumanTime(t);
   }
   /**
 	 * 
 	 * @param {Calendar2Event} event 
 	 */
-  viewEvent(event){
+  viewEvent(event) {
     var p = Injector.Nav.push(DialogPage);
 
     p.title = "Event Details";
-    p.addLabel('Title',event.title);
+    p.addLabel('Title', event.title);
     if (this.onAddressLabelClicked)
-      p.addLink('Location', event.location, { click: ()=>{
-        this.onAddressLabelClicked(event);			
-      }});
-		
+      p.addLink('Location', event.location, {
+        click: () => {
+          this.onAddressLabelClicked(event);
+        }
+      });
+
     p.addLabel('From', DateTime.toHumanDateTime(event.startDate));
     p.addLabel('To', DateTime.toHumanDateTime(event.endDate));
 
     p.addLabel('Calendar', this.getCalendarName(event.calendarId));
-    p.addLabel('Notes',event.message);
-			
+    p.addLabel('Notes', event.message);
+
     if (!this.appraisalEvent && event.internalEventInfo) {
       p.buttons = {
-        'View Order': ()=> {this.onViewOrderButtonClicked(event);},
-        'Close':null
+        'View Order': () => { this.onViewOrderButtonClicked(event); },
+        'Close': null
       };
     } else {
       p.buttons = {
-        'Delete': this.appraisalEvent ?  undefined : ()=>this.removeEvent(event),
-        'Edit': this.appraisalEvent ?  undefined : ()=>this.editEvent(event),
-        'Close':null
+        'Delete': this.appraisalEvent ? undefined : () => this.removeEvent(event),
+        'Edit': this.appraisalEvent ? undefined : () => this.editEvent(event),
+        'Close': null
       };
     }
   }
@@ -519,14 +522,14 @@ export class Calendar2Page extends HeaderPage{
 	 * 
 	 * @param {Calendar2Event} event 
 	 */
-  removeEvent(event){
-    ConfirmDanger(Translate("Delete this event?"),()=>{
+  removeEvent(event) {
+    ConfirmDanger(Translate("Delete this event?"), () => {
       calendarDeleteEvent(event).then(this._getCalendarEvents).catch(this._getCalendarEvents);
     });
   }
 
-  getCalendarName(calendarId){
-    var cal = Objects.find(this.calendars, cal=> cal.id == calendarId );
+  getCalendarName(calendarId) {
+    var cal = Objects.find(this.calendars, cal => cal.id == calendarId);
     return cal ? cal.name : "";
   }
 
@@ -534,11 +537,11 @@ export class Calendar2Page extends HeaderPage{
 	 * ***Override***
 	 * @param {Calendar2Event} event 
 	 */
-  onViewOrderButtonClicked(event){
+  onViewOrderButtonClicked(event) {
 
   }
 
-  onEditEventClicked(event){
+  onEditEventClicked(event) {
     if (this.appraisalEvent) {
       return;
     }
@@ -549,7 +552,7 @@ export class Calendar2Page extends HeaderPage{
 	 * 
 	 * @param {Calendar2Event} event 
 	 */
-  editEvent(event){
+  editEvent(event) {
     var p = Injector.Nav.push(DialogPage);
 
     var appraisalEvent = null;
@@ -559,86 +562,90 @@ export class Calendar2Page extends HeaderPage{
 
     var calitems = [];
 
-    Objects.forEach(this.calendars,(cal)=>{
+    Objects.forEach(this.calendars, (cal) => {
       if (cal && !cal.isReadonly) {
         calitems.push({ title: cal.name, value: cal.id });
       }
     });
 
-    var unscheduledEvent = (evt)=>{
+    var unscheduledEvent = (evt) => {
       //p.controls.push({name: "contactButton", type: "button", title:null, value:"Contact"});
       if (this.onViewContactDetailsLabelClicked)
-        p.addLink('Contact', "View contact details",{ click: ()=>{
-          this.onViewContactDetailsLabelClicked(evt);			
-        }});
-      p.addInput('location','Location','text', evt.location,null, {readonly:true});
-      p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, 'required|after:' + new Date().getTime()); 
-      p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
-      if (calitems.length>0){
-        p.addSelect('calendar','Calendar', event.calendarId, false, calitems);
+        p.addLink('Contact', "View contact details", {
+          click: () => {
+            this.onViewContactDetailsLabelClicked(evt);
+          }
+        });
+      p.addInput('location', 'Location', 'text', evt.location, null, { readonly: true });
+      p.addInput('startDate', 'From', 'date-time', event.startDate ? moment(event.startDate).toDate() : null, 'required|after:' + new Date().getTime());
+      p.addInput('endDate', 'To', 'date-time', event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
+      if (calitems.length > 0) {
+        p.addSelect('calendar', 'Calendar', event.calendarId, false, calitems);
       }
-      p.addTextArea('message','Notes', evt.message);
+      p.addTextArea('message', 'Notes', evt.message);
     };
     var genericEvent = () => {
-      p.addInput('title','Title','text', event.title, true);
-      p.addInput('location','Location','text', event.location);
-				
-      p.addInput('startDate','From','date-time', event.startDate ? moment(event.startDate).toDate() : null, true);
-      p.addInput('endDate','To','date-time',  event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
-      if (calitems.length>0){
-        p.addSelect('calendar','Calendar', event.calendarId, false, calitems);
+      p.addInput('title', 'Title', 'text', event.title, true);
+      p.addInput('location', 'Location', 'text', event.location);
+
+      p.addInput('startDate', 'From', 'date-time', event.startDate ? moment(event.startDate).toDate() : null, true);
+      p.addInput('endDate', 'To', 'date-time', event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
+      if (calitems.length > 0) {
+        p.addSelect('calendar', 'Calendar', event.calendarId, false, calitems);
       }
-      p.addTextArea('message','Notes', event.message);
-			
+      p.addTextArea('message', 'Notes', event.message);
+
     };
 
     if (!appraisalEvent) {
       if (!event.id) {
         p.title = "New Event Details";
         var items = [
-          {title: Translate("Select Request"), value: 0},
+          { title: Translate("Select Request"), value: 0 },
         ];
 
-        Objects.forEach(this.unscheduledEvents,(evt, i)=>{
+        Objects.forEach(this.unscheduledEvents, (evt, i) => {
           if (evt) {
-            items.push({ title: evt.title, placeholder: evt.location, value: parseInt(i)+1});
+            items.push({ title: evt.title, placeholder: evt.location, value: parseInt(i) + 1 });
           }
         });
 
         if (items.length > 1) {
-          p.addSelect('eventType','Appointment for', null, false, items, {change: (ev)=>{
-            p.removeField('title');
-            p.removeField('calendar');
-            p.removeField('link');
-            p.removeField('location');
-            p.removeField('startDate');
-            p.removeField('endDate');
-            p.removeField('message');
-						
-            if (p.data.eventType !== "0") {
-              p.title = Translate("Set Appointment");
-              var evt = this.unscheduledEvents[p.data.eventType-1];
-              unscheduledEvent(evt);
-              this.onCreateAppraisalEventSelected(evt);
-              appraisalEvent = evt;
-              p.data.location = evt.location;
+          p.addSelect('eventType', 'Appointment for', null, false, items, {
+            change: (ev) => {
+              p.removeField('title');
+              p.removeField('calendar');
+              p.removeField('link');
+              p.removeField('location');
+              p.removeField('startDate');
+              p.removeField('endDate');
+              p.removeField('message');
 
-              if (!appraisalEvent.startDate) {
-                appraisalEvent.startDate = moment();
-                appraisalEvent.endDate = moment();
+              if (p.data.eventType !== "0") {
+                p.title = Translate("Set Appointment");
+                var evt = this.unscheduledEvents[p.data.eventType - 1];
+                unscheduledEvent(evt);
+                this.onCreateAppraisalEventSelected(evt);
+                appraisalEvent = evt;
+                p.data.location = evt.location;
+
+                if (!appraisalEvent.startDate) {
+                  appraisalEvent.startDate = moment();
+                  appraisalEvent.endDate = moment();
+                }
+              } else {
+                genericEvent();
+                appraisalEvent = null;
               }
-            } else {
-              genericEvent();
-              appraisalEvent = null;
             }
-          }});
+          });
         } else {
           p.addLabel('Appointment for', 'No Orders pending appointment');
         }
       }
       genericEvent();
     } else {
-      p.title = Translate("Set Appointment")  + " #" + appraisalEvent.internalEventInfo.id ;
+      p.title = Translate("Set Appointment") + " #" + appraisalEvent.internalEventInfo.id;
       p.data.title = appraisalEvent.title;
       p.data.message = appraisalEvent.message;
       p.data.location = appraisalEvent.location;
@@ -647,8 +654,8 @@ export class Calendar2Page extends HeaderPage{
     }
     var addEvent;
     p.buttons = {
-      'Cancel':null,
-      'Save':()=>{
+      'Cancel': null,
+      'Save': () => {
 
         if (p.validate()) {
           /** @type {Calendar2Event} */
@@ -661,7 +668,7 @@ export class Calendar2Page extends HeaderPage{
             message: p.data.message,
             location: p.data.location,
             calendarId: p.data.calendar,
-            internalEventInfo: null						
+            internalEventInfo: null
           };
 
           this.defaultCalendarId = addEvent.calendarId;
@@ -672,15 +679,15 @@ export class Calendar2Page extends HeaderPage{
             //addEvent.message = appraisalEvent.message;
             addEvent.internalEventInfo = appraisalEvent.internalEventInfo;
 
-            this.onAppraisalEventSaveClicked( addEvent, (orderDetails)=>{
+            this.onAppraisalEventSaveClicked(addEvent, (orderDetails) => {
               calendarDeleteEvent(appraisalEvent)
-                .finally(()=>{
+                .finally(() => {
                   p.destroy();
                   deleteEventFromUnscheduled(appraisalEvent.title, undefined, this.unscheduledEvents);
                   return calendarCreateEvent(addEvent);
                 })
-                .then(()=>{
-									
+                .then(() => {
+
                   if (this.onAppraisalEventAdded(orderDetails) !== false) {
                     this.destroy();
                   } else {
@@ -692,7 +699,7 @@ export class Calendar2Page extends HeaderPage{
           } else if (event.id) {
             p.destroy();
             calendarDeleteEvent(event)
-              .finally(()=>{
+              .finally(() => {
                 return calendarCreateEvent(addEvent);
               })
               .finally(this._getCalendarEvents);
@@ -700,39 +707,39 @@ export class Calendar2Page extends HeaderPage{
             p.destroy();
             calendarCreateEvent(addEvent)
               .finally(this._getCalendarEvents);
-          }	
+          }
           return false;
-        }	
+        }
         return false;
       }
     };
-  } 
+  }
 
   /**
 	 * 
 	 * @param {moment.Moment} [startDate]
 	 */
-  createBlankEvent(startDate){
-    this._currDate.startOf( 'minute' ); 
+  createBlankEvent(startDate) {
+    this._currDate.startOf('minute');
 
     /** @type {Calendar2Event} */
-    var blank ={
-      id:null,
-      title:"",
-      location:"",
+    var blank = {
+      id: null,
+      title: "",
+      location: "",
       startDate: startDate ? startDate : this._currDate.clone(),
       endDate: startDate ? startDate.clone().add(1, 'hour') : this._currDate.clone().add(1, 'h'),
-      allday:null,
+      allday: null,
       calendarId: this.defaultCalendarId,
-      message:"",
-      internalEventInfo:null
+      message: "",
+      internalEventInfo: null
     };
 
     if (this.appraisalEvent) {
       blank = Objects.copy(this.appraisalEvent);
       blank.calendarId = this.defaultCalendarId;
-      blank.startDate= startDate ? startDate : this._currDate.clone();
-      blank.endDate=startDate ? startDate.clone().add(1, 'hour') : this._currDate.clone().add(1, 'h');
+      blank.startDate = startDate ? startDate : this._currDate.clone();
+      blank.endDate = startDate ? startDate.clone().add(1, 'hour') : this._currDate.clone().add(1, 'h');
     }
 
     this.editEvent(blank);
@@ -742,9 +749,9 @@ export class Calendar2Page extends HeaderPage{
 	 * Create Appraisal Event Flow
 	 * @param {Calendar2Event} event 
 	 */
-  createAppraisalEvent(event){
+  createAppraisalEvent(event) {
     this.setDate(event.startDate);
-    this.title = Translate("Set Appointment") + " #" + event.internalEventInfo.id ;
+    this.title = Translate("Set Appointment") + " #" + event.internalEventInfo.id;
     this.appraisalEvent = event;
   }
 
@@ -752,14 +759,14 @@ export class Calendar2Page extends HeaderPage{
 	 * Create Appraisal Event Flow
 	 * @param {Calendar2Event} appraisalEvent
 	 */
-  removeAppraisalEvent(appraisalEvent){
-    var resolve = ()=>{
+  removeAppraisalEvent(appraisalEvent) {
+    var resolve = () => {
       //deleteEventFromDaySlots(appraisalEvent.title, null, this.dayEventSlots);
       this._getCalendarEvents();
     };
-    queueCalendarRequest(function(){
-      window.plugins.calendar.deleteEvent(appraisalEvent.title, null, null , appraisalEvent.startDate.clone().subtract(6, 'months').toDate(), appraisalEvent.startDate.clone().add(6, 'months').toDate(),
-        next(resolve.bind(this)),next(resolve.bind(this))
+    queueCalendarRequest(function () {
+      window.plugins.calendar.deleteEvent(appraisalEvent.title, null, null, appraisalEvent.startDate.clone().subtract(6, 'months').toDate(), appraisalEvent.startDate.clone().add(6, 'months').toDate(),
+        next(resolve.bind(this)), next(resolve.bind(this))
       );
     });
   }
@@ -769,7 +776,7 @@ export class Calendar2Page extends HeaderPage{
 	 * Notify Appraisal Event is selected when creating event
 	 * @param {Calendar2Event} event 
 	 */
-  onCreateAppraisalEventSelected(event){
+  onCreateAppraisalEventSelected(event) {
 
   }
 
@@ -779,7 +786,7 @@ export class Calendar2Page extends HeaderPage{
 	 * Notify Appraisal Event is ready to be added to calendar
 	 * @param {Calendar2Event} event 
 	 */
-  onAppraisalEventSaveClicked(event, callback){
+  onAppraisalEventSaveClicked(event, callback) {
 
   }
 
@@ -789,7 +796,7 @@ export class Calendar2Page extends HeaderPage{
 	 * @param {Calendar2Event} event 
 	 * @return {boolean|void}
 	 */
-  onAppraisalEventAdded(event){
+  onAppraisalEventAdded(event) {
     return false;
   }
 
@@ -797,8 +804,8 @@ export class Calendar2Page extends HeaderPage{
 	* ***Override***
 	* Callback on Address label clicked
 	* @param {Calendar2Event} event  
-   	*/ 
-  onAddressLabelClicked(event){
+   	*/
+  onAddressLabelClicked(event) {
 
   }
 
@@ -807,7 +814,7 @@ export class Calendar2Page extends HeaderPage{
 	* Callback on Contact Details label clicked
 	* @param {Calendar2Event} event 
    	*/
-  onViewContactDetailsLabelClicked(event){
+  onViewContactDetailsLabelClicked(event) {
 
   }
 
@@ -817,40 +824,40 @@ export class Calendar2Page extends HeaderPage{
 	 * @param {Calendar2Event} event 
 	 */
 
-  onAppraisalEventError(event){
+  onAppraisalEventError(event) {
 
   }
 
-  _onCalendarMonthClicked(){
+  _onCalendarMonthClicked() {
     var p = Injector.Nav.push(OptionsDialogPage);
-    p.icons=null;
-    p.items= Objects.copy(this._months);
-    p.buttons=null;
-    p.isSelectedItem = (item)=>{
-      return item.value == this._currMonth.format('M'); 
+    p.icons = null;
+    p.items = Objects.copy(this._months);
+    p.buttons = null;
+    p.isSelectedItem = (item) => {
+      return item.value == this._currMonth.format('M');
     };
-    p.onItemClicked=(item)=>{
+    p.onItemClicked = (item) => {
       this.setMonth(item.value);
     };
   }
-  _onCalendarYearClicked(){
+  _onCalendarYearClicked() {
     var p = Injector.Nav.push(OptionsDialogPage);
-    p.icons=null;
-    p.items= Objects.copy(this._years);
-    p.buttons=null;
-    p.isSelectedItem = (item)=>{
-      return item.value == this._currMonth.format('YYYY'); 
+    p.icons = null;
+    p.items = Objects.copy(this._years);
+    p.buttons = null;
+    p.isSelectedItem = (item) => {
+      return item.value == this._currMonth.format('YYYY');
     };
-    p.onItemClicked=(item)=>{
+    p.onItemClicked = (item) => {
       this.setYear(item.value);
     };
 
   }
 
-  _onMonthSwipeStart(ev){
+  _onMonthSwipeStart(ev) {
     //console.log("touchStart!");
     this.swipe = Touch(ev);
-    this.swipe.onSwipe = (direction)=>{
+    this.swipe.onSwipe = (direction) => {
       if (direction == Touch.LEFT) {
         this._onNextMonthClicked();
       }
@@ -860,9 +867,9 @@ export class Calendar2Page extends HeaderPage{
     };
   }
 
-  _onDaySwipeStart(ev){
+  _onDaySwipeStart(ev) {
     //console.log("touchStart!");
-    Touch(ev).onSwipe = (direction)=>{
+    Touch(ev).onSwipe = (direction) => {
       if (direction == Touch.LEFT) {
         this._onNextDayClicked();
       }
@@ -872,10 +879,10 @@ export class Calendar2Page extends HeaderPage{
     };
   }
 
-  _onDayEventsHourClicked(hour){
-    this._currDate.set( 'hour', hour ); 
-    this._currDate.set( 'minute', 0 ); 
-    this._currDate.startOf( 'minute' ); 
+  _onDayEventsHourClicked(hour) {
+    this._currDate.set('hour', hour);
+    this._currDate.set('minute', 0);
+    this._currDate.startOf('minute');
     this._setProps();
     this.createBlankEvent(this._currDate);
   }
@@ -885,25 +892,28 @@ export class Calendar2Page extends HeaderPage{
  * @param {Calendar2Event} addEvent 
  * @return {Promise}
  */
-function calendarCreateEvent(addEvent){
-  return new Promise(function(resolve, reject){
+function calendarCreateEvent(addEvent) {
+  return new Promise(function (resolve, reject) {
+    if (!window.plugins || !window.plugins.calendar) {
+      return reject("Calendar plugin not Found");
+    }
     var options = window.plugins.calendar.getCalendarOptions();
-    calendarGetCalendars().then((calendars)=>{ 
+    calendarGetCalendars().then((calendars) => {
       //use primary calendar or first available primary(android)
-      var calendar = Objects.find(calendars, calendar => {return (addEvent.calendarId ? (calendar.id == addEvent.calendarId) : !calendar.isPrimary );});
-      if (calendar){
+      var calendar = Objects.find(calendars, calendar => { return (addEvent.calendarId ? (calendar.id == addEvent.calendarId) : !calendar.isPrimary); });
+      if (calendar) {
         //calendar that 
-        options.calendarId = calendar.id;	
-        options.calendarName  = calendar.name;	
-      }else if (calendars[0]){
+        options.calendarId = calendar.id;
+        options.calendarName = calendar.name;
+      } else if (calendars[0]) {
         //if fails, use the first available calendar
         options.calendarId = calendars[0].id;
-        options.calendarName  = calendars[0].name;	
+        options.calendarName = calendars[0].name;
       }
-    }).finally(()=>{
+    }).finally(() => {
       //console.log("finallyCalled!");
-      queueCalendarRequest(function(){
-        window.plugins.calendar.createEventWithOptions(addEvent.title, addEvent.location,addEvent.message, addEvent.startDate, addEvent.endDate, options, next(resolve), next(reject));
+      queueCalendarRequest(function () {
+        window.plugins.calendar.createEventWithOptions(addEvent.title, addEvent.location, addEvent.message, addEvent.startDate, addEvent.endDate, options, next(resolve), next(reject));
       });
     });
   });
@@ -912,12 +922,15 @@ function calendarCreateEvent(addEvent){
 /**
  * @return {Promise<Calendar2Calendar[]>} 
  */
-function calendarGetCalendars(){
-  return new Promise(function(resolve, reject){
-    queueCalendarRequest(()=>{
+function calendarGetCalendars() {
+  return new Promise(function (resolve, reject) {
+    if (!window.plugins || !window.plugins.calendar) {
+      return reject("Calendar plugin not Found");
+    }
+    queueCalendarRequest(() => {
       window.plugins.calendar.listCalendars(
-        next((calendars)=>{
-          calendars.forEach(calendar => {calendar.isReadonly = calendarIsReadonlyCalendar(calendar);} );
+        next((calendars) => {
+          calendars.forEach(calendar => { calendar.isReadonly = calendarIsReadonlyCalendar(calendar); });
           resolve(calendars);
         }),
         next(reject)
@@ -927,40 +940,40 @@ function calendarGetCalendars(){
 }
 
 var calendarQueue = [];
-function queueCalendarRequest(callback){
+function queueCalendarRequest(callback) {
   calendarQueue.push(callback);
-  setTimeout(()=>{
+  setTimeout(() => {
     nextCalendarRequest();
   });
 }
 
-function next(callback){
-  return function(){
+function next(callback) {
+  return function () {
     if (isFunction(callback))
       callback.apply(null, arguments);
-    setTimeout(()=>{
+    setTimeout(() => {
       //delay execution of next block	
       nextCalendarRequest();
-    },50);
+    }, 50);
   };
 }
 
 
-function nextCalendarRequest(){
+function nextCalendarRequest() {
   if (calendarQueue.length > 0) {
     var callable = calendarQueue[0];
     callable();
     calendarQueue.shift();
-  } 
+  }
 }
 
-function calendarIsReadonlyCalendar(calendar){
-  if( calendar.isPrimary !== undefined /*cordova.platformId === "android"*/){
+function calendarIsReadonlyCalendar(calendar) {
+  if (calendar.isPrimary !== undefined /*cordova.platformId === "android"*/) {
     // Omit where not isPrimary
     return !calendar.isPrimary;
   } else { //cordova.platformId === "ios"
     // Omit Birthdays and Subscriptions as they are read-only
-    if(calendar.type.match(/Subscription/i) || calendar.type.match(/Birthday/i) || calendar.type.match(/Mail/i)){
+    if (calendar.type.match(/Subscription/i) || calendar.type.match(/Birthday/i) || calendar.type.match(/Mail/i)) {
       return true;
     }
   }
@@ -970,13 +983,13 @@ function calendarIsReadonlyCalendar(calendar){
 /**
  * @param {Calendar2Event} event
  */
-function calendarDeleteEvent(event){
-  return new Promise(function(resolve, reject){
-    queueCalendarRequest(function(){
-      if (event.id){
-        window.plugins.calendar.deleteEventById(event.id, null, next(resolve), next(reject) );
-      }else{
-        window.plugins.calendar.deleteEvent(event.title, null, null , DateTime.moment(event.startDate).clone().subtract(6, 'months').toDate(), DateTime.moment(event.startDate).clone().add(6, 'months').toDate(),
+function calendarDeleteEvent(event) {
+  return new Promise(function (resolve, reject) {
+    queueCalendarRequest(function () {
+      if (event.id) {
+        window.plugins.calendar.deleteEventById(event.id, null, next(resolve), next(reject));
+      } else {
+        window.plugins.calendar.deleteEvent(event.title, null, null, DateTime.moment(event.startDate).clone().subtract(6, 'months').toDate(), DateTime.moment(event.startDate).clone().add(6, 'months').toDate(),
           next(resolve), next(reject)
         );
       }
@@ -990,18 +1003,18 @@ function calendarDeleteEvent(event){
  * @param {string} calendarName 
  * @return {Promise<Calendar2Event[]>}
  */
-function calendarGetEvents( dateFrom, dateTo, calendarName, calendarId){
-  return new Promise(function(resolve,reject){
+function calendarGetEvents(dateFrom, dateTo, calendarName, calendarId) {
+  return new Promise(function (resolve, reject) {
     var options = window.plugins.calendar.getCalendarOptions();
     options.calendarName = calendarName;
     options.calendarId = calendarId;
-    queueCalendarRequest(function(){
+    queueCalendarRequest(function () {
       window.plugins.calendar.findEventWithOptions('', '', '', dateFrom, dateTo, options, list => {
-        if (!isArray(list)){
+        if (!isArray(list)) {
           reject();
           return;
         }
-        Objects.forEach(list, evt => {evt.calendarId = calendarId;});
+        Objects.forEach(list, evt => { evt.calendarId = calendarId; });
         //console.log(JSON.stringify(list, null, '\t'))
         resolve(list);
         nextCalendarRequest();
@@ -1015,14 +1028,14 @@ function calendarGetEvents( dateFrom, dateTo, calendarName, calendarId){
  * @param {*} el 
  * @returns {Calendar2Event}
  */
-function parseNativeCalendarEvent(el){
+function parseNativeCalendarEvent(el) {
   var evt = {
     id: el.id,
     startDate: null,
     endDate: null,
     title: el.title,
     location: el.location,
-    allday:false,
+    allday: false,
     calendarId: el.calendarId,
     message: el.message,
     internalEventInfo: el.internalEventInfo
@@ -1032,12 +1045,12 @@ function parseNativeCalendarEvent(el){
     evt.startDate = DateTime.moment(el.startDate);
     evt.endDate = DateTime.moment(el.endDate);
   } else {
-    var diff = DateTime.moment(el.startDate).diff( DateTime.moment.utc(el.startDate),'hours');
+    var diff = DateTime.moment(el.startDate).diff(DateTime.moment.utc(el.startDate), 'hours');
     evt.startDate = DateTime.moment(el.startDate).add(diff, 'hour');
     evt.endDate = DateTime.moment(el.endDate).add(diff, 'hour');
   }
 
-  if (DateTime.moment(el.endDate).diff( DateTime.moment(el.startDate),'hours')>=23) {
+  if (DateTime.moment(el.endDate).diff(DateTime.moment(el.startDate), 'hours') >= 23) {
     evt.allday = true;
   }
   return evt;
@@ -1047,11 +1060,11 @@ function parseNativeCalendarEvent(el){
  * 
  * @param {moment.Moment} mom_date 
  */
-function getDayNumber(mom_date){
-  return mom_date.diff( moment("1900-1-1","YYYY-MM-D"), 'day');
+function getDayNumber(mom_date) {
+  return mom_date.diff(moment("1900-1-1", "YYYY-MM-D"), 'day');
 }
 
-function eventSortCallback(a, b){
+function eventSortCallback(a, b) {
   return a.startDate - b.startDate !== 0 ? a.startDate - b.startDate : a.endDate - b.endDate;
 }
 /**
@@ -1059,10 +1072,10 @@ function eventSortCallback(a, b){
  * @param {Calendar2Event} el 
  * @param {Calendar2DaySlots} yBusySlots 
  */
-function populateDayEventSlots(el, yBusySlots){
+function populateDayEventSlots(el, yBusySlots) {
   var ev_st = moment(el.startDate);
-  var ev_end = moment(el.endDate).subtract(1,'second');
-	
+  var ev_end = moment(el.endDate).subtract(1, 'second');
+
   var ev_d_st = getDayNumber(ev_st);
   var ev_d_end = getDayNumber(ev_end);
 
@@ -1072,9 +1085,9 @@ function populateDayEventSlots(el, yBusySlots){
   var totalOverlaps = 0;
   var overlaps = 0;
   var minOverlapShift = 0;
-	
+
   var touched = [];
-  Objects.forEach(yBusySlots[ev_d_st], function(eli,i) {
+  Objects.forEach(yBusySlots[ev_d_st], function (eli, i) {
     //if event being added is already added as internal
     if (eli && eli.internalEventInfo && eli.title == el.title && eli.startDate.isSame(el.startDate)) {
       return false;
@@ -1085,48 +1098,48 @@ function populateDayEventSlots(el, yBusySlots){
     }
   });
   var maxOverlaps = 0;
-  Objects.forEach(yBusySlots[ev_d_st], function(eli,i) {
+  Objects.forEach(yBusySlots[ev_d_st], function (eli, i) {
     //if event being added is already added as internal
     if (eli && eli.internalEventInfo && eli.title == el.title && eli.startDate.isSame(el.startDate)) {
       el.internalEventInfo = eli.internalEventInfo;
       slot = i;
       return false;
     }
-		
+
     if (eli && i >= slot) {
-      slot = parseInt(i)+1;
+      slot = parseInt(i) + 1;
     }
 
     if (el.startDate >= eli.startDate && el.startDate < eli.endDate && !eli.allday) {
-      if (minOverlapShift < eli.overlapShift){
+      if (minOverlapShift < eli.overlapShift) {
         minOverlapShift = eli.overlapShift;
       }
       if (maxOverlaps < eli.overlaps) {
         maxOverlaps = eli.overlaps;
       }
-      if (overlaps > eli.overlapShift) { 
+      if (overlaps > eli.overlapShift) {
         touched.push(eli);
-        overlapShift ++;
-        totalOverlaps ++;
+        overlapShift++;
+        totalOverlaps++;
       } else {
-        overlapShift = Math.min(0, minOverlapShift-1);
+        overlapShift = Math.min(0, minOverlapShift - 1);
         totalOverlaps = eli.overlaps;
       }
     }
   });
   totalOverlaps = Math.max(totalOverlaps, maxOverlaps);
-  Objects.forEach(touched, function(eli){
+  Objects.forEach(touched, function (eli) {
     //set all touched events overlaps count to the total overlap
     eli.overlaps = totalOverlaps;
   });
-	
+
   el.overlaps = totalOverlaps;
   el.overlapShift = overlapShift;
 
   if (!yBusySlots[ev_d_st]) {
     yBusySlots[ev_d_st] = {};
   }
-  el.title =el.title || '(Event)';	
+  el.title = el.title || '(Event)';
   //same day event
   if (ev_d_st == ev_d_end) {
     yBusySlots[ev_d_st][slot] = el;
@@ -1149,8 +1162,8 @@ function populateDayEventSlots(el, yBusySlots){
  * 
  * @param {Calendar2Event[]} events 
  */
-function deleteEventFromUnscheduled(title, message, events){
-  Objects.forEach(events, function(event,i){
+function deleteEventFromUnscheduled(title, message, events) {
+  Objects.forEach(events, function (event, i) {
     if (event && event.title == title && (empty(message) || message == event.message)) {
       delete events[i];
     }
