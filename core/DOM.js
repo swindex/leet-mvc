@@ -82,7 +82,7 @@ export function DOM(elemOrQuery) {
         if (value === undefined)
           return getComputedStyle(elemArray[0])[styles];
 
-        elemArray[0].style[styles] = value;
+        elemArray[0].style[styles] = addPx(value, styles);
         return;
       }
       if (Array.isArray(styles)) {
@@ -418,7 +418,7 @@ export function DOM(elemOrQuery) {
     },
     /**
 		 * Scroll Element contents
-     * @param {number} offset
+     * @param {number} [offset]
 		 * @param {'auto'|'smooth'} [behavior] 
 		 */
     scrollTop(offset, behavior) {

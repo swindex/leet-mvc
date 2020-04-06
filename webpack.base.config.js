@@ -8,10 +8,7 @@ const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const merge = require("webpack-merge");
-const extractSass = new MiniCssExtractPlugin({
-  filename: "[name].bundle.[contenthash].css",
-  ignoreOrder: false
-});
+//const require("resolve-url-loader")
 
 const path = require('path');
 
@@ -38,7 +35,10 @@ module.exports = (env, overrideConfig) => {
     new MomentLocalesPlugin({
       localesToKeep: [/*'fr', 'es'*/],
     }),
-    extractSass,
+    new MiniCssExtractPlugin({
+      filename: "[name].bundle.[contenthash].css",
+      ignoreOrder: false
+    })
   ];
 
   //if production, use additional plugins
@@ -49,7 +49,7 @@ module.exports = (env, overrideConfig) => {
   var base = {
     mode: mode,
     devServer: {
-      contentBase: path.join(__dirname, 'www'),
+      contentBase: path.join(__dirname, ''),
       compress: true,
       port: 9000,
       disableHostCheck: true
@@ -130,12 +130,13 @@ module.exports = (env, overrideConfig) => {
                 ],
               }
             },
+
             {
               loader: 'sass-loader',
               options: {
-                sourceMap: mode != "production" ? true : false
+                sourceMap: mode != "production" ? true : false,
               }
-            },
+            }
           ]
         },
         { test: /\.(woff|woff2|eot|ttf|svg)$/, loader: 'file-loader', options: { name: '[name].[ext]', outputPath: 'fonts/' } },
