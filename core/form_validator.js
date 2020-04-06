@@ -6,7 +6,7 @@ import { Parser } from 'expr-eval';
 import { isDate } from "util";
 import { Text } from "./text";
 
-const isFieldsSymbol = Symbol("isFieldsSymbol");
+const dynamicIndexSymbol = Symbol("dynamicIndexSymbol");
 
 /**
  * Validate data array according to validating rules, defined in template object, errors will be writtel in errors object and visibuility flags written in attributes object 
@@ -949,15 +949,15 @@ export const FormWalker = {
     var keyed = {};
     var index = 1;
 
-    function set_names(obj, path) {
+    function set_names_int(obj, path) {
       var hasSet = false;
       if (!path) {
         path = "";
       }
 
       if (isArray(obj)) {
-        Objects.forEach(obj, (el) => {
-          if (set_names(el, path)) {
+        Objects.forEach(obj, function (el) {
+          if (set_names_int(el, path)) {
             hasSet = true;
           }
         });
@@ -975,13 +975,10 @@ export const FormWalker = {
           }
         }
 
-        //if (obj.type == 'select')
-        //  path.pop();
-
         if (obj.items && !obj.type && obj.value) {
           //it is select option with items!
 
-          if (set_names(obj.items, obj.value)) {
+          if (set_names_int(obj.items, obj.value)) {
             hasSet = true;
           }
         }
@@ -989,7 +986,7 @@ export const FormWalker = {
         if (obj.items && obj.type == "select") {
           if (obj.items.length > 0) {
 
-            Objects.forEach(obj.items, option => {
+            Objects.forEach(obj.items, function (option) {
               if (option.items && option.items.length > 0) {
                 //give option a name now
                 option._name = "__dynamic__" + (index++);
@@ -997,10 +994,7 @@ export const FormWalker = {
                 option.attributes = {};
                 keyed[option._name] = option;
 
-                // if (set_names(option.items, (path !="" ? path + "." : "") + option.value + "_items" )) {
-                //   hasSet = true;
-                // }
-                if (set_names(option.items)) {
+                if (set_names_int(option.items)) {
                   hasSet = true;
                 }
 
@@ -1010,15 +1004,16 @@ export const FormWalker = {
         }
 
         if (obj.items && obj.type == "form") {
-          if (set_names(obj.items, obj.name)) {
+          if (set_names_int(obj.items, obj.name)) {
             hasSet = true;
           }
         }
       }
       return hasSet;
     }
-    set_names(obj);
-    keyed[isFieldsSymbol] = true;
+    index = obj[dynamicIndexSymbol] || 1;
+    set_names_int(obj);
+    obj[dynamicIndexSymbol] = index;
     return keyed;
   }
 };
