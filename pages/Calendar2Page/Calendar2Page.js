@@ -594,7 +594,6 @@ export class Calendar2Page extends HeaderPage {
         p.addSelect('calendar', 'Calendar', event.calendarId, false, calitems);
       }
       p.addTextArea('message', 'Notes', event.message);
-
     };
 
     if (!appraisalEvent) {
@@ -680,21 +679,21 @@ export class Calendar2Page extends HeaderPage {
             addEvent.internalEventInfo = appraisalEvent.internalEventInfo;
 
             this.onAppraisalEventSaveClicked(addEvent, (orderDetails) => {
+
               calendarDeleteEvent(appraisalEvent)
                 .finally(() => {
                   p.destroy();
                   deleteEventFromUnscheduled(appraisalEvent.title, undefined, this.unscheduledEvents);
-                  return calendarCreateEvent(addEvent);
-                })
-                .then(() => {
 
                   if (this.onAppraisalEventAdded(orderDetails) !== false) {
                     this.destroy();
                   } else {
                     this._getCalendarEvents();
                   }
-                })
-                .catch(this._getCalendarEvents);
+
+                  return calendarCreateEvent(addEvent);
+                });
+
             });
           } else if (event.id) {
             p.destroy();
@@ -760,6 +759,9 @@ export class Calendar2Page extends HeaderPage {
 	 * @param {Calendar2Event} appraisalEvent
 	 */
   removeAppraisalEvent(appraisalEvent) {
+    if (!window.plugins || !window.plugins.calendar) {
+      return;
+    }
     var resolve = () => {
       //deleteEventFromDaySlots(appraisalEvent.title, null, this.dayEventSlots);
       this._getCalendarEvents();
@@ -895,7 +897,7 @@ export class Calendar2Page extends HeaderPage {
 function calendarCreateEvent(addEvent) {
   return new Promise(function (resolve, reject) {
     if (!window.plugins || !window.plugins.calendar) {
-      return reject("Calendar plugin not Found");
+      throw new Error("Calendar plugin not found!");
     }
     var options = window.plugins.calendar.getCalendarOptions();
     calendarGetCalendars().then((calendars) => {
@@ -925,7 +927,7 @@ function calendarCreateEvent(addEvent) {
 function calendarGetCalendars() {
   return new Promise(function (resolve, reject) {
     if (!window.plugins || !window.plugins.calendar) {
-      return reject("Calendar plugin not Found");
+      throw new Error("Calendar plugin not found!");
     }
     queueCalendarRequest(() => {
       window.plugins.calendar.listCalendars(
@@ -985,6 +987,9 @@ function calendarIsReadonlyCalendar(calendar) {
  */
 function calendarDeleteEvent(event) {
   return new Promise(function (resolve, reject) {
+    if (!window.plugins || !window.plugins.calendar) {
+      throw new Error("Calendar plugin not found!");
+    }
     queueCalendarRequest(function () {
       if (event.id) {
         window.plugins.calendar.deleteEventById(event.id, null, next(resolve), next(reject));
@@ -1005,6 +1010,9 @@ function calendarDeleteEvent(event) {
  */
 function calendarGetEvents(dateFrom, dateTo, calendarName, calendarId) {
   return new Promise(function (resolve, reject) {
+    if (!window.plugins || !window.plugins.calendar) {
+      throw new Error("Calendar plugin not found!");
+    }
     var options = window.plugins.calendar.getCalendarOptions();
     options.calendarName = calendarName;
     options.calendarId = calendarId;
