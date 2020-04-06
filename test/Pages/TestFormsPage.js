@@ -5,60 +5,64 @@ import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { NumericKeyboard } from "../../pages/NumericKeyboard/NumericKeyboard";
 
 export class TestFormsPage extends HeaderPage {
-	constructor(){
-		super();
-		this.form1data = {}
-		this.form1errors ={}
-		this.form1attributes = {};
+  constructor() {
+    super();
+    this.form1data = {};
+    this.form1errors = {};
+    this.form1attributes = {};
 
-		this.form1template = [
-			{type:"number", name:"number1", title:"Enter Number 1"},
-			{type:"number", name:"number2", title:"Enter Number 2", validateRule:"required"},
+    this.form1template = [
+      { type: "number", name: "number1", title: "Enter Number 1" },
+      { type: "number", name: "number2", title: "Enter Number 2", validateRule: "required" },
 
-			{type:"checkbox", name:"checkbox1",title:"Show text1"},
-			{type:"text", name:"text1",title:"text1", validateRule:"required", displayRule:"true_if:checkbox1,true" , attributes:{ onclick: "this.onClicked()" }},
-			
-			{type:"checkbox", name:"checkbox2",title:"Show form1", validateRule:"required",},
-			{type:"form", /*name:"form1"*/ title:"form1", displayRule:"true_if:checkbox2,true",items:[
-				{type:"text", name:"text2",title:"text2", validateRule:"required"},
-			]},
-			{type:"form", name:"someForm11", title:"form2", items:[
-				{type:"text", name:"text3",title:"text3", validateRule:"required"},
-			]},
-			{type:"number", name:"number3", title:"Enter Number 3"},
-		];
+      { type: "checkbox", name: "checkbox1", title: "Show text1" },
+      { type: "text", name: "text1", title: "text1", validateRule: "required", displayRule: "true_if:checkbox1,true", attributes: { onclick: "this.onClicked()" } },
 
-		this.form1 = new Forms(this.form1template, this.form1data, this.form1errors, {nestedData:true});
+      { type: "checkbox", name: "checkbox2", title: "Show form1", validateRule: "required", },
+      {
+        type: "form", /*name:"form1"*/ title: "form1", displayRule: "true_if:checkbox2,true", items: [
+          { type: "text", name: "text2", title: "text2", validateRule: "required" },
+        ]
+      },
+      {
+        type: "form", name: "someForm11", title: "form2", items: [
+          { type: "text", name: "text3", title: "someForm11.text3", validateRule: "required" },
+        ]
+      },
+      { type: "number", name: "number3", title: "Enter Number 3" },
+    ];
 
-		this.form1.onClicked = this.onClicked;
+    this.form1 = new Forms(this.form1template, this.form1data, this.form1errors, { nestedData: true });
 
-		this.visibleForm1data = null
+    this.form1.onClicked = this.onClicked;
 
-		console.log(BasePage instanceof Object);
-		console.log((new BasePage()) instanceof Object);
+    this.visibleForm1data = null;
 
-		console.log(typeof BasePage);
-		console.log(typeof (new BasePage())) ;
+    console.log(BasePage instanceof Object);
+    console.log((new BasePage()) instanceof Object);
 
-		console.log(typeof (BasePage.prototype));
-		console.log(typeof ((new BasePage().prototype))) ;
-		
-		NumericKeyboard.enable();
-		NumericKeyboard.options.layout = 1;
-	}
+    console.log(typeof BasePage);
+    console.log(typeof (new BasePage()));
 
-	onClicked(){
-		Alert("CLICKED!");
-	}
+    console.log(typeof (BasePage.prototype));
+    console.log(typeof ((new BasePage().prototype)));
 
-	validate(){
-		this.isValid = this.form1.validator.validate();
-		this.visibleForm1data = this.form1.getVisibleData();
-	}
+    NumericKeyboard.enable();
+    NumericKeyboard.options.layout = 1;
+  }
 
-	get template(){
-		return this.extendTemplate(super.template, template)
-	}
+  onClicked() {
+    Alert("CLICKED!");
+  }
+
+  validate() {
+    this.isValid = this.form1.validator.validate();
+    this.visibleForm1data = this.form1.getVisibleData();
+  }
+
+  get template() {
+    return this.extendTemplate(super.template, template);
+  }
 }
 
 const template = `
