@@ -1,25 +1,25 @@
-window['empty'] = function(value){
+
+window.empty = function (value) {
   return typeof value === "undefined" || value === null || value === "" || value === 0 || value === false;
 };
 
 if (!('remove' in Element.prototype)) {
-  Element.prototype.remove = function() {
+  Element.prototype.remove = function () {
     this.parentNode.removeChild(this);
   };
 }
 
 if (!('repaint' in Element.prototype)) {
-  Element.prototype.repaint = function() {
-    var d= this.style.display;
-    this.style.display='none';
+  Element.prototype.repaint = function () {
+    var d = this.style.display;
+    this.style.display = 'none';
     this.offsetHeight;
-    this.style.display=d;
+    this.style.display = d;
     //console.log(this.tagName+"."+this.className + " repaint");
   };
 }
 if (!Array.prototype.lastIndexOf) {
-  Array.prototype.lastIndexOf = function(searchElement /*, fromIndex*/)
-  {
+  Array.prototype.lastIndexOf = function (searchElement /*, fromIndex*/) {
     "use strict";
     if (this == null)
       throw new TypeError();
@@ -30,8 +30,7 @@ if (!Array.prototype.lastIndexOf) {
       return -1;
 
     var n = len;
-    if (arguments.length > 1)
-    {
+    if (arguments.length > 1) {
       n = Number(arguments[1]);
       if (n != n)
         n = 0;
@@ -43,8 +42,7 @@ if (!Array.prototype.lastIndexOf) {
       ? Math.min(n, len - 1)
       : len - Math.abs(n);
 
-    for (; k >= 0; k--)
-    {
+    for (; k >= 0; k--) {
       if (k in t && t[k] === searchElement)
         return k;
     }
@@ -52,7 +50,7 @@ if (!Array.prototype.lastIndexOf) {
   };
 }
 if (!String.prototype.repeat) {
-  String.prototype.repeat = function(count) {
+  String.prototype.repeat = function (count) {
     'use strict';
     if (this == null) {
       throw new TypeError('can\'t convert ' + this + ' to object');
@@ -116,10 +114,10 @@ if (typeof Object.assign != 'function') {
 }
 if (!("classList" in document.documentElement) && Object.defineProperty && typeof HTMLElement !== 'undefined') {
   Object.defineProperty(HTMLElement.prototype, 'classList', {
-    get: function() {
+    get: function () {
       var self = this;
       function update(fn) {
-        return function(value) {
+        return function (value) {
           var classes = self.className.split(/\s+/),
             index = classes.indexOf(value);
 
@@ -128,30 +126,30 @@ if (!("classList" in document.documentElement) && Object.defineProperty && typeo
         };
       }
 
-      var ret = {                    
-        add: update(function(classes, index, value) {
+      var ret = {
+        add: update(function (classes, index, value) {
           ~index || classes.push(value);
         }),
 
-        remove: update(function(classes, index) {
+        remove: update(function (classes, index) {
           ~index && classes.splice(index, 1);
         }),
 
-        toggle: update(function(classes, index, value) {
+        toggle: update(function (classes, index, value) {
           ~index ? classes.splice(index, 1) : classes.push(value);
         }),
 
-        contains: function(value) {
+        contains: function (value) {
           return !!~self.className.split(/\s+/).indexOf(value);
         },
 
-        item: function(i) {
+        item: function (i) {
           return self.className.split(/\s+/)[i] || null;
         }
       };
-            
+
       Object.defineProperty(ret, 'length', {
-        get: function() {
+        get: function () {
           return self.className.split(/\s+/).length;
         }
       });
@@ -161,7 +159,7 @@ if (!("classList" in document.documentElement) && Object.defineProperty && typeo
   });
 }
 
-if (! window['device']){
+if (!window['device']) {
   window['device'] = {
     platform: window.platform,
     model: "Unknown",
@@ -172,27 +170,29 @@ if (! window['device']){
 // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
 // requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
 // MIT license
-(function() {
+(function () {
   var lastTime = 0;
   var vendors = ['ms', 'moz', 'webkit', 'o'];
-  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-    window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-    window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
-                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+  for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame']
+      || window[vendors[x] + 'CancelRequestAnimationFrame'];
   }
- 
+
   if (!window.requestAnimationFrame)
-    window.requestAnimationFrame = function(callback, element) {
+    window.requestAnimationFrame = function (callback, element) {
       var currTime = new Date().getTime();
       var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-      var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+      var id = window.setTimeout(function () { callback(currTime + timeToCall); },
         timeToCall);
       lastTime = currTime + timeToCall;
       return id;
     };
- 
+
   if (!window.cancelAnimationFrame)
-    window.cancelAnimationFrame = function(id) {
+    window.cancelAnimationFrame = function (id) {
       clearTimeout(id);
     };
 }());
+
+module.exports = () => { };

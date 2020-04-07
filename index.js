@@ -1,4 +1,5 @@
-import './core/polyfill';
+require('./core/polyfill');
+
 
 import { MapElement } from "./core/MapElement";
 import { BasePage } from "./pages/BasePage";
@@ -15,7 +16,7 @@ import { CalendarPage } from "./pages/CalendarPage/CalendarPage";
 import { Calendar2Page } from "./pages/Calendar2Page/Calendar2Page";
 import { DirectionsPage } from "./pages/DirectionsPage/DirectionsPage";
 import { ActionSheetPage } from "./pages/ActionSheetPage/ActionSheetPage";
-import { DeBouncer } from "./core/DeBouncer"; 
+import { DeBouncer } from "./core/DeBouncer";
 import { DateTime } from "./core/DateTime";
 import { DataShape } from "./core/DataShape";
 import { CallbackQueue } from "./core/CallbackQueue";
@@ -26,7 +27,7 @@ import { Touch } from "./core/Touch.js";
 import { OptionsDialogPage } from "./pages/OptionsDialogPage/OptionsDialogPage";
 import { Extend, GUID, tryCall, argumentsToArray } from "./core/helpers";
 
-import { Toast, ToastPage } from "./pages/Toast/Toast"; 
+import { Toast, ToastPage } from "./pages/Toast/Toast";
 import { EnableCustomElements } from "./core/EnableCustomElements";
 import { Forms } from "./components/Forms";
 import { ItemList } from "./components/ItemList";

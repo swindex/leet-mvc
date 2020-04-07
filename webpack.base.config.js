@@ -73,10 +73,10 @@ module.exports = (env, overrideConfig) => {
     },
     module: {
       rules: [
-        {
+        /*{
           test: /polyfill\.js$/,
           loader: 'script-loader'
-        },
+        },*/
         {
           test: /\.js$/,
           exclude: /@babel(?:\/|\\{1,2})runtime|core-js/,
