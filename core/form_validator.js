@@ -533,7 +533,11 @@ export function FormValidator(data, template, errors, options) {
 
         errmsg = errmsg.replace(':attribute', title);
 
-        var conditions_arr = conditions.split(',');
+        //split conditions by , use \\, to escape the split
+        var conditions_arr = conditions.replace(/\\,/g, "~;").split(',').map(e => e.replace(/~;/g, ','));
+
+        if (!conditions_arr)
+          conditions_arr = [""];
 
         var c_name = conditions_arr[0];
 
@@ -721,7 +725,8 @@ FormValidator.messages = {
   "number": "The :attribute must be a number.",
   "numeric": "The :attribute must be a number.",
   "present": "The :attribute must be present.",
-  "regex": "The :attribute has invalid characters: :result",
+  "regex": "The :attribute is not valid. :result",
+
   "required": "The :attribute is required.",
   "required_if": "The :attribute is required when :other is :value.",
   "required_unless": "The :attribute is required unless :other is in :values.",
@@ -931,8 +936,7 @@ FormValidator.rules = {
     var re = new RegExp(condition);
 
     if (re.test(value) == false) {
-      var ret = value.replace(new RegExp(condition.replace(/^\^|\*|\$$/g, ''), 'g'), '');
-      return ret;
+      return conditions[1] ? conditions[1] : "";
     }
     return true;
   },
