@@ -23,6 +23,57 @@ export function DOM(elemOrQuery) {
 
   var pxRequiredKeys = ['top', 'left', 'height', 'width', 'right', 'bottom'];
 
+  function remove(elem) {
+    //remove children
+    /*if (elem.children) {
+      for (var i in elem.children) {
+        if (!elem.children.hasOwnProperty(i)) continue;
+        remove(elem.children[i]);
+      }
+    }*/
+
+    if (elem.parentNode) {
+      elem.parentNode.removeChild(elem);
+      //removeAllEventListeners(elem);
+    }
+  }
+
+  function removeAllEventListeners(elem) {
+    var handlers = elem["__EVENTS__"];
+    if (!handlers) {
+      return;
+    }
+    for (var event in handlers) {
+      removeEventListener(elem, event);
+    }
+    delete elem["__EVENTS__"];
+  }
+
+  function removeEventListener(elem, events, removeHandler = null) {
+    var ar = events.split(' ');
+    for (var j in ar) {
+      if (!ar.hasOwnProperty(j)) continue;
+      var event = ar[j];
+
+      var eventHandlers = elem["__EVENTS__"][event];
+      if (!eventHandlers) {
+        return;
+      }
+
+      for (var i in eventHandlers) {
+        var handler = eventHandlers[i];
+        if (removeHandler && handler[0] == removeHandler) {
+          elem.removeEventListener(event.split(".")[0], handler[0], handler[1]);
+        } else if (!removeHandler) {
+          elem.removeEventListener(event.split(".")[0], handler[0], handler[1]);
+        }
+      }
+
+      delete elem["__EVENTS__"][event];
+    };
+
+  }
+
 
   function addPx(value, keyName) {
     if (isNaN(value))
@@ -40,11 +91,14 @@ export function DOM(elemOrQuery) {
   const self = {
     identity: identitySymbol,
     /**
-		 * Iterate ove reach element of the set
-		 * @param {function(HTMLElement):void} callback 
-		 */
+     * Iterate ove reach element of the set
+     * @param {function(HTMLElement):void} callback 
+     */
     each(callback) {
-      elemArray.forEach(callback);
+      for (var i in elemArray) {
+        if (elemArray.hasOwnProperty(i))
+          callback(elemArray[i]);
+      }
     },
     get(index) {
       return elemArray[index];
@@ -58,20 +112,22 @@ export function DOM(elemOrQuery) {
       if (value == undefined) {
         return elemArray[0].getAttribute(key);
       }
-      elemArray.forEach(elem => {
-        elem.setAttribute(key, value);
-      });
+      for (var i in elemArray) {
+        if (elemArray.hasOwnProperty(i))
+          elemArray[i].setAttribute(key, value);
+      };
     },
     removeAttr(key) {
-      elemArray.forEach(elem => {
-        elem.removeAttribute(key);
-      });
+      for (var i in elemArray) {
+        if (elemArray.hasOwnProperty(i))
+          elemArray[i].removeAttribute(key);
+      }
     },
     /**
-		 * Apply CSS rule to all elements
-		 * @param {{[key:string]:string}|string[]|string} styles - if styles is array, return the specified css properties
-		 * @param {string} [value]
-		 */
+     * Apply CSS rule to all elements
+     * @param {{[key:string]:string}|string[]|string} styles - if styles is array, return the specified css properties
+     * @param {string} [value]
+     */
     css(styles, value) {
       if (elemArray[0] == undefined) return null;
 
@@ -88,124 +144,149 @@ export function DOM(elemOrQuery) {
       if (Array.isArray(styles)) {
         var ret = {};
         var elStyles = getComputedStyle(elemArray[0]);
-        styles.forEach(function (prop) {
+        for (var i in styles) {
+          if (!styles.hasOwnProperty(i)) continue;
+          var prop = styles[i];
           ret[prop] = elStyles[prop];
-        });
+        }
         return ret;
       } else {
-        elemArray.forEach(elem => {
-          Objects.forEach(styles, function (prop, i) {
+        for (var j in elemArray) {
+          if (!elemArray.hasOwnProperty(j)) continue;
+          var elem = elemArray[j];
+
+          for (var i in styles) {
+            if (!styles.hasOwnProperty(i)) continue;
+            var prop = styles[i];
+
             if (prop !== null)
               elem.style[i] = addPx(prop, i);
             else
               elem.style[i] = 'auto';
-          });
-        });
+          }
+        };
       }
     },
     addClass(className) {
-      elemArray.forEach(elem => {
-        elem.classList.add(className);
-      });
+      for (var i in elemArray) {
+        if (elemArray.hasOwnProperty(i))
+          elemArray[i].classList.add(className);
+      };
     },
     removeClass(className) {
-      elemArray.forEach(elem => {
-        elem.classList.remove(className);
-      });
+      for (var i in elemArray) {
+        if (elemArray.hasOwnProperty(i))
+          elemArray[i].classList.remove(className);
+      };
     },
     toggleClass(className) {
-      elemArray.forEach(elem => {
-        elem.classList.toggle(className);
-      });
+      for (var i in elemArray) {
+        if (elemArray.hasOwnProperty(i))
+          elemArray[i].classList.toggle(className);
+      };
     },
     /**
-		 * Remove element and their children from DOM
-		 * @param {function(HTMLElement|Element): void} [onRemoveElement] 
-		 */
+     * Remove element and their children from DOM
+     * @param {function(HTMLElement|Element): void} [onRemoveElement] 
+     */
     remove(onRemoveElement) {
       //remove children
-      elemArray.forEach(elem => {
-        if (elem.children)
-          DOM(elem.children).remove(onRemoveElement);
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var elem = elemArray[i];
 
-        if (elem.parentNode) {
-          elem.parentNode.removeChild(elem);
-          DOM(elem).removeAllEventListeners();
-        }
+        remove(elem);
 
         if (typeof onRemoveElement == "function") {
           onRemoveElement(elem);
         }
-      });
+      };
     },
 
     /**
-		 * Append children to element
-		 * @param {*} childOrChildren 
-		 */
+     * Append children to element
+     * @param {*} childOrChildren 
+     */
     append(childOrChildren) {
       var chArray = getArray(childOrChildren);
-      elemArray.forEach(elem => {
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var elem = elemArray[i];
         for (let k in chArray) {
           if (!chArray.hasOwnProperty(k)) continue;
           elem.appendChild(chArray[k]);
         }
-      });
+      };
     },
 
     /**
-		 * Insert the first element of collection After the reference element
-		 * @param {HTMLElement} refChild 
-		 */
+     * Insert the first element of collection After the reference element
+     * @param {HTMLElement} refChild 
+     */
     insertAfter(refChild) {
-      if (refChild.nextElementSibling)
-        elemArray.forEach(elem => {
+      if (refChild.nextElementSibling) {
+        for (var i in elemArray) {
+          if (!elemArray.hasOwnProperty(i)) continue;
+          var elem = elemArray[i];
           refChild.parentElement.insertBefore(elem, refChild.nextElementSibling);
-        });
-      else
-        elemArray.forEach(elem => {
+        }
+      } else {
+        for (var i in elemArray) {
+          if (!elemArray.hasOwnProperty(i)) continue;
+          var elem = elemArray[i];
           refChild.parentElement.appendChild(elem);
-        });
+        };
+      }
     },
 
     /**
-		 * Insert the first element of collection Before the reference element
-		 * @param {HTMLElement} refChild 
-		 */
+     * Insert the first element of collection Before the reference element
+     * @param {HTMLElement} refChild 
+     */
     insertBefore(refChild) {
-      elemArray.forEach(elem => {
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var elem = elemArray[i];
         refChild.parentElement.insertBefore(elem, refChild);
-      });
+      };
     },
 
     /**
-		 * Replace first element of collection with new element
-		 * @param {HTMLElement} newElement 
-		 */
+     * Replace first element of collection with new element
+     * @param {HTMLElement} newElement 
+     */
     replaceWith(newElement) {
       DOM(newElement).insertAfter(elemArray[0]);
       DOM(elemArray).remove();
     },
 
     /**
-		 * Gt Parent of each element in sequence
-		 */
+     * Gt Parent of each element in sequence
+     */
     parent() {
       var ret = [];
-      elemArray.forEach(elem => {
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var elem = elemArray[i];
         ret.push(elem.parentElement);
-      });
+      };
       return DOM(ret);
     },
     /**
-		 * Add event listener to element
-		 * @param {string} events 
-		 * @param {function(Event)} handler
-		 * @param {any} [capture]
-		 */
+     * Add event listener to element
+     * @param {string} events 
+     * @param {function(Event)} handler
+     * @param {any} [capture]
+     */
     addEventListener(events, handler, capture) {
-      elemArray.forEach(elem => {
-        events.split(' ').forEach(event => {
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var elem = elemArray[i];
+
+        var ar = events.split(' ');
+        for (var ii in ar) {
+          if (!ar.hasOwnProperty(ii)) continue;
+          var event = ar[ii];
           if (!elem["__EVENTS__"]) {
             elem["__EVENTS__"] = {};
           }
@@ -216,50 +297,33 @@ export function DOM(elemOrQuery) {
           // capture reference
           elem["__EVENTS__"][event].push([handler, capture]);
           elem.addEventListener(event.split(".")[0], handler, capture);
-        });
-      });
+        };
+      };
     },
     /**
-		 * Remove Event Listener
-		 * @param {string} events 
-		 * @param {function()} [removeHandler] - specific handler to remove. By default removes all events for specified event name
-		 */
+     * Remove Event Listener
+     * @param {string} events 
+     * @param {function()} [removeHandler] - specific handler to remove. By default removes all events for specified event name
+     */
     removeEventListener(events, removeHandler = null) {
-      elemArray.forEach(elem => {
-        events.split(' ').forEach(event => {
-          var eventHandlers = elem["__EVENTS__"][event];
-          if (!eventHandlers) {
-            return;
-          }
-
-          for (var i in eventHandlers) {
-            var handler = eventHandlers[i];
-            if (removeHandler && handler[0] == removeHandler) {
-              elem.removeEventListener(event.split(".")[0], handler[0], handler[1]);
-            } else if (!removeHandler) {
-              elem.removeEventListener(event.split(".")[0], handler[0], handler[1]);
-            }
-          }
-
-          delete elem["__EVENTS__"][event];
-        });
-      });
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var elem = elemArray[i];
+        removeEventListener(elem, events, removeHandler);
+      };
     },
 
     /**
-		 * Remove All Event Listeners
-		 */
+     * Remove All Event Listeners
+     */
     removeAllEventListeners() {
-      elemArray.forEach(elem => {
-        var handlers = elem["__EVENTS__"];
-        if (!handlers) {
-          return;
-        }
-        for (var event in handlers) {
-          DOM(elem).removeEventListener(event);
-        }
-        delete elem["__EVENTS__"];
-      });
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var elem = elemArray[i];
+
+        removeAllEventListeners(elem);
+
+      };
     },
 
     on(event, handler, capture) {
@@ -282,23 +346,26 @@ export function DOM(elemOrQuery) {
 
 
     /**
-		 * Repaint element
-		 */
+     * Repaint element
+     */
     repaint() {
       // in plain js
-      elemArray.forEach(elem => {
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var elem = elemArray[i];
+
         var old = elem.style.display;
         elem.style.display = 'none';
         elem.style.display = old;
-      });
+      };
     },
 
 
     /**
-		 * Find a parent by query
-		 * @param {string} query 
-		 * //@vvreturn {HTMLElement[]|HTMLOptionElement[]|Element[]}
-		 */
+     * Find a parent by query
+     * @param {string} query 
+     * //@vvreturn {HTMLElement[]|HTMLOptionElement[]|Element[]}
+     */
     closest(query) {
       if (elemArray[0] == undefined) return DOM([]);
       var elements = [elemArray[0].closest(query)];
@@ -306,10 +373,10 @@ export function DOM(elemOrQuery) {
       return DOM(elements);
     },
     /**
-		 * Find children by query
-		 * @param {string} query 
-		 * //@vvreturn {HTMLElement[]|HTMLOptionElement[]|Element[]}
-		 */
+     * Find children by query
+     * @param {string} query 
+     * //@vvreturn {HTMLElement[]|HTMLOptionElement[]|Element[]}
+     */
     find(query) {
       if (elemArray[0] == undefined) return DOM([]);
       var elems = Array.from(elemArray[0].querySelectorAll(query));
@@ -393,42 +460,38 @@ export function DOM(elemOrQuery) {
       return distance < 0 ? 0 : distance;
     },
     /**
-		 * Scroll Element contents
-		 * @param {{behavior?:'auto'|'smooth', top?: number, left?:number}} options 
-		 */
+     * Scroll Element contents
+     * @param {{behavior?:'auto'|'smooth', top?: number, left?:number}} options 
+     */
     scrollTo(options) {
       if (elemArray[0] == undefined) return 0;
       elemArray[0].scrollTo(options);
     },
 
     /**
-		 * Scroll Element contents
+     * Scroll Element contents
      * @param {number} [offset]
-		 * @param {'auto'|'smooth'} [behavior] 
-		 */
+     * @param {'auto'|'smooth'} [behavior] 
+     */
     scrollLeft(offset, behavior) {
       if (elemArray[0] == undefined) return 0;
       if (offset == undefined) {
         return elemArray[0].scrollLeft;
       } else {
-        elemArray.forEach(el => {
-          self.scrollTo({ left: offset, behavior: behavior });
-        });
+        self.scrollTo({ left: offset, behavior: behavior });
       }
     },
     /**
-		 * Scroll Element contents
+     * Scroll Element contents
      * @param {number} [offset]
-		 * @param {'auto'|'smooth'} [behavior] 
-		 */
+     * @param {'auto'|'smooth'} [behavior] 
+     */
     scrollTop(offset, behavior) {
       if (elemArray[0] == undefined) return 0;
       if (offset == undefined) {
         return elemArray[0].scrollTop;
       } else {
-        elemArray.forEach(el => {
-          self.scrollTo({ top: offset, behavior: behavior });
-        });
+        self.scrollTo({ top: offset, behavior: behavior });
       }
     },
 
@@ -437,35 +500,47 @@ export function DOM(elemOrQuery) {
       if (value == undefined) {
         return elemArray[0].value;
       } else {
-        elemArray.forEach(el => {
-          el.value = value;
-        });
+        for (var i in elemArray) {
+          if (!elemArray.hasOwnProperty(i)) continue;
+          var elem = elemArray[i];
+
+          elem.value = value;
+        };
       }
     },
     show(value) {
-      elemArray.forEach(el => {
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var el = elemArray[i];
+
         if (!el._DOM_oldStyle)
           el._DOM_oldStyle = {};
         if (!el._DOM_oldStyle.display)
           el._DOM_oldStyle.display = DOM(el).css('display');
         el.style.display = el._DOM_oldStyle.display;
-      });
+      };
     },
     hide(value) {
-      elemArray.forEach(el => {
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var el = elemArray[i];
+
         if (!el._DOM_oldStyle)
           el._DOM_oldStyle = {};
         if (!el._DOM_oldStyle.display)
           el._DOM_oldStyle.display = DOM(el).css('display');
 
         el.style.display = 'none';
-      });
+      }
     },
     focus() {
       if (elemArray[0] == undefined) return undefined;
-      elemArray.forEach(el => {
+      for (var i in elemArray) {
+        if (!elemArray.hasOwnProperty(i)) continue;
+        var el = elemArray[i];
+
         el.focus();
-      });
+      };
     }
 
   };

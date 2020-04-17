@@ -56,7 +56,7 @@ export var Binder = function (context) {
   function insertVDomItemsAfter(items, referenceNode) {
     if (isArray(items)) {
       var frag = document.createDocumentFragment();
-      items.forEach(item => {
+      Objects.forEach(items, item => {
         frag.appendChild(item.elem);
         if (item.elem instanceof Comment) {
           insertVDomItemsAfter(item.items, item.elem);
@@ -88,7 +88,7 @@ export var Binder = function (context) {
 
   function removeVDomItems(items, keepEvents) {
     if (isArray(items)) {
-      items.forEach(item => {
+      Objects.forEach(items, item => {
         removeElement(item.elem, keepEvents);
         //if item is a comment, remove its items too
         if (item.elem instanceof Comment) {
@@ -200,7 +200,7 @@ export var Binder = function (context) {
       //parse {{moustache}} template within the text node
       var bits = escaped.split(/({{[^{}]*}})/gmi);
       var splitNodes = [];
-      bits.forEach(function (el) {
+      Objects.forEach(bits, function (el) {
         var ret = null;
         el.replace(/{{([^{}]+)}}|(.*)/g, function (a, p1, p2, d) {
           if (p1) {
@@ -497,7 +497,7 @@ export var Binder = function (context) {
    * @param {HTMLElement|Element} elem
    */
   function bindEventsToContext(elem, inject) {
-    Array.prototype.slice.call(elem.attributes).forEach(function (attr) {
+    Objects.forEach(Array.prototype.slice.call(elem.attributes), function (attr) {
       if (typeof elem[attr.name] == 'function') {
         //var inject = self.injectVars;
         elem[attr.name] = null;
@@ -1465,7 +1465,7 @@ on.items[index].INJECT[parts.item] != item*/
       where: null
     };
     var p_name = 'data';
-    parts.forEach((part) => {
+    Objects.forEach(parts, (part) => {
       switch (part) {
         case 'in':
           p.index = p.data; //first item must have been index
@@ -1575,13 +1575,9 @@ on.items[index].INJECT[parts.item] != item*/
 
 
 
-export function removeDOMElement(elem) {
-  if (elem.VDOM) {
-    removeVDOMElement(elem.VDOM);
-    delete elem.VDOM;
-    return;
-  } else {
-    DOM(elem).remove();
+function removeDOMElement(elem) {
+  if (elem.parentNode) {
+    elem.parentNode.removeChild(elem);
   }
 }
 /**
@@ -1590,13 +1586,16 @@ export function removeDOMElement(elem) {
  */
 export function removeVDOMElement(en) {
   if (en.items && en.items.length > 0) {
-    en.items.forEach(item => removeVDOMElement(item));
+    for (var i in en.items) {
+      if (!en.items.hasOwnProperty(i)) continue;
+      removeVDOMElement(en.items[i]);
+    }
     delete en.items;
   }
 
   if (en.elem) {
     delete en.elem.VDOM;
-    DOM(en.elem).remove();
+    removeDOMElement(en.elem);
     delete en.elem;
   }
 
