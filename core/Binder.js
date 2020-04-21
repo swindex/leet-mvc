@@ -263,6 +263,13 @@ export var Binder = function (context) {
 
     return thisSorurce;
   }
+
+  function getHtmlFromRender(tag, attrs) {
+    var attrs_str = [""];
+    Objects.forEach(attrs, (atr, key) => { attrs_str.push(`${key}="${atr}"`); });
+    return `<${tag}${attrs_str.join(' ')}></${tag}>`;
+  }
+
   this.vdom = null;
   /**
    * @return {vDom}
@@ -273,46 +280,50 @@ export var Binder = function (context) {
     var scope = {
       /** Any kind of element that creates it's own scope AND returns vDOM with fragment and itemBuilder  */
       createDirectiveElement: function (tag, attributes, createElements, inject) {
-        //create directive fragment element, into which the deirective contents will be appended
-        var directiveFragment = document.createDocumentFragment();
+        try {
+          //create directive fragment element, into which the deirective contents will be appended
+          var directiveFragment = document.createDocumentFragment();
 
-        var attrKeys = Object.keys(attributes);
-        var getters = {};
+          var attrKeys = Object.keys(attributes);
+          var getters = {};
 
-        var attrName = attrKeys[0];
-        var bindExpression = attributes[attrName];
+          var attrName = attrKeys[0];
+          var bindExpression = attributes[attrName];
 
-        //create comment element that will become the anchor for the directive.
-        var elem = document.createComment(attrName + "=" + bindExpression + " ");
-        directiveFragment.appendChild(elem);
+          //create comment element that will become the anchor for the directive.
+          var elem = document.createComment(attrName + "=" + bindExpression + " ");
+          directiveFragment.appendChild(elem);
 
-        var rType = getReactivityType(attrName);
-        var key = rType.key;
+          var rType = getReactivityType(attrName);
+          var key = rType.key;
 
-        if (bindExpression) {
-          if (key == "foreach") {
-            //special handling for foreach. because getter can not be created from foreach attribute [foreach] = "index in this.items as item"
-            getters[key] = getForeachAttrParts(bindExpression);
-          } else {
-            //for all other attributes like [if] = "this.isVisible" create getter for the attribute value
-            getters[key] = createGetter(bindExpression, inject);
+          if (bindExpression) {
+            if (key == "foreach") {
+              //special handling for foreach. because getter can not be created from foreach attribute [foreach] = "index in this.items as item"
+              getters[key] = getForeachAttrParts(bindExpression);
+            } else {
+              //for all other attributes like [if] = "this.isVisible" create getter for the attribute value
+              getters[key] = createGetter(bindExpression, inject);
+            }
           }
+          //because directive children are likely to be re-rendered, do not immediately render them. create itemBuilder function
+          var itemBuilder = function (inject) {
+            var items = createElements(inject);
+            if (items[0] && items[0].elem.getAttribute && items[0].elem.getAttribute("fragment") !== null) {
+              var frag = document.createDocumentFragment();
+              DOM(frag).append(items[0].elem.childNodes);
+              items[0].elem = frag;
+            }
+            items[0].INJECT = inject;
+            return items[0];
+          };
+          var vdom = { values: {}, getters: getters, setters: {}, callers: {}, fragment: directiveFragment, elem: elem, items: [], itemBuilder: itemBuilder };
+          executeAttribute(key, vdom, inject);
+
+          return vdom;
+        } catch (ex) {
+          console.error(ex.message + "\n At " + getHtmlFromRender(tag, attributes));
         }
-        //because directive children are likely to be re-rendered, do not immediately render them. create itemBuilder function
-        var itemBuilder = function (inject) {
-          var items = createElements(inject);
-          if (items[0] && items[0].elem.getAttribute && items[0].elem.getAttribute("fragment") !== null) {
-            var frag = document.createDocumentFragment();
-            DOM(frag).append(items[0].elem.childNodes);
-            items[0].elem = frag;
-          }
-          items[0].INJECT = inject;
-          return items[0];
-        };
-        var vdom = { values: {}, getters: getters, setters: {}, callers: {}, fragment: directiveFragment, elem: elem, items: [], itemBuilder: itemBuilder };
-        executeAttribute(key, vdom, inject);
-
-        return vdom;
       },
       /**
        * Create element
@@ -322,113 +333,117 @@ export var Binder = function (context) {
        * @param {any} inject
        */
       createElement: function (tag, attributes, createElements, inject) {
-        inject = inject || {};
-        var vdomItems = [];
-        var elem;
-        var attrKeys = Object.keys(attributes);
-        var getters = {};
-        var setters = {};
-        var callers = {};
-        var plainAttrs = {};
-        var renderImmediately = [];
+        try {
+          inject = inject || {};
+          var vdomItems = [];
+          var elem;
+          var attrKeys = Object.keys(attributes);
+          var getters = {};
+          var setters = {};
+          var callers = {};
+          var plainAttrs = {};
+          var renderImmediately = [];
 
-        if (tag == "#text") {
-          if (isString(createElements)) {
-            elem = document.createTextNode(createElements);
-            var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context };
+          if (tag == "#text") {
+            if (isString(createElements)) {
+              elem = document.createTextNode(createElements);
+              var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context };
 
-          } else {
-            elem = document.createTextNode("");
-            getters = { 'bind': createGetter(attributes['bind'], inject) };
-            var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context };
-            executeAttribute('bind', vdom, inject);
-          }
-
-          return vdom;
-        }
-
-        elem = document.createElement(tag);
-
-        for (var i in attrKeys) {
-          var bindExpression = null;
-
-          var attrName = attrKeys[i];
-          bindExpression = attributes[attrName];
-
-          var rType = getReactivityType(attrName);
-          var key = rType.key;
-
-          if (!bindExpression) {
-            plainAttrs[key] = null;
-            elem.setAttribute(key, attributes[key]);
-            continue;
-          }
-
-          switch (rType.type) {
-            case 'get-set':
-              getters[key] = createGetter(bindExpression, inject);
-              setters[key] = createSetter(bindExpression, inject);
-
-              //if element is directly setting, then apply all change and input callbacks
-              if (isElementSetting(elem)) {
-                applyCallbacks(elem, self.context, self.eventCallbacks);
-                if (inject.component && inject.component.events) {
-                  applyCallbacks(elem, inject.component, inject.component.events);
-                }
-              }
-              renderImmediately.push(key);
-              elem.setAttribute(key, attributes[key]);
-              break;
-            case 'get':
-              getters[key] = createGetter(bindExpression, inject);
-              renderImmediately.push(key);
-              break;
-            case 'call':
-              callers[key] = createCaller(bindExpression, inject);
-              break;
-            default:
-              //normal attribute
-              //add it to the list of plain string-only attributes - will be used in component
-              plainAttrs[key] = bindExpression;
-              elem.setAttribute(key, attributes[key]);
-              break;
-          }
-        }
-
-        //if element has an attribute "fragment" then make the element a fragment so its children can be added directly
-        if (plainAttrs['fragment'] !== undefined) {
-          elem = document.createDocumentFragment();
-        }
-
-        for (var ii = 0; ii < createElements.length; ii++) {
-          if (isObject(createElements[ii])) {
-            if (isArray(createElements[ii])) {
-              if (createElements[ii].length > 0)
-                createElements[ii].map(function (el) {
-                  if (el.vdom)
-                    vdomItems.push(el.vdom);
-                  elem.appendChild(el.fragment || el.elem);
-                });
             } else {
-              if (createElements[ii])
-                vdomItems.push(createElements[ii]);
-              elem.appendChild(createElements[ii].fragment || createElements[ii].elem);
+              elem = document.createTextNode("");
+              getters = { 'bind': createGetter(attributes['bind'], inject) };
+              var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context };
+              executeAttribute('bind', vdom, inject);
             }
-          } else if (isFunction(createElements[ii])) {
-            throw new Error("Item must be an vDom object");
+
+            return vdom;
           }
-        }
 
-        var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, callers: callers, plainAttrs: plainAttrs, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context };
-        elem['VDOM'] = vdom;
+          elem = document.createElement(tag);
 
-        for (var ii = 0; ii < renderImmediately.length; ii++) {
-          executeAttribute(renderImmediately[ii], vdom, inject);
+          for (var i in attrKeys) {
+            var bindExpression = null;
+
+            var attrName = attrKeys[i];
+            bindExpression = attributes[attrName];
+
+            var rType = getReactivityType(attrName);
+            var key = rType.key;
+
+            if (!bindExpression) {
+              plainAttrs[key] = null;
+              elem.setAttribute(key, attributes[key]);
+              continue;
+            }
+
+            switch (rType.type) {
+              case 'get-set':
+                getters[key] = createGetter(bindExpression, inject);
+                setters[key] = createSetter(bindExpression, inject);
+
+                //if element is directly setting, then apply all change and input callbacks
+                if (isElementSetting(elem)) {
+                  applyCallbacks(elem, self.context, self.eventCallbacks);
+                  if (inject.component && inject.component.events) {
+                    applyCallbacks(elem, inject.component, inject.component.events);
+                  }
+                }
+                renderImmediately.push(key);
+                elem.setAttribute(key, attributes[key]);
+                break;
+              case 'get':
+                getters[key] = createGetter(bindExpression, inject);
+                renderImmediately.push(key);
+                break;
+              case 'call':
+                callers[key] = createCaller(bindExpression, inject);
+                break;
+              default:
+                //normal attribute
+                //add it to the list of plain string-only attributes - will be used in component
+                plainAttrs[key] = bindExpression;
+                elem.setAttribute(key, attributes[key]);
+                break;
+            }
+          }
+
+          //if element has an attribute "fragment" then make the element a fragment so its children can be added directly
+          if (plainAttrs['fragment'] !== undefined) {
+            elem = document.createDocumentFragment();
+          }
+
+          for (var ii = 0; ii < createElements.length; ii++) {
+            if (isObject(createElements[ii])) {
+              if (isArray(createElements[ii])) {
+                if (createElements[ii].length > 0)
+                  createElements[ii].map(function (el) {
+                    if (el.vdom)
+                      vdomItems.push(el.vdom);
+                    elem.appendChild(el.fragment || el.elem);
+                  });
+              } else {
+                if (createElements[ii])
+                  vdomItems.push(createElements[ii]);
+                elem.appendChild(createElements[ii].fragment || createElements[ii].elem);
+              }
+            } else if (isFunction(createElements[ii])) {
+              throw new Error("Item must be an vDom object");
+            }
+          }
+
+          var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, callers: callers, plainAttrs: plainAttrs, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context };
+          elem['VDOM'] = vdom;
+
+          for (var ii = 0; ii < renderImmediately.length; ii++) {
+            executeAttribute(renderImmediately[ii], vdom, inject);
+          }
+          if (plainAttrs['fragment'] === undefined) {
+            bindEventsToContext(elem, inject);
+          }
+          return vdom;
+        } catch (ex) {
+          console.error(ex.message + "\n At " + getHtmlFromRender(tag, attributes));
         }
-        if (plainAttrs['fragment'] === undefined) {
-          bindEventsToContext(elem, inject);
-        }
-        return vdom;
       }
     };
 
