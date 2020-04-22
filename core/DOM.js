@@ -1,5 +1,5 @@
 import { isIterable } from './helpers';
-import { Objects } from './Objects';
+
 
 const identitySymbol = Symbol('identitySymbol');
 //Window|HTMLElement|DocumentFragment|Element|string
@@ -19,6 +19,25 @@ export function DOM(elemOrQuery) {
     } else {
       return [children];
     }
+  }
+
+  function interpolateLine(p1, p2, steps, callback) {
+    var N = steps;
+    var step = 0;
+    var anumateToDest = () => {
+      if (step < N) {
+        step++;
+        var t = step / N;
+        window.requestAnimationFrame(anumateToDest);
+        var y = lerp(p1.y, p2.y, t);
+        var x = lerp(p1.x, p2.x, t);
+        callback({ x, y });
+      }
+    };
+    anumateToDest();
+  }
+  function lerp(start, end, t) {
+    return start + t * (end - start);
   }
 
   var pxRequiredKeys = ['top', 'left', 'height', 'width', 'right', 'bottom'];
@@ -465,7 +484,27 @@ export function DOM(elemOrQuery) {
      */
     scrollTo(options) {
       if (elemArray[0] == undefined) return 0;
-      elemArray[0].scrollTo(options);
+
+      if (elemArray[0].scrollTo) {
+        elemArray[0].scrollTo(options);
+        return;
+      }
+
+      var el = elemArray[0];
+      interpolateLine({
+        x: el.scrollLeft,
+        y: el.scrollTop
+      },
+        {
+          x: options.left != undefined ? options.left : el.scrollLeft,
+          y: options.top != undefined ? options.top : el.scrollTop
+        },
+        options.behavior == "smooth" ? 25 : 1,
+        (p) => {
+          el.scrollTop = p.y;
+          el.scrollLeft = p.x;
+        });
+
     },
 
     /**
