@@ -3,6 +3,8 @@ import { Forms } from "../../components/Forms";
 import { Alert } from "../../core/simple_confirm";
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { NumericKeyboard } from "../../pages/NumericKeyboard/NumericKeyboard";
+import { RegisterComponent } from "../../core/Register";
+import { PhoneInputComponent } from '../../components/PhoneInputComponent';
 
 export class TestFormsPage extends HeaderPage {
   constructor() {
@@ -11,7 +13,10 @@ export class TestFormsPage extends HeaderPage {
     this.form1errors = {};
     this.form1attributes = {};
 
+    PhoneInputComponent.Use();
+
     this.form1template = [
+      { type: "phone", name: "number_phone", title: "Enter the Phone Number", validateRule: "required|regex:/^\\+1\\d{10\\,15}$/,Must be in the following format (234)-456-7891. Maximum 15 digits" },
       { type: "number", name: "number1", title: "Enter Number 1" },
       { type: "number", name: "number2", title: "Enter Number 2", validateRule: "required" },
 
