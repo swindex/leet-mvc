@@ -57,7 +57,7 @@ export class PhoneInputComponent extends BaseComponent {
   _onChange(ev) {
     this._formatAsPhoneNumber();
 
-    this.value = empty(this._formattedValue) ? null : "+1" + this._formattedValue.replace(/\D/g, '');
+    this.value = PhoneInputComponent.UnFormatPhoneNumber(this._formattedValue);
     this.onChange(ev);
   }
 
@@ -75,8 +75,25 @@ export class PhoneInputComponent extends BaseComponent {
   // }
 
   _formatAsPhoneNumber() {
-    this._formattedValue = Text.formatPhone(this._formattedValue, { 0: "(", 3: ')-', 6: '-', 10: 'x' });
+    this._formattedValue = PhoneInputComponent.FormatPhoneNumber(this._formattedValue);
   }
+
+  /**
+   * Format phone number for display
+   * @param {string} val 
+   */
+  static FormatPhoneNumber(val) {
+    return Text.formatPhone(val, { 0: "(", 3: ')-', 6: '-', 10: 'x' });
+  }
+
+  /**
+   * Un-Format phone number for Data Transfer
+   * @param {string} val 
+   */
+  static UnFormatPhoneNumber(val) {
+    return empty(val) ? null : "+1" + val.replace(/\D/g, '');
+  }
+
   /**
    * Use PhoneInputComponent as input-phone for rendering in Forms for phone type field
    * @param {object} attributes 
