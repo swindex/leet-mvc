@@ -1210,7 +1210,7 @@ on.items[index].INJECT[parts.item] != item*/
     if (format !== null) {
       var formats = format.split(":");
       if (formats.length > 0 && (formats[0] === "number" || formats[0] === "localenumber")) {
-        if (v !== "") {
+        if (v !== "" && v !== null) {
           v = v * 1;
           if (isNaN(v)) v = 0;
           if (formats.length == 2) {
