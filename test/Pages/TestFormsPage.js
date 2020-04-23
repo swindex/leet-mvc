@@ -13,10 +13,11 @@ export class TestFormsPage extends HeaderPage {
     this.form1errors = {};
     this.form1attributes = {};
 
-    PhoneInputComponent.Use();
+    PhoneInputComponent.Use({ number: true });
 
     this.form1template = [
-      { type: "phone", name: "number_phone", title: "Enter the Phone Number", validateRule: "required|regex:/^\\+1\\d{10\\,15}$/,Must be in the following format (234)-456-7891. Maximum 15 digits" },
+      { type: "phone", name: "number_phone", title: "Phone Number (numeric kb)", value: "+16474497042", validateRule: "required|regex:/^\\+1\\d{10\\,15}$/,Must be in the following format (234)-456-7891. Maximum 15 digits" },
+      { type: "phone", name: "number_phone2", attributes: { number: null }, title: "Phone Number (native kb)", value: "+16474497042", validateRule: "required|regex:/^\\+1\\d{10\\,15}$/,Must be in the following format (234)-456-7891. Maximum 15 digits" },
       { type: "number", name: "number1", title: "Enter Number 1" },
       { type: "number", name: "number2", title: "Enter Number 2", validateRule: "required" },
 

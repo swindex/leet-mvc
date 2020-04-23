@@ -12,7 +12,7 @@ export class PhoneInputComponent extends BaseComponent {
     this._formattedValue = null;
     this.template = `
     <div>
-      <input type="text" [attribute]={name:this.attributes.name} bind = "this._formattedValue" number oninput = "this._onInput($event)" onchange = "this._onChange($event)" />
+      <input type="text" [attribute]="this.attributes" bind = "this._formattedValue" oninput = "this._onInput($event)" onchange = "this._onChange($event)" />
     </div>
     `;
   }
@@ -40,7 +40,18 @@ export class PhoneInputComponent extends BaseComponent {
   }
 
   _onInput(ev) {
+    var el = this._numberEl;
+    var selS = el.selectionStart;
+    var selE = el.selectionEnd;
+    var old = this._formattedValue || "";
+
     this._formatAsPhoneNumber();
+    var newV = this._formattedValue || "";
+    setTimeout(function () {
+      var dif = newV.length - old.length;
+      el.selectionStart = selS + dif;
+      el.selectionEnd = selE + dif;
+    }, 0);
   }
 
   _onChange(ev) {
@@ -64,23 +75,18 @@ export class PhoneInputComponent extends BaseComponent {
   // }
 
   _formatAsPhoneNumber() {
-    var el = this._numberEl;
-    var selS = el.selectionStart;
-    var selE = el.selectionStart;
-    var old = this._formattedValue;
-    //setTimeout(function () {
     this._formattedValue = Text.formatPhone(this._formattedValue, { 0: "(", 3: ')-', 6: '-', 10: 'x' });
-    var dif = el.value.length - old.length;
-    el.selectionStart = selS + dif;
-    el.selectionEnd = selE + dif;
-    //}, 1);
   }
-
-  static Use() {
+  /**
+   * Use PhoneInputComponent as input-phone for rendering in Forms for phone type field
+   * @param {object} attributes 
+   */
+  static Use(attributes) {
+    attributes = attributes || {};
     RegisterComponent(PhoneInputComponent, 'input-phone');
     Forms.field_definitions.phone = (forms, el, parentPath) => {
       var opt = {};
-      Object.assign(opt, el.attributes);
+      Object.assign(opt, attributes, el.attributes);
       //custom elements will not emit 2 way binding events. so explicitly link onChange event with appropriate handler!
       return forms.renderFieldGroupHTML(el, `<input-phone [(value)]="${forms.refactorAttrName('this.data.' + el._name)}" (onChange)="this.events.change.apply(this, arguments)" [(isValid)]="${forms.refactorAttrName('this.fields.' + el._name)}.attributes.isValid"  name="${el._name}" ${forms.generateAttributes(opt)}></input-phone>`);
     };
