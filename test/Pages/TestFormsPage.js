@@ -64,6 +64,7 @@ export class TestFormsPage extends HeaderPage {
   validate() {
     this.isValid = this.form1.validator.validate();
     this.visibleForm1data = this.form1.getVisibleData();
+    Alert("Validate Clicked!");
   }
 
   get template() {

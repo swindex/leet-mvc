@@ -207,7 +207,7 @@ textarea {
 		font-size: 12px;
 		&.error {
       color: $color-error;
-      white-space: pre;
+      white-space: pre-wrap;
 		}
 	}
 	.message{
