@@ -18,6 +18,8 @@ export var Text = {
 	 * @param {object} [mask] - default: { 0: '(', 3: ') ', 6: ' - ', 10: ' x ' };
 	 */
   formatPhone: function(text, mask) {
+    if (text == null)
+      text = "";
     var numbers = text.replace(/\D/g, '');
     mask = mask || { 0: '(', 3: ') ', 6: ' - ', 10: ' x ' };
     text = '';
@@ -91,6 +93,4 @@ export var Text = {
     value = value+"";
     return (value.toLowerCase()).replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
   }
-
-
 };
