@@ -504,7 +504,7 @@ export function FormValidator(data, template, errors, options) {
 
     //iterate through rules
     for (var r in rules) {
-      var rr = rules[r].split(":");
+      var rr = rules[r].split(/:(.+)/);
       var conditions = "";
 
       errmsg = _messages[rr[0]];
