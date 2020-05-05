@@ -351,7 +351,7 @@ export class NavController{
 
       if (frame.page.isHidden) {
         this.setPageState(frame.page, 'isShowing');
-        setTimeout(function () {
+        setTimeout(()=>{
           tryCall(frame.page, frame.page.onEnter);
         }, 0);
       } else if (!frame.page.isHidden && !frame.page.isHiding && !frame.page.isVisible) {
@@ -359,11 +359,11 @@ export class NavController{
         this.setPageState(frame.page, 'isCreating');
 
         //Add creating attribute ALMOST immedaitely for smooth appearance
-        setTimeout(function () {
+        setTimeout(() => {
           tryCall(frame.page, frame.page.resize, this.windowSize);
         }, 0);
 
-        setTimeout(function () {
+        setTimeout(() => {
           tryCall(frame.page, frame.page.onEnter);
         }, 0);
       }
