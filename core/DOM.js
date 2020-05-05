@@ -485,7 +485,7 @@ export function DOM(elemOrQuery) {
     scrollTo(options) {
       if (elemArray[0] == undefined) return 0;
 
-      if (elemArray[0].scrollTo) {
+      if (typeof elemArray[0].scrollTo !== "function") {
         elemArray[0].scrollTo(options);
         return;
       }
