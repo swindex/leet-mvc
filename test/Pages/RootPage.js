@@ -6,6 +6,7 @@ import { TestChangeWatcher } from "./TestChangeWatcher";
 import { TestFormsVisiblePage } from "./TestFormsVisiblePage";
 import { TestComponentPage } from "./TestComponentPage";
 import { TestFormsSelectItemsPage } from "./TestFormsSelectItemsPage";
+import { RouterTestPage } from "./RouterTest";
 
 export class RootPage extends HeaderPage {
   constructor() {
@@ -20,7 +21,8 @@ export class RootPage extends HeaderPage {
       { page: TestFormsVisiblePage, name: "Test Forms Visible" },
 
       { page: TestComponentPage, name: "Test Component" },
-      { page: TestFormsSelectItemsPage, name: "Test Forms Select Items" }
+      { page: TestFormsSelectItemsPage, name: "Test Forms Select Items" },
+      { page: RouterTestPage, name: "Router Test" }
     ];
 
   }

@@ -4,41 +4,60 @@ import { isSkipUpdate } from "./Watcher";
 import { Objects } from "./Objects";
 import { DOM } from "./DOM";
 
-export function NavController() {
-  /** @type {NavController} */
-  var self = this;
+export class NavController{
+  constructor(){
+    /**
+     * @typedef PageFrame
+     * @prop {string} name
+     * @prop {JQuery<Element>} element
+     * @prop {object} page
+     */
+    /** @type {PageFrame[]} */
+    this.stack = [];
 
-  /**
-	 * @typedef Page
-	 * @prop name
-	 */
+    this.windowSize = { width: null, height: null };
 
-  /**
-	 * @typedef PageFrame
-	 * @prop {string} name
-	 * @prop {JQuery<Element>} element
-	 * @prop {object} page
-	 */
-  /** @type {PageFrame[]} */
-  var stack = [];
+    this.backTimeout = 300;
+    this.backTimeoutRunning = false;
 
-  var windowSize = { width: null, height: null };
+    this.transitionTime = 400;
+    this.pageContainer = document.body;
 
-  var backTimeout = 300;
-  var backTimeoutRunning = false;
+      //Set default window size cashe
+    this.windowSize.width = window.innerWidth;
+    this.windowSize.height = window.innerHeight;
 
-  var transitionTime = 400;
+    //bind all methods to this isntance
+    Objects.bindMethods(this);
 
-  var pageContainer = document.body;
+    //add ONE listener that will fire onResize on all pages;
+    DOM(window).addEventListener('resize', (ev)=> {
+      this.windowSize.width = window.innerWidth;
+      this.windowSize.height = window.innerHeight;
 
+      for (var i = 0; i < this.stack.length; i++) {
+        //recalcContentHeight(this.stack[i].element);
+        tryCall(this.stack[i].page, this.stack[i].page.resize, this.windowSize);
+      }
+    });
+    
+    DOM(document).addEventListener("backbutton", (e) => {
+      var cf = this.currentFrame();
+      if (cf && tryCall(cf.page, cf.page.onBackNavigate) !== false && tryCall(cf.page, cf.page.onBeforeDestroy) !== false && this.back() === null) {
+        this.onRootPageBackPressed(cf.name);
+      }
+    });
+
+
+  }
   /**
 	 * @param {HTMLElement} container
 	 */
-  this.setContainer = function (container, listenTobBackButton = false) {
-    pageContainer = container;
+  setContainer(container, listenTobBackButton = false) {
+    this.pageContainer = container;
     //if container is not document, remove the back button handler
-    if (pageContainer != document.body && !listenTobBackButton) {
-      DOM(document).off('backbutton', documentBackButtonHandler);
+    if (this.pageContainer != document.body && !listenTobBackButton) {
+      DOM(document).off('backbutton');
     }
   };
 
@@ -46,45 +65,49 @@ export function NavController() {
 	 * Remove all pages and load passed page Constructor as Root
 	 * @param {object} pageConstructor
 	 * @param {...any} [parameters] 
-	 * @return {BasePage}
+	 * @return {BasePage|Promise}
 	 */
-  this.setRoot = function (pageConstructor, parameters) {
-    removeAllFrames();
+  setRoot(pageConstructor, parameters) {
+    this.removeAllFrames();
     //self.onPageNavigateTo(pageConstructor.name);
-    var page = createPage(pageContainer, pageConstructor, argumentsToArray(arguments, 1));
+    var page = this._createPage(this.pageContainer, pageConstructor, argumentsToArray(arguments, 1));
     //self.onPageCreated(page);
     return page;
   };
   /**
 	 * Remove All Pages
 	 */
-  this.removeAll = removeAllFrames;
+  removeAll(){
+    this.removeAllFrames();
+  };
+
   /**
-	 * Push a page on top of stack.
+	 * Push a page on top of this.stack.
 	 * @param {object} pageConstructor 
 	 * @param {...any} [parameters]  
+   * @return {BasePage|Promise}
 	 */
-  this.push = function (pageConstructor, parameters) {
-    if (currentFrame())
-      tryCall(currentFrame().page, currentFrame().page.onLeave);
+  push(pageConstructor, parameters) {
+    if (this.currentFrame())
+      tryCall(this.currentFrame().page, this.currentFrame().page.onLeave);
     //self.onPageNavigateTo(pageConstructor.name);
-    var page = createPage(pageContainer, pageConstructor, argumentsToArray(arguments, 1));
+    var page = this._createPage(this.pageContainer, pageConstructor, argumentsToArray(arguments, 1));
     //self.onPageCreated(page);
     //pushState(pageConstructor.name);
     return page;
   };
 
   /**
-	 * Push a page on top of stack INTO a specified element
+	 * Push a page on top of this.stack INTO a specified element
 	 * @param {HTMLElement} container
 	 * @param {object} pageConstructor 
 	 * @param {...any} [parameters]  
 	 */
-  this.pushInto = function (container, pageConstructor, parameters) {
-    if (currentFrame())
-      tryCall(currentFrame().page, currentFrame().page.onLeave);
+  pushInto(container, pageConstructor, parameters) {
+    if (this.currentFrame())
+      tryCall(this.currentFrame().page, this.currentFrame().page.onLeave);
     //self.onPageNavigateTo(pageConstructor.name);
-    var page = createPage(container, pageConstructor, argumentsToArray(arguments, 2));
+    var page = this._createPage(container, pageConstructor, argumentsToArray(arguments, 2));
     //self.onPageCreated(page);
     return page;
   };
@@ -93,40 +116,43 @@ export function NavController() {
 	 * Returns true if success, null if last page and can not go back
 	 * @return {null|boolean} 
 	 */
-  this.back = function () {
-    if (stack.length > 1) {
-      if (backTimeoutRunning) return false;
-      backTimeoutRunning = true;
-      setTimeout(function () { backTimeoutRunning = false; }, backTimeout);
+  back() {
+    if (this.stack.length >= 1) {
+      if (this.backTimeoutRunning) return false;
+      this.backTimeoutRunning = true;
+      setTimeout(() => {
+        this.backTimeoutRunning = false; 
+      }, this.backTimeout);
 
-      removeLastFrame();
-      self.onPageNavigateBack(currentFrame().name);
-      resetPagesVisibility();
+      var cf = this.currentFrame();
+      this.removeLastFrame();
+      this.onPageNavigateBack(cf.name);
+      this._resetPagesVisibility();
 
       return true;
     }
     return null;
   };
   /**
-	 * Remuve page from stack
+	 * Remuve page from this.stack
 	 * @param {Page} pageObject 
 	 */
-  this.remove = function (pageObject) {
-    for (var i = 0; i < stack.length; i++) {
-      if (stack[i].page === pageObject) {
-        removeFrameN(i);
+  remove(pageObject) {
+    for (var i = 0; i < this.stack.length; i++) {
+      if (this.stack[i].page === pageObject) {
+        this.removeFrameN(i);
         break;
       }
     }
-    resetPagesVisibility();
+    this._resetPagesVisibility();
   };
   /**
 	 * Get a list of displayed pages
 	 * @return {string[]}
 	 */
-  this.getPageNames = function () {
+  getPageNames() {
     var ret = [];
-    Objects.forEach(stack, function () { ret.push(this.name); });
+    Objects.forEach(this.stack, function (el) { ret.push(el.name); });
     return ret;
   };
 
@@ -134,9 +160,9 @@ export function NavController() {
 	 * Get Pages Stack
 	 * @return {PageFrame[]}
 	 */
-  this.getPages = function () {
+  getPages() {
     var ret = [];
-    return stack;
+    return this.stack;
   };
   /**
 	 * Create page 
@@ -145,11 +171,11 @@ export function NavController() {
 	 * @param {any[]} args - array of arguments to pass to the page constructor
 	 * @return {BasePage|Promise} 
 	 */
-  function createPage(container, pageConstructor, args) {
+  _createPage(container, pageConstructor, args) {
 
-    function insertIntoDOM(pageObject) {
-      self.onPageNavigateTo(pageObject.name, args);
-      if (stack.length == 0) {
+    var insertIntoDOM = (pageObject) => {
+      this.onPageNavigateTo(pageObject.name, args);
+      if (this.stack.length == 0) {
         //history.setRoot(null, pageObject.name, "#" + pageObject.name );
       } else {
         //history.push(null, pageObject.name, "#" + pageObject.name );
@@ -169,16 +195,16 @@ export function NavController() {
         container.appendChild(p);
       }
 
-      pageObject.Nav = self;
-      pageObject.style.zIndex = getMaxStackZIndex() + 100;
+      pageObject.Nav = this;
+      pageObject.style.zIndex = this.getMaxStackZIndex() + 100;
 
       var classes = !empty(pageObject.className) ? (pageObject.className).split(" ") : [];
       classes.push(className);
       pageObject.className = classes.join(' ');
 
-      self.onPageCreated(pageObject);
-      stack.push({ name: pageObject.name, element: p, page: pageObject });
-      resetPagesVisibility();
+      this.onPageCreated(pageObject);
+      this.stack.push({ name: pageObject.name, element: p, page: pageObject });
+      this._resetPagesVisibility();
 
       tryCall(pageObject, pageObject.onInit, p);
 
@@ -194,7 +220,7 @@ export function NavController() {
       //Resolve it!
       return pageConstructor.then(_pageConstructor => {
         //call it again
-        return createPage(container, _pageConstructor, args);
+        return this._createPage(container, _pageConstructor, args);
       });
     } else if (typeof pageConstructor == "function") {
       var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + pageConstructor.name;
@@ -202,7 +228,7 @@ export function NavController() {
 
       //create page object in a new scope
       /** @type {BasePage} */
-      var pageObject = createPageInstance(pageConstructor, args);
+      var pageObject = new pageConstructor(...args);
       //pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
       pageObject.name = pageConstructor.name;
       //empty(pageObject.className) ? pageObject.className = className : null;
@@ -228,58 +254,46 @@ export function NavController() {
 
   }
 
-  function getMaxStackZIndex() {
+  getMaxStackZIndex() {
     var maxZ = 0;
-    for (var i = 0; i < stack.length; i++) {
-      var frame = stack[i];
+    for (var i = 0; i < this.stack.length; i++) {
+      var frame = this.stack[i];
       maxZ = Math.max(maxZ, frame.page.style.zIndex);
     }
     return maxZ;
   }
 
-  /**
-	 * 
-	 * @param {any} pageConstructor 
-	 * @param {any[]} args 
-	 */
-  function createPageInstance(pageConstructor, args) {
-    /*var page = Object.create(pageConstructor.prototype);
-		var ret = pageConstructor.apply(page, args);
-		return ret ? ret : page;*/
-    return new pageConstructor(...args);
-  }
-
-  function removeFrameN(frameIndex) {
-    var frame = stack.splice(frameIndex, 1)[0];
+  removeFrameN(frameIndex) {
+    var frame = this.stack.splice(frameIndex, 1)[0];
 
     tryCall(frame.page, frame.page.onLeave);
     tryCall(frame.page, frame.page._onDestroy);
-    hidePageElement(frame, true);
+    this.hidePageElement(frame, true);
     //history.pop();		
 
     frame = null;
     return true;
   }
-  function removeLastFrame() {
-    if (stack.length === 0)
+  removeLastFrame() {
+    if (this.stack.length === 0)
       return null;
-    return removeFrameN(stack.length - 1);
+    return this.removeFrameN(this.stack.length - 1);
   }
   /**
 	 * Return current page frame
 	 * @return {PageFrame}
 	 */
-  function currentFrame() {
-    if (stack.length === 0)
+  currentFrame() {
+    if (this.stack.length === 0)
       return null;
-    return stack[stack.length - 1];
+    return this.stack[this.stack.length - 1];
   }
-  function removeAllFrames() {
-    if (stack.length === 0)
+  removeAllFrames() {
+    if (this.stack.length === 0)
       return null;
 
-    if (removeLastFrame())
-      removeAllFrames();
+    if (this.removeLastFrame())
+      this.removeAllFrames();
 
   }
   /**
@@ -287,7 +301,7 @@ export function NavController() {
 	 * @param {object} page 
 	 * @param {'isDeleting'|'isCreating'|'isHiding'|'isShowing'|'isVisible'|'isHidden'} state 
 	 */
-  function setPageState(page, state) {
+  setPageState(page, state) {
     if (page[state] == true) {
       return;
     }
@@ -303,11 +317,11 @@ export function NavController() {
   /**
 	 * Recalculate pages' visibility
 	 */
-  function resetPagesVisibility() {
+  _resetPagesVisibility() {
     var n = 0;
     var hideAfter = 1;
-    for (var i = stack.length - 1; i >= 0; i--) {
-      var frame = stack[i];
+    for (var i = this.stack.length - 1; i >= 0; i--) {
+      var frame = this.stack[i];
       if (i == 0) {
         frame.page.isRoot = true;
       } else {
@@ -316,9 +330,9 @@ export function NavController() {
       if (!empty(frame.page.visibleParent))
         hideAfter++;
       if (hideAfter > n) {
-        showPageElement(frame, i < stack.length - 1);
+        this.showPageElement(frame, i < this.stack.length - 1);
       } else {
-        hidePageElement(frame);
+        this.hidePageElement(frame);
       }
       n++;
     }
@@ -329,24 +343,24 @@ export function NavController() {
 	 * @param {PageFrame} frame - page to show
 	 * @param {boolean} [inactive] 
 	 */
-  function showPageElement(frame, inactive) {
-    setTimeout(function () {
+  showPageElement(frame, inactive) {
+    setTimeout( ()=> {
       if (frame.page.isDeleting) {
         return;
       }
 
       if (frame.page.isHidden) {
-        setPageState(frame.page, 'isShowing');
+        this.setPageState(frame.page, 'isShowing');
         setTimeout(function () {
           tryCall(frame.page, frame.page.onEnter);
         }, 0);
       } else if (!frame.page.isHidden && !frame.page.isHiding && !frame.page.isVisible) {
         //if page is not yet have any attributes
-        setPageState(frame.page, 'isCreating');
+        this.setPageState(frame.page, 'isCreating');
 
         //Add creating attribute ALMOST immedaitely for smooth appearance
         setTimeout(function () {
-          tryCall(frame.page, frame.page.resize, windowSize);
+          tryCall(frame.page, frame.page.resize, this.windowSize);
         }, 0);
 
         setTimeout(function () {
@@ -361,17 +375,17 @@ export function NavController() {
       }
 
       //Set to fully visible after 500ms delay
-      setTimeout(function () {
+      setTimeout(()=> {
         if (frame.page.isDeleting) {
           return;
         }
 
         if (!frame.page.isVisible) {
-          setPageState(frame.page, 'isVisible');
+          this.setPageState(frame.page, 'isVisible');
           tryCall(frame.page, frame.page._onVisible);
         }
 
-      }, transitionTime);
+      }, this.transitionTime);
     });
 
   }
@@ -381,15 +395,15 @@ export function NavController() {
 	 * @param {PageFrame} frame - page to show
 	 * @param {boolean} [isDeleting] - true if page is being deleted
 	 */
-  function hidePageElement(frame, isDeleting) {
+  hidePageElement(frame, isDeleting) {
     var element = frame.element;
     isDeleting = isDeleting || false;
 
     if (frame.page.isDeleting)
       return;
-    function doHideElem(isDeleting) {
-      window.requestAnimationFrame(function () {
-        setPageState(frame.page, 'isHidden');
+    var doHideElem = (isDeleting) => {
+      window.requestAnimationFrame(()=> {
+        this.setPageState(frame.page, 'isHidden');
         if (isDeleting) {
           frame.page[isSkipUpdate] = true;
           frame.page.Nav = null;
@@ -401,109 +415,45 @@ export function NavController() {
       doHideElem();
     } else {
       if (isDeleting) {
-        setPageState(frame.page, 'isDeleting');
+        this.setPageState(frame.page, 'isDeleting');
       } else {
-        setPageState(frame.page, 'isHiding');
+        this.setPageState(frame.page, 'isHiding');
       }
-      setTimeout(function () {
+      setTimeout(() => {
         doHideElem(isDeleting);
-      }, isDeleting ? transitionTime : transitionTime + 100);	//hiding takes 100 ms longer than deleting
+      }, isDeleting ? this.transitionTime : this.transitionTime + 100);	//hiding takes 100 ms longer than deleting
     }
   }
-
-  //Set default window size cashe
-  windowSize.width = window.innerWidth;
-  windowSize.height = window.innerHeight;
-  //add ONE listener that will fire onResize on all pages;
-  DOM(window).addEventListener('resize', windowResizeHandler);
-  function windowResizeHandler(ev) {
-    windowSize.width = window.innerWidth;
-    windowSize.height = window.innerHeight;
-
-    for (var i = 0; i < stack.length; i++) {
-      //recalcContentHeight(stack[i].element);
-      tryCall(stack[i].page, stack[i].page.resize, windowSize);
-    }
-  }
-
-  DOM(document).addEventListener("backbutton", documentBackButtonHandler);
-  function documentBackButtonHandler(e) {
-    var cf = currentFrame();
-    if (cf && tryCall(cf.page, cf.page.onBackNavigate) !== false && tryCall(cf.page, cf.page.onBeforeDestroy) !== false && self.back() === null) {
-      self.onRootPageBackPressed(cf.name);
-    }
-  }
-
   /**
 	 * Delete Event handlers that were created by the Nav instance
 	 */
-  this.destroy = function () {
+  destroy() {
     DOM(window).removeEventListener('resize'/*,windowResizeHandler*/);
     DOM(document).removeEventListener('backbutton'/*,documentBackButtonHandler*/);
-  };
+  }
 
   /**
 	 * ***Override***
 	 * Callback fired when Back button is clicked on LAST page of the app 
 	 * @param {string} name
 	 */
-  this.onRootPageBackPressed = function (name) { };
+  onRootPageBackPressed(name) { }
   /**
 	 * ***Override***
 	 * Callback fired on page forward
 	 * @param {string} name 
 	 * @param {any[]} args
 	 */
-  this.onPageNavigateTo = function (name, args) { };
+  onPageNavigateTo(name, args) { }
 
   /**
 	 * ***Override***
 	 * Callback fired when page is created
 	 */
-  this.onPageCreated = function (page) { };
+  onPageCreated(page) { }
   /**
 	 * Callback fired when page is navigated "back" to
 	 * @param {string} name 
 	 */
-  this.onPageNavigateBack = function (name) { };
+  onPageNavigateBack(name) { }
 }
-
-function History() {
-  var _stack = [];
-
-  //window.history.replaceState({initialized:true}, "" );
-  //window.history.pushState(null, "initial", "#initial");
-
-  function getCurrentState() {
-    return window.history.state;
-  }
-  function push(state, title, url) {
-    _stack.push({ state, title, url });
-    window.history.pushState(state, title, url);
-  }
-  function pop() {
-    _stack.pop();
-    if (_stack.length > 0) {
-      window.history.go(-1);
-    }
-  }
-
-  function resetHistory() {
-    if (_stack.length > 1) {
-      window.history.go(-_stack.length);
-    }
-    _stack = [];
-  }
-
-  function setRoot(state, title, url) {
-    resetHistory();
-    //push(state, title, url);
-    window.history.replaceState(state, title, url);
-  }
-  return {
-    push,
-    setRoot,
-    pop
-  };
-}
-var history = History();
