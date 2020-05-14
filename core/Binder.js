@@ -599,7 +599,7 @@ export var Binder = function (context) {
         //getter exists
         var value = on.getters[attribute](inject);
         //-----------Below code used to set the property of the componenet to the value returned by the getter. I dont know why. Maybe remothe the whole thing. and do nothing with custom getters....
-        if (self.context instanceof BaseComponent) {
+        if (self.context instanceof BaseComponent && self.context[attribute] !== value) {
           self.context[attribute] = value;
         }
         //set attribute of the HTML element to the value;

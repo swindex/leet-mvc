@@ -96,7 +96,7 @@ export class PhoneInputComponent extends BaseComponent {
 
   /**
    * Use PhoneInputComponent as input-phone for rendering in Forms for phone type field
-   * @param {object} attributes 
+   * @param {object} [attributes]
    */
   static Use(attributes) {
     attributes = attributes || {};

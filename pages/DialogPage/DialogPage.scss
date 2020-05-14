@@ -21,7 +21,7 @@
 	}
 
 	.dialog-content{
-		padding: $margin-lg $margin-lg 0 $margin-lg;
+		padding: $margin-lg;
 	}
 	.backdrop {
 		opacity: 0;
@@ -35,12 +35,9 @@
 		background-color: rgba(0, 0, 0, 0.5);
 	
 		transition: opacity 0.3s ease;
-		-webkit-transition: opacity 0.3s ease;
-		-moz-transition: opacity 0.3s ease;
-		-ms-transition: opacity 0.3s ease;
-		-o-transition: opacity 0.3s ease;
 		align-items: center;
-		display: flex;
+    display: flex;
+    padding: 0 $margin-xl;
 	}
 	
 	.title, .prompt{
