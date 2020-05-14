@@ -429,9 +429,13 @@ export function DOM(elemOrQuery) {
       };
     },
     offset() {
+      var box = { top: 0, left: 0 };
+      if ( typeof elemArray[0].getBoundingClientRect == "function" ) {
+        box = elemArray[0].getBoundingClientRect();
+      }
       return {
-        top: self.offsetTop(),
-        left: self.offsetLeft(),
+        top: box.top  + (window.scrollY || window.pageYOffset),
+        left: box.left + (window.scrollX || window.pageXOffset)
       };
     },
     innerHeight() {

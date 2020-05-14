@@ -185,6 +185,8 @@ export class NavController{
         var newEl = document.createElement('div');
         container.appendChild(newEl);
         pageObject.$args = args;
+        if (args && args.length == 1)
+          Object.assign(pageObject, args[0])
         pageObject.$mount(newEl);
         var p = pageObject.$el;
       } else {

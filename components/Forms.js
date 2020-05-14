@@ -583,26 +583,34 @@ ${item.title}
     var items_items = "";
 
     var hasSubItems = false;
-    Objects.forEach(el.items, (option) => {
-      elem = elem + `<option value="${option.value === null ? '' : option.value}" title="${option.placeholder || ''}">${option.title}</option>`;
-      if (option.items) {
-        hasSubItems = true;
-        items_items += `
-        <div [if]="${this.refactorAttrName('this.data.' + el._name)} == ${(isNumber(option.value) || option.value == null ? option.value : "'" + option.value + "'")}">
-         ${this.renderArray(option.items, parentPath)}
-        </div>`;
 
-        /*if (!this.fields[el._name].component) {
-          this.fields[el._name].component = new Forms(option.items, this.data);
+    if (el.dynamicItems) {
+      if (typeof el.dynamicItems == "function")
+        el.dynamicItems(el._name);
+      elem += `<option [attribute]="{value : selectItem.value}" [foreach]="this.fields['${el._name}'].items as selectItem">{{selectItem.title}}</option>`;
+    } else {
+  
+      Objects.forEach(el.items, (option) => {
+        elem = elem + `<option value="${option.value === null ? '' : option.value}" title="${option.placeholder || ''}">${option.title}</option>`;
+        if (option.items) {
+          hasSubItems = true;
+          items_items += `
+          <div [if]="${this.refactorAttrName('this.data.' + el._name)} == ${(isNumber(option.value) || option.value == null ? option.value : "'" + option.value + "'")}">
+          ${this.renderArray(option.items, parentPath)}
+          </div>`;
+
+          /*if (!this.fields[el._name].component) {
+            this.fields[el._name].component = new Forms(option.items, this.data);
+          }
+
+          items_items += `
+          <div [if]="${this.refactorAttrName('this.data.' + el._name)} == ${(isNumber(option.value) || option.value == null ? option.value : "'" + option.value + "'")}">
+            <div [component]="${this.refactorAttrName('this.fields.' + el._name + '.component')}"></div>
+          </div>`
+          */
         }
-
-        items_items += `
-        <div [if]="${this.refactorAttrName('this.data.' + el._name)} == ${(isNumber(option.value) || option.value == null ? option.value : "'" + option.value + "'")}">
-          <div [component]="${this.refactorAttrName('this.fields.' + el._name + '.component')}"></div>
-        </div>`
-        */
-      }
-    });
+      });
+    }
     elem = elem + "</select>";
 
     if (hasSubItems) {
