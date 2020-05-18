@@ -1,4 +1,5 @@
 import { Objects } from "leet-mvc/core/Objects";
+import Axios from "axios";
 
 // Analytics 
 export class Analytics {
@@ -363,12 +364,17 @@ class Matomo {
       formData.set(key, value);
     });
 
+    this.makeRequest(this._URL, formData);
+  }
+
+  /** @override */
+  makeRequest(url, data){
     window.fetch(this._URL,
       {
         method: 'POST',
         //headers: new Headers([['Content-Type','application/json']]),
         mode: 'no-cors',
-        body: formData
+        body: data
       }).then((ret) => {
         //console.log("SPY OK");
       }).catch((err) => {
