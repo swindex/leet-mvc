@@ -1,4 +1,4 @@
-import { Objects } from "leet-mvc/core/Objects";
+import { Objects } from "./Objects";
 
 // Analytics 
 export class Analytics {
