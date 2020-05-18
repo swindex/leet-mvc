@@ -45,7 +45,7 @@ export class Analytics {
     this.config = config;
 
     //only init if device is initialized
-    if (typeof device !== 'undefined') {
+    if (typeof window.device !== 'undefined') {
       this.Tracker = new Matomo(config.SiteId, config.URL);
     }
 
@@ -364,11 +364,11 @@ class Matomo {
       formData.set(key, value);
     });
 
-    this.makeRequest(this._URL, formData);
+    this.makeRequest(formData);
   }
 
   /** @override */
-  makeRequest(url, data){
+  makeRequest(data){
     window.fetch(this._URL,
       {
         method: 'POST',
