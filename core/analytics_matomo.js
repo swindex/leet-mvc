@@ -1,5 +1,4 @@
 import { Objects } from "leet-mvc/core/Objects";
-import Axios from "axios";
 
 // Analytics 
 export class Analytics {
