@@ -63,7 +63,12 @@ module.exports = (env, overrideConfig) => {
         if (isGeneratedDuplicate) {
           return `webpack-generated:///${info.resourcePath}?${info.hash}`;
         }
-        return `webpack:///${path.normalize(info.resourcePath)}`;
+        var np = path.normalize(info.resourcePath);
+        if (np.length>0 && (np.startsWith("\\") || np.startsWith("/"))) {
+          np = np.substring(1);
+        }
+        //console.log(`Path:${np}`)
+        return `webpack:///${np}`;
       },
     },
     optimization: {

@@ -587,6 +587,11 @@ export var Binder = function (context) {
     return nodeChanged;
   }
 
+  function getClassName(object){
+    var ret = object.constructor ? object.constructor.name : object.toString();
+    return ret.replace(/bound /g, '');
+  }
+
   function executeAttribute(attribute, on, inject) {
     var old = on.values[attribute];
     //try{
@@ -755,10 +760,13 @@ export var Binder = function (context) {
       var newValue = getter(inject);
       if (typeof newValue == 'object') {
         Objects.forEach(newValue, function (prop, i) {
-          if (prop !== null)
-            on.elem.setAttribute(i, prop);
-          else
-            on.elem.removeAttribute(i);
+          if (prop !== on.elem.getAttribute(i)){
+            if (prop !== null) {
+               on.elem.setAttribute(i, prop);
+            } else {
+              on.elem.removeAttribute(i);
+            }
+          }
         });
       }
     },
@@ -1057,6 +1065,10 @@ on.items[index].INJECT[parts.item] != item*/
           //link componenet properties to getter values
           Objects.forEach(p_vDom.getters, (getter, key) => {
             c_vDom.getters[key] = getter;
+            if (component[key] === undefined){
+              console.warn(`Warning. Trying to set undefined property '${key}' in Component '${getClassName(component)}'. Please define property in component constructor!`);
+            }
+
             component[key] = getter(inject);
           });
 
@@ -1080,7 +1092,7 @@ on.items[index].INJECT[parts.item] != item*/
           //Copy over callers into the componenet
           Objects.forEach(p_vDom.callers, (caller, key) => {
             if (dynamicEvents.indexOf(key) >= 0) {
-              throw new Error(`Component ${component.constructor.name} can not override 2-way event (${key})!`);
+              throw new Error(`Component ${getClassName(component)} can not override 2-way event (${key})!`);
             }
             c_vDom.callers[key] = component[key] = caller;
           });
