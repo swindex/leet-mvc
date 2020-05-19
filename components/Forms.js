@@ -587,7 +587,7 @@ ${item.title}
     if (el.dynamicItems) {
       if (typeof el.dynamicItems == "function")
         el.dynamicItems(el._name);
-      elem += `<option [attribute]="{value : selectItem.value}" [foreach]="this.fields['${el._name}'].items as selectItem">{{selectItem.title}}</option>`;
+      elem += `<option [attribute]="{value : selectItem.value, title:selectItem.text ? selectItem.text : '' }" [foreach]="this.fields['${el._name}'].items as selectItem">{{selectItem.title}}</option>`;
     } else {
   
       Objects.forEach(el.items, (option) => {
