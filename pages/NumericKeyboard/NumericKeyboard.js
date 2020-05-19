@@ -97,7 +97,7 @@ class NumericKeyboardPage extends BasePage {
     this.old_input_hidden = false;
 
     this.blinker = null;
-    //this.value = "";
+    this.value = null;
     this.isTextSelected = false;
     this.scrolled = 0;
     this.isPipeVisible = false;
@@ -436,7 +436,7 @@ class NumericKeyboardPage extends BasePage {
   }
 
   setValue(t) {
-    //this.value = t;
+    this.value = t;
     this.old_input.value = t;
     /*var v = Number(t);
     if (!isNaN(v)) {
@@ -457,15 +457,13 @@ class NumericKeyboardPage extends BasePage {
   }
 
   getValue() {
-    return this.old_input.value;
+    return this.old_input.value || this.value;
     //return this.value;
   }
 
   blink() {
-    var t = this.getValue();
-
     this.isPipeVisible = !this.isPipeVisible;
-    this.setValue(t);
+    this.setValue(this.value);
   }
 
   startBlinker() {
