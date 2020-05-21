@@ -826,13 +826,13 @@ Forms.field_definitions = {
   },
   email(forms, el, parentPath) {
     forms.assertValidateRuleHas(el, "email");
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'email' })]);
+    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'email', autocomplete:"false" })]);
   },
   file(forms, el, parentPath) {
     return forms.renderFieldGroupHTML(el, [forms.addFile(el)]);
   },
   text(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, null)]);
+    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { autocomplete:"false" })]);
   },
   date(forms, el, parentPath) {
     el.icon = "far fa-calendar-alt";
@@ -875,13 +875,13 @@ Forms.field_definitions = {
   number(forms, el, parentPath) {
     forms.assertValidateRuleHas(el, "numeric");
     var format = el.attributes && el.attributes.format ? undefined : "number:2";
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'text', number: "", format: format, pattern: "[0-9]*", novalidate: true })]);
+    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'text', number: "", format: format, pattern: "[0-9]*", novalidate: true, autocomplete:"false" })]);
   },
   password(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addPassword(el, null)]);
+    return forms.renderFieldGroupHTML(el, [forms.addPassword(el, {autocomplete:"false"})]);
   },
   phone(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'tel', oninput: "this._formatPhoneNumber($event)" })]);
+    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'tel', oninput: "this._formatPhoneNumber($event)",autocomplete:"false" })]);
   },
   hidden(forms, el, parentPath) {
     return "";

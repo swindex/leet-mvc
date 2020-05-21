@@ -13,8 +13,8 @@ declare namespace NavControllerModule{
 		setRoot<T>(PageClass: { new (x, ...args): T }, ...args): T;
 		push<T>(PageClass: { new (x, ...args): T }, ...args): T;
 		pushInto<T>(container: HTMLElement, PageClass: { new (x, ...args): T }, ...args): T;
-		onPageNavigateTo(pageName: string): void;
-		onPageNavigateBack(pageName: string): void;
+		onPageNavigateTo(pageName: string, pageObject: any): void;
+		onPageNavigateBack(pageName: string, pageObject: any): void;
 		onPageCreated(PageInstance: any):void;
 		onRootPageBackPressed(): void;
 		getPages(): PageFrame[];

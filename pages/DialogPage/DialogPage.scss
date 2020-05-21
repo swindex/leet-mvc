@@ -21,7 +21,11 @@
 	}
 
 	.dialog-content{
-		padding: $margin-lg;
+    padding: $margin-lg;
+    .fieldgroup:last-child{
+      //last fieldgroup has no margin
+      margin-bottom: 0;
+    }
 	}
 	.backdrop {
 		opacity: 0;

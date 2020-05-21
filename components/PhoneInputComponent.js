@@ -9,6 +9,7 @@ export class PhoneInputComponent extends BaseComponent {
 
     this._numberEl = null;
     this.value = null;
+    this.isValid = null;
     this._formattedValue = null;
     this.template = `
     <div>

@@ -72,7 +72,7 @@ export class Analytics {
   setScreenName(name, optionalUrl = null) {
     this.Tracker.setScreenName(name);
 
-    var url = optionalUrl ? optionalUrl : name;
+    var url = optionalUrl ? optionalUrl : this.createPageURL(name);
     this.Tracker.setURL(url);
     this.Tracker.setRefURL(this.PrevScreenName);
 
@@ -81,6 +81,15 @@ export class Analytics {
     this.PrevScreenName = url;
 
     return this;
+  }
+
+  setOutLink(url) {
+    this.Tracker.setActionOpenLink(url);
+    this.Tracker.send();
+  }
+
+  createPageURL(name){
+    return "app://" + encodeURI( name );
   }
 
   markNewVisit() {
@@ -188,6 +197,8 @@ export class Analytics {
         break;
       //here we can intercept properties
       default:
+        if (eventValue && typeof eventValue == 'object')
+          eventValue = JSON.stringify(eventValue);
         this.Tracker.setEvent("Event", eventName, eventValue);
     }
     this.Tracker.send();

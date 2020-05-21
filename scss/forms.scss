@@ -194,7 +194,8 @@ textarea {
 		text-align: left;
 		
 		i {
-			color: #0874B7;
+      color: #0874B7;
+      margin-left: $margin-sm;
 		}
 	}
 	&.short {
