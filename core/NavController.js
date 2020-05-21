@@ -126,7 +126,7 @@ export class NavController{
 
       var cf = this.currentFrame();
       this.removeLastFrame();
-      this.onPageNavigateBack(cf.name);
+      this.onPageNavigateBack(cf.name, cf);
       this._resetPagesVisibility();
 
       return true;
@@ -145,6 +145,10 @@ export class NavController{
       }
     }
     this._resetPagesVisibility();
+    var lastEntry = this.stack[this.stack.length-1];
+    if (lastEntry){
+      this.onPageNavigateBack(lastEntry.name, lastEntry.page);
+    }
   };
   /**
 	 * Get a list of displayed pages
@@ -174,7 +178,7 @@ export class NavController{
   _createPage(container, pageConstructor, args) {
 
     var insertIntoDOM = (pageObject) => {
-      this.onPageNavigateTo(pageObject.name, args);
+      this.onPageNavigateTo(pageObject.name, pageObject, args);
       if (this.stack.length == 0) {
         //history.setRoot(null, pageObject.name, "#" + pageObject.name );
       } else {
@@ -225,14 +229,17 @@ export class NavController{
         return this._createPage(container, _pageConstructor, args);
       });
     } else if (typeof pageConstructor == "function") {
-      var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + pageConstructor.name;
+
+      var pageName = pageConstructor.pageName || pageConstructor.name
+
+      var selector = pageConstructor.selector ? pageConstructor.selector : 'page-' + pageName;
       var className = pageConstructor.className ? pageConstructor.className : "";
 
       //create page object in a new scope
       /** @type {BasePage} */
       var pageObject = new pageConstructor(...args);
       //pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
-      pageObject.name = pageConstructor.name;
+      pageObject.name = pageName;
       //empty(pageObject.className) ? pageObject.className = className : null;
       pageObject.selector = selector;
       return insertIntoDOM(pageObject);
@@ -444,9 +451,10 @@ export class NavController{
 	 * ***Override***
 	 * Callback fired on page forward
 	 * @param {string} name 
-	 * @param {any[]} args
+	 * @param {any} pageObject
+   * @param {any[]} args
 	 */
-  onPageNavigateTo(name, args) { }
+  onPageNavigateTo(name, pageObject, args) { }
 
   /**
 	 * ***Override***
@@ -457,5 +465,5 @@ export class NavController{
 	 * Callback fired when page is navigated "back" to
 	 * @param {string} name 
 	 */
-  onPageNavigateBack(name) { }
+  onPageNavigateBack(name, pageObject) { }
 }
