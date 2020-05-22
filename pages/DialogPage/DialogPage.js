@@ -125,8 +125,8 @@ export class DialogPage extends BasePage{
 		
     return this;
   }
-  addLink (title, value, attrs) {
-    this.controls.push({type:'link', title:title, value:value, attributes:attrs});
+  addLink (name, title, value, attrs) {
+    this.controls.push({type:'link', name:name, title:title, value:value, attributes:attrs});
     this.render();
 		
     return this;
