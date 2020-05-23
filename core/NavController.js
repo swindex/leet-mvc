@@ -117,7 +117,7 @@ export class NavController{
 	 * @return {null|boolean} 
 	 */
   back() {
-    if (this.stack.length >= 1) {
+    if (this.stack.length > 1) { //can not back on root page!
       if (this.backTimeoutRunning) return false;
       this.backTimeoutRunning = true;
       setTimeout(() => {
