@@ -461,6 +461,20 @@ export function FormValidator(data, template, errors, options) {
 
   }
 
+  function splitFirst(value, splitSeq){
+    if (!value){
+      return [];
+    }
+
+    var parts = value.split(splitSeq)
+
+    var ret = [parts[0]];
+    if (parts.length > 1) {
+     ret.push(parts.slice(1).join(splitSeq));
+    }
+    return ret;
+  }
+
   /**
    * 
    * @param {FieldTemplate} f 
@@ -504,7 +518,7 @@ export function FormValidator(data, template, errors, options) {
 
     //iterate through rules
     for (var r in rules) {
-      var rr = rules[r].split(/:(.+)/);
+      var rr = splitFirst(rules[r], ":");
       var conditions = "";
 
       errmsg = _messages[rr[0]];
