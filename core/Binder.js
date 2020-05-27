@@ -1265,8 +1265,11 @@ on.items[index].INJECT[parts.item] != item*/
         if (v === null || v === undefined) {
           /** @type {HTMLOptionElement} */
           // @ts-ignore
-          firstOption.selected = true;
-          var fVal = firstOption.value;
+          var fVal = null;
+          if (firstOption) {
+            firstOption.selected = true;
+            fVal = firstOption.value;
+          }
           if (fVal !== null) {
             elem.value = fVal;
             updateBoundContextProperty(elem);
@@ -1279,7 +1282,9 @@ on.items[index].INJECT[parts.item] != item*/
             sel.selected = true;
             elem.value = v; //this is important
           } else {
-            firstOption.selected = true;
+            if (firstOption) {
+              firstOption.selected = true;
+            }
             //opdate data property to keep it in sync with element; 
             updateBoundContextProperty(elem);
           }
