@@ -84,7 +84,7 @@ export class PhoneInputComponent extends BaseComponent {
    * @param {string} val 
    */
   static FormatPhoneNumber(val) {
-    return Text.formatPhone(val, { 0: "(", 3: ')-', 6: '-', 10: 'x' });
+    return Text.formatPhone(val, { 0: "(", 3: ')', 6: '-', 10: 'x' });
   }
 
   /**
