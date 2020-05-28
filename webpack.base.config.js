@@ -69,35 +69,29 @@ module.exports = (env, overrideConfig) => {
     optimization: {
       usedExports: true,
       //sideEffects: true,
-      minimizer: [new UglifyJsPlugin(), new OptimizeCSSAssetsPlugin({})],
+      minimizer: [new UglifyJsPlugin({
+        parallel: 4,
+        uglifyOptions: {
+          mangle: true,
+          compress: true,
+          keep_classnames: true, //needed for automatic page classname and selector identification
+          keep_fnames: true//needed for automatic page classname and selector identification
+        }
+      }), new OptimizeCSSAssetsPlugin({})],
     },
     module: {
       rules: [
-        /*{
-          test: /polyfill\.js$/,
-          loader: 'script-loader'
-        },*/
         {
           test: /\.js$/,
           exclude: /@babel(?:\/|\\{1,2})runtime|core-js/,
           loader: 'babel-loader',
         },
-				/*{
-					test: /\.vue$/,
-					loader: ['vue-loader']
-				},*/
         {
           test: /\.html$/,
-          oneOf: [
+          use: [
             {
-              resourceQuery: /lazy/, // foo.html?lazy
-              loader: 'file-loader',
-              options: { name: '[name]-[hash].[ext]', outputPath: 'templates/' }
-            },
-            {
-              //no query :  foo.html
               loader: 'raw-loader',
-            }
+            },
           ],
         },
         { test: /\.(jpg|png|gif)$/, loader: "file-loader", options: { name: '[name].[ext]', outputPath: 'img/' } },
