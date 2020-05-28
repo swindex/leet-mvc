@@ -295,7 +295,7 @@ class NumericKeyboardPage extends BasePage {
         return;
       }
       var w_h = window.innerHeight;
-      var b_h = w_h - kb_h;
+      var b_h = w_h - kb_h + 10;
 
       DOM(self.page).css({ top: (w_h - kb_h) + "px" });
 

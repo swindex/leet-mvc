@@ -12,7 +12,7 @@ $fontname: 'NumericKeyboardPage';
 
 #page-NumericKeyboardPage[page]{
 	  
-	  i {
+	i {
 		/* use !important to prevent issues with browser extensions that change fonts */
 		pointer-events: none;
 		font-family: $fontname !important;
@@ -26,25 +26,26 @@ $fontname: 'NumericKeyboardPage';
 		/* Better Font Rendering =========== */
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-	  }
+	}
 	  
-	  .NumericKeyboardPage-icon-kb_delete:before {
-		content: "\e900";
-	  }
-	  .NumericKeyboardPage-icon-kb_enter:before {
-		content: "\e901";
-	  }
+	.NumericKeyboardPage-icon-kb_delete:before {
+	  content: "\e900";
+	}
+	.NumericKeyboardPage-icon-kb_enter:before {
+	  content: "\e901";
+	}
 	  
-    top: 0;
-    height: 20rem;
-    background-color:transparent;
-    left: 0;
-    margin: 0;
-    position: absolute;
-    right: 0;
-    width: 100%;
-    user-select: none;
-	overflow: hidden !important;
+  top: 0;
+  height: 20.5rem;
+  background-color:transparent;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+  user-select: none;
+  overflow: hidden !important;
+  padding-top: 10px;
 	&[creating], &[visible]{
 		.wrapper{
 			transform: translate3d(0, 0, 0);
@@ -62,7 +63,7 @@ $fontname: 'NumericKeyboardPage';
 		}
 	}
 	&.layout-2{
-		height: 10rem;
+		height: 10.5rem;
 		.wrapper .keyboard{
 			tr{
 				height: 50%;
@@ -75,8 +76,8 @@ $fontname: 'NumericKeyboardPage';
 		height: 100%;
 		background-color: #2f3538;
 		transform: translate3d(0, 100%, 0);
-    	transition: transform 0.3s ease;
-		//padding-top:5px;
+   	transition: transform 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 	}
 	
 	table.keyboard{
