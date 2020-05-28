@@ -7,14 +7,19 @@ let propertyChangeCallbacks = Symbol("propertyChangeCallbacks");
 let objectChangeCallbacks = Symbol("objectChangeCallbacks");
 //window['Proxy'] = null; //comment out to test dirty checking on chrome
 
+var updatesHalted = false;
+
 export var isSkipUpdate = Symbol("isSkipUpdate");
 /**
  * The watch function creates proxy from any object and watches its changes. Triggers only when own properties change or properties of its simple properties
  * 
  */
 export var Watcher={
-  skip: isSkipUpdate,
-  watched: isWatched,
+  noChange(callback){
+    updatesHalted = true;
+    callback();
+    updatesHalted = false;
+  },
 
   /**
    * Watch for object changes. 
@@ -41,6 +46,7 @@ export var Watcher={
 
     function propertyChangeHandler(target, property, value ){
       if (//value === isSkipUpdate ||
+        updatesHalted == true ||
         target[property] === value ||
         isSymbol(property) ||
         //property === isSkipUpdate ||

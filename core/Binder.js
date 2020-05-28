@@ -2,7 +2,7 @@ import { empty, tryCall, numberFromLocaleString, isObjLiteral } from "./helpers"
 import { BaseComponent } from "../components/BaseComponent";
 import { isObject, isString, isBoolean } from "util";
 
-import { isSkipUpdate } from "./Watcher";
+import { isSkipUpdate, Watcher } from "./Watcher";
 import { DateTime } from "./DateTime";
 import { isArray } from "util";
 import { isFunction } from "util";
@@ -1308,6 +1308,7 @@ on.items[index].INJECT[parts.item] != item*/
             //file value can not be set programmatically!
             break;
           default:
+            //if (elem.value != toInputValue(v))
             elem.value = toInputValue(v);
             break;
         }
@@ -1473,16 +1474,17 @@ on.items[index].INJECT[parts.item] != item*/
     if (domElVal !== v || v !== vDomdomElVal) {
 
       if (skipUpdate && self.context[isSkipUpdate] === false) {
-        self.context[isSkipUpdate] = true;
-        elem['VDOM'].setters.bind(inj, v);
-        self.context[isSkipUpdate] = false;
+        Watcher.noChange(()=>{
+          elem['VDOM'].setters.bind(inj, v);
+        });
       } else {
         //because upon change the value is likely to be the same, but we still want to trigger the update, set v to isSkipUpdate (that will not trigger anything) first and then re-set it back
-        elem['VDOM'].setters.bind(inj, isSkipUpdate);
+        elem['VDOM'].setters.bind(inj, Symbol("dummy"));
         //then immediately set the proper value
         elem['VDOM'].setters.bind(inj, v);
       }
     }
+    //console.log("updateBoundContextProperty:",v);
   }
 
   function getForeachAttrParts(attrValue) {

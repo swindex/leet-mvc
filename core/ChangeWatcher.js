@@ -6,7 +6,7 @@ const propChangeHanler = Symbol('propChangeHanler');
 const objectChangeHanler = Symbol('objectChangeHanler');
 export class ChangeWatcher {
   constructor(){
-    this[Watcher.skip] = true;
+    this[isSkipUpdate] = true;
 
 
     //var updateRequested = false;
@@ -33,7 +33,7 @@ export class ChangeWatcher {
   }
 
   startWatch(){
-    this[Watcher.skip] = false;
+    this[isSkipUpdate] = false;
   }
 
   stopWatch(){
