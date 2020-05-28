@@ -15,6 +15,7 @@ export class TestFormsPage extends HeaderPage {
 
     PhoneInputComponent.Use({ number: true });
 
+    this.testNumber = 0
     this.form1template = [
       { type: "phone", name: "number_phone", title: "Phone Number (numeric kb)", value: "+16474497042", validateRule: "required|regex:/^\\+1\\d{10\\,15}$/,Must be in the following format (234)-456-7891. Maximum 15 digits" },
       { type: "phone", name: "number_phone2", attributes: { number: null }, title: "Phone Number (native kb)", value: "+16474497042", validateRule: "required|regex:/^\\+1\\d{10\\,15}$/,Must be in the following format (234)-456-7891. Maximum 15 digits" },
@@ -53,8 +54,8 @@ export class TestFormsPage extends HeaderPage {
     console.log(typeof (BasePage.prototype));
     console.log(typeof ((new BasePage().prototype)));
 
-    NumericKeyboard.enable();
-    NumericKeyboard.options.layout = 1;
+    //NumericKeyboard.enable();
+    //NumericKeyboard.options.layout = 1;
   }
 
   onClicked() {
@@ -74,6 +75,13 @@ export class TestFormsPage extends HeaderPage {
 
 const template = `
 <div class="scroll fill">
+  <div>
+    <input type="number" bind="this.testNumber"/>
+  </div>
+  <hr>
+	form1data
+  <pre>{{ JSON.stringify(this.testNumber,null,'  ') }}</pre>
+  
 	<div [component] = "this.form1"></div>
 	<button onclick="this.validate()">Validate {{ this.isValid ? 'VALID' : 'INVALID'}}</button>
 	<!-- <hr>
