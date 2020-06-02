@@ -298,8 +298,8 @@ class NumericKeyboardPage extends BasePage {
 
     this.cursorPosition = posIndex;
     this.isTextSelected = false
-    //this.stopBlinker();
-    //this.startBlinker();
+    clearInterval(this.blinker);
+    this.startBlinker();
   }
 
   _resizeBody(emitResize) {
@@ -381,11 +381,22 @@ class NumericKeyboardPage extends BasePage {
 
   customKB_keydownhandler(e) {
     switch (e.keyCode) {
+      case 37: //left
+        e.preventDefault();
+        this.setCursorPosition(this.cursorPosition - 1);
+        break;
+      case 39: //right
+        e.preventDefault();
+        this.setCursorPosition(this.cursorPosition + 1);
+        break;  
       case 27:
         e.preventDefault();
         this.destroyKB();
         break;
-      case 46:
+      case 46: //delete
+        e.preventDefault();
+        this.delete();
+        break;
       case 8:
         e.preventDefault();
         this.backspace();
@@ -493,7 +504,7 @@ class NumericKeyboardPage extends BasePage {
       return `<span index="${i}" style="position:relative;">${d}${cstyle}</span>`
     });
 
-    this.curr_input.innerHTML = `<span style="${style};">` + digits.join('') + '</span>' //+ (this.isPipeVisible ? pipechar : '&nbsp;');
+    this.curr_input.innerHTML = `<span style="white-space: nowrap; ${style};">` + digits.join('') + '</span>' //+ (this.isPipeVisible ? pipechar : '&nbsp;');
     
     //end pipechar
     if (this.cursorPosition >= digits.length && this.isPipeVisible) {
@@ -517,11 +528,13 @@ class NumericKeyboardPage extends BasePage {
   }
 
   startBlinker() {
-    this.blinker = setInterval(() => {
+    var blink = () => {
       if (!this.isDeleted) {
         this.blink();
       }
-    }, 400);
+    }
+    this.blinker = setInterval(blink, 400);
+    blink();
   }
 
   stopBlinker() {
@@ -566,6 +579,24 @@ class NumericKeyboardPage extends BasePage {
       var digits = (r_val+"").split('');
       digits.splice(this.cursorPosition-1,1)
       this.cursorPosition --;
+
+      this.setValue(digits.join('')); //remove last char and add caret
+      this.old_input.dispatchEvent(new Event('input'));
+    }
+
+    this.onClick();
+    return false;
+  }
+  delete() {
+    var r_val = this.getValue()+""; //remove caret
+    var digits = r_val.split('');
+    
+    if (this.cursorPosition < digits.length ) {
+      this.isTextSelected = false;
+
+
+      digits.splice(this.cursorPosition,1)
+      this.cursorPosition;
 
       this.setValue(digits.join('')); //remove last char and add caret
       this.old_input.dispatchEvent(new Event('input'));
