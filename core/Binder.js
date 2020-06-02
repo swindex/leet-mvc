@@ -314,10 +314,13 @@ export var Binder = function (context) {
               DOM(frag).append(items[0].elem.childNodes);
               items[0].elem = frag;
             }
-            items[0].INJECT = inject;
+            //items[0].INJECT = inject;
             return items[0];
           };
-          var vdom = { values: {}, getters: getters, setters: {}, callers: {}, fragment: directiveFragment, elem: elem, items: [], itemBuilder: itemBuilder };
+          if (key == "foreach")
+            var vdom = { values: {}, getters: getters, setters: {}, callers: {}, fragment: directiveFragment, elem: elem, items: [], itemBuilder: itemBuilder, INJECT: inject };
+          else
+            var vdom = { values: {}, getters: getters, setters: {}, callers: {}, fragment: directiveFragment, elem: elem, items: [], itemBuilder: itemBuilder, INJECT: null };
           executeAttribute(key, vdom, inject);
 
           return vdom;
@@ -347,12 +350,12 @@ export var Binder = function (context) {
           if (tag == "#text") {
             if (isString(createElements)) {
               elem = document.createTextNode(createElements);
-              var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context };
+              var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context, INJECT: null };
 
             } else {
               elem = document.createTextNode("");
               getters = { 'bind': createGetter(attributes['bind'], inject) };
-              var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context };
+              var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context, INJECT: null };
               executeAttribute('bind', vdom, inject);
             }
 
@@ -431,7 +434,7 @@ export var Binder = function (context) {
             }
           }
 
-          var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, callers: callers, plainAttrs: plainAttrs, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context };
+          var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, callers: callers, plainAttrs: plainAttrs, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context, INJECT: null };
           elem['VDOM'] = vdom;
 
           for (var ii = 0; ii < renderImmediately.length; ii++) {
@@ -874,7 +877,7 @@ export var Binder = function (context) {
 
         if (on.items[index] && isObject(item) && !isObjLiteral(item)) {
           //it is some sort of complex object. Handle it differently
-          if (on.items[index].INJECT[parts.item] != item) {
+          if (on.items[index].INJECT && on.items[index].INJECT[parts.item] != item) {
             //element's injected item is not the same as current item (can not hot-swap complex instances!)
             //delete object
             hasDeleted = true;
@@ -886,10 +889,7 @@ export var Binder = function (context) {
           }
         }
 
-        if (!on.items.hasOwnProperty(index)
-          /*||
-on.items[index].INJECT[parts.item] != item*/
-        ) {
+        if (!on.items.hasOwnProperty(index)) {
           //a new item appeared
           if (!hasNew) {
             hasNew = true;
@@ -967,7 +967,7 @@ on.items[index].INJECT[parts.item] != item*/
 
         if (html) {
           if (html instanceof DocumentFragment) {
-            c_vDom = { elem: html, fragment: null, items: [], values: {}, valuesD: {}, getters: {}, setters: {}, itemBuilder: null, inject: {} };
+            c_vDom = { elem: html, fragment: null, items: [], values: {}, valuesD: {}, getters: {}, setters: {}, itemBuilder: null, inject: inject };
           } else {
             c_vDom = executeSource(parseElement(html), inject);
           }

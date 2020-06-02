@@ -3,8 +3,8 @@ import './NumericKeyboardPage.scss';
 import * as template from './NumericKeyboardPage.html';
 import { BasePage } from './../BasePage';
 import { Injector } from "./../../core/Injector";
-import { numberFromLocaleString } from './../../core/helpers';
 import { DOM } from '../../core/DOM';
+import { Objects } from '../../core/Objects';
 
 export var NumericKeyboard = {
   isEnabled: false,
@@ -109,6 +109,8 @@ class NumericKeyboardPage extends BasePage {
       theme: '',
     };
 
+    this.cursorPosition = 0;
+
     this.inputStyle = {};
 
     this.setOptions(Object.assign({}, this._options, options));
@@ -140,6 +142,7 @@ class NumericKeyboardPage extends BasePage {
       }, 1);
       return;
     }
+    
     //switch to new element without closing keyboard
     if (this.curr_input) {
       this.enter();
@@ -162,6 +165,7 @@ class NumericKeyboardPage extends BasePage {
 
     this.setValue(elem.value);
 
+    this.cursorPosition = (this.value+"").length;
 
     if (this._options.selectOnFocus) {
       this.isTextSelected = true;
@@ -190,6 +194,15 @@ class NumericKeyboardPage extends BasePage {
     if (isNew) {
       this.hookEvents();
     }
+
+    DOM(this.curr_input).on('mousedown', (ev)=>{
+      //console.log(ev.target);
+      if (ev.target && ev.target.getAttribute("index") !== null){
+        this.setCursorPosition(Number(ev.target.getAttribute("index")));
+      } else if (ev.target == this.curr_input) {
+        this.setCursorPosition((this.getValue()+"").length);
+      }
+    })
   }
 
   hookEvents() {
@@ -268,7 +281,7 @@ class NumericKeyboardPage extends BasePage {
       self.destroyKB();
 
     });
-
+    
     var w_h = window.innerHeight;
 
     var kb_h = this.page.offsetHeight;
@@ -277,6 +290,16 @@ class NumericKeyboardPage extends BasePage {
     DOM(this.page).css({ top: (w_h - kb_h) + "px" });
     this.listenResize = true;
     this._resizeBody(true);
+  }
+
+  setCursorPosition(posIndex){
+    if (posIndex < 0 )
+      posIndex = 0;
+
+    this.cursorPosition = posIndex;
+    this.isTextSelected = false
+    //this.stopBlinker();
+    //this.startBlinker();
   }
 
   _resizeBody(emitResize) {
@@ -452,7 +475,35 @@ class NumericKeyboardPage extends BasePage {
       style = `background-color: ${this._options.selectBackColor}; color: ${this._options.selectForeColor}`;
     }
     var pipechar = `<span style="border-left:1px solid ${this.inputStyle['color']};">&nbsp;</span>`;
-    this.curr_input.innerHTML = `<span style="${style}">` + t + '</span>' + (this.isPipeVisible ? pipechar : '&nbsp;');
+    
+    var items = (t+"").split('');
+    
+    var digits = Objects.map(items, (d,i) => {
+      var cstyle = "";
+      if (i == this.cursorPosition) {
+        if (this.isPipeVisible) {
+          cstyle = `<span style="position:absolute;width:1px;height:1.25em;background-color: ${this.inputStyle['color']};top:0;left:0;"></span>`
+        } else {
+          cstyle = ``
+        }
+      } else {
+        //cstyle = `border-left: 1px solid transparent;`
+      } 
+
+      return `<span index="${i}" style="position:relative;">${d}${cstyle}</span>`
+    });
+
+    this.curr_input.innerHTML = `<span style="${style};">` + digits.join('') + '</span>' //+ (this.isPipeVisible ? pipechar : '&nbsp;');
+    
+    //end pipechar
+    if (this.cursorPosition >= digits.length && this.isPipeVisible) {
+      this.cursorPosition = digits.length;
+      this.curr_input.innerHTML += pipechar;
+    }
+
+    /*if (this.isPipeVisible) {
+      DOM(this.curr_input).find(`[index=${this.cursorPosition}]`)
+    }*/
   }
 
   getValue() {
@@ -498,16 +549,28 @@ class NumericKeyboardPage extends BasePage {
     if (r_val == "" && chr == ".") {
       r_val = r_val + "0"; //. will be added later
     }
-    this.setValue(r_val + chr.toString());
+
+    var digits = (r_val+"").split('');
+    digits.splice(this.cursorPosition,0,chr.toString())
+    this.cursorPosition ++;
+    this.setValue( digits.join(''));
     this.old_input.dispatchEvent(new Event('input'));
     this.onClick();
     return false;
   }
   backspace() {
-    var r_val = this.getValue(); //remove caret
-    this.isTextSelected = false;
-    this.setValue(r_val.substring(0, r_val.length - 1)); //remove last char and add caret
-    this.old_input.dispatchEvent(new Event('input'));
+    if (this.cursorPosition > 0 ) {
+      var r_val = this.getValue(); //remove caret
+      this.isTextSelected = false;
+
+      var digits = (r_val+"").split('');
+      digits.splice(this.cursorPosition-1,1)
+      this.cursorPosition --;
+
+      this.setValue(digits.join('')); //remove last char and add caret
+      this.old_input.dispatchEvent(new Event('input'));
+    }
+
     this.onClick();
     return false;
   }
@@ -523,10 +586,12 @@ class NumericKeyboardPage extends BasePage {
 
     if (r_val.substring(0, 1) == "-") {
       //Remove minus
+      this.setCursorPosition(this.cursorPosition - 1);
       this.setValue(r_val.substring(1, r_val.length)); //remove minus char
     }
     else {
       //remove minus
+      this.setCursorPosition(this.cursorPosition + 1);
       this.setValue("-" + r_val); //add minus
     }
     this.old_input.dispatchEvent(new Event('input'));

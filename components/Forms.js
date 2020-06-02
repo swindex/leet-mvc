@@ -395,6 +395,8 @@ ${(noErrorHint ? '' : this.addErrorHint(el))}
 
 
   renderSelectGroupHTML(el, elHTML) {
+    if (!elHTML)
+      return "";
     return `<div [if]="this.getIsVisible('${el._name ? el._name : ''}')">${elHTML}</div>`;
   }
 
@@ -875,7 +877,7 @@ Forms.field_definitions = {
   number(forms, el, parentPath) {
     forms.assertValidateRuleHas(el, "numeric");
     var format = el.attributes && el.attributes.format ? undefined : "number:2";
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'number', number: "", format: format, pattern: "[0-9]*", novalidate: true, autocomplete:"false" })]);
+    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'text', number: "", format: format, pattern: "[0-9]*", novalidate: true, autocomplete:"false" })]);
   },
   password(forms, el, parentPath) {
     return forms.renderFieldGroupHTML(el, [forms.addPassword(el, {autocomplete:"false"})]);
