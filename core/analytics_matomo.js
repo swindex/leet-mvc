@@ -48,8 +48,8 @@ export class Analytics {
       this.Tracker = new Matomo(config.SiteId, config.URL);
     }
 
+    this.PrevScreenUrl = null;
     this.PrevScreenName = null;
-
   }
 
   init() {
@@ -70,15 +70,20 @@ export class Analytics {
 	 * @param {string} optionalUrl
 	 */
   setScreenName(name, optionalUrl = null) {
+    if (this.PrevScreenName === name) {
+      return;
+    }
+    
     this.Tracker.setScreenName(name);
 
     var url = optionalUrl ? optionalUrl : this.createPageURL(name);
     this.Tracker.setURL(url);
-    this.Tracker.setRefURL(this.PrevScreenName);
+    this.Tracker.setRefURL(this.PrevScreenUrl);
 
 
     this.Tracker.send();
-    this.PrevScreenName = url;
+    this.PrevScreenUrl = url;
+    this.PrevScreenName = name;
 
     return this;
   }

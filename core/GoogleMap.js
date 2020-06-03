@@ -507,7 +507,26 @@ export function GoogleMap(API_KEY, API_VERSION, LANGUAGE) {
   };
 
   function addEvents(map) {
+    var isMouseDown = false;
+    var isCenterchanged = false;
+    map.addListener("mousedown", function () {
+      isMouseDown = true
+    });
+    map.addListener("mouseup", function () {
+      isMouseDown = false
+      if (isCenterchanged) {
+        isCenterchanged = false;
+        var center = self.map.getCenter();
+        self.onCenterChanged({ lat: center.lat(), lng: center.lng() });
+      }
+    });
+
     map.addListener("center_changed", function () {
+      if(isMouseDown) {
+        isCenterchanged = true;
+        return;
+      }
+      isCenterchanged = false;
       var center = self.map.getCenter();
       self.onCenterChanged({ lat: center.lat(), lng: center.lng() });
     });
