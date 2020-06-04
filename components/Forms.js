@@ -634,6 +634,7 @@ ${item.title}
   */
   addTitle(el) {
     if (!el.title && !el.info) return '';
+    //el.title = el.title.replace(/ /g, "&nbsp;")
     return `<label>{{ Translate(this.fields['${el._name}'].title) }}${el.info ? this.addInfo(el) : ''}</label>`;
   }
   /**

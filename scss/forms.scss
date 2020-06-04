@@ -9,11 +9,11 @@ select,
 select-multiple,
 .input
 {
-    box-sizing:border-box;
-    font-size: $size-f-input;
-    width:100%;
-    -webkit-border-radius:0; 
-    border-radius:0;
+  box-sizing:border-box;
+  font-size: $size-f-input;
+  width:100%;
+  -webkit-border-radius:0; 
+  border-radius:0;
 	border: 1px solid #BBB;
 
 	-webkit-appearance: none;
@@ -63,27 +63,6 @@ select-multiple{
 	background-image: url(../img/angle-down-solid.svg);
 	background-size: $size-input-i-sm;
 }
-/*.formgroup {
-	button,
-	input[type=button]
-	{
-		width: auto;
-		color: $color-button-fg;
-		background-color: $color-button-bg;
-		border: none;
-		border-radius: 3px;
-		padding: $margin-lg $margin-lg;
-		font-size: $size-f-input;
-		box-shadow: 0px 0px 3px 0px #000000ab;
-		-webkit-appearance: none;
-	}
-
-	input[type=button]:active ,button:active {
-		filter: brightness(0.75);
-		outline: none;
-		box-shadow: none;
-	}
-}*/
 
 input[type=button]:focus ,button:focus{
 	outline: none;
@@ -185,14 +164,16 @@ textarea {
 		
 	}
 	
-	label {
+	>label {
 		color: #333;
 		z-index: 5;
 		background-color: transparent;
 		padding-left: 0;
 		font-size: $size-f-toplabel;
 		text-align: left;
-		
+		display: inline-block;
+    height: 1.0em;
+    line-height: 1em;
 		i {
       color: #0874B7;
       margin-left: $margin-sm;
@@ -234,8 +215,32 @@ textarea {
 				right: $margin-sm;
 			}
 		}
-	}
+  }
+  
+  /*&.filled,
+  &.active{
+    label {
+      top: 0;
+      font-size: 12px;
+      pointer-events: all;
+    }
+  }*/
 
+  /*.label {
+    color: #333;
+    z-index: 5;
+    background-color: transparent;
+    padding-left: 0;
+    font-size: 16px;
+    text-align: left;
+    display: inline-block;
+    height: 1em;
+    line-height: 1em;
+    position: absolute;
+    top: 1em;
+    transition: all 0.5s ease;
+    pointer-events: none;
+  }*/
 	.fieldrow {
 		position: relative;
 		display: flex;
@@ -251,7 +256,10 @@ textarea {
 			color: red;
 			padding-left: 5px;
 		}
-	}
+  }
+  &.checkbox {
+    align-self: center;
+  }
 }
 //custom override for select-multiple
 select-multiple{
