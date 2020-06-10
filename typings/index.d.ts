@@ -13,7 +13,9 @@ interface FieldTemplate{
 	dataType?:string;
 	attributes?:FieldData;
 	unit?:string;
-	icon?:string;
+  icon?:string;
+  dynamicItems?:any;
+  ownItems?:FieldTemplate[] //custom items that are not processed by the validator and are passed into the created component
 }
 
 interface GenFormData{

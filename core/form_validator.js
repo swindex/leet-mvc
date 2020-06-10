@@ -99,8 +99,11 @@ export function FormValidator(data, template, errors, options) {
     Objects.walk(template, function (el) {
       if (el && el._name)
         if (!el.attributes || (!el.attributes.hidden && el.attributes.data !== false)) {
-          if (el.name && (el.type != "form" && el.type != "label" && el.type != "link" && el.type != "button"))
-            Objects.setPropertyByPath(obj, el._name, Objects.getPropertyByPath(data, el._name));
+          if (el.name && (el.type != "form" && el.type != "label" && el.type != "link" && el.type != "button")){
+            var val = Objects.getPropertyByPath(data, el._name);
+            if (val !== undefined)
+              Objects.setPropertyByPath(obj, el._name, val);
+          }
         } else if (el.attributes && (el.attributes.hidden || el.attributes.data === false)) {
           //This element is hidden. Do not include its possible children!
           return false;
@@ -177,6 +180,8 @@ export function FormValidator(data, template, errors, options) {
     return isValid;
   };
 
+  this.validateObject = validate_object;
+
   this.clearErrors = function () {
     used = [];
     Objects.clear(_errors);
@@ -220,9 +225,10 @@ export function FormValidator(data, template, errors, options) {
   };
 
   /**
-   * 
+   * Validate Object. Returns number of errors.
    * @param {FieldTemplate|FieldTemplate[]} obj - FieldTemplate or array to validate
    * @param {string[]} [path]
+   * @returns {number}
    */
   function validate_object(obj, showErrors = true) {
     var e = 0;
@@ -232,31 +238,34 @@ export function FormValidator(data, template, errors, options) {
 
     //object is FieldTemplate
     if (isObject(obj) && !isArray(obj)) {
-      if (obj.validateRule) {
+      if (typeof obj.validate == "function")
+        e+= obj.validate() ? 0 : 1;
+      else if (obj.validateRule) {
         e += validate_field(obj, showErrors);
       }
-      //items of a form
-      if (obj.type == "form" && obj.items) {
 
-        var visible = is_field_visible(obj);
-        if (visible) {
+      if (obj.items) {
+        //items of the select box
+        if (obj.type == "select") {
+          var v = Objects.getPropertyByPath(_data, obj.name);
+          Objects.forEach(obj.items, (el) => {
+            //only validate items of the selected item!
+            if (el.value == v) {
+              e += validate_object(el.items, showErrors);
+            }
+          });
+        } else if (obj.type) {
+          //items of a form -like
+          var visible = is_field_visible(obj);
+          if (visible) {
+            e += validate_object(obj.items, showErrors);
+          }
+        }
+
+        //items of the selected item
+        if (obj.type == undefined) {
           e += validate_object(obj.items, showErrors);
         }
-      }
-
-      //items of the select box
-      if (obj.type == "select" && obj.items) {
-        var v = Objects.getPropertyByPath(_data, obj.name);
-        Objects.forEach(obj.items, (el) => {
-          //only validate items of the selected item!
-          if (el.value == v) {
-            e += validate_object(el.items, showErrors);
-          }
-        });
-      }
-      //items of the selected item
-      if (obj.type == undefined && obj.items) {
-        e += validate_object(obj.items, showErrors);
       }
     }
     //Object is an array FieldTemplate[]
@@ -1019,9 +1028,7 @@ export const FormWalker = {
               }
             });
           }
-        }
-
-        if (obj.items && obj.type == "form") {
+        } else if (obj.type && obj.items) {
           if (set_names_int(obj.items, obj.name)) {
             hasSet = true;
           }

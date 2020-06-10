@@ -27,6 +27,9 @@ export class Forms extends BaseComponent {
 
     this.errors = errors || {};
 
+    /** @type {{[key: string]: FieldTemplate}} */
+    this.fields= {};
+
     this.options = { nestedData: true, formClass: 'formgroup', fieldClass: 'fieldgroup' };
     Object.assign(this.options, options);
 
@@ -216,37 +219,16 @@ export class Forms extends BaseComponent {
       if (el.type) {
         if (el.type == "form") {
           var ret = this.render_field(el, parentPath);
-          if (ret) {
-            html.push(ret);
-          }
         } else {
-          /*if ((el.name == null || el.name==undefined)){
-          el.name = i;
-          }*/
           //do we support nested data?
           if (!this.options.nestedData) {
             parentPath = null;
           }
 
-          if (parentPath && el.name) {
-            //el._name = parentPath + "." + el.name ;
-            //el._parent = Objects.getPropertyByPath(this.formTemplate, el._name);
-          } else {
-            //el._name = el.name;
-          }
-          //create value in each structure
-          /*if (! Objects.getPropertyByPath(this.data, el._name))
-          Objects.setPropertyByPath(this.data, el._name, el.value != undefined ? el.value : null);
-          if (! Objects.getPropertyByPath(this.errors, el._name))
-          Objects.setPropertyByPath(this.errors, el._name, null);
-          if (! Objects.getPropertyByPath(this.attributes, el._name))
-          Objects.setPropertyByPath(this.attributes, el._name, null);
-          */
-
           var ret = this.render_field(el, parentPath);
-          if (ret) {
-            html.push(ret);
-          }
+        }
+        if (ret) {
+          html.push(ret);
         }
       }
     }
@@ -694,14 +676,14 @@ ${el.icon ? `<i class="${el.icon}"></i>` : ''}
   * @param {FieldTemplate} el 
   */
   addHtml(el) {
-    var opt = Object.assign({}, { name: el._name }, { onclick: "this.onClick($event);" }, el.attributes);
-    return `<div class="html" ${this.generateAttributes(opt)}>${(el.value != null ? el.value : "")}</div>`;
+    var opt = Object.assign({}, { name: el._name, class: "html" }, {class: el.class}, { onclick: "this.onClick($event);" }, el.attributes);
+    return `<div ${this.generateAttributes(opt)}>${(el.value != null ? el.value : "")}</div>`;
   }
   /**
   * 
   * @param {FieldTemplate} el 
   */
-  addLink(el) {
+  addLink(el) {``
     var opt = Object.assign({}, { onclick: "this.onClick($event);" }, el.attributes);
     return `<div class="link" ${this.generateAttributes(opt)} name="${el._name}">${(el.value != null ? el.value : "")}</div>` +
       (el.unit || el.icon ? `<div class="icon">
