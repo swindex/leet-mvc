@@ -303,7 +303,7 @@ export var Binder = function (context) {
               getters[key] = getForeachAttrParts(bindExpression);
             } else {
               //for all other attributes like [if] = "this.isVisible" create getter for the attribute value
-              getters[key] = createGetter(bindExpression, inject);
+              getters[key] = createGetter(bindExpression, inject,key);
             }
           }
           //because directive children are likely to be re-rendered, do not immediately render them. create itemBuilder function
@@ -354,7 +354,7 @@ export var Binder = function (context) {
 
             } else {
               elem = document.createTextNode("");
-              getters = { 'bind': createGetter(attributes['bind'], inject) };
+              getters = { 'bind': createGetter(attributes['bind'], inject, "bind") };
               var vdom = { values: {}, valuesD: {}, getters: getters, setters: setters, fragment: null, elem: elem, items: vdomItems, itemBuilder: null, context: self.context, INJECT: null };
               executeAttribute('bind', vdom, inject);
             }
@@ -381,7 +381,7 @@ export var Binder = function (context) {
 
             switch (rType.type) {
               case 'get-set':
-                getters[key] = createGetter(bindExpression, inject);
+                getters[key] = createGetter(bindExpression, inject, key);
                 setters[key] = createSetter(bindExpression, inject);
 
                 //if element is directly setting, then apply all change and input callbacks
@@ -395,7 +395,7 @@ export var Binder = function (context) {
                 elem.setAttribute(key, attributes[key]);
                 break;
               case 'get':
-                getters[key] = createGetter(bindExpression, inject);
+                getters[key] = createGetter(bindExpression, inject, key);
                 renderImmediately.push(key);
                 break;
               case 'call':
@@ -446,6 +446,7 @@ export var Binder = function (context) {
           return vdom;
         } catch (ex) {
           console.error(ex.message + "\n At " + getHtmlFromRender(tag, attributes));
+          console.warn("Error Context:", self.context);
         }
       }
     };
@@ -596,33 +597,36 @@ export var Binder = function (context) {
   }
 
   function executeAttribute(attribute, on, inject) {
-    var old = on.values[attribute];
-    //try{
-    //if a built-in attribute
-    if (attributes[attribute]) {
-      var ret = attributes[attribute](on, inject);
-    } else {
-      //attribute is not in the standard attribute list
-      if (on.getters[attribute]) {
-        //getter exists
-        var value = on.getters[attribute](inject);
-        //-----------Below code used to set the property of the componenet to the value returned by the getter. I dont know why. Maybe remothe the whole thing. and do nothing with custom getters....
-        if (self.context instanceof BaseComponent && self.context[attribute] !== value) {
-          self.context[attribute] = value;
+      var old = on.values[attribute];
+      try{
+        //if a built-in attribute
+        if (attributes[attribute]) {
+          var ret = attributes[attribute](on, inject);
+        } else {
+          //attribute is not in the standard attribute list
+          if (on.getters[attribute]) {
+            //getter exists
+            var value = on.getters[attribute](inject);
+            //-----------Below code used to set the property of the componenet to the value returned by the getter. I dont know why. Maybe remothe the whole thing. and do nothing with custom getters....
+            if (self.context instanceof BaseComponent) {
+              if (on.elem == self.context.container && self.context[attribute] !== value)
+              self.context[attribute] = value;
+            }
+            //set attribute of the HTML element to the value;
+            if (on.elem) {
+              on.elem[attribute] = value;
+            }
+          }
         }
-        //set attribute of the HTML element to the value;
-        if (on.elem) {
-          on.elem[attribute] = value;
-        }
+      }catch(ex){
+        throw new Error(`${ex.message} executing attribute '${attribute}'`)
+        //console.warn(ex);
       }
-    }
-    /*}catch(ex){
-  console.warn(ex);
-}/**/
-    if (old !== on.values[attribute] && ret !== EAttrResult.SkipChildren) {
-      ret = EAttrResult.NodeChanged;
-    }
-    return ret;
+
+      if (old !== on.values[attribute] && ret !== EAttrResult.SkipChildren) {
+        ret = EAttrResult.NodeChanged;
+      }
+      return ret;
   }
 
   /**
@@ -635,6 +639,10 @@ export var Binder = function (context) {
       var isTrue;
       try {
         isTrue = getter(inject);
+        //Objects cant be compared. So if expression is one, set it to true
+        if (isObject(isTrue)){
+          isTrue = true;
+        }
       } catch (ex) {
         isTrue = undefined;
       }
@@ -840,7 +848,7 @@ export var Binder = function (context) {
       var getter = on.getters[key];
       /** @type {{data:string,index:string,item:string}}*/
       var parts = getter;
-      var data = createGetter(parts.data, inject)(inject) || [];
+      var data = createGetter(parts.data, inject, "foreach")(inject) || [];
 
       var fo = document.createDocumentFragment();
 
@@ -860,8 +868,6 @@ export var Binder = function (context) {
 
       //create a new fragment for new/updated items
       var hasNew = false;
-      var hasDeleted = false;
-      var hasChanges = 0;
 
       for (var index in data) {
         if (!data.hasOwnProperty(index))
@@ -907,7 +913,6 @@ export var Binder = function (context) {
           on.items[index].INJECT = inj;
           insertBefore(fo1, on.items[index].elem);
           if (checkVDomNode(on.items[index], inj) === true) {
-            hasChanges++;
           }
         }
       }
@@ -920,7 +925,6 @@ export var Binder = function (context) {
         if (touchedKeys.hasOwnProperty(index))
           continue;
 
-        hasDeleted = true;
         if (on.items[index].elem == null || on.items[index].elem instanceof DocumentFragment) {
           removeVDomItems(on.items[index].items);
         }
@@ -1209,7 +1213,7 @@ export var Binder = function (context) {
     try {
       var inj = findElemInject(elem);
       if (empty(elem.VDOM.getters[attrName]))
-        elem.VDOM.getters[attrName] = createGetter(attrValue, inj);
+        elem.VDOM.getters[attrName] = createGetter(attrValue, inj, attrName);
       var result = elem.VDOM.getters[attrName](self, inj);
     } catch (ex) {
       var result = null;
@@ -1522,7 +1526,7 @@ export var Binder = function (context) {
    * @param {string} expression 
    * @return {function(*)} callback
    */
-  function createGetter(expression, inject) {
+  function createGetter(expression, inject, key) {
     var inj = createInjectVarText(inject);
     try {
       var cashe = inj + expression;
@@ -1534,7 +1538,7 @@ export var Binder = function (context) {
       );
       return getterCashe[cashe] = getter.bind(self.context);
     } catch (ex) {
-      return null;
+      throw new Error(`${ex.message} creating getter for attribute ${key}="${expression}"\nGetter must be a valid expression`)
     }
   }
 

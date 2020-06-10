@@ -12,6 +12,7 @@ export var Text = {
 			 .replace(/'/g, "&#039;")
 			 .replace(/\n/g, convertNewlines ? "<br />" : '');
   },
+
   /**
 	 * Format phone number while typing
 	 * @param {string} text - phone number to format

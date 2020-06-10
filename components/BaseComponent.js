@@ -26,10 +26,6 @@ export class BaseComponent extends ChangeWatcher {
     this.components = [];
   }
 
-  get ref() {
-    return this;
-  }
-
 	/** 
 	 *  ***DO NOT OVERRIDE*** 
 	 * This function is called once after the container is bound to context
@@ -46,6 +42,12 @@ export class BaseComponent extends ChangeWatcher {
       this.parentPage.components.push(this);
     }
     this.onInit(this.container);
+    this.returnContext(this);
+  }
+
+  /** @override */
+  returnContext(context){
+
   }
 
 	/** 
