@@ -886,7 +886,6 @@ export var Binder = function (context) {
           if (on.items[index].INJECT && on.items[index].INJECT[parts.item] != item) {
             //element's injected item is not the same as current item (can not hot-swap complex instances!)
             //delete object
-            hasDeleted = true;
             if (on.items[index].elem == null || on.items[index].elem instanceof DocumentFragment) {
               removeVDomItems(on.items[index].items);
             }
