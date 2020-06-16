@@ -19,8 +19,8 @@ export class Forms extends BaseComponent {
    * @param {{nestedData?:boolean, formClass?:string, fieldClass?:string}} [options]
    */
   constructor(formTemplate, data, errors, options) {
-    super();
-    this.formTemplate = formTemplate;
+    super(); 
+    this.formTemplate = Objects.copy(formTemplate);
     this.data = data || {};
 
     this.extraData = {};
@@ -92,7 +92,7 @@ export class Forms extends BaseComponent {
 
     this.template = `<div [directive]="this.formHTML"></div>`;
 
-    this.updateTemplate(formTemplate);
+    this.updateTemplate(this.formTemplate);
   }
 
   setDataValuesFromFields() {
@@ -110,9 +110,9 @@ export class Forms extends BaseComponent {
   }
 
   updateTemplate(formTemplate) {
-    this.formTemplate = formTemplate;
+    this.formTemplate = Objects.copy(formTemplate);
 
-    this.validator = new FormValidator(this.data, formTemplate, this.errors, this.options);
+    this.validator = new FormValidator(this.data,  this.formTemplate, this.errors, this.options);
     this.fields = this.validator.fields;
     this.setDataValuesFromFields();
     this.validator.validateVisibility();
@@ -322,6 +322,9 @@ export class Forms extends BaseComponent {
     return this.renderArrayHTML(el, this.renderArray(el.items, el._name));
   }
 
+  /**
+   * @returns {{[key:string]:any}}
+   */
   getVisibleData() {
     return this.validator.getVisibleData();
   }

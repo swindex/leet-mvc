@@ -315,13 +315,15 @@ select-multiple{
 
 //special case: label contains inpuit chechbox
 .fieldgroup{
+  label.radio,
 	label.toggle{
 		display:flex;
 		align-items: center;
 		width: 100%;
 		font-size: $size-f-input;
-		padding: $margin-md 0  $margin-md 0;
-		input[type=checkbox],input[type=radio] {
+    padding: $margin-md 0  $margin-md 0;
+    height: auto;
+		input {
 			display: none;
 			&:checked {
 				&+.slider {
