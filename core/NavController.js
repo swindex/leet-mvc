@@ -3,6 +3,7 @@ import { BasePage } from "../pages/BasePage";
 import { isSkipUpdate } from "./Watcher";
 import { Objects } from "./Objects";
 import { DOM } from "./DOM";
+import { isObject } from "util";
 
 export class NavController{
   constructor(){
@@ -189,8 +190,8 @@ export class NavController{
         var newEl = document.createElement('div');
         container.appendChild(newEl);
         pageObject.$args = args;
-        if (args && args.length == 1)
-          Object.assign(pageObject, args[0])
+        //if (args && args.length == 1)
+        //  Object.assign(pageObject, args[0])
         pageObject.$mount(newEl);
         var p = pageObject.$el;
       } else {
@@ -236,8 +237,12 @@ export class NavController{
       var className = pageConstructor.className ? pageConstructor.className : "";
 
       //create page object in a new scope
-      /** @type {BasePage} */
-      var pageObject = new pageConstructor(...args);
+      if (pageConstructor._isVue && isObject(args[0])) {
+        var pageObject = new pageConstructor({propsData: args[0]});
+      } else {
+        /** @type {BasePage} */
+        var pageObject = new pageConstructor(...args);
+      }
       //pageObject.visibleParent = pageObject.visibleParent===null ? pageConstructor.visibleParent : pageObject.visibleParent;
       pageObject.name = pageName;
       //empty(pageObject.className) ? pageObject.className = className : null;
