@@ -642,7 +642,7 @@ ${item.title}
     if (isObject(this.fields[name].info)) {
       Alert(this.fields[name].info.text, this.fields[name].info.callback, this.fields[name].info.title);
     } else if (isString(this.fields[name].info)) {
-      Alert(this.fields[name].info);
+      Alert(this.fields[name].info,null, this.fields[name].title);
     } else {
       console.error(`Forms.fields['${name}'].info value is not supported`, this.fields[name].info);
     }
