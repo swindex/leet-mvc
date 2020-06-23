@@ -4,7 +4,7 @@ interface FieldTemplate{
 	_name?: string; //internal
 	title?:string;
 	value?:string|number;
-	type:string;
+	type: string;
 	placeholder?:string;
 	validateRule?:string;
 	displayRule?:string;

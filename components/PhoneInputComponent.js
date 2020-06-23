@@ -11,9 +11,12 @@ export class PhoneInputComponent extends BaseComponent {
     this.value = null;
     this.isValid = null;
     this._formattedValue = null;
+
+    this.placeholder = null;
+
     this.template = `
     <div>
-      <input type="text" [attribute]="this.attributes" bind = "this._formattedValue" oninput = "this._onInput($event)" onchange = "this._onChange($event)" />
+      <input type="text" [attribute]="this.attributes" bind = "this._formattedValue" oninput = "this._onInput($event)" onchange = "this._onChange($event)" [placeholder]="this.placeholder" />
     </div>
     `;
   }
@@ -106,7 +109,13 @@ export class PhoneInputComponent extends BaseComponent {
       var opt = {};
       Object.assign(opt, attributes, el.attributes);
       //custom elements will not emit 2 way binding events. so explicitly link onChange event with appropriate handler!
-      return forms.renderFieldGroupHTML(el, `<input-phone [(value)]="${forms.refactorAttrName('this.data.' + el._name)}" (onChange)="this.events.change.apply(this, arguments)" [(isValid)]="${forms.refactorAttrName('this.fields.' + el._name)}.attributes.isValid"  name="${el._name}" ${forms.generateAttributes(opt)}></input-phone>`);
+      return forms.renderFieldGroupHTML(el, `<input-phone 
+        [(value)]="${forms.refactorAttrName('this.data.' + el._name)}"
+        (onChange)="this.events.change.apply(this, arguments)"
+        [(isValid)]="${forms.refactorAttrName('this.fields.' + el._name)}.attributes.isValid"
+        [placeholder]="${forms.refactorAttrName('this.fields.' + el._name)}.placeholder"
+        name="${el._name}"
+        ${forms.generateAttributes(opt)}></input-phone>`);
     };
   }
 }
