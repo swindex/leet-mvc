@@ -1,7 +1,8 @@
 declare namespace State2Namespace{ 
 	class Listener{
 		index:number;
-		remove():boolean;
+    remove():boolean;
+    destroy():boolean;
 		onSet(callback:(data: T)=>void):Listener;
 		onError(callback:(error: E)=>void):Listener;
 		onStatus(callback:(isRunning: boolean)=>void):Listener;
@@ -12,14 +13,17 @@ declare namespace State2Namespace{
 		 */
 		newListener():{
 			index:number;
-			remove():boolean;
+      remove():boolean;
+      destroy():boolean;
+
 			/**
 			 * Add on data set Callback
 			 * @param callback 
 			 */
 			onSet(callback:(data: T)=>void):{
 				index:number;
-				remove():boolean;
+        remove():boolean;
+        destroy():boolean;
 				onSet(callback:(data: T)=>void):Listener;
 				onError(callback:(error: E)=>void):Listener;
 				onStatus(callback:(isRunning: boolean)=>void):Listener;
@@ -31,6 +35,7 @@ declare namespace State2Namespace{
 			onError(callback:(error: E)=>void):{
 				index:number;
 				remove():boolean;
+        destroy():boolean;
 				onSet(callback:(data: T)=>void):Listener;
 				onError(callback:(error: E)=>void):Listener;
 				onStatus(callback:(isRunning: boolean)=>void):Listener;
@@ -42,12 +47,14 @@ declare namespace State2Namespace{
 			onStatus(callback:(isRunning: boolean)=>void):{
 				index:number;
 				remove():boolean;
+        destroy():boolean;
 				onSet(callback:(data: T)=>void):Listener;
 				onError(callback:(error: E)=>void):Listener;
 				onStatus(callback:(isRunning: boolean)=>void):Listener;
 			};
 		}
 		remove(listener:Listener):boolean;
+    destroy():boolean;
 		setData(data:T);
 		setError(error:E);
 		setRunning(status: boolean);
