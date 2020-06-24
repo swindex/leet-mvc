@@ -26,6 +26,11 @@ export function State2(data){
     var i = index;
     var listener = {
       index:i,
+      destroy:function(){
+        removeIndex(i);
+        delete this.index;
+        delete this.remove;
+      },
       remove:function(){
         removeIndex(i);
         delete this.index;
@@ -167,6 +172,7 @@ export function State2(data){
     set data(data){
       setData(data);
     },
+    destroy: remove,
     remove: remove,
     setData: setData,
     setError: setError,

@@ -178,7 +178,7 @@ export class Analytics {
 	 * @param {string|number} eventName 
 	 * @param {any} eventValue 
 	 */
-  logEvent(eventName, eventValue = null) {
+  logEvent(eventName, eventValue = "") {
     //console.log("eventName",eventValue);
     if (eventName === null) {
       //if mapping is set to null then dont track
