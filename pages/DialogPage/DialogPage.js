@@ -147,8 +147,8 @@ export class DialogPage extends BasePage{
     this.render();
   }
 	
-  addHtml (value) {
-    this.controls.push({type:'html',value:value});
+  addHtml (value, attrs) {
+    this.controls.push({type:'html',value:value, attributes:attrs});
     this.render();
 		
     return this;

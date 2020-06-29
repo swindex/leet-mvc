@@ -679,7 +679,7 @@ ${el.icon ? `<i class="${el.icon}"></i>` : ''}
   * @param {FieldTemplate} el 
   */
   addHtml(el) {
-    var opt = Object.assign({}, { name: el._name, class: "html" }, {class: el.class}, { onclick: "this.onClick($event);" }, el.attributes);
+    var opt = Object.assign({}, { name: el._name, class: "html" }, { onclick: "this.onClick($event);" }, el.attributes);
     return `<div ${this.generateAttributes(opt)}>${(el.value != null ? el.value : "")}</div>`;
   }
   /**
