@@ -79,7 +79,7 @@ export var Prompt = function (prompt, onConfirm, title, value, validateRule, typ
  */
 export var Alert = function (prompt, onConfirm, title) {
   var p = Dialog(title);
-  p.addHtml(Text.escapeHTML(prompt, true));
+  p.addHtml(Text.escapeHTML(prompt, true), { class:"align-center" });
   p.addActionButton('Ok', onConfirm);
   //back navigation also means confirm!
   p.onBackNavigate = onConfirm;

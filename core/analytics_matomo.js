@@ -235,9 +235,11 @@ class Matomo {
     this.EventVar = {};
 
     this.UserVar = {
-      OS: device ? device.platform : null,
-      Model: device ? device.model : null,
+      OS: window.device ? window.device.platform : null,
+      Model: window.device ? window.device.model : null,
     };
+
+    console.log("Device:", window.device);
 
     this.ActionVar = {};
     this.ActionDimension = {};
@@ -282,6 +284,7 @@ class Matomo {
 
   setUserProperty(user_property, property_value) {
     this.UserVar[user_property] = property_value;
+    console.log(user_property,property_value);
   }
 
   setActionProperty(action_property, action_value) {

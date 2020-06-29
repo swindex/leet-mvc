@@ -107,6 +107,8 @@ export class PhoneInputComponent extends BaseComponent {
     RegisterComponent(PhoneInputComponent, 'input-phone');
     Forms.field_definitions.phone = (forms, el, parentPath) => {
       var opt = {};
+      if (!el.placeholder)
+        el.placeholder = "";
       Object.assign(opt, attributes, el.attributes);
       //custom elements will not emit 2 way binding events. so explicitly link onChange event with appropriate handler!
       return forms.renderFieldGroupHTML(el, `<input-phone 
