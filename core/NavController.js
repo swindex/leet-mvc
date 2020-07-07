@@ -419,6 +419,7 @@ export class NavController{
       window.requestAnimationFrame(()=> {
         this.setPageState(frame.page, 'isHidden');
         if (isDeleting) {
+          this.onDestroyPage(frame.name, frame.page );
           frame.page[isSkipUpdate] = true;
           frame.page.Nav = null;
           frame.page.destroy(true);
@@ -471,4 +472,13 @@ export class NavController{
 	 * @param {string} name 
 	 */
   onPageNavigateBack(name, pageObject) { }
+
+  /**
+   * 
+   * @param {*} name 
+   * @param {*} pageObject 
+   */
+  onDestroyPage(name, pageObject){
+
+  }
 }
