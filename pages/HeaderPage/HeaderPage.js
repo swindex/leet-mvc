@@ -38,7 +38,7 @@ export class HeaderPage extends BasePage{
 	 * ***Override***
 	 */
   onBackButtonClicked(){
-    this.destroy();
+    this.Nav.back();
   }
   /**
 	 * ***Override***

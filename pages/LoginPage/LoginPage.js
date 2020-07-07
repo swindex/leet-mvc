@@ -67,9 +67,16 @@ export class LoginPage extends HeaderPage {
     var h = DOM(this.page).height();
     var w = DOM(this.page).width();
     var logo = DOM(this.page).find('#logo');
+    var login = DOM(this.page).find('#login');
     var dc = DOM(this.page).find('.content');
+
+    if (h > this.i_height) {
+      this.i_height = h;
+      logo.height(h*0.30);
+      login.height(h);
+    }
 			
-    if (h < this.i_height && w === this.i_width){
+    if (h < this.i_height-300 /*&& w === this.i_width*/){
       //use debounce, so it does not fire too often
       this.debouncer1(()=>{
         //dc.animate({ 'margin-top': -logo.height() }, 500 );	
