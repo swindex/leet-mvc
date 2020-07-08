@@ -680,7 +680,7 @@ ${el.icon ? `<i class="${el.icon}"></i>` : ''}
   */
   addHtml(el) {
     var opt = Object.assign({}, { name: el._name, class: "html" }, { onclick: "this.onClick($event);" }, el.attributes);
-    return `<div ${this.generateAttributes(opt)}>${(el.value != null ? el.value : "")}</div>`;
+    return `<div ${this.generateAttributes(opt)}><div>${(el.value != null ? el.value : "")}</div></div>`;
   }
   /**
   * 

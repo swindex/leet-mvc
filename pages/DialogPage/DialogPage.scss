@@ -26,6 +26,12 @@
       //last fieldgroup has no margin
       margin-bottom: 0;
     }
+    .align-block-center {
+      display: flex;
+      >div{
+        margin: auto;
+      }
+    }
 	}
 	.backdrop {
 		opacity: 0;
