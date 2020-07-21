@@ -551,7 +551,7 @@ export function FormValidator(data, template, errors, options) {
         var title = f.title;
 
         if (!title || (isString(title) && title.length > 25)) {
-          title = "field";
+          title = "Field";
         }
 
         errmsg = errmsg.replace(':attribute', title);
@@ -697,80 +697,80 @@ export function FormValidator(data, template, errors, options) {
 }
 //default english messages. Rules for some of these are not yet implemented.
 FormValidator.messages = {
-  "accepted": "The :attribute must be accepted.",
-  "active_url": "The :attribute is not a valid URL.",
-  "after": "The :attribute must be a date after :date.",
-  "alpha": "The :attribute may only contain letters.",
-  "alpha_dash": "The :attribute may only contain letters, numbers, and dashes.",
-  "alpha_num": "The :attribute may only contain letters and numbers.",
-  "array": "The :attribute must be an array.",
-  "before": "The :attribute must be a date before :date.",
+  "accepted": ":attribute must be accepted.",
+  "active_url": ":attribute is not a valid URL.",
+  "after": ":attribute must be a date after :date.",
+  "alpha": ":attribute may only contain letters.",
+  "alpha_dash": ":attribute may only contain letters, numbers, and dashes.",
+  "alpha_num": ":attribute may only contain letters and numbers.",
+  "array": ":attribute must be an array.",
+  "before": ":attribute must be a date before :date.",
   "between": {
-    "number": "The :attribute must be between :min and :max.",
-    "numeric": "The :attribute must be between :min and :max.",
-    "file": "The :attribute must be between :min and :max kilobytes.",
-    "string": "The :attribute must be between :min and :max characters.",
-    "array": "The :attribute must have between :min and :max items."
+    "number": ":attribute must be between :min and :max.",
+    "numeric": ":attribute must be between :min and :max.",
+    "file": ":attribute must be between :min and :max kilobytes.",
+    "string": ":attribute must be between :min and :max characters.",
+    "array": ":attribute must have between :min and :max items."
   },
-  "boolean": "The :attribute must be true or false.",
-  "confirmed": "The :attribute confirmation does not match.",
-  "date": "The :attribute is not a valid date.",
-  "date_format": "The :attribute does not match the format :format.",
-  "different": "The :attribute and :other must be different.",
-  "digits": "The :attribute must be :digits digits.",
-  "digits_between": "The :attribute must be between :min and :max digits.",
-  "distinct": "The :attribute has a duplicate value.",
-  "email": "The :attribute must be a valid email address.",
+  "boolean": ":attribute must be true or false.",
+  "confirmed": ":attribute confirmation does not match.",
+  "date": ":attribute is not a valid date.",
+  "date_format": ":attribute does not match the format :format.",
+  "different": ":attribute and :other must be different.",
+  "digits": ":attribute must be :digits digits.",
+  "digits_between": ":attribute must be between :min and :max digits.",
+  "distinct": ":attribute has a duplicate value.",
+  "email": ":attribute must be a valid email address.",
   "exists": "The selected :attribute is invalid.",
-  "filled": "The :attribute is required.",
-  "image": "The :attribute must be an image.",
+  "filled": ":attribute is required.",
+  "image": ":attribute must be an image.",
   "in": "The selected :attribute is invalid.",
-  "in_array": "The :attribute does not exist in :other.",
-  "integer": "The :attribute must be an integer.",
-  "ip": "The :attribute must be a valid IP address.",
-  "json": "The :attribute must be a valid JSON string.",
+  "in_array": ":attribute does not exist in :other.",
+  "integer": ":attribute must be an integer.",
+  "ip": ":attribute must be a valid IP address.",
+  "json": ":attribute must be a valid JSON string.",
   "max": {
-    "number": "The :attribute may not be greater than :max.",
-    "numeric": "The :attribute may not be greater than :max.",
-    "file": "The :attribute may not be greater than :max kilobytes.",
-    "string": "The :attribute may not be greater than :max characters.",
-    "array": "The :attribute may not have more than :max items."
+    "number": ":attribute may not be greater than :max.",
+    "numeric": ":attribute may not be greater than :max.",
+    "file": ":attribute may not be greater than :max kilobytes.",
+    "string": ":attribute may not be greater than :max characters.",
+    "array": ":attribute may not have more than :max items."
   },
-  "mimes": "The :attribute must be a file of type: :values.",
+  "mimes": ":attribute must be a file of type: :values.",
   "min": {
-    "number": "The :attribute must be at least :min.",
-    "numeric": "The :attribute must be at least :min.",
-    "file": "The :attribute must be at least :min kilobytes.",
-    "string": "The :attribute must be at least :min characters.",
-    "array": "The :attribute must have at least :min items."
+    "number": ":attribute must be at least :min.",
+    "numeric": ":attribute must be at least :min.",
+    "file": ":attribute must be at least :min kilobytes.",
+    "string": ":attribute must be at least :min characters.",
+    "array": ":attribute must have at least :min items."
   },
   "not_in": "The selected :attribute is invalid.",
-  "number": "The :attribute must be a number.",
-  "numeric": "The :attribute must be a number.",
-  "present": "The :attribute must be present.",
-  "regex": "The :attribute is not valid. :result",
+  "number": ":attribute must be a number.",
+  "numeric": ":attribute must be a number.",
+  "present": ":attribute must be present.",
+  "regex": ":attribute is not valid. :result",
 
-  "required": "The :attribute is required.",
-  "required_if": "The :attribute is required when :other is :value.",
-  "required_unless": "The :attribute is required unless :other is in :values.",
-  "required_with": "The :attribute is required when :values is present.",
-  "required_with_all": "The :attribute is required when :values is present.",
-  "required_without": "The :attribute is required when :values is not present.",
-  "required_without_all": "The :attribute is required when none of :values are present.",
-  "same": "The :attribute and :other must match.",
+  "required": ":attribute is required.",
+  "required_if": ":attribute is required when :other is :value.",
+  "required_unless": ":attribute is required unless :other is in :values.",
+  "required_with": ":attribute is required when :values is present.",
+  "required_with_all": ":attribute is required when :values is present.",
+  "required_without": ":attribute is required when :values is not present.",
+  "required_without_all": ":attribute is required when none of :values are present.",
+  "same": ":attribute and :other must match.",
   "size": {
-    "number": "The :attribute must be :size.",
-    "numeric": "The :attribute must be :size.",
-    "file": "The :attribute must be :size kilobytes.",
-    "string": "The :attribute must be :size characters.",
-    "array": "The :attribute must contain :size items."
+    "number": ":attribute must be :size.",
+    "numeric": ":attribute must be :size.",
+    "file": ":attribute must be :size kilobytes.",
+    "string": ":attribute must be :size characters.",
+    "array": ":attribute must contain :size items."
   },
-  "string": "The :attribute must be a string.",
-  "timezone": "The :attribute must be a valid zone.",
-  "unique": "The :attribute has already been taken.",
-  "url": "The :attribute format is invalid.",
-  "isValid": "The :attribute is not invalid."
-  //"phone":"The :attribute format is invalid."
+  "string": ":attribute must be a string.",
+  "timezone": ":attribute must be a valid zone.",
+  "unique": ":attribute has already been taken.",
+  "url": ":attribute format is invalid.",
+  "isValid": ":attribute is not invalid."
+  //"phone":":attribute format is invalid."
 };
 
 /** @type {{[key:string]:function(any, 'string'|'array'|'numeric'|'select', string[], FormValidator, string):boolean}} */
