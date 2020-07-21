@@ -1,121 +1,128 @@
 @import '_variables';
-input[type=text], 
-input[type=email], 
-input[type=password], 
-input[type=number], 
-input[type=date], 
-input[type=tel], 
-select,
-select-multiple,
-.input
-{
-  box-sizing:border-box;
-  font-size: $size-f-input;
-  width:100%;
-  -webkit-border-radius:0; 
-  border-radius:0;
-	border: 1px solid #BBB;
+.fieldgroup {
+  input[type=text], 
+  input[type=email], 
+  input[type=password], 
+  input[type=number], 
+  input[type=date], 
+  input[type=tel], 
+  select,
+  select-multiple,
+  .input
+  {
+    box-sizing:border-box;
+    font-size: $size-f-input;
+    width:100%;
+    -webkit-border-radius:0; 
+    border-radius:0;
+    border: 1px solid #BBB;
 
-	-webkit-appearance: none;
+    -webkit-appearance: none;
 
-	background-position: 99% 50%;
-	background-repeat: no-repeat;
-	//height: $size-input-h-md;
-	background-size: $size-input-i-md;
-	background-color: transparent;
-	color: $color-input-fg;
-	&:focus{
-		outline:none;
-	}
-}
-.fieldgroup	div.icon{
-	position: absolute;
-	top: 0;
-	right: $margin-sm;
-	font-weight: bold;
-	font-size: $size-f-input;
-	pointer-events: none;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	
-	padding-left: inherit;
-	padding-right: inherit;
-	
-	&[onclick]{
-		pointer-events: all;
-	}
-}
+    background-position: 99% 50%;
+    background-repeat: no-repeat;
+    //height: $size-input-h-md;
+    background-size: $size-input-i-md;
+    background-color: transparent;
+    color: $color-input-fg;
+    &:focus{
+      outline:none;
+    }
+  }
+  div.icon{
+    position: absolute;
+    top: 0;
+    right: $margin-sm;
+    font-weight: bold;
+    font-size: $size-f-input;
+    pointer-events: none;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    padding-left: inherit;
+    padding-right: inherit;
+    
+    &[onclick]{
+      pointer-events: all;
+    }
+  }
 
-input[date]{
-    //background-image: url(../img/calendar_ico.png);
-}
-input[dateTime]{
-    //background-image: url(../img/calendar_ico.png);
-}
-input[time]{
-    //background-image: url(../img/clock_ico.png);
-}
+  input[date]{
+      //background-image: url(../img/calendar_ico.png);
+  }
+  input[dateTime]{
+      //background-image: url(../img/calendar_ico.png);
+  }
+  input[time]{
+      //background-image: url(../img/clock_ico.png);
+  }
 
-select,
-select-multiple{
-	background-image: url(../img/angle-down-solid.svg);
-	background-size: $size-input-i-sm;
-}
+  select,
+  select-multiple{
+    background-image: url(../img/angle-down-solid.svg);
+    background-size: $size-input-i-sm;
+  }
 
-input[type=button]:focus ,button:focus{
-	outline: none;
-}
+  input[type=button]:focus ,button:focus{
+    outline: none;
+  }
+
+  input[type=checkbox]{
+      -webkit-appearance: none;
+      border-radius:0;
+      border: 1px solid #BBB;
+    
+      box-sizing:border-box;
+      height: 25px;
+      width: 25px;
+      margin-left: 0;
+      vertical-align: middle;
+      margin-bottom: 5px;
+  }
+  input[type=checkbox]:checked{
+      background-image: url(../img/blue_dot.png);
+      background-position: 50% 50%;
+      background-size: cover;
+  }
+  textarea {
+      resize: none;
+      box-sizing: border-box;
+      font-size: 16px;
+      padding: 6px;
+      width: 100%;
+      height: 80px;
+      -webkit-border-radius:0; 
+      -webkit-appearance: none;
+      border-radius:0;
+      border: 1px solid #BBB;
+  }
+
+  @keyframes focus_blink {
+    50% {
+      border-bottom: $size-border solid $color-border;
+    }
+  }
+}  
 
 button[none],
 input[type=button][none]
 {
-	width: auto;
-	background-color: transparent;
-	border: none;
-	margin: 0;
-	padding: 0;
-	-webkit-appearance: none;
-	box-shadow: none;
+  width: auto;
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+  -webkit-appearance: none;
+  box-shadow: none;
 }
 
-
-
-input[type=checkbox]{
-    -webkit-appearance: none;
-    border-radius:0;
-    border: 1px solid #BBB;
-   
-    box-sizing:border-box;
-    height: 25px;
-    width: 25px;
-    margin-left: 0;
-    vertical-align: middle;
-    margin-bottom: 5px;
-}
-input[type=checkbox]:checked{
-    background-image: url(../img/blue_dot.png);
-    background-position: 50% 50%;
-    background-size: cover;
-}
-textarea {
-    resize: none;
-    box-sizing: border-box;
-    font-size: 16px;
-    padding: 6px;
-    width: 100%;
-    height: 80px;
-    -webkit-border-radius:0; 
-    -webkit-appearance: none;
-    border-radius:0;
-    border: 1px solid #BBB;
-}
-
-@keyframes focus_blink {
-	50% {
-		border-bottom: $size-border solid $color-border;
-	}
+button,
+input[type=button] {
+  &:focus{
+    outline:none;
+  }
 }
 .fieldgroup {
 	display: flex;

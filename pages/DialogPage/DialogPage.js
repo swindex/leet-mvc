@@ -53,7 +53,7 @@ export class DialogPage extends BasePage{
     this.content.updateTemplate(this.controls);
   }
 
-  addCheck(name, title, value, required, attrs) {
+  addCheck(name, title, value, required, attrs = null) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type:'checkbox', title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -62,7 +62,7 @@ export class DialogPage extends BasePage{
 			
   }
 
-  addSelect(name, title, value, required, items, attrs) {
+  addSelect(name, title, value, required, items, attrs=null) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "select", title: title, validateRule: valRule, items: items, attributes:attrs});
     this.data[name] = value;
@@ -71,7 +71,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 	
-  addInput(name, title, type, value, required, attrs) {
+  addInput(name, title, type, value, required, attrs=null) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: type, title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -80,7 +80,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addDate(name, title, value, required, attrs) {
+  addDate(name, title, value, required, attrs=null) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "date", title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -89,7 +89,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addDateTime(name, title, value, required, attrs) {
+  addDateTime(name, title, value, required, attrs = null) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "datetime", title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -98,7 +98,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addTime(name, title, value, required, attrs) {
+  addTime(name, title, value, required, attrs = null) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "time", title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -107,7 +107,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addTextArea(name, title, value, required, attrs) {
+  addTextArea(name, title, value, required, attrs = null) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "textarea", title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -116,24 +116,24 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addText (name, title, value, required, attrs) {
+  addText (name, title, value, required, attrs = null) {
     return this.addInput(name, title,"text", value, required, attrs);
   }
 
-  addLabel (title, value, attrs) {
+  addLabel (title, value, attrs = null) {
     this.controls.push({type:'label', title:title, value:value, attributes:attrs});
     this.render();
 		
     return this;
   }
-  addLink (name, title, value, attrs) {
+  addLink (name, title, value, attrs = null) {
     this.controls.push({type:'link', name:name, title:title, value:value, attributes:attrs});
     this.render();
 		
     return this;
   }
 
-  addPassword (name, title, value, required, attrs) {
+  addPassword (name, title, value, required, attrs = null) {
     return this.addInput(name, title,"password", value, required, attrs);
   }
 
@@ -147,7 +147,7 @@ export class DialogPage extends BasePage{
     this.render();
   }
 	
-  addHtml (value, attrs) {
+  addHtml (value, attrs = null) {
     this.controls.push({type:'html',value:value, attributes:attrs});
     this.render();
 		
