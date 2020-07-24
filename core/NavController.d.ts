@@ -1,12 +1,15 @@
+import { BasePage } from "leet-mvc/pages/BasePage";
+
 declare namespace NavControllerModule{
 	class PageFrame{
 		name: string;
 		element: JQuery<HTMLElement>;
-		page: any; 
+		page: BasePage; 
 	}
 
 	class NavController  {
-		remove(PageInstance: any);
+    isLoadingRoot: boolean;
+		remove(PageInstance: BasePage);
 		removeAll(): void;
 		back():void;
 		setContainer(container: HTMLElement|DocumentFragment, listenToBackButton?: boolean): void;
@@ -18,10 +21,10 @@ declare namespace NavControllerModule{
     push<T>(PageObject: T): T;
     
     pushInto<T>(container: HTMLElement, PageClass: { new (x, ...args): T }, ...args): T;
-		onPageNavigateTo(pageName: string, pageObject: any): void;
-    onPageNavigateBack(pageName: string, pageObject: any): void;
-    onDestroyPage(pageName: string, pageObject: any): void;
-		onPageCreated(PageInstance: any):void;
+		onPageNavigateTo(pageName: string, pageObject: BasePage): void;
+    onPageNavigateBack(pageName: string, pageObject: BasePage): void;
+    onDestroyPage(pageName: string, pageObject: BasePage, frameIndex: number): void;
+		onPageCreated(PageInstance: BasePage):void;
 		onRootPageBackPressed(): void;
 		getPages(): PageFrame[];
 		destroy():void;
