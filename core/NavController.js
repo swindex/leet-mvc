@@ -18,6 +18,8 @@ export class NavController{
 
     this.windowSize = { width: null, height: null };
 
+    this.isLoadingRoot=false;
+
     this.backTimeout = 300;
     this.backTimeoutRunning = false;
 
@@ -69,10 +71,12 @@ export class NavController{
 	 * @return {BasePage|Promise}
 	 */
   setRoot(pageConstructor, parameters) {
+    this.isLoadingRoot=true
     this.removeAllFrames();
     //self.onPageNavigateTo(pageConstructor.name);
     var page = this._createPage(this.pageContainer, pageConstructor, argumentsToArray(arguments, 1));
     //self.onPageCreated(page);
+    this.isLoadingRoot=false
     return page;
   };
   /**
@@ -282,6 +286,8 @@ export class NavController{
 
     tryCall(frame.page, frame.page.onLeave);
     tryCall(frame.page, frame.page._onDestroy);
+    this.onDestroyPage(frame.name, frame.page, frameIndex);
+
     this.hidePageElement(frame, true);
     //history.pop();		
 
@@ -419,7 +425,6 @@ export class NavController{
       window.requestAnimationFrame(()=> {
         this.setPageState(frame.page, 'isHidden');
         if (isDeleting) {
-          this.onDestroyPage(frame.name, frame.page );
           frame.page[isSkipUpdate] = true;
           frame.page.Nav = null;
           frame.page.destroy(true);
@@ -477,8 +482,9 @@ export class NavController{
    * 
    * @param {*} name 
    * @param {*} pageObject 
+   * @param {number} frameIndex
    */
-  onDestroyPage(name, pageObject){
+  onDestroyPage(name, pageObject, frameIndex){
 
   }
 }

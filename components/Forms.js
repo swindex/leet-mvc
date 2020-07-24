@@ -367,7 +367,7 @@ ${childrenHTML}
 `;
   }
 
-  renderFieldGroupHTML(el, elHTML, noTitle, noErrorHint) {
+  renderFieldGroupHTML(el, elHTML, noTitle = false, noErrorHint = false) {
     var isRequired = el.validateRule ? el.validateRule.includes('required') : null;
 
     return `

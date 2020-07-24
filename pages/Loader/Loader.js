@@ -113,7 +113,8 @@ export function Loader (){
       if (self._loaderIsTimedOut) 
         return false;
 
-      self.loaderInstance.destroy();
+      if (self.loaderInstance)  
+        self.loaderInstance.destroy();
       self.loaderInstance = null;
 
 
