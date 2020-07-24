@@ -66,6 +66,15 @@ export class MenuPage extends BasePage {
     this.destroy();
   }
 
+  /** @override */
+  onLogoClicked($event) {
+    
+  }
+  _onLogoClicked($event) {
+    this.destroy();
+    this.onLogoClicked($event);
+  }
+
   get template (){
     return this.extendTemplate(super.template, template);
   }
@@ -77,7 +86,7 @@ var template = `
 <div class="backdrop" onclick="this.onBackdropClicked()"></div>
 <div class="menu-body scroll">
 	<div class="menu-head">
-		<div id="logo" [innerhtml] = "this.logo"></div>
+		<div id="logo" [innerhtml] = "this.logo" onclick="this._onLogoClicked($event)"></div>
 		<div id="slogan" [innerhtml] = "this.slogan"></div> 
 	</div>
 	<ul class="menu-tree">

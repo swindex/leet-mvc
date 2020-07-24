@@ -61,7 +61,8 @@ div[page].page-Menu{
 				height: 7rem;
 				background-size: contain;
 				background-position: 50% 50%;
-				background-repeat: no-repeat;
+        background-repeat: no-repeat;
+        cursor: pointer;
 			}
 			#slogan{
 				text-align: center;
