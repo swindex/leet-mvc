@@ -429,7 +429,13 @@ select-multiple{
 					border-radius: 0;
 				}
 			}
-		}
+    }
+    
+    i[onclick]{
+      color: #0874B7;
+      margin-left: $margin-sm;
+      cursor: pointer;
+    }
 		
 	}
 	&.required {

@@ -541,11 +541,12 @@ ${el.icon ? `<i class="${el.icon}"></i>` : ''}
     Object.assign(opt, override, el.attributes);
 
     var elems = `<div class="fieldrow">`;
-    Objects.forEach(el.items, item => {
+    Objects.forEach(el.items, (item, itemIndex )=> {
       elems += `<label class="toggle">
 <input bind = "${this.refactorAttrName('this.data.' + el._name)}" format="${el.dataType ? el.dataType : ''}" value = "${item.value !== null ? item.value : ''}" ${this.generateAttributes(opt)} />
 <span class="radio round"></span>
 ${item.title}
+${item.info ? this.addItemInfo(el, itemIndex) : ''}
 </label>
 `;
     });
@@ -628,8 +629,23 @@ ${item.title}
   */
   addInfo(el) {
     //if (!el.title) return '';
-    return `<i class="fas fa-question-circle" onclick="this.showInfoText('${el._name}')"></i>`;
+    return `<i class="fas fa-question-circle" onclick="this.stopEvent($event);this.showInfoText('${el._name}')"></i>`;
   }
+
+  /**
+  * 
+  * @param {FieldTemplate} el 
+  */
+  addItemInfo(el, itemIndex) {
+    //if (!el.title) return '';
+    return `<i class="fas fa-question-circle" onclick="this.stopEvent($event);this.showInfoText('${el._name}','${itemIndex}')"></i>`;
+  }
+
+  stopEvent($event){
+    $event.stopPropagation();
+    $event.preventDefault();
+  }
+
   /**
   * 
   * @param {FieldTemplate} el 
@@ -638,15 +654,41 @@ ${item.title}
     return (`<div class="hint" [class]="this.getError('${el._name}') ? 'error' : ''">{{ this.getError('${el._name}') || '${el.hint ? el.hint : ''}' }}</div>`);
   }
 
-  showInfoText(name) {
-    if (isObject(this.fields[name].info)) {
-      Alert(this.fields[name].info.text, this.fields[name].info.callback, this.fields[name].info.title);
-    } else if (isString(this.fields[name].info)) {
-      Alert(this.fields[name].info,null, this.fields[name].title);
+  showInfoText(name, itemIndex = null) {
+    var title = "";
+    var text = "";
+    var callback = null;
+
+    if (itemIndex !== null) {
+      if (isObject(this.fields[name].items[itemIndex].info)) {
+        text = this.fields[name].items[itemIndex].info.text
+        callback = this.fields[name].items[itemIndex].info.callback
+        title = this.fields[name].items[itemIndex].info.title;
+      } else if (isString(this.fields[name].items[itemIndex].info)) {
+        text = this.fields[name].items[itemIndex].info
+        title = this.fields[name].items[itemIndex].title;
+      } else {
+        console.error(`Forms.fields['${name}'].info value is not supported`, this.fields[name].items[itemIndex].info);
+        return;
+      }  
     } else {
-      console.error(`Forms.fields['${name}'].info value is not supported`, this.fields[name].info);
+      if (isObject(this.fields[name].info)) {
+        text = this.fields[name].info.text
+        callback = this.fields[name].info.callback
+        title = this.fields[name].info.title;
+      } else if (isString(this.fields[name].info)) {
+        text = this.fields[name].info
+        title = this.fields[name].title;
+      } else {
+        console.error(`Forms.fields['${name}'].info value is not supported`, this.fields[name].info);
+        return;
+      }
     }
+
+    Alert(text, callback, title);
+
   }
+
 
   /**
   * Split form name from property name 
