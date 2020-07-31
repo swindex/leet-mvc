@@ -1,22 +1,32 @@
+import { BaseComponent } from "leet-mvc/components/BaseComponent";
 
 interface FieldTemplate{
-	name:string;
+	name?:string;
 	_name?: string; //internal
 	title?:string;
-	value?:string|number;
-	type: string;
+	value?:any;
+  type?: string;
+  class?: string;
 	placeholder?:string;
 	validateRule?:string;
 	displayRule?:string;
 	setField?:string;
-	items?:FieldTemplate[];
+	items?:FieldTemplate[]|SelectOption[];
 	dataType?:string;
 	attributes?:FieldData;
 	unit?:string;
   icon?:string;
   dynamicItems?:any;
   ownItems?:FieldTemplate[]; //custom items that are not processed by the validator and are passed into the created component
-  info:{title:string,text:string}|string
+  info?:{title:string,text:string}|string;
+  isLoading?: boolean; //mark field as waiting for dynamic data
+  context?: any; //Component fields can have context property referring to the Component it self
+}
+
+interface SelectOption {
+  value: string|number|boolean,
+  title: string,
+  description: string
 }
 
 interface GenFormData{

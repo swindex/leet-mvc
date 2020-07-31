@@ -6,7 +6,6 @@ declare namespace InjectorModule{
 		Nav: new NavController,
 		/**
 		 * Return Injector 
-		 * @param template - Injection template used for intelliSense 
 		 */
 		implement<T>(template: T): T;
 	};
