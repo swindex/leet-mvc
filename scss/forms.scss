@@ -511,3 +511,23 @@ button{
 		color: $color-link !important;
 	}
 }
+
+
+@keyframes moving-gradient {
+  0% { background-position: left bottom; }
+  100% { background-position: right bottom; }
+}
+
+.fieldgroup.isLoading {
+  background: -webkit-linear-gradient(
+      left,
+      rgba(255, 255, 255, 0) 30%,
+      #89c8fb 100%
+  ) repeat;
+  
+  background-size: 50% 100%;
+  animation-name: moving-gradient;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}

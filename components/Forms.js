@@ -422,6 +422,11 @@ ${(noErrorHint ? '' : this.addErrorHint(el))}
     if (this.fields[_name] && this.fields[_name].attributes && this.fields[_name].attributes.active) {
       classnames.push('active');
     }
+
+    if (this.fields[_name] && this.fields[_name].isLoading ) {
+      classnames.push('isLoading');
+    }
+
     return classnames.join(' ');
   }
 
@@ -701,6 +706,7 @@ ${item.info ? this.addItemInfo(el, itemIndex) : ''}
       return `['${b}']`;
     });
   }
+  
   /**
   * 
   * @param {FieldTemplate} el 

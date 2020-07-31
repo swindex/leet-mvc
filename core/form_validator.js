@@ -45,6 +45,7 @@ export function FormValidator(data, template, errors, options) {
     return isValid;
   });
 
+  /** @type {{[key:string]:FieldTemplate}} */
   var fields = this.fields = FormWalker.set_names(_template);
 
   /*Objects.forEach(fields, (_, key)=> {
@@ -96,7 +97,7 @@ export function FormValidator(data, template, errors, options) {
   function getVisibleData() {
     var obj = {};
 
-    Objects.walk(template, function (el) {
+    /*Objects.walk(template, function (el) {
       if (el && el._name)
         if (!el.attributes || (!el.attributes.hidden && el.attributes.data !== false)) {
           if (el.name && (el.type != "form" && el.type != "label" && el.type != "link" && el.type != "button")){
@@ -108,7 +109,14 @@ export function FormValidator(data, template, errors, options) {
           //This element is hidden. Do not include its possible children!
           return false;
         }
-    });
+    });*/
+
+    Objects.forEach(fields, (field, fieldName)=>{
+      if (field.name && (!field.attributes || !field.attributes.hidden )) {
+        var value = Objects.getPropertyByPath(data, field._name);
+        Objects.setPropertyByPath(obj, field._name, value);
+      }
+    })
 
     return obj;
   }
@@ -405,26 +413,42 @@ export function FormValidator(data, template, errors, options) {
         e += validate_visibility(el);
       });
     } else if (isObject(obj)) {
-      var visible = true;
+      var hidden = false;
       if (obj.displayRule) {
         //prepField(obj._name);
-        visible = is_field_visible(obj);
-        if (!visible) {
-          //only reset data and error values if field name is not yet hidden
-          if (empty(fields[obj._name].attributes.hidden)) {
-            setValue(_errors, obj._name, null);
-          }
-          fields[obj._name].attributes.hidden = true;
-        } else {
-          delete fields[obj._name].attributes.hidden;
-        }
+        hidden = !is_field_visible(obj);
+        
+        setElementHidden(obj, hidden);
       }
-      if (visible && obj.items) {
+      if (!hidden && obj.items) {
         e += validate_visibility(obj.items);
       }
     }
-
     return e;
+  }
+
+  /**
+   * Make children invisible.
+   * @param {FieldTemplate} obj 
+   * @param {boolean} value 
+   */
+  function setElementHidden(obj, value) {
+    if (obj._name && fields[obj._name] && fields[obj._name].attributes){
+      //if (!fields[obj._name].attributes) fields[obj._name].attributes = {}
+   
+      if (value){
+        if (empty(fields[obj._name].attributes.hidden)) {
+          setValue(_errors, obj._name, null);
+        }
+        fields[obj._name].attributes.hidden = true;
+      } else
+        delete fields[obj._name].attributes.hidden;  
+    }
+    if (obj && obj.items) {
+      Objects.forEach(obj.items, (el) => {
+        setElementHidden(el, value);
+      });
+    }
   }
 
   function prepField(name) {
@@ -976,6 +1000,14 @@ export const FormWalker = {
     var keyed = {};
     var index = 1;
 
+    function combinePath(prev, next){
+      var ret = [];
+      if (prev) ret.push(prev)
+      if (next) ret.push(next)
+  
+      return ret.join('.');
+    }
+    
     function set_names_int(obj, path) {
       var hasSet = false;
       if (!path) {
@@ -1029,7 +1061,7 @@ export const FormWalker = {
             });
           }
         } else if (obj.type && obj.items) {
-          if (set_names_int(obj.items, obj.name)) {
+          if (set_names_int(obj.items, combinePath(path, obj.name))) {
             hasSet = true;
           }
         }
@@ -1040,5 +1072,19 @@ export const FormWalker = {
     set_names_int(obj);
     obj[dynamicIndexSymbol] = index;
     return keyed;
-  }
+  },
+
+  /**
+	 * Walk object calling callback on every node
+	 * @param {object} obj1 
+	 */
+  getVibleData(obj1) {
+    if (isObject(obj1) && callback(obj1, i) !== false) {
+      for (var i in obj1) {
+        if (obj1.hasOwnProperty(i) && isObject(obj1[i])) {
+          Objects.walk(obj1[i], callback);
+        }
+      }
+    }
+  },
 };
