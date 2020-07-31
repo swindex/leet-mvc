@@ -497,7 +497,7 @@ ${el.icon ? `<i class="${el.icon}"></i>` : ''}
   */
   addPassword(el, override) {
 
-    var opt = { name: el._name, autocorrect: "off", autocapitalize: "off" };
+    var opt = { name: el._name, autocorrect: "off", autocapitalize: "off", placeholder: el.placeholder };
 
     Object.assign(opt, override, el.attributes);
     this.types[el._name] = "password";
