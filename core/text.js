@@ -14,6 +14,15 @@ export var Text = {
   },
 
   /**
+   * Safely convert to string. Null or undefined convert to an empty string
+   * @param {any} val 
+   */
+  toString(val){
+    if (val == null) val = "";
+    return String(val);
+  },
+
+  /**
 	 * Format phone number while typing
 	 * @param {string} text - phone number to format
 	 * @param {object} [mask] - default: { 0: '(', 3: ') ', 6: ' - ', 10: ' x ' };
