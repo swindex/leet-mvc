@@ -890,9 +890,9 @@ FormValidator.rules = {
       chVal = value;
     }
 
-    return conditions.indexOf(chVal) >= 0;
-
-
+    
+    
+    return conditions.indexOf(Text.toString(chVal).toLowerCase()) >= 0;
   },
   max(value, type, conditions, validator) {
     var otherValue;
