@@ -570,7 +570,7 @@ export function FormValidator(data, template, errors, options) {
       var name = f._name;
       var dValue = getValue(_data, name);
       //only validate fields that are either required, or not empty
-      if (!empty(dValue) || rules.indexOf('accepted') >= 0 || rules.indexOf('required') >= 0 || rr[0] === 'required_if' || rr[0] === 'true_if' || rr[0] === 'true_if_not') {
+      if (!empty(dValue) || rules.indexOf('accepted') >= 0 || rules.indexOf('required') >= 0 || rr[0] === 'required' || rr[0] === 'required_if' || rr[0] === 'true_if' || rr[0] === 'true_if_not') {
 
         var title = f.title;
 
@@ -636,7 +636,15 @@ export function FormValidator(data, template, errors, options) {
         var result = validate_isfail(name, rr[0], type, conditions_arr);
 
         if (result) {
-          var err = result === true ? errmsg : errmsg.replace(':result', result);
+          if (result === true) {
+            var err = errmsg
+          } else {
+            if (errmsg.indexOf(':result')>=0){
+              var err = errmsg.replace(':result', result);
+            } else {
+              var err = result;
+            }
+          }
           return err;
         }
       }
@@ -806,19 +814,21 @@ FormValidator.rules = {
     return value !== "" && value != null && value != false;
   },
   required(value, type, conditions, validator, name) {
+    var msg = conditions[0] || false;
     if (type == "select") {
-      return value !== null;
+      return value !== null ? true : msg;
     }
     if (type == "boolean") {
-      return value !== null && value !== undefined;
+      return (value !== null && value !== undefined) ? true : msg;
     }
     if (type == "file") {
-      return !empty(value) && !empty(value.name);
+      return (!empty(value) && !empty(value.name)) ? true : msg;
     }
     if (validator.fields[name].attributes.isValid != undefined) {
       //return validator.fields[name].attributes.isValid
     }
-    return value !== "" && value != null && value != false;
+    
+    return (value !== "" && value != null && value != false) ? true : msg;
   },
   filled(value, type, conditions, validator) {
     return FormValidator.rules.required(value, type, conditions, validator);
