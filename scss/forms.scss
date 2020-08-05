@@ -252,7 +252,8 @@ input[type=button] {
 		position: relative;
 		display: flex;
 		align-items: center;
-		flex-wrap: wrap; //allow 100% wide children to form column
+    flex-wrap: wrap; //allow 100% wide children to form column
+    overflow: hidden;
 		&.field >* {
 			//padding-bottom: $margin-md;
 		}
@@ -307,7 +308,12 @@ select-multiple{
 	.input{
 		overflow: hidden;
 		white-space: nowrap;
-		text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    height: auto;
+    line-height: inherit;
+    span{
+
+    }
 		//background-image: url(../img/file_ico.png);
 		input[type=file]{
 			width: 0.1px;
@@ -318,6 +324,9 @@ select-multiple{
 			z-index: -1;
 		}	
 	}
+}
+.fieldgroup.file {
+  overflow: hidden;
 }
 
 //special case: label contains inpuit chechbox

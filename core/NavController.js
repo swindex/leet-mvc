@@ -34,25 +34,28 @@ export class NavController{
     Objects.bindMethods(this);
 
     //add ONE listener that will fire onResize on all pages;
-    DOM(window).addEventListener('resize', (ev)=> {
-      this.windowSize.width = window.innerWidth;
-      this.windowSize.height = window.innerHeight;
-
-      for (var i = 0; i < this.stack.length; i++) {
-        //recalcContentHeight(this.stack[i].element);
-        tryCall(this.stack[i].page, this.stack[i].page.resize, this.windowSize);
-      }
-    });
+    DOM(window).addEventListener('resize', this.windowResizeHandler.bind(this));
     
-    DOM(document).addEventListener("backbutton", (e) => {
-      var cf = this.currentFrame();
-      if (cf && tryCall(cf.page, cf.page.onBackNavigate) !== false && tryCall(cf.page, cf.page.onBeforeDestroy) !== false && this.back() === null) {
-        this.onRootPageBackPressed(cf.name);
-      }
-    });
+    DOM(document).addEventListener("backbutton", this.documentBackButtonHandler.bind(this));
 
 
   }
+  windowResizeHandler(ev){
+    this.windowSize.width = window.innerWidth;
+    this.windowSize.height = window.innerHeight;
+
+    for (var i = 0; i < this.stack.length; i++) {
+      //recalcContentHeight(this.stack[i].element);
+      tryCall(this.stack[i].page, this.stack[i].page.resize, this.windowSize);
+    }
+  }
+  documentBackButtonHandler(){
+    var cf = this.currentFrame();
+    if (cf && tryCall(cf.page, cf.page.onBackNavigate) !== false && tryCall(cf.page, cf.page.onBeforeDestroy) !== false && this.back() === null) {
+      this.onRootPageBackPressed(cf.name);
+    }
+  }
+
   /**
 	 * @param {HTMLElement} container
 	 */
@@ -448,8 +451,8 @@ export class NavController{
 	 * Delete Event handlers that were created by the Nav instance
 	 */
   destroy() {
-    DOM(window).removeEventListener('resize'/*,windowResizeHandler*/);
-    DOM(document).removeEventListener('backbutton'/*,documentBackButtonHandler*/);
+    DOM(window).removeEventListener('resize', this.windowResizeHandler);
+    DOM(document).removeEventListener('backbutton', this.documentBackButtonHandler);
   }
 
   /**
