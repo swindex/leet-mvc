@@ -1,6 +1,8 @@
 import { Injector } from "./Injector";
 import { isString } from "util";
 import { argumentsToArray } from "./helpers";
+import { Text } from "leet-mvc/core/text";
+import { Objects } from "leet-mvc/core/Objects";
 
 const Inject = Injector;
 
@@ -25,10 +27,15 @@ export var ReplaceValues = function(LangConstText, replaceValues){
  * @return {string}
  */
 export function Translate(keyOrText, replaceValues){
+  
   if (!Inject['LNG'])
     return keyOrText;
 
-  var ret = Inject['LNG'][keyOrText] ? Inject['LNG'][keyOrText] : keyOrText;
+  if (Array.isArray(keyOrText)) {
+    var ret = Objects.getPropertyByPath(Inject['LNG'], keyOrText)
+  } else { 
+    var ret = Inject['LNG'][keyOrText] ? Inject['LNG'][keyOrText] : keyOrText;
+  }
   if (replaceValues && isString(ret)){
     var args = argumentsToArray(arguments);
     args[0] = ret;
