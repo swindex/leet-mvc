@@ -1,3 +1,5 @@
+@import "../../scss/_variables.scss";
+
 #page-CalendarPage{
   .popup{
     width: 90%;
@@ -147,17 +149,39 @@
 	}
 	.month-buttons{
 		display: flex;
-		background-color: aliceblue;
-		&>div{
+    background-color: aliceblue;
+    padding: .5em;
+    button {
+      font-size: 1.15em;
+      color: $color-action;
+      &:active {
+        color: $color-action-active;
+      }
+    }
+		.arrow{
 			margin:auto;
-			padding:1em;
 			&:first-child{
 				margin-left: 0;
 			}
 			&:last-child{
 				margin-right: 0;
 			}
-		}
+    }
+    .month-year{
+      display: flex;
+    }
+    .month,
+    .year {
+      display: inline-block;
+      border: 1px solid $color-action;
+      padding: $margin-sm $margin-md;
+      margin: 0 $margin-sm;
+      border-radius: $margin-md;
+      &:active {
+        color: $color-action-active;
+        border: 1px solid $color-action-active;
+      }
+    }
 	}
 
 	#clock{

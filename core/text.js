@@ -23,6 +23,14 @@ export var Text = {
   },
 
   /**
+   * Safely lower-case a string
+   * @param {any} val 
+   */
+  toLowerCase(val){
+    return Text.toString(val).toLowerCase();
+  },
+
+  /**
 	 * Format phone number while typing
 	 * @param {string} text - phone number to format
 	 * @param {object} [mask] - default: { 0: '(', 3: ') ', 6: ' - ', 10: ' x ' };

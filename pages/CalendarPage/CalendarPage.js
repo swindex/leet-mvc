@@ -341,16 +341,16 @@ CalendarPage.content = `
     <div class="tabs">
       <div id="calendar" [show]="this._showCalendar">
         <div class="month-buttons">
-          <div onclick="this.onPrevMonthClicked()">
+          <button none class="arrow" onclick="this.onPrevMonthClicked()">
             <i class="fas fa-chevron-left"></i>
-          </div>
-          <div>
-            <b bind="this._d_monthName" onclick="this.onMonthClicked()"></b>
-            <b bind="this._d_year" onclick="this.onYearClicked()"></b>
+          </button>
+          <div class="month-year">
+            <button none class="month" bind="this._d_monthName" onclick="this.onMonthClicked()"></button>
+            <button none class="year" bind="this._d_year" onclick="this.onYearClicked()"></button>
           </div>	
-          <div onclick="this.onNextMonthClicked()">
+          <button none class="arrow" onclick="this.onNextMonthClicked()">
             <i class="fas fa-chevron-right"></i>
-          </div>	
+          </button>	
         </div>
         <div class="calendar">
           <table>
