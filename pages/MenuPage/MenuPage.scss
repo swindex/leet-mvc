@@ -51,14 +51,14 @@ div[page].page-Menu{
 			border-radius: 1px;
 			background-color: #fff;
 			color: #11497f;
-			font-size: 1.75rem;
-			padding: 5rem 1rem;
+			font-size: 17px;
+			padding:50px 10px;
 			#logo{  
 				display: flex;
 				justify-content: center;
-				//margin-bottom: 2rem;
+				//margin-bottom:20px;
 				//background-image: url(../../img/logo/NAS_logoLarge.png);
-				height: 7rem;
+				height:70px;
 				background-size: contain;
 				background-position: 50% 50%;
         background-repeat: no-repeat;
@@ -97,7 +97,7 @@ div[page].page-Menu{
 				//font-family: OSbold!important;
 				//text-transform: uppercase;
 				cursor: pointer;
-				padding: 1.5rem 1rem;
+				padding: 15px 10px;
 				color: #e9e9e9;
 				border-bottom: 1px solid rgba(100, 100, 100, 0.5);
 				i{

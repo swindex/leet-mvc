@@ -75,20 +75,20 @@
 			max-width: 325px;
 			margin-left: auto;
 			margin-right: auto;
-			padding-bottom: 3rem;
-			padding-top: 5rem
+			padding-bottom:30px;
+			padding-top:50px
 		}
 		.fieldgroup {
 			margin-bottom: $margin-xl;
 			
 			&.has-error{
-				padding-top: 2rem;
-				margin-top: 0.5rem;
+				padding-top:20px;
+				margin-top: 5px;
 			}
 			
 			label {
 				color: #f3f3f3;
-				padding: 0 0rem;
+				padding: 0;
 				width: 100%;
 				font-weight: normal;
 				font-size: 14px;
@@ -117,9 +117,9 @@
 				color: white;
 				position: absolute;
 				background-color: $color-bg-error;
-				top: -1rem;
+				top: -10px;
 				right: 0;
-				padding: .4rem .5rem;
+				padding: 4px 5px;
 				font-weight: bold;
 				z-index: 10;
 
@@ -157,7 +157,7 @@
 			border: 1px solid #112f5f;
 			border-radius:5px;
 			font-family:"Open Sans", sans-serif; font-weight: bold;
-			font-size: 1.6rem;
+			font-size: 16px;
 			width:100%;
 			cursor:pointer;
 			box-shadow: none;

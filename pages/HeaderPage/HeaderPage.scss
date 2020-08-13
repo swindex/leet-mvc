@@ -55,7 +55,7 @@
 				background-color: rgba(128, 128, 128, 0.75);
 			}
 			i {
-				font-size: 2.8rem;
+				font-size: 28px;
 				width: 1em;
 				height: 1em;
 			}
@@ -72,7 +72,7 @@
 			box-sizing: border-box;
 			color: $top-bar-title;
 			//cursor: pointer;
-			font-size: 1.6rem;
+			font-size: 16px;
 			font-weight: bold;
 			text-align: center;
 			text-transform: uppercase;
@@ -80,12 +80,12 @@
 			right: 0;
 			top:0;
 			bottom:0;
-			padding: 1rem;
+			padding:10px;
 		}
 		.logo{
 			margin: $margin-md 0;
 			//background-image: url(../../img/svg/cnx-logo.svg);
-			background-size: 17rem;
+			background-size: 170px;
 			background-repeat: no-repeat;
 			background-position: 50%;
 		}
@@ -94,7 +94,7 @@
 	>.footer {
 		display: block;
 		background-color: $color-top-bar;
-		height: 5.5rem;
+		height: 55px;
 		max-width: none;
 		width: 100%;
 	
@@ -104,14 +104,14 @@
 		box-shadow: 0px 2px 13px black;
 		z-index: 1;
 		i {
-			font-size: 1.5rem;
+			font-size: 15px;
 		}
 		.judith {
-			font-size: 1rem;
+			font-size:10px;
 			color: white;
 			padding: 0;
-			line-height: 1.1rem;
-			max-height: 2.2rem;
+			line-height: 11px;
+			max-height: 22px;
 			overflow: hidden;
 		}
 	
@@ -120,7 +120,7 @@
 			display: flex;
 			flex-direction: row;
 			justify-content: space-around;
-			font-size: 1rem;
+			font-size:10px;
 			padding: 0 $margin-sm;
 		}
 		li {
@@ -130,8 +130,8 @@
 			text-align: center;
 			flex: 1;
 			margin: 0 $margin-xs;
-			font-size: 1rem;
-			height: 5.5rem;
+			font-size:10px;
+			height: 55px;
 			justify-content: center;
 			span{ //make sure we show only 2 lines of overflow-break happens
 				height: 2.5em;
