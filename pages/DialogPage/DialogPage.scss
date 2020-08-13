@@ -62,8 +62,8 @@
 	.title{
 		font-weight: bold;
 		border-bottom: 1px solid #e7e7e7;
-	}
-
+  }
+    
 	.popup{
 		background-color: #fff;
 		right: 1rem;
@@ -71,7 +71,6 @@
 		margin-left: auto;
 		margin-right: auto;
 		min-width: 275px;
-	  //  width: 90%;
 		max-width: 550px;
 		border-radius: 10px;
 		overflow: hidden;
@@ -110,5 +109,11 @@
 				}
 			}
 		}
-	}
+  }
+  //optional style overrides
+  &.large{
+    .popup {
+      width: 100%;
+    }
+  }
 }
