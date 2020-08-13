@@ -4,8 +4,8 @@
 
 	.items{
 		background-color: #fff;
-		right: 1rem;
-		left: 1rem;
+		right:10px;
+		left:10px;
 		margin-left: auto;
 		margin-right: auto;
 		min-width: 275px;
@@ -13,8 +13,8 @@
 			box-sizing: border-box;
 			text-align: center;
 			width: 100%;
-			padding: 1rem 2rem;
-			font-size: 1.6rem;
+			padding:10px 20px;
+			font-size: 16px;
 			color: #054877;
 		}
 		.call-buttons{
@@ -22,15 +22,15 @@
 			justify-content: center;
 			a{
 				text-align: center;
-				margin: 1rem;
+				margin:10px;
 				text-decoration: none;
-				font-size: 2rem;
+				font-size:20px;
 				span.icon{
 					display: block;
-					width: 9rem;
-					height: 8rem;
+					width:90px;
+					height:80px;
 					background-size: contain;
-					font-size: 6rem;
+					font-size:60px;
 					color: #4CAF50;
 				}
 				span.text{

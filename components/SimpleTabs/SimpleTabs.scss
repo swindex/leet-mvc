@@ -24,7 +24,7 @@
 		margin: 5px 0px; 
 		font-size: 14px;
 	
-		// width: 30rem;
+		// width: 300px;
 		display: flex;
 		flex: 1;
 		flex-direction: column;
@@ -33,15 +33,15 @@
 
 		i {
 			color: $color-tabbutton-fg;
-			font-size: 2rem;
+			font-size:20px;
 			width: auto;
 		}
 		span {
 			color: $color-tabbutton-fg;
-			font-size: 1rem;
+			font-size:10px;
 			height: 50%;
-			line-height: 1rem;
-			padding-top: 0.2rem;
+			line-height:10px;
+			padding-top: 2px;
 		}
 		div.counter{
 			background-color: red;
