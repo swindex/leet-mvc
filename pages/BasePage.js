@@ -219,12 +219,16 @@ export class BasePage extends ChangeWatcher{
     return super_template.replace('<!--child-template-->', child_template );
   }
 
+  getClassName(){
+    return [this.className, ...this.classNames ].join(' ');
+  }
+
   /**
 	 * ***Readonly*** property that returns the template string
 	 *   You can extend base template by returning this.extendTemplate(super.template,'child template string');
 	 */
   get template (){
-    return `<div page [class]="this.className" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}"><!--child-template--></div>`;
+    return `<div page [class]="this.getClassName()" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}"><!--child-template--></div>`;
   }
 }
 BasePage.visibleParent = null;

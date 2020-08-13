@@ -12,12 +12,14 @@ import { Objects } from "../../core/Objects";
 /**
  * Create an instance of the dialog page
  * @param {string} title 
+ * @param {'flexible'|'large'} [popupStyle]
  */
-export function Dialog(title){
+export function Dialog(title, popupStyle = "flexible" ){
   /** @type {NavController} */
   var nav = Injector.Nav;
   var d = nav.push(DialogPage);
   d.title = title;
+  d.classNames.push(popupStyle)
   return d;
 }
 
