@@ -178,14 +178,21 @@ input[type=button] {
 		padding-left: 0;
 		font-size: $size-f-toplabel;
 		text-align: left;
-		display: inline-block;
+    display: inline-block;
+    white-space: nowrap;
     height: 1.0em;
     line-height: 1em;
 		i {
       color: #0874B7;
       margin-left: $margin-sm;
 		}
-	}
+  }
+  &.label {
+    label {
+      white-space: normal;
+      height: auto;
+    }
+  }
 	&.short {
 		padding-bottom:20px;
 		.label {
