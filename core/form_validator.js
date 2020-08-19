@@ -248,9 +248,9 @@ export function FormValidator(data, template, errors, options) {
     if (isObject(obj) && !isArray(obj)) {
       if (typeof obj.validate == "function")
         e+= obj.validate() ? 0 : 1;
-      else if (obj.validateRule) {
+      if (obj.validateRule) 
         e += validate_field(obj, showErrors);
-      }
+      
 
       if (obj.items) {
         //items of the select box
