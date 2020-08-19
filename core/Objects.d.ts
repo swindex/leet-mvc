@@ -1,3 +1,7 @@
+interface Iterable<T> {
+  readonly length?: number;
+  readonly [n: number]: T;
+}
 declare namespace ObjectsModule{
 	const Objects = {
 		/**
@@ -26,7 +30,7 @@ declare namespace ObjectsModule{
 		 * @param callback The function that will be executed on every object. Return true to add it to filtered array
 		 * @return {T}
 		 */
-		find<T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | true): T[K];,
+		find<T>(obj: Iterable<T>, callback: (valueOfProperty: T, propertyName: any) => false | true): T;,
 		/**
 		 * A iterator function, which can be used to seamlessly iterate over both objects and arrays.
 		 * Arrays and array-like objects with a length property (such as a function's arguments object) are
