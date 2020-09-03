@@ -2,7 +2,7 @@ const webpackConfig = require('./spec/webpack.config.js');
 //webpackConfig.entry = {};
 
 module.exports = function(config) {
-    config.set({
+  config.set({
 		browsers: ['Chrome'],
 		files: [
 			// all files ending in "_test"

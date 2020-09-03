@@ -13,10 +13,10 @@ export class PhoneInputComponent extends BaseComponent {
     this._formattedValue = null;
 
     this.placeholder = null;
-
+//oninput = "this._onInput($event)"
     this.template = `
     <div>
-      <input type="text" [attribute]="this.attributes" bind = "this._formattedValue" oninput = "this._onInput($event)" onchange = "this._onChange($event)" [placeholder]="this.placeholder" />
+      <input type="text" [attribute]="this.attributes" bind = "this._formattedValue" onchange = "this._onChange($event)" oninput = "this._onInput($event)" [placeholder]="this.placeholder" />
     </div>
     `;
   }
@@ -56,6 +56,11 @@ export class PhoneInputComponent extends BaseComponent {
       el.selectionStart = selS + dif;
       el.selectionEnd = selE + dif;
     }, 0);
+    if (document.documentMode || /Edge/.test(navigator.userAgent) || /Edg/.test(navigator.userAgent)) {
+      //in stupid IE/Edge onchange will ot fire if oninput changes the value. REALLY!
+      //so do it immediately
+      this._onChange(ev);
+    }
   }
 
   _onChange(ev) {
