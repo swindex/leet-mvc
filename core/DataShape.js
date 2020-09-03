@@ -68,7 +68,7 @@ export var DataShape = {
   copy: function(obj, templateObject, checkSource,path){
     path = path || "";
     checkSource = checkSource || false;
-    templateObject = templateObject || obj;
+    //templateObject = templateObject || obj;
     let newObj;
     if (isArray(templateObject)) {
       //speacial handling of array template
@@ -97,7 +97,7 @@ export var DataShape = {
       return templateObject(obj);
     } else {				
       //if primitive, return as is
-      if (typeof obj == 'undefined' && templateObject==null)
+      if (typeof obj == 'undefined' && templateObject===null)
         return null;
       return obj;
     }

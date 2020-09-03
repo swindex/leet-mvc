@@ -4,7 +4,7 @@ import { FormValidator } from "./../../core/form_validator";
 import { Translate } from "./../../core/Translate";
 import { DeBouncer } from "./../../core/DeBouncer";
 import { HeaderPage } from "./../HeaderPage/HeaderPage";
-import { DOM } from "leet-mvc/core/DOM";
+import { DOM } from "./../../core/DOM";
 
 export class LoginPage extends HeaderPage {
   constructor(){

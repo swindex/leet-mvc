@@ -1,8 +1,7 @@
 import { Injector } from "./Injector";
 import { isString } from "util";
 import { argumentsToArray } from "./helpers";
-import { Text } from "leet-mvc/core/text";
-import { Objects } from "leet-mvc/core/Objects";
+import { Objects } from "./Objects";
 
 const Inject = Injector;
 
