@@ -173,52 +173,64 @@ describe('test DataShape methods',function(){
   it('Expect copy(obj) to copy arr:[] as-is ',function(){
 		var val = {
 			ii:'11',
-			arr:[
-        {a:1,b:2},
-        {a:1,b:2,c:3},
-        {a:1,b:2,c:3,d:4},
-      ]
+			obj:{
+        arr:[
+          {a:1,b:2},
+          {a:1,b:2,c:3},
+          {a:1,b:2,c:3,d:4},
+        ]
+      }
 		}
 		var ds = {
 			ii:DataShape.integer(),
-			arr: []
+			obj: {
+        arr:[]
+      }
 		}
 
 		var c = DataShape.copy(val,ds);
 		//console.log(JSON.stringify(c));
 		expect(JSON.stringify(c)).toEqual(JSON.stringify({
 			ii:11,
-			arr:[
-        {a:1,b:2},
-        {a:1,b:2,c:3},
-        {a:1,b:2,c:3,d:4},
-      ]
+			obj:{
+        arr:[
+          {a:1,b:2},
+          {a:1,b:2,c:3},
+          {a:1,b:2,c:3,d:4},
+        ]
+      }
 		}));
   })
   
   it('Expect copy(obj) to copy arr:null as-is ',function(){
 		var val = {
 			ii:'11',
-			arr:[
-        {a:1,b:2},
-        {a:1,b:2,c:3},
-        {a:1,b:2,c:3,d:4},
-      ]
+      obj:{
+        arr:[
+          {a:1,b:2},
+          {a:1,b:2,c:3},
+          {a:1,b:2,c:3,d:4},
+        ]
+      }
 		}
 		var ds = {
 			ii:DataShape.integer(),
-			arr: null
+			obj: {
+        arr:null
+      }
 		}
 
 		var c = DataShape.copy(val,ds);
 		//console.log(JSON.stringify(c));
 		expect(JSON.stringify(c)).toEqual(JSON.stringify({
 			ii:11,
-			arr:[
-        {a:1,b:2},
-        {a:1,b:2,c:3},
-        {a:1,b:2,c:3,d:4},
-      ]
+			obj:{
+        arr:[
+          {a:1,b:2},
+          {a:1,b:2,c:3},
+          {a:1,b:2,c:3,d:4},
+        ]
+      }
 		}));
 	})
 
