@@ -13,7 +13,9 @@ declare namespace State2Namespace{
 		 */
 		newListener():{
 			index:number;
-      remove():boolean;
+      /** Remove a listener */
+      //remove(func:Function):boolean;
+      /** Remova all listeners from the queue and release resources*/
       destroy():boolean;
 
 			/**

@@ -5,7 +5,7 @@ import { BasePage } from "./../../pages/BasePage";
 import { argumentsToArray, Override } from "./../../core/helpers";
 import { DeBouncer } from "./../../core/DeBouncer";
 import './SwiperTabs.scss';
-import 'swiper/dist/css/swiper.css';
+import 'swiper/swiper.scss';
 import { Objects } from "./../../core/Objects";
 import { DOM } from "../../core/DOM";
 
