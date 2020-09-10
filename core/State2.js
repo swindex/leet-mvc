@@ -63,7 +63,18 @@ export function State2(data){
     listener.onStatus.bind(listener);
     return listener;
   }
-	
+
+  /**
+	 * Remove all callbacks
+	 * @param {{index:number, remove:function():void, onSet: function():void, onError: function():void, onStatus: function():void}} listener 
+	 * @return {void}
+	 */
+  function destroy(){
+    for (var i in Queue){
+      removeIndex(i);
+    }
+  }
+  
   /**
 	 * Remove callback from Queue
 	 * @param {{index:number, remove:function():void, onSet: function():void, onError: function():void, onStatus: function():void}} listener 
@@ -172,7 +183,7 @@ export function State2(data){
     set data(data){
       setData(data);
     },
-    destroy: remove,
+    destroy: destroy,
     remove: remove,
     setData: setData,
     setError: setError,
