@@ -372,7 +372,7 @@ ${childrenHTML}
 
     return `
 <div class="${this.options.fieldClass} ${el.class ? ' ' + el.class : ''} ${el.type ? ' ' + el.type : ''} ${isRequired ? 'required' : ''}" [class]="this.getClassName('${el._name ? el._name : ''}')" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
-${this.addTitle(el)}
+${noTitle ? "" : this.addTitle(el)}
 ${isArray(elHTML) ? elHTML.join('') : elHTML}
 ${(noErrorHint ? '' : this.addErrorHint(el))}
 </div>`;
