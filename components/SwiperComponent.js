@@ -1,7 +1,7 @@
-import Swiper from 'swiper';
-import 'swiper/swiper.scss';
+import Swiper from 'swiper/bundle';
+import 'swiper/swiper-bundle.css';
 
-import { BaseComponent } from "leet-mvc/components/BaseComponent";
+import { BaseComponent } from "./BaseComponent";
 
 
 
