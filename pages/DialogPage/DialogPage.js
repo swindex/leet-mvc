@@ -175,7 +175,7 @@ export class DialogPage extends BasePage{
   /**
 	 * Add Action Button to the dialog
 	 * @param {string} title
-	 * @param {function(DialogPage)} callback - fired when button is clicked. Return false to stop dialog from closing
+	 * @param {null|function(DialogPage):any} callback - fired when button is clicked. Return false to stop dialog from closing
 	 */
   addActionButton(title, callback) {
     callback = callback || null;

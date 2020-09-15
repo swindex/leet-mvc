@@ -13,10 +13,14 @@ export class PhoneInputComponent extends BaseComponent {
     this._formattedValue = null;
 
     this.placeholder = null;
+
+    //dynamic attributes
+    this.attr = {}
+
 //oninput = "this._onInput($event)"
     this.template = `
-    <div>
-      <input type="text" [attribute]="this.attributes" bind = "this._formattedValue" onchange = "this._onChange($event)" oninput = "this._onInput($event)" [placeholder]="this.placeholder" />
+    <div [attribute]="this.attr">
+      <input type="text" [attribute]="this.attr" bind = "this._formattedValue" onchange = "this._onChange($event)" oninput = "this._onInput($event)" [placeholder]="this.placeholder" />
     </div>
     `;
   }
@@ -120,6 +124,7 @@ export class PhoneInputComponent extends BaseComponent {
         [(value)]="${forms.refactorAttrName('this.data.' + el._name)}"
         (onChange)="this.events.change.apply(this, arguments)"
         [(isValid)]="${forms.refactorAttrName('this.fields.' + el._name)}.attributes.isValid"
+        [attr]="${forms.refactorAttrName('this.fields.' + el._name)}.attributes"
         [placeholder]="${forms.refactorAttrName('this.fields.' + el._name)}.placeholder"
         name="${el._name}"
         ${forms.generateAttributes(opt)}></input-phone>`);

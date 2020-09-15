@@ -33,6 +33,8 @@ export class Forms extends BaseComponent {
     this.options = { nestedData: true, formClass: 'formgroup', fieldClass: 'fieldgroup' };
     Object.assign(this.options, options);
 
+    this.validator = new FormValidator(this.data,  this.formTemplate, this.errors, { nestedData: this.options.nestedData });
+
     this.attrEvents = {};
     this.types = {};
     this.arrays = {};
@@ -371,7 +373,7 @@ ${childrenHTML}
     var isRequired = el.validateRule ? el.validateRule.includes('required') : null;
 
     return `
-<div class="${this.options.fieldClass} ${el.class ? ' ' + el.class : ''} ${el.type ? ' ' + el.type : ''} ${isRequired ? 'required' : ''}" [class]="this.getClassName('${el._name ? el._name : ''}')" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
+<div class="${this.options.fieldClass} ${el.class ? ' ' + el.class : ''} ${el.type ? ' ' + el.type : ''} ${isRequired ? 'required' : ''} ${el.icon ? 'hasIcon' : ''}" [class]="this.getClassName('${el._name ? el._name : ''}')" [if]="this.getIsVisible('${el._name ? el._name : ''}')">
 ${noTitle ? "" : this.addTitle(el)}
 ${isArray(elHTML) ? elHTML.join('') : elHTML}
 ${(noErrorHint ? '' : this.addErrorHint(el))}
@@ -914,6 +916,7 @@ Forms.field_definitions = {
     return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'text', number: "", format: format, novalidate: true, autocomplete:"false" })]);
   },
   password(forms, el, parentPath) {
+    el.icon = true;
     return forms.renderFieldGroupHTML(el, [forms.addPassword(el, {autocomplete:"false"})]);
   },
   phone(forms, el, parentPath) {

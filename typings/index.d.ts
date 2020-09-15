@@ -37,7 +37,7 @@ interface GenFormData{
 }
 
 interface FieldData{
-	[string]:string|number|boolean;
+	[key:string]:string|number|boolean;
 }
 
 interface HTMLElementMouseEvent extends MouseEvent{
@@ -51,14 +51,14 @@ interface HTMLInputElementChangeEvent extends Event{
 interface vDom {
 	values: {},
 	valuesD: {},
-	getters: {[string]:function},
-	setters: {[string]:function},
-	callers: {[string]:function},
+	getters: {[key:string]:Function},
+	setters: {[key:string]:Function},
+	callers: {[key:string]:Function},
 	plainAttrs: {},
 	elem: HTMLElement|DocumentFragment,
 	items:vDom[],
-	itemBuilder:function,
+	itemBuilder:Function,
 	inject:{},
 	fragment: DocumentFragment
-	events: {[string]:function};
-};
+	events: {[key:string]:Function}
+}
