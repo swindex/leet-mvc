@@ -71,7 +71,7 @@ export class Analytics {
 	 */
   setScreenName(name, optionalUrl = null) {
     if (this.PrevScreenName === name) {
-      return;
+      return this;
     }
     
     this.Tracker.setScreenName(name);
@@ -84,6 +84,8 @@ export class Analytics {
     this.Tracker.send();
     this.PrevScreenUrl = url;
     this.PrevScreenName = name;
+
+    //console.log(`Set Screen Name ${name}`);
 
     return this;
   }
@@ -175,36 +177,37 @@ export class Analytics {
 
   /**
 	 * 
-	 * @param {string|number} eventName 
-	 * @param {any} eventValue 
+	 * @param {string|number} eventAction 
+	 * @param {any} eventName 
+   * @param {any} eventValue
 	 */
-  logEvent(eventName, eventValue = "") {
+  logEvent(eventAction, eventName = "", eventValue = "") {
     //console.log("eventName",eventValue);
-    if (eventName === null) {
+    if (eventAction === null) {
       //if mapping is set to null then dont track
       return;
     }
-    switch (eventName) {
+    switch (eventAction) {
       case Analytics.Event.SEARCH:
-        this.Tracker.setActionSearch(eventValue.search_value, eventValue.result_count, eventValue.category_name);
+        this.Tracker.setActionSearch(eventName.search_value, eventName.result_count, eventName.category_name);
         break;
       case Analytics.Event.LOADFILE:
-        this.Tracker.setActionDownload(eventValue);
+        this.Tracker.setActionDownload(eventName);
         break;
       case Analytics.Event.APPERROR:
-        this.Tracker.setEvent("Error", eventName, eventValue);
+        this.Tracker.setEvent("Error", eventAction, eventName, eventValue);
         break;
       case Analytics.Event.APIERROR:
-        this.Tracker.setEvent("Error", eventName, eventValue);
+        this.Tracker.setEvent("Error", eventAction, eventName, eventValue);
         break;
       case Analytics.Event.LOGINFAIL:
-        this.Tracker.setEvent("Error", eventName, eventValue);
+        this.Tracker.setEvent("Error", eventAction, eventName, eventValue);
         break;
       //here we can intercept properties
       default:
-        if (eventValue && typeof eventValue == 'object')
-          eventValue = JSON.stringify(eventValue);
-        this.Tracker.setEvent("Event", eventName, eventValue);
+        if (eventName && typeof eventName == 'object')
+          eventName = JSON.stringify(eventName);
+        this.Tracker.setEvent("Event", eventAction, eventName, eventValue);
     }
     this.Tracker.send();
     return this;

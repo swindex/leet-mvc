@@ -134,7 +134,7 @@ export class NavController{
 
       var cf = this.currentFrame();
       this.removeLastFrame();
-      this.onPageNavigateBack(cf.name, cf);
+      this.onPageNavigateBack(cf.name, cf.page);
       this._resetPagesVisibility();
 
       return true;

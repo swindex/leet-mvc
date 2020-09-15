@@ -1,4 +1,5 @@
-import { BasePage } from "leet-mvc/pages/BasePage";
+import { BasePage } from "../pages/BasePage";
+
 
 declare namespace NavControllerModule{
 	class PageFrame{
