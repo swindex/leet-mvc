@@ -13,7 +13,7 @@ declare namespace ObjectsModule{
 		 * @param callback The function that will be executed on every object. Return true to add it to filtered array
 		 * @return {T}
 		 */
-		filter<T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | true): T;,
+		filter<T>(obj: Iterable<T>, callback: (valueOfProperty: T[K], propertyName: any) => false | true): Iterable<T>;,
 
 		/**
 		 * A map function that creates a new array from the collection of thigs returned in the callback
@@ -22,7 +22,7 @@ declare namespace ObjectsModule{
 		 * @param {function} callback The function that will be executed on every object. Returned value is added to the new array
 		 * @return {T}
 		 */
-		map<NT, T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => NT ): NT[];,
+		map<NT, T>(obj: Iterable<T>, callback: (valueOfProperty: T[K], propertyName: any) => NT ): NT[];,
 
 		/**
 		 * Find first element
@@ -40,7 +40,7 @@ declare namespace ObjectsModule{
 		 * @param callback The function that will be executed on every object. Return false to stop iteration. Return any to skip rest of block
 		 * @return {T}
 		 */
-		forEach<T, K extends {[KeyT in keyof T]: V}>(obj: T, callback: (valueOfProperty: T[K], propertyName: any) => false | any): void;,
+		forEach<T>(obj: Iterable<T>, callback: (valueOfProperty: T, propertyName: any) => false | any): void;,
 
 		/**
 		 * Convert array of objects to key-value pair collection

@@ -1,5 +1,5 @@
 @import '_variables';
-.fieldgroup {
+/*.fieldgroup {
   input[type=text], 
   input[type=email], 
   input[type=password], 
@@ -15,7 +15,8 @@
     width:100%;
     -webkit-border-radius:0; 
     border-radius:0;
-    border: 1px solid #BBB;
+    border: $size-border solid #BBB;
+    margin-bottom: $size-border-active - $size-border; //space for the border
 
     -webkit-appearance: none;
 
@@ -102,9 +103,10 @@
   @keyframes focus_blink {
     50% {
       border-bottom: $size-border solid $color-border;
+      
     }
   }
-}  
+} */ 
 
 button[none],
 input[type=button][none]
@@ -148,12 +150,13 @@ input[type=button] {
 		border-collapse: collapse;
 		padding-left: 0;
 		border: none;
-		border-bottom: $size-border solid $color-border;
+    border-bottom: $size-border solid $color-border;
+    margin-bottom: $size-border-active - $size-border; //space for the border
 		-webkit-appearance: none;
 		padding: $margin-sm 0;
-		padding-right: $size-input-i-md; //this used for hiding text under icon	
-		
-		&[disabled]{
+		//padding-right: $size-input-i-md; //this used for hiding text under icon	
+		background-color: transparent;
+		&[disabled], &[readonly]{
 			border-bottom: $size-border solid $color-border-disabled;
 		}
 
@@ -161,7 +164,7 @@ input[type=button] {
 			outline: none;
 			box-shadow: none;
 			border-bottom: $size-border-active solid $color-border-active;
-			margin-bottom: -1px;
+			margin-bottom: 0;
 		}
 		&[readonly]:focus, &.focus-blink{
 			animation: focus_blink 0.5s;
@@ -169,8 +172,44 @@ input[type=button] {
 		}
 		width: 100%;
 		
-	}
-	
+  }
+
+  &.hasIcon {
+    input[type=text], 
+    input[type=email], 
+    input[type=password], 
+    input[type=number], 
+    input[type=date],
+    input[type=tel],
+    textarea,
+    select,
+    select-multiple,
+    .input
+    {
+      padding-right: $size-input-i-md;
+    }
+  }
+
+  div.icon{
+    position: absolute;
+    top: 0;
+    right: $margin-sm;
+    font-weight: bold;
+    font-size: $size-f-input;
+    pointer-events: none;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    padding-left: inherit;
+    padding-right: inherit;
+    
+    &[onclick]{
+      pointer-events: all;
+    }
+  }
+
 	>label {
 		color: #333;
 		z-index: 5;
@@ -198,7 +237,8 @@ input[type=button] {
 		.label {
 			margin-left: 5px;
 		}
-	}
+  }
+
 	.hint {
 		font-size: 12px;
 		&.error {
@@ -274,6 +314,11 @@ input[type=button] {
   }
   &.checkbox {
     align-self: center;
+  }
+  @keyframes focus_blink {
+    50% {
+      border-bottom: $size-border-active solid $color-border;
+    }
   }
 }
 //custom override for select-multiple
