@@ -13,6 +13,7 @@ declare namespace ObjectsModule{
 		 * @param callback The function that will be executed on every object. Return true to add it to filtered array
 		 * @return {T}
 		 */
+    filter<T>(obj: Array<T>, callback: (valueOfProperty: T[K], propertyName: any) => false | true): Array<T>;,
 		filter<T>(obj: Iterable<T>, callback: (valueOfProperty: T[K], propertyName: any) => false | true): Iterable<T>;,
 
 		/**
