@@ -62,3 +62,7 @@ interface vDom {
 	fragment: DocumentFragment
 	events: {[key:string]:Function}
 }
+
+interface KeyValuePair{
+	[key:string]: any
+}
