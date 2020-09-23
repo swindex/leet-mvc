@@ -33,7 +33,9 @@ export class DialogPage extends BasePage{
     this.dialog_content_max_height = "100%";
     /** @type {FieldTemplate[]} */
     this.controls=[];
+    /** @type {KeyValuePair} */
     this.data = {};
+    /** @type {KeyValuePair} */
     this.errors={};
 
     /** @type {Forms} */
