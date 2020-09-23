@@ -26,7 +26,8 @@ export class MenuPage extends BasePage {
     /**
 		 * HTML text to put in logo
 		 */
-    this.logo="";
+    this.logo=null;
+    this.logoHeight=undefined;
 
     this.slogan = "";
   }
@@ -86,7 +87,7 @@ var template = `
 <div class="backdrop" onclick="this.onBackdropClicked()"></div>
 <div class="menu-body scroll">
 	<div class="menu-head">
-		<div id="logo" [innerhtml] = "this.logo" onclick="this._onLogoClicked($event)"></div>
+		<div id="logo" [style] = "{ backgroundImage: this.logo ? 'url('+this.logo+')' : undefined, height: this.logoHeight }" onclick="this._onLogoClicked($event)"></div>
 		<div id="slogan" [innerhtml] = "this.slogan"></div> 
 	</div>
 	<ul class="menu-tree">
