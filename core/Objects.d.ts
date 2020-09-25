@@ -19,11 +19,10 @@ declare namespace ObjectsModule{
 		/**
 		 * A map function that creates a new array from the collection of thigs returned in the callback
 		 *
-		 * @param {object} obj The object/array to iterate over.
-		 * @param {function} callback The function that will be executed on every object. Returned value is added to the new array
-		 * @return {T}
+		 * @param  obj The object/array to iterate over.
+		 * @param callback The function that will be executed on every object. Returned value is added to the new array
 		 */
-		map<NT, T>(obj: Iterable<T>, callback: (valueOfProperty: T[K], propertyName: any) => NT ): NT[];,
+		map<NT, T>(obj: Iterable<T>, callback: (valueOfProperty: T, propertyName: any) => NT ): NT[];,
 
 		/**
 		 * Find first element
