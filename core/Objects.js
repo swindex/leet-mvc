@@ -249,6 +249,8 @@ export const Objects = {
       if (pathArray[pathArray.length - 1] === '') {
         pathArray.pop();
       }
+    } else {
+      pathArray = pathArray.slice();
     }
 
 
@@ -275,6 +277,8 @@ export const Objects = {
       if (pathArray[pathArray.length - 1] === '') {
         pathArray.pop();
       }
+    } else {
+      pathArray = pathArray.slice();
     }
 
     if (pathArray.length > 1) {
@@ -298,6 +302,8 @@ export const Objects = {
     }
     if (!Array.isArray(pathArray)) {
       pathArray = ("" + pathArray).split('.');
+    } else {
+      pathArray = pathArray.slice();
     }
 
     if (pathArray.length > 1)

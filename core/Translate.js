@@ -21,17 +21,23 @@ export var ReplaceValues = function(LangConstText, replaceValues){
 
 /**
  * 
- * @param {string} keyOrText 
+ * @param {string|string[]} keyOrText - key string, or [key, subkey] array of strings
  * @param {...string|number} [replaceValues] text items that replace {1},{2},{3} placeholders in the translated text.
  * @return {string}
  */
 export function Translate(keyOrText, replaceValues){
   
   if (!Inject['LNG'])
-    return keyOrText;
+    return keyOrText !== null ? keyOrText.toString() : "";
 
   if (Array.isArray(keyOrText)) {
-    var ret = Objects.getPropertyByPath(Inject['LNG'], keyOrText)
+    var val = Objects.getPropertyByPath(Inject['LNG'], keyOrText);
+    if (val == null) {
+      var newk = keyOrText.slice();
+      newk[keyOrText.length-1] = "" // get default key
+      val = Objects.getPropertyByPath(Inject['LNG'], newk);
+    }
+    var ret = val;
   } else { 
     var ret = Inject['LNG'][keyOrText] ? Inject['LNG'][keyOrText] : keyOrText;
   }
