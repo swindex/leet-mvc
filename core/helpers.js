@@ -1,4 +1,3 @@
-import { isObject, isArray } from "util";
 /**
  * Check if object is empty
  * @param {*} value 
@@ -123,4 +122,23 @@ export function isIterable(obj) {
     return false;
   }
   return typeof obj[Symbol.iterator] === 'function';
+}
+
+
+export function isString(value){
+  return typeof value === "string"
+}
+
+export function isNumber(value){
+  return typeof value === "number"
+}
+export function isObject(value){
+  return value !== null && typeof value === 'object'
+
+}
+export function isArray(value){
+  return Array.isArray(value)
+}
+export function isFunction(value){
+  return typeof value === "function"
 }
