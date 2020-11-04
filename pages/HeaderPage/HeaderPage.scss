@@ -61,6 +61,11 @@
 			}
 		}
 
+    .headertitle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
 		.headertitle, .logo{
 			z-index:0;
