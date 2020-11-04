@@ -568,14 +568,18 @@ export class Calendar2Page extends HeaderPage {
       }
     });
 
+
+
     var unscheduledEvent = (evt) => {
       //p.controls.push({name: "contactButton", type: "button", title:null, value:"Contact"});
-      if (this.onViewContactDetailsLabelClicked)
-        p.addLink('Contact', "View contact details", {
-          click: () => {
+      if (this.onViewContactDetailsLabelClicked){
+        p.addLink('contact','Contact', "View contact details");
+        p.content.onClick = ($mevt)=>{
+          if ($mevt.target.getAttribute('name') == 'contact') {
             this.onViewContactDetailsLabelClicked(evt);
           }
-        });
+        }
+      }
       p.addInput('location', 'Location', 'text', evt.location, null, { readonly: true });
       p.addInput('startDate', 'From', 'date-time', event.startDate ? moment(event.startDate).toDate() : null, 'required|after:' + new Date().getTime());
       p.addInput('endDate', 'To', 'date-time', event.endDate ? moment(event.endDate).toDate() : null, 'required|after:startDate');
@@ -619,6 +623,7 @@ export class Calendar2Page extends HeaderPage {
               p.removeField('startDate');
               p.removeField('endDate');
               p.removeField('message');
+              p.removeField('contact');
 
               if (p.data.eventType !== "0") {
                 p.title = Translate("Set Appointment");

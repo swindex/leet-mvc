@@ -722,18 +722,20 @@ export var Binder = function (context) {
 
               on.items[1].elem.classList.add(options.enter_to);
               on.items[0].elem.classList.add(options.leave_to);
-            }, 0);
-            //discard vDom nodes of the element that will be removed
-            on.items[0].items = [];
-            setTimeout(function () {
-              on.items[1].elem.classList.remove(options.enter_active);
-              on.items[0].elem.classList.remove(options.leave_active);
-              on.items[1].elem.classList.remove(options.enter_to);
-              on.items[0].elem.classList.remove(options.leave_to);
 
-              removeElement(on.items[0].elem);
-              on.items.shift();
-            }, options.duration);
+              //discard vDom nodes of the element that will be removed
+              on.items[0].items = [];
+              setTimeout(function () {
+                on.items[1].elem.classList.remove(options.enter_active);
+                on.items[0].elem.classList.remove(options.leave_active);
+                on.items[1].elem.classList.remove(options.enter_to);
+                on.items[0].elem.classList.remove(options.leave_to);
+
+                removeElement(on.items[0].elem);
+                on.items.shift();
+              }, options.duration);
+            }, 16);
+            
             return EAttrResult.SkipChildren;
           }
           checkVDomNode(on.items[0], {});

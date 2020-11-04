@@ -444,7 +444,7 @@ export function FormValidator(data, template, errors, options) {
       } else
         delete fields[obj._name].attributes.hidden;  
     }
-    if (obj && obj.items) {
+    if (obj && obj.items && obj.type /*if select option then do not touch its children*/) {
       Objects.forEach(obj.items, (el) => {
         setElementHidden(el, value);
       });
