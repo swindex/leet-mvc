@@ -491,12 +491,14 @@ export class Calendar2Page extends HeaderPage {
 
     p.title = "Event Details";
     p.addLabel('Title', event.title);
-    if (this.onAddressLabelClicked)
-      p.addLink('Location', event.location, {
-        click: () => {
+    if (this.onAddressLabelClicked) {
+      p.addLink('Location','Location', event.location);
+      p.content.onClick = ($mevt)=>{
+        if ($mevt.target.getAttribute('name') == 'Location') {
           this.onAddressLabelClicked(event);
         }
-      });
+      }
+    }
 
     p.addLabel('From', DateTime.toHumanDateTime(event.startDate));
     p.addLabel('To', DateTime.toHumanDateTime(event.endDate));
