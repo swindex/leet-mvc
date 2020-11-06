@@ -34,9 +34,9 @@ export class NavController{
     Objects.bindMethods(this);
 
     //add ONE listener that will fire onResize on all pages;
-    DOM(window).addEventListener('resize', this.windowResizeHandler.bind(this));
+    DOM(window).addEventListener('resize', this.windowResizeHandler);
     
-    DOM(document).addEventListener("backbutton", this.documentBackButtonHandler.bind(this));
+    DOM(document).addEventListener("backbutton", this.documentBackButtonHandler);
 
 
   }

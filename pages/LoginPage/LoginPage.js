@@ -76,7 +76,7 @@ export class LoginPage extends HeaderPage {
       login.height(h);
     }
 			
-    if (h < this.i_height-300 /*&& w === this.i_width*/){
+    if (h < this.i_height * 0.7 /*&& w === this.i_width*/){
       //use debounce, so it does not fire too often
       this.debouncer1(()=>{
         //dc.animate({ 'margin-top': -logo.height() }, 500 );	
@@ -156,7 +156,6 @@ export class LoginPage extends HeaderPage {
 }
 LoginPage.selector = 'page-login';
 var template = `
-<!-- <div class="content" > -->
 	<div id="logo" [style]="{backgroundSize:this.backgroundSize}">
 		<span bind="Translate('AppSlogan')"></span>
 		<div ion-fab right top [if]="this.showLanguage">
@@ -194,10 +193,9 @@ var template = `
 				<button type="button"  onclick="this.onRegisterClicked()" class="btn_register"><b bind = "Translate('REGISTER NOW')"></b></button>
 			</div>
 			<div class="fieldgroup">
-				<label onclick="this.onForgotClicked()" class="centered" bind = "Translate('Forgot Password?')"></label>
+				<label class="centered"><span onclick="this.onForgotClicked()">{{Translate('Forgot Password?')}}</span></label>
 			</div>
 		</form>	
 	</div>
 	<div class="dev_label" [if]="this.isDev">d{{this.version}}</div>
-<!-- </div> -->
 `;
