@@ -111,12 +111,12 @@ export function DOM(elemOrQuery) {
     identity: identitySymbol,
     /**
      * Iterate ove reach element of the set
-     * @param {function(HTMLElement):void} callback 
+     * @param {function(HTMLElement, any):void} callback 
      */
     each(callback) {
       for (var i in elemArray) {
         if (elemArray.hasOwnProperty(i))
-          callback(elemArray[i]);
+          callback(elemArray[i], i);
       }
     },
     get(index) {
