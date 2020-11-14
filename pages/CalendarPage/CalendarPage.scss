@@ -198,7 +198,8 @@
 		// }
 		.circle_wrapper{
 			margin: auto;
-			padding: 2em;
+      padding: 2em;
+      box-sizing: content-box !important;
 		}	
 		.circle{
 			width:100%;
