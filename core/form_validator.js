@@ -97,22 +97,8 @@ export function FormValidator(data, template, errors, options) {
   function getVisibleData() {
     var obj = {};
 
-    /*Objects.walk(template, function (el) {
-      if (el && el._name)
-        if (!el.attributes || (!el.attributes.hidden && el.attributes.data !== false)) {
-          if (el.name && (el.type != "form" && el.type != "label" && el.type != "link" && el.type != "button")){
-            var val = Objects.getPropertyByPath(data, el._name);
-            if (val !== undefined)
-              Objects.setPropertyByPath(obj, el._name, val);
-          }
-        } else if (el.attributes && (el.attributes.hidden || el.attributes.data === false)) {
-          //This element is hidden. Do not include its possible children!
-          return false;
-        }
-    });*/
-
     Objects.forEach(fields, (field, fieldName)=>{
-      if (field.name && (!field.attributes || !field.attributes.hidden )) {
+      if (field.name && field.type != "form" && (!field.attributes || !field.attributes.hidden )) {
         var value = Objects.getPropertyByPath(data, field._name);
         Objects.setPropertyByPath(obj, field._name, value);
       }
@@ -246,8 +232,11 @@ export function FormValidator(data, template, errors, options) {
 
     //object is FieldTemplate
     if (isObject(obj) && !isArray(obj)) {
-      if (typeof obj.validate == "function")
-        e+= obj.validate() ? 0 : 1;
+      if (typeof obj.validate == "function"){
+        prepField(obj._name);
+        if (is_field_visible(obj))
+          e+= obj.validate() ? 0 : 1;
+      } 
       if (obj.validateRule) 
         e += validate_field(obj, showErrors);
       
