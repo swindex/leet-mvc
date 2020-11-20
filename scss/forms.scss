@@ -181,6 +181,10 @@ input[type=button] {
     background-repeat: no-repeat;
     background-position: right 50%;
   }
+  textarea{
+    min-height: 4em;
+    width: 100% !important;
+  }
 
   &.hasIcon {
     input[type=text], 
