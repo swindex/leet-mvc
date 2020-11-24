@@ -567,7 +567,7 @@ export function FormValidator(data, template, errors, options) {
           title = "Field";
         }
 
-        errmsg = errmsg.replace(':attribute', title);
+        errmsg = errmsg.replace(/\:attribute([^\w]|$)/g, title);
 
         //split conditions by , use \\, to escape the split
         var conditions_arr = conditions.replace(/\\,/g, "~;").split(',').map(e => e.replace(/~;/g, ','));
@@ -580,47 +580,42 @@ export function FormValidator(data, template, errors, options) {
         var c_template = getTemplateValue(tryDefaultForm(c_name, name));
 
         if (!empty(c_template)) {
-          errmsg = errmsg.replace(':other', c_template.title);
+          errmsg = errmsg.replace(/\:other([^\w]|$)/g, c_template.title);
           var otherFieldValue = getValue(_data, tryDefaultForm(c_name, name));
           if (c_template.items && c_template.items.length > 0) {
             var otherFieldItem = Objects.find(c_template.items, (t) => t.value == otherFieldValue);
-            errmsg = errmsg.replace(':value', otherFieldItem ? otherFieldItem.title : "null");
+            errmsg = errmsg.replace(/\:value([^\w]|$)/g, otherFieldItem ? otherFieldItem.title : "null");
           } else {
-            errmsg = errmsg.replace(':value', otherFieldValue);
-            errmsg = errmsg.replace(':max', otherFieldValue);
-            errmsg = errmsg.replace(':min', otherFieldValue);
+            errmsg = errmsg.replace(/\:value([^\w]|$)/g, otherFieldValue);
+            errmsg = errmsg.replace(/\:max([^\w]|$)/g, otherFieldValue);
+            errmsg = errmsg.replace(/\:min([^\w]|$)/g, otherFieldValue);
           }
         }
 
 
 
-        if (errmsg.indexOf(':max') >= 0 && errmsg.indexOf(':max') >= 0) {
-          //min and max both present so split the condition string
-          if (conditions_arr.length == 2) {
-            errmsg = errmsg.replace(':min', conditions_arr[0]);
-            errmsg = errmsg.replace(':max', conditions_arr[1]);
-          }
+        if (conditions_arr.length == 2) {
+          errmsg = errmsg.replace(/\:min([^\w]|$)/g, conditions_arr[0]);
+          errmsg = errmsg.replace(/\:max([^\w]|$)/g, conditions_arr[1]);
         }
 
-        errmsg = errmsg.replace(':max', c_name);
-        errmsg = errmsg.replace(':min', c_name);
+        errmsg = errmsg.replace(/\:max([^\w]|$)/g, c_name);
+        errmsg = errmsg.replace(/\:min([^\w]|$)/g, c_name);
 
-        errmsg = errmsg.replace(':digits', c_name);
-        errmsg = errmsg.replace(':size', c_name);
+        errmsg = errmsg.replace(/\:digits([^\w]|$)/g, c_name);
+        errmsg = errmsg.replace(/\:size([^\w]|$)/g, c_name);
 
-        if (errmsg.indexOf(':date') >= 0) {
+        errmsg = errmsg.replace(/\:date([^\w]|$)/g, function(){
           var otherFieldValue;
           if (!isNaN(Number(c_name))) {
             otherFieldValue = Number(c_name);
           } else {
             otherFieldValue = getValue(_data, tryDefaultForm(c_name, name));
           }
-          errmsg = errmsg.replace(':date', new Date(otherFieldValue).toLocaleString());
-        }
+          return new Date(otherFieldValue).toLocaleDateString()
+        })
 
-        if (errmsg.indexOf(':values') >= 0) {
-          errmsg = errmsg.replace(':values', conditions);
-        }
+        errmsg = errmsg.replace(/\:values([^\w]|$)/g, conditions);
 
         var result = validate_isfail(name, rr[0], type, conditions_arr);
 
