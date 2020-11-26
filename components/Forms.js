@@ -528,15 +528,47 @@ ${el.icon ? `<i class="${el.icon}"></i>` : ''}
   * @param {FieldTemplate} el 
   * @param {KeyValuePair} [override]
   */
-  addCheck(el, override) {
+  addCheckSquare(el, override) {
     var opt = { name: el._name, type: "checkbox" };
     Object.assign(opt, override, el.attributes);
-    return `<label class="toggle"><span class="text">${el.title}</span>
+    return `<label class="toggle">
+<input bind="${this.refactorAttrName('this.data.' + el._name)}" ${this.generateAttributes(opt)} />
+<span class="radio square"></span>
+<span class="text">${el.title}</span>
+</label>
+`;
+  }
+
+  /**
+  * 
+  * @param {FieldTemplate} el 
+  * @param {KeyValuePair} [override]
+  */
+ addCheckRound(el, override) {
+  var opt = { name: el._name, type: "checkbox" };
+  Object.assign(opt, override, el.attributes);
+  return `<label class="toggle">
+<input bind="${this.refactorAttrName('this.data.' + el._name)}" ${this.generateAttributes(opt)} />
+<span class="radio round"></span>
+<span class="text">${el.title}</span>
+</label>
+`;
+}
+
+  /**
+  * 
+  * @param {FieldTemplate} el 
+  * @param {KeyValuePair} [override]
+  */
+ addToggle(el, override) {
+  var opt = { name: el._name, type: "checkbox" };
+  Object.assign(opt, override, el.attributes);
+  return `<label class="toggle"><span class="text">${el.title}</span>
 <input bind="${this.refactorAttrName('this.data.' + el._name)}" ${this.generateAttributes(opt)} />
 <span class="slider round"></span>
 </label>
 `;
-  }
+}
 
   /**
   * 
@@ -928,10 +960,20 @@ Forms.field_definitions = {
   textarea(forms, el, parentPath) {
     return forms.renderFieldGroupHTML(el, [forms.addTextArea(el, null)]);
   },
-  checkbox(forms, el, parentPath) {
+  "checkbox": function(forms, el, parentPath) {
     var el_ch = Objects.copy(el);
     el_ch.title = "";
-    return forms.renderFieldGroupHTML(el_ch, [forms.addCheck(el, null)], true);
+    return forms.renderFieldGroupHTML(el_ch, [forms.addCheckSquare(el, null)], true);
+  },
+  "checkbox-round": function(forms, el, parentPath) {
+    var el_ch = Objects.copy(el);
+    el_ch.title = "";
+    return forms.renderFieldGroupHTML(el_ch, [forms.addCheckRound(el, null)], true);
+  },
+  toggle(forms, el, parentPath) {
+    var el_ch = Objects.copy(el);
+    el_ch.title = "";
+    return forms.renderFieldGroupHTML(el_ch, [forms.addToggle(el, null)], true);
   },
   radio(forms, el, parentPath) {
     return forms.renderFieldGroupHTML(el, [forms.addRadio(el, null)]);
