@@ -637,7 +637,7 @@ export function FormValidator(data, template, errors, options) {
 
   function phReplace(str="", expStr, replStr) {
     var repl = typeof replStr == "function" ? replStr : replStr + "$1"
-    return str.replace( new RegExp("\\:"+expStr+"(\\s|$)",'g'), repl);
+    return str.replace( new RegExp("\\:"+expStr+"([^\\w]|$)",'g'), repl);
   }
 
   //return true if fail validation
