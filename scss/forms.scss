@@ -1,113 +1,4 @@
 @import '_variables';
-/*.fieldgroup {
-  input[type=text], 
-  input[type=email], 
-  input[type=password], 
-  input[type=number], 
-  input[type=date], 
-  input[type=tel], 
-  select,
-  select-multiple,
-  .input
-  {
-    box-sizing:border-box;
-    font-size: $size-f-input;
-    width:100%;
-    -webkit-border-radius:0; 
-    border-radius:0;
-    border: $size-border solid #BBB;
-    margin-bottom: $size-border-active - $size-border; //space for the border
-
-    -webkit-appearance: none;
-
-    background-position: 99% 50%;
-    background-repeat: no-repeat;
-    //height: $size-input-h-md;
-    background-size: $size-input-i-md;
-    background-color: transparent;
-    color: $color-input-fg;
-    &:focus{
-      outline:none;
-    }
-  }
-  div.icon{
-    position: absolute;
-    top: 0;
-    right: $margin-sm;
-    font-weight: bold;
-    font-size: $size-f-input;
-    pointer-events: none;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    padding-left: inherit;
-    padding-right: inherit;
-    
-    &[onclick]{
-      pointer-events: all;
-    }
-  }
-
-  input[date]{
-      //background-image: url(../img/calendar_ico.png);
-  }
-  input[dateTime]{
-      //background-image: url(../img/calendar_ico.png);
-  }
-  input[time]{
-      //background-image: url(../img/clock_ico.png);
-  }
-
-  select,
-  select-multiple{
-    background-image: url(../img/angle-down-solid.svg);
-    background-size: $size-input-i-sm;
-  }
-
-  input[type=button]:focus ,button:focus{
-    outline: none;
-  }
-
-  input[type=checkbox]{
-      -webkit-appearance: none;
-      border-radius:0;
-      border: 1px solid #BBB;
-    
-      box-sizing:border-box;
-      height: 25px;
-      width: 25px;
-      margin-left: 0;
-      vertical-align: middle;
-      margin-bottom: 5px;
-  }
-  input[type=checkbox]:checked{
-      background-image: url(../img/blue_dot.png);
-      background-position: 50% 50%;
-      background-size: cover;
-  }
-  textarea {
-      resize: none;
-      box-sizing: border-box;
-      font-size: 16px;
-      padding: 6px;
-      width: 100%;
-      height: 80px;
-      -webkit-border-radius:0; 
-      -webkit-appearance: none;
-      border-radius:0;
-      border: 1px solid #BBB;
-  }
-
-  @keyframes focus_blink {
-    50% {
-      border-bottom: $size-border solid $color-border;
-      
-    }
-  }
-} */ 
-
 button[none],
 input[type=button][none]
 {
@@ -417,12 +308,21 @@ select-multiple{
 					}
 				}
 				&+.radio {
-					//background-color: #2196F3;
+          //background-color: #2196F3;
+          border-color: #2196f3;
 					&:before {
-						box-shadow: 0 0 2px #333;
 						background-color: #2196f3;
-						opacity: 1;
-					}
+            opacity: 1;
+          }
+          &.square {
+            &:before{
+              background-color: transparent;
+              content: '\2714';
+              color: #2196f3;
+              font-size: 1.25em;
+              font-weight: bold;
+            }
+          }
 				}
 
 			}
@@ -430,9 +330,10 @@ select-multiple{
 				&+.slider {
 					box-shadow: 0 0 1px #2196F3;
 				}
-				/*&+.radio {
-					box-shadow: 0 0 1px #2196F3;
-				}*/
+				&+.radio {
+          //box-shadow: 0 0 1px #2196F3;
+          border-color: #333;
+				}
 			}
 		}
 		.slider {
@@ -479,7 +380,7 @@ select-multiple{
 			min-width: 26px;
 			height: 26px;
 			margin-left: 0;
-			border: 1px solid #2196f3;
+			border: 1px solid #333;
 
 			//
 			margin-right: $margin-md;
@@ -495,13 +396,15 @@ select-multiple{
 				//border-radius: 50%;
 			}
 			&.round {
-				border-radius: 50%;
+        border-radius: 50%;
+        border: 2px solid #9e9e9e;
 				&:before {
 					border-radius: 50%;
 				}
 			}
 			&.square {
-				border-radius: 0;
+        border-radius: 2px;
+        border: 2px solid #9e9e9e;
 				&:before {
 					border-radius: 0;
 				}
@@ -524,7 +427,13 @@ select-multiple{
 			color: red;
 			padding-left: 5px;
 		}
-	}
+  }
+  &.flat {
+    label.toggle{
+      width: auto;
+      margin-right: $margin-lg;
+    }
+  }
 }
 
 div[ion-fab]{

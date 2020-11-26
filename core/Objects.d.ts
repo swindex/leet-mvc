@@ -28,9 +28,9 @@ declare namespace ObjectsModule{
 		 * Find first element
 		 * @param obj The array of objects to find element in
 		 * @param callback The function that will be executed on every object. Return true to add it to filtered array
-		 * @return {T}
+		 * @return {T|null}
 		 */
-		find<T>(obj: Iterable<T>, callback: (valueOfProperty: T, propertyName: any) => false | true): T;,
+		find<T>(obj: Iterable<T>, callback: (valueOfProperty: T, propertyName: any) => false | true): T|null;,
 		/**
 		 * A iterator function, which can be used to seamlessly iterate over both objects and arrays.
 		 * Arrays and array-like objects with a length property (such as a function's arguments object) are
