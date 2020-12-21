@@ -108,7 +108,7 @@ export function EnableCustomElements(){
       var value = option.getAttribute('value');
       var text = option.getAttribute('title');
       if (value !== null || !p.title){
-        p.items.push({title: option.innerHTML, value: value, text: text});
+        p.items.push({title: option.innerText, value: value, text: text});
       }
     });
 		
