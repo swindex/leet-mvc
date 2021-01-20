@@ -603,7 +603,7 @@ ${item.info ? this.addItemInfo(el, itemIndex) : ''}
 
     var opt = { name: el._name, type: "select", format: el.dataType, bind: `${this.refactorAttrName('this.data.' + el._name)}`, placeholder: el.placeholder };
     Object.assign(opt, override, el.attributes, { onchange: `this._onSelectBoxChanged('${el._name}')` });
-    var elem = `<select ${this.generateAttributes(opt)}>`;
+    var elem = `<div class="fieldrow"><select ${this.generateAttributes(opt)}>`;
     if (el.placeholder)
       elem = elem + `<option>${el.placeholder}</option>`;
 
@@ -638,7 +638,7 @@ ${item.info ? this.addItemInfo(el, itemIndex) : ''}
         }
       });
     }
-    elem = elem + "</select>";
+    elem = elem + `</select><div class="icon"><i class="fas fa-angle-down"></i></div></div>`;
 
     if (hasSubItems) {
       //this.fields[el._name].component = new Forms([], this.data);

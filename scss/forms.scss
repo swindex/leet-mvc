@@ -65,13 +65,13 @@ input[type=button] {
 		
   }
 
-  select,
+  /*select,
   select-multiple{
     background-image: url(../img/angle-down-solid.svg);
     background-size: $size-input-i-sm;
     background-repeat: no-repeat;
     background-position: right 50%;
-  }
+  }*/
   textarea{
     min-height: 4em;
     width: 100% !important;
