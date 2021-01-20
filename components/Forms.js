@@ -640,6 +640,8 @@ ${item.info ? this.addItemInfo(el, itemIndex) : ''}
     }
     elem = elem + `</select><div class="icon"><i class="fas fa-angle-down"></i></div></div>`;
 
+    el.icon = true;
+
     if (hasSubItems) {
       //this.fields[el._name].component = new Forms([], this.data);
       //items_items += '<div>Sub items go here</div>';
