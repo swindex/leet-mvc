@@ -37,9 +37,10 @@ export class PhoneInputComponent extends BaseComponent {
     //remove the +1 part!
     if (typeof val == "string") {
       val = val.replace(/\+1/, '');
+      this._formattedValue = val;
+      this._formatAsPhoneNumber();
     }
-    this._formattedValue = val;
-    this._formatAsPhoneNumber();
+    
   }
 
   onInit() {
