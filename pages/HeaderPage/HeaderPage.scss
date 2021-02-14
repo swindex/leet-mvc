@@ -1,15 +1,25 @@
 @import '../../scss/variables';
 
 .page-HeaderPage{
-	background-color: #fff;
-	.header {
-		-webkit-transform:translateZ(0);
-		-webkit-transform-style:preserve-3d;
-		-webkit-backface-visibility:hidden;
-		-webkit-perspective:1000;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	opacity:0;
+	transform: translate3d(0,50px,0);
+	transition: opacity 0.5s ease, transform 0.4s ease;
+	overflow: hidden !important;
 
+	background-color: #fff;
+
+	display: flex;
+	flex-direction: column;
+	
+	>.header {
+		transform:translateZ(0);
+		
 		background-color: $color-top-bar;
 		height: $height-top-bar;
+		min-height: $height-top-bar;
 		padding: 0px;
 		position: relative;
 		width: 100%;
@@ -29,26 +39,33 @@
 			color: #fff;
 			cursor:pointer;
 			
-			justify-content: center;
+      justify-content: center;
+      align-items: center;
 			padding: 0;
 			width: $height-top-bar;
 			height: $height-top-bar;
 			z-index: 10;
-			border-radius: 50%;
+			border-radius: $height-top-bar / 2;
 			background-color: transparent;
 			box-shadow: none;
+			border: none;
 			&:active{
 				box-shadow: none;
 				//transition: background-color 0.1s ease-in;
 				background-color: rgba(128, 128, 128, 0.75);
 			}
 			i {
-				font-size: 2.8rem;
+				font-size: 28px;
 				width: 1em;
 				height: 1em;
 			}
 		}
 
+    .headertitle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
 		.headertitle, .logo{
 			z-index:0;
@@ -59,8 +76,8 @@
 			
 			box-sizing: border-box;
 			color: $top-bar-title;
-			cursor: pointer;
-			font-size: 1.6rem;
+			//cursor: pointer;
+			font-size: 16px;
 			font-weight: bold;
 			text-align: center;
 			text-transform: uppercase;
@@ -68,38 +85,38 @@
 			right: 0;
 			top:0;
 			bottom:0;
-			padding: 1rem;
-		}
+      display: flex;
+    }
 		.logo{
 			margin: $margin-md 0;
 			//background-image: url(../../img/svg/cnx-logo.svg);
-			background-size: 17rem;
+			background-size: 170px;
 			background-repeat: no-repeat;
 			background-position: 50%;
 		}
 	}
 
-	.footer {
+	>.footer {
 		display: block;
 		background-color: $color-top-bar;
-		height: 5.5rem;
+		height: 55px;
 		max-width: none;
 		width: 100%;
 	
-		position: fixed;
+		position: relative;
 		bottom: 0;
 		top: unset !important;
 		box-shadow: 0px 2px 13px black;
 		z-index: 1;
 		i {
-			font-size: 1.5rem;
+			font-size: 15px;
 		}
 		.judith {
-			font-size: 1rem;
+			font-size:10px;
 			color: white;
 			padding: 0;
-			line-height: 1.1rem;
-			max-height: 2.2rem;
+			line-height: 11px;
+			max-height: 22px;
 			overflow: hidden;
 		}
 	
@@ -108,7 +125,7 @@
 			display: flex;
 			flex-direction: row;
 			justify-content: space-around;
-			font-size: 1rem;
+			font-size:10px;
 			padding: 0 $margin-sm;
 		}
 		li {
@@ -118,8 +135,8 @@
 			text-align: center;
 			flex: 1;
 			margin: 0 $margin-xs;
-			font-size: 1rem;
-			height: 5.5rem;
+			font-size:10px;
+			height: 55px;
 			justify-content: center;
 			span{ //make sure we show only 2 lines of overflow-break happens
 				height: 2.5em;
@@ -127,7 +144,51 @@
 			}
 		}
 	}
-	.content{
+	>.content{
+		flex: 1;
 		position: relative;
+		height: inherit !important;
+		overflow: hidden;
+	}
+
+
+	&[root] {
+		transform: translate3d(0,0,0);
+		transition: opacity 0.4s ease;
+		&[deleting] { //when root is deleted: Prevent it from sliding 
+			transform: translate3d(0,0,0);
+		}
+	}
+	&[hidden] {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		opacity:1;
+		transform: translate3d(0,0,0);
+		transition: none;
+		display: none;
+	}
+	&[hiding] {
+		opacity:1;
+		//transition: opacity 0.4s ease;
+		transform: translate3d(0px,0,0);
+	}
+	&[deleting] {
+		opacity:0;
+		transform: translate3d(300px,0,0);
+	}
+
+	&[creating] {
+		opacity:1;
+		transform: translate3d(0,0,0);
+	}
+	&[showing] {
+		opacity:1;
+		transform: translate3d(0,0,0);
+	}
+	//once it is loaded, visible class is added. thus implementing transition
+	&[visible] {
+		opacity:1;
+		transform: translate3d(0,0,0);
 	}
 }

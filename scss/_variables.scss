@@ -7,7 +7,10 @@ $select-height: 2em;
 $toggle-height: 2em;
 $button-height: 2em;
 
-$height-top-bar: 4.5rem;
+$height-top-bar: 45px;
+
+$shadow-b-up: 0 0 10px rgba(0, 0, 0, 0.5);
+$shadow-b-down: 0 0 1px rgba(0, 0, 0, 0.5);
 
 //==== TOP BAR ================
 $color-top-bar: rgba(5,72,119,1);// p4
@@ -18,6 +21,7 @@ $color-error: #F32332;
 $color-bg-error: #F32332;
 $color-border: #77a2c5;
 $color-border-active: #2196F3;
+$color-border-disabled: rgba(129, 142, 152, 0.6);
 
 $color-input-bg: #FFF;
 $color-input-fg: #333;
@@ -26,16 +30,22 @@ $color-button-fg:#FFF;
 $color-button-bg:#2196F3;
 
 $color-link:#2196F3;
+$color-link-active:rgb(243, 82, 33);
+
+$color-action: #2196F3;
+$color-action-active: #1d70b4; //button or label is clicked on
 
 $color-tabbutton-fg: #b2b2b2;
 $color-tabbutton-fg-active: #2196F3;
 $color-tabbutton-border-active: #2196F3;
 $size-tabbutton-border-active: 2px;
 $color-tabbutton-bg: transparent;
+$color-tabbutton-counter-fg: #FFF;
+$color-tabbutton-counter-bg: #F32332;
 
 $size-border: 1px;
 $size-border-active: 2px;
-$size-input-h-md: 35px;
+$size-input-h-md: 30px;
 $size-input-i-md: 20px;
 $size-input-i-sm: 10px;
 
@@ -50,9 +60,14 @@ $margin-md: 6px;
 $margin-lg: 12px;
 $margin-xl: 24px;
 
-$color-list-item-fg:black;
+$color-list-item-fg:#1d1d1d;
 $color-list-item-active-fg:#2196F3;
 
+$size-f-xl: 1.25em;
+$size-f-lg: 1.25em;
+$size-f-md: 1.125em;
+$size-f-sm: 1em;
+$size-f-xs: 0.75em;
 
 
 
@@ -63,4 +78,16 @@ $color-list-item-active-fg:#2196F3;
 		overflow-y:scroll !important;  
 		-webkit-overflow-scrolling:touch !important;
 	}
+}
+
+@mixin button-primary{
+	width: auto;
+	color: $color-button-fg;
+	background-color: $color-button-bg;
+	border: none;
+	border-radius: 3px;
+	padding: $margin-lg $margin-lg;
+	font-size: $size-f-input;
+	box-shadow: 0px 0px 3px 0px #000000ab;
+	-webkit-appearance: none;
 }

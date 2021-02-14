@@ -34,6 +34,9 @@
 
 	$c_bo_nav:  1px solid #e2e2e2;
 	$c_b_nav: aliceblue;
+	*{
+		box-sizing: border-box;
+	}
 	.touch-scroll{
 		overflow: visible !important;
 	}
@@ -62,14 +65,15 @@
 			}
 		}
 		button{
+      border: none;
 			background-color: transparent;
 			box-shadow: none;
 		}
 
 	}
 	.tab-buttons li{
-		font-size: 2rem;
-		line-height: 2rem;
+		font-size:20px;
+		line-height:20px;
 		margin: 0;
 		padding: 12px 0px;
 		color: $c_f_tab;
@@ -300,7 +304,8 @@
 		button{
 			color: $c_f_tab;
 			border-radius: 50%;
-			background-color: transparent;
+      background-color: transparent;
+      border: none;
 			width: 2.5em;
 			height: 2.5em;
 			padding: .5em;
@@ -314,6 +319,7 @@
 			margin:auto;
 			//padding:1em;
 			&>button{
+        border: none;
 				width: auto;
 				border-radius: $margin-sm;
 			}
@@ -324,5 +330,5 @@
 				margin-right: 0;
 			}
 		}
-	}
+  }
 }

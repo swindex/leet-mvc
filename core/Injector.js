@@ -8,6 +8,6 @@ import { NavController } from "./NavController";
 	Inject.Config = Config ;
  */
 export const Injector = {
-	implement: (InjectTemplate )=>{return Injector}
-}
+  implement: (InjectTemplate )=>{return Injector;}
+};
 

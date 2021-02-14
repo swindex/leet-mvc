@@ -1,74 +1,98 @@
 import './MenuPage.scss';
 import { BasePage } from "./../BasePage"; 
-import { ItemList } from './../../components/ItemList';
 import { isFunction } from 'util';
 import { Injector } from './../../core/Injector';
+import { DOM } from '../../core/DOM';
 
 
 /**
  * @param {HTMLElement} container
  */
 export class MenuPage extends BasePage {
-	constructor(page) {
-		super(page)
-		this.down = false;
-		//this.selected = selected;
+  constructor(position) {
+    super();
+    this.down = false;
+    this.position = position || "left";
+    if (this.position) {
+      this.className = this.className + " " + this.position;
+    }
+    var st = Injector.Nav ? Injector.Nav.getPages() : null;
 
-		var st = Injector.Nav ? Injector.Nav.getPages() : null;
+    this.currPage = st[st.length-1].page;
 
-		this.currPage = st[st.length-1].page;
+    /** @type {{action:Page|string,label:string,className?:string}[]}*/
+    this.items = [];
 
-		/** @type {{action:Page|string,label:string}[]}*/
-		this.items = [];
-		//this.List = new ItemList()
-		//this.items = [];
-		//this.List.onItemClicked = (item,index)=>{
-		//	this.onItemClicked(item,index)
-		//};
-		/**
+    /**
 		 * HTML text to put in logo
 		 */
-		this.logo="";
-	}
-	onItemClicked(item,index){
-		console.log(item);
-		throw new Error("Override onItemClicked");
-	}
+    this.logo=null;
+    this.logoHeight=undefined;
 
-	onDestroy() {
-		super.onDestroy();
-		$('body').removeClass('menu-shown');
-	};
+    this.slogan = "";
+  }
+  _onItemClicked(item,index){
+    this.destroy();
+    this.onItemClicked(item,index);	
+  }
 
-	/**
+  onItemClicked(item,index){
+    console.log(item);
+    throw new Error("Override onItemClicked");
+  }
+
+  onDestroy() {
+    super.onDestroy();
+    DOM('body').first().classList.remove('menu-shown');
+  }
+
+  /**
 	 * Check if the item is selected
 	 * @param {{action:any,label:string}} item
 	 * @return {boolean}
 	 */
-	isSelected(item){
-		return (isFunction(item.action) && this.currPage instanceof item.action);
-	}
+  isSelected(item){
+    return (isFunction(item.action) && this.currPage instanceof item.action);
+  }
 
-	init() {
-		$('body').addClass('menu-shown');
-	};
+  onVisible(){
+    console.log("");
+  }
 
-	onBackdropClicked() {
-		this.destroy();
-	}
+  onInit() {
+    DOM('body').first().classList.add('menu-shown');
+  }
+
+  onBackdropClicked() {
+    this.destroy();
+  }
+
+  /** @override */
+  onLogoClicked($event) {
+    
+  }
+  _onLogoClicked($event) {
+    this.destroy();
+    this.onLogoClicked($event);
+  }
+
+  get template (){
+    return this.extendTemplate(super.template, template);
+  }
 }
 MenuPage.visibleParent = true;
 MenuPage.selector = "page-menu";
 MenuPage.className = "page-Menu";
-MenuPage.template = `
+var template = `
 <div class="backdrop" onclick="this.onBackdropClicked()"></div>
-<div class="menu-body">
+<div class="menu-body scroll">
 	<div class="menu-head">
-		<div id="logo" [innerHTML] = "this.logo"></div>
+		<div id="logo" [style] = "{ backgroundImage: this.logo ? 'url('+this.logo+')' : undefined, height: this.logoHeight }" onclick="this._onLogoClicked($event)"></div>
+		<div id="slogan" [innerhtml] = "this.slogan"></div> 
 	</div>
 	<ul class="menu-tree">
-		<li [foreach]="index in this.items as item" onclick="this.onItemClicked(item, index)" [selected]="this.isSelected(item)">
-			<span [innerHTML] = "item.label"></span>
+		<li [foreach]="index in this.items as item" onclick="this._onItemClicked(item, index)" [class]="item.className" [selected]="this.isSelected(item)">
+			<span [innerhtml] = "item.label"></span>
 		</li>
 	</ul>
 </div>

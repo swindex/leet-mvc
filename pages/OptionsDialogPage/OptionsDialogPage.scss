@@ -10,6 +10,13 @@
 		margin: 0;
 		color: $color-list-item-fg;
 		font-size: 1.15em;
+		&.hideOverflow{
+			div.item > div{
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+		}
 	}
 	li {
 		list-style: none;
@@ -17,6 +24,7 @@
 		padding: 0;
 		display: flex;
 		align-items: center;
+		color: $color-list-item-fg;
 		&[selected] {
 			color: $color-list-item-active-fg;
 		}
@@ -30,17 +38,13 @@
 			max-height:2em;	
 		}
 		div.item {
-			border-bottom: 1px solid #b8b8b8;
+			border-bottom: 1px solid #dedede;
 			display: block;
 			margin-right: 0;
 			margin-left: 0;
 			padding: $margin-lg 0;
 			width: 100%;
-			>div{
-				overflow: hidden;
-				white-space: nowrap;
-				text-overflow: ellipsis;
-			}
+			
 			.item-text{
 				font-size: 0.9em;
 			}

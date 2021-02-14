@@ -3,166 +3,234 @@ import { NavController } from '../core/NavController';
 import { ChangeWatcher } from '../core/ChangeWatcher';
 import { tryCall } from '../core/helpers';
 import { BaseComponent } from '../components/BaseComponent';
-import { Objects } from 'leet-mvc/core/Objects';
+import { Objects } from '../core/Objects';
 
 export class BasePage extends ChangeWatcher{
-	/**
-	 * @param {JQuery<HTMLElement>} page 
-	 */
-	constructor(page){
-		super();
-		this.page = page;
-		/** @type {NavController} */
-		this.Nav;
-		/** @type {CSSStyleDeclaration} */
-		this.style;
+  constructor(){
+    super();
+    /** @type {HTMLElement}*/
+    this.page = null;
+    /** @type {NavController} */
+    this.Nav;
+    /** @type {CSSStyleDeclaration} */
+    this.style;
 		
-		// @ts-ignore
-		this.style = {};
-		this.components = null;
-		this.binder = new Binder(this,this.page);
+    // @ts-ignore
+    this.style = {};
+    this.components = null;
+    this.binder = new Binder(this);
 
-		this.isDeleting = false;
-		this.isCreating = false;
-		this.isHiding = false;
-		this.isShowing = false;
-		this.isVisible = false;
+    this.name = null;
 
-		//Be lazy. This allows us to directly pass page methods without having to worry about "this"
-		Objects.bindMethods(this);
-	}
+    this.isDeleting = null;
+    this.isCreating = null;
+    this.isHiding = null;
+    this.isShowing = null;
+    this.isVisible = null;
+    this.isDeleted = null;
+    this.isHidden = null;
+    this.isRoot = null,
+
+    this.selector = this.constructor.selector;
+    this.className = this.constructor.className;
+    this.visibleParent = this.constructor.visibleParent;
+
+    this.classNames = [];
+
+    //Be lazy. This allows us to directly pass page methods without having to worry about "this"
+    Objects.bindMethods(this);
+  }
 
 	
 
-	/**
+  /**
 	 * Force Page update
 	 */
-	update(){
-		if (!this.binder)
-			return;
-		this.binder.updateElements();
-		this.onUpdated();
-	}
+  update(){
+    if (!this.binder)
+      return;
 
-	_onVisible(){
-		if (!this.isLoaded && (this.isLoaded=true)){
-			this.onLoaded();
-		}
-		this.onVisible();
-	}
+    this.onBeforeUpdated();	
+    this.binder.updateElements();
+    this.onUpdated();
+  }
 
-	/**
+  _onVisible(){
+    this.onVisible();
+  }
+
+  /**
 	 * Command the nav controller to remove this page from the stack
 	 */
-	destroy(){
-		this.Nav.remove(this);
-	}
+  destroy(){
 
-	//Implementation of Lifecycle callbacks that are called by NavController
-	/**
+    if (this.isDeleted) {
+      return;
+    }
+
+    if (this.Nav && this.onBeforeDestroy() === false){
+      return;
+    }
+		
+    //if nav exists, then tell nav to delete the page. Nav will then call this method again
+    if (this.Nav){
+      //tell Nav to remove the page from the stack
+      this.Nav.remove(this);
+    } else {
+      //Nav does not exist any more: delete the page
+      //notify whoever implements, that page is to be destroyed.
+      this.onDestroy();		
+					
+      //Call destroy on all child components
+      if (this.components){
+        for (let i in this.components){
+          var comp = this.components[i];
+          if (comp instanceof BaseComponent){
+            tryCall(comp, comp.destroy);
+            delete this.components[i];
+          }
+        }
+      }
+      //destroy binder
+      if (this.binder){
+        this.binder.destroy();
+      }
+      //Destroy the rest of listeners, properties and methods
+      this.stopWatch();
+      Objects.strip(this);
+      this.isDeleted = true;
+    }
+  }
+
+  //Implementation of Lifecycle callbacks that are called by NavController
+  /**
 	 * ***OverrideCallSuper***
 	 * Initialize binder
 	 */
-	onInit(binderEvent){
-		this.binder.bindElements(binderEvent);
-		super.startWatch();
-	}
+  _init(binderEvent){
+ 		//this.template = BasePage.template.replace('<!--child-template-->', this.template);
 
-	/**
+    this.binder.bindElements(binderEvent, this.template);
+    this.page = this.binder.vdom.elem;
+    super.startWatch();
+  }
+
+  /**
 	 * ***Override***
-	 * Called after page is created but before it is rendered
+	 * Called after page is created and inserted into the document but before it is rendered
+	 * @param {HTMLElement} page 
 	 */
-	init(){
+  onInit(page){
 		
-	}
-	/**
+  }
+  /**
 	 * ***Override***
 	 * * Called after the page is created and fully rendered
 	 */
-	onLoaded(){
+  onLoaded(){
 
-	}
-
-	/**
+  }
+  /**
+	 * ***Override****
+	 * Called before page is updated either manually, or by watcher
+	 */
+  onBeforeUpdated(){
+    //console.log(this.constructor.name, 'updated');
+  }
+  /**
 	 * ***Override****
 	 * Called after page is updated either manually, or by watcher
 	 */
-	onUpdated(){
-		//console.log(this.constructor.name, 'updated');
-	}
+  onUpdated(){
+    //console.log(this.constructor.name, 'updated');
+  }
 
-	/**
+  /**
 	 * ***Override****
 	 * * Called every time the page becomes active but before transitions
 	 */
-	onEnter(){
+  onEnter(){
 
-	}
+  }
 
-	/**
+  /**
 	 * ***Override***
 	 * Called every time the transitions have ended and the page is fully visible.
 	 */
-	onVisible(){
+  onVisible(){
 
-	}
-	/**
+  }
+  /**
 	 * ***Override****
 	 */
-	onLeave(){
+  onLeave(){
 
-	}
-	/**
-	 * ***Override****
-	 */
-	onResize(){
-
-	}
-	/**
-	 * ***DO NOT OVERRIDE****
-	 * Called when NavController is about to delete the page
-	 */
-	_onDestroy(){
-		//notify whoever implements, that page is to be destroyed.
-		this.onDestroy();		
-		
-		//Call destroy on all child components
-		if (this.components){
-			for (let i in this.components){
-				var comp = this.components[i];
-				if (comp instanceof BaseComponent){
-					tryCall(comp, comp.onDestroy);
-					tryCall(comp, comp._onDestroy);
-					delete this.components[i];
-				}
-			}
-		}
-		//Destroy the rest of listeners, properties and methods
-		//super._onDestroy();
-		this.stopWatch();
-		Objects.strip(this);
-	}
-
-	/**
+  }
+  /**
 	 * ***Override***
-	 * Called when NavController is about to delete the page
+	 * @param {{width:number, height:number}} windowSize
+	 */
+  onResize(windowSize){
+
+  }
+  /**
+	 * ***OverrideCallSuper***
+	 * @param {{width:number, height:number}} windowSize
+	 */
+  resize(windowSize){
+    this.onResize(windowSize);
+  }
+
+  /**
+	 * ***Override***
+	 * Called when NavController removes it self from the page and page is about to be deleted
 	 * @override
 	 */
-	onDestroy(){
-		
-	}
+  onDestroy(){
+  }
+
+  /**
+	 * ***Override***
+	 * Called before page is deleted. Return false to prefent page deletion. 
+	 * @return {any|false}
+	 * @override
+	 */
+  onBeforeDestroy(){
+    return true;
+  }
 	
-	/**
+  /**
 	 * ***Override***
 	 * Called just before navigating back from the page.
 	 * return false to cancel the back page navigation
 	 * @returns {boolean}
 	 */
-	onBackNavigate(){
-		return true;
-	}
+  onBackNavigate(){
+    return true;
+  }
+
+  /**
+	 * Extend the base template with child template.
+	 * Use <!--child-template--> to mark the slot
+	 * @param {string} super_template 
+	 * @param {string} child_template 
+	 */
+  extendTemplate(super_template, child_template){
+    return super_template.replace('<!--child-template-->', child_template );
+  }
+
+  getClassName(){
+    return [this.className, ...this.classNames ].join(' ');
+  }
+
+  /**
+	 * ***Readonly*** property that returns the template string
+	 *   You can extend base template by returning this.extendTemplate(super.template,'child template string');
+	 */
+  get template (){
+    return `<div page [class]="this.getClassName()" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}"><!--child-template--></div>`;
+  }
 }
 BasePage.visibleParent = null;
 BasePage.selector = null;
-BasePage.template = null;
 BasePage.className = null;

@@ -28,6 +28,18 @@ div[page].page-Menu{
 		content: ' ';
 	}
 	//Initial CSS for when the page has just been created
+	&.left {
+		.menu-body {
+			margin-left: 0;
+			transform: translate3d(-100%,0,0);
+		}
+	}
+	&.right {
+		.menu-body {
+			margin-left: auto;
+			transform: translate3d(100%,0,0);
+		}
+	}	
 	.menu-body{
 		background-color: #054877;
 		width: 80%;
@@ -36,22 +48,24 @@ div[page].page-Menu{
 		transform: translate3d(-100%,0,0);
 		
 		.menu-head{
-			padding: 70px 0 50px;
 			border-radius: 1px;
 			background-color: #fff;
-			font-family: Crimson Text, serif;
-			font-style: italic;
-			font-size: 2rem;
-			padding: 5rem 1rem;
+			color: #11497f;
+			font-size: 17px;
+			padding:50px 10px;
 			#logo{  
 				display: flex;
 				justify-content: center;
-				//margin-bottom: 2rem;
+				//margin-bottom:20px;
 				//background-image: url(../../img/logo/NAS_logoLarge.png);
-				height: 7rem;
+				height:70px;
 				background-size: contain;
 				background-position: 50% 50%;
-				background-repeat: no-repeat;
+        background-repeat: no-repeat;
+        cursor: pointer;
+			}
+			#slogan{
+				text-align: center;
 			}
 			p{
 				text-align:center;
@@ -75,7 +89,7 @@ div[page].page-Menu{
 				align-items: center;
 				margin-left: 1em;
 				//@include effect-tap-ripple;
-				font-size: 1.3em;
+				font-size: $size-f-md;
 			}
 			li > span{
 				display: block;
@@ -83,7 +97,7 @@ div[page].page-Menu{
 				//font-family: OSbold!important;
 				//text-transform: uppercase;
 				cursor: pointer;
-				padding: 1.5rem 1rem;
+				padding: 15px 10px;
 				color: #e9e9e9;
 				border-bottom: 1px solid rgba(100, 100, 100, 0.5);
 				i{
@@ -123,8 +137,12 @@ div[page].page-Menu{
 		}
 	}
 	&[deleting] {
-		.menu-body{
+		&.left .menu-body {
 			transform: translate3d(-100%,0,0);
+			transition: transform ease 0.3s;
+		}
+		&.right .menu-body {
+			transform: translate3d(100%,0,0);
 			transition: transform ease 0.3s;
 		}
 	}

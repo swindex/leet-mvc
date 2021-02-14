@@ -20,10 +20,10 @@ declare namespace DataShapeModule{
 		 * Copy Object Data using a template
 		 * @param obj The object to copy.
 		 * @param templateObj The template.
-		 * @param throwIfNotMatching - Trow error if the shape of the object does not match the shape of the template
+		 * @param throwIfNotMatching - false - no error reporting (default); true - Throw errors; 1 - Throw warnings
 		 * @return {T}
 		 */
-		copy<T>(obj: A, templateObj?: T, throwIfNotMatching?: boolean ): T;,
+		copy<T,A>(obj: A, templateObj?: T, throwIfNotMatching?: boolean ): T;,
 	}
 }
 export = DataShapeModule;

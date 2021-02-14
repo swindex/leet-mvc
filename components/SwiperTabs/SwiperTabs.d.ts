@@ -1,4 +1,4 @@
-import { NavController } from "leet-mvc/core/NavController";
+import { NavController } from "./NavController";
 
 declare namespace SwiperTabsModule{
 	class SwiperTabs extends SwiperTabs {
@@ -9,6 +9,7 @@ declare namespace SwiperTabsModule{
 		init(container: HTMLElement): void;
 		onTabChanged(page: object,index: index): void;
 		destroy():void;
+		changeTab(index: number, speed?: number , triggerEvents?:boolean): void;
 		swiper: Swiper;
 	};
 	

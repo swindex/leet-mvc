@@ -1,232 +1,232 @@
 import * as moment from "moment";
-import { Translate } from "leet-mvc/core/Translate";
+import { Translate } from "./Translate";
 
 export var DateTime = {
-	/**
+  /**
 	 * Return date in progressive string format. Used for display purposes ONLY
 	 * @param {string|Date} [value] a Date object or parseable string, 
 	 * @param {boolean} [outputOffset] - specify whether (UTC-xx:xx) timezone offset will be output. Defaults to false
 	 * @returns {string}
 	 */
-	smartFormat(value, outputOffset ) {
-		outputOffset = outputOffset || false;
-		if (empty(value))
-			return null;
-		//moment.locale(this.GUser.settings.language);
+  smartFormat(value, outputOffset ) {
+    outputOffset = outputOffset || false;
+    if (empty(value))
+      return null;
+    //moment.locale(this.GUser.settings.language);
 		
-		var now = moment();
+    var now = moment();
 
-		var date = moment(value);
-		var offset = moment.parseZone(value).utcOffset();
-		var hasZone = typeof date._tzm !=='undefined';
+    var date = moment(value);
+    var offset = moment.parseZone(value).utcOffset();
+    var hasZone = typeof date._tzm !=='undefined';
 
-		var sameZone = !hasZone ||  (hasZone && now.utcOffset() === date.utcOffset());
+    var sameZone = !hasZone ||  (hasZone && now.utcOffset() === date.utcOffset());
 
-		var f ="";
+    var f ="";
 		
-		//Everything is the same - show time only	
-		if (
-			now.year() == date.year() &&
+    //Everything is the same - show time only	
+    if (
+      now.year() == date.year() &&
 			now.month() == date.month() &&
 			now.week() == date.week() &&
 			now.day() == date.day()
-		)
-			f = "["+ Translate("Today") +"] LT";
+    )
+      f = "["+ Translate("Today") +"] LT";
 		
-		//Only Day of week is different	- show day of week and time
-		if (
-			now.year() == date.year() &&
+    //Only Day of week is different	- show day of week and time
+    if (
+      now.year() == date.year() &&
 			now.month() == date.month() &&
 			now.week() == date.week() &&
 			now.day() != date.day()
-		)
-			f = "dddd LT";
+    )
+      f = "dddd LT";
 
-		//week is different - show month and date and time
-		if (
-			now.year() == date.year() &&
+    //week is different - show month and date and time
+    if (
+      now.year() == date.year() &&
 			now.month() == date.month() &&
 			now.week() != date.week()
-		)
-			f = "MMM D LT";
+    )
+      f = "MMM D LT";
 
-		//month is different - show month and date and time
-		if (
-			now.year() == date.year() &&
+    //month is different - show month and date and time
+    if (
+      now.year() == date.year() &&
 			now.month() != date.month()
-		)
-			f = "MMM D LT";
+    )
+      f = "MMM D LT";
 
-		//year is different - show year and month and date and time
-		if (
-			now.year() != date.year()
-		)
-			f = "MMM D, YYYY LT";
+    //year is different - show year and month and date and time
+    if (
+      now.year() != date.year()
+    )
+      f = "MMM D, YYYY LT";
 
-		if ( outputOffset &&
+    if ( outputOffset &&
 			hasZone
-			)
-				f += " [(UTC]Z[)]";
+    )
+      f += " [(UTC]Z[)]";
 	
-		var ret = null;
-		if ( hasZone && !sameZone )				
-			ret = moment(value).utcOffset(offset).format(f);
-		else	
-			ret = moment(value).format(f);
+    var ret = null;
+    if ( hasZone && !sameZone )				
+      ret = moment(value).utcOffset(offset).format(f);
+    else	
+      ret = moment(value).format(f);
 			
-		return ret;	
-	},
-	/**
+    return ret;	
+  },
+  /**
 	 * Return date in local string format: YYYY-MM-DD HH:mm:ss. Used for data transfer.
 	 * @param {string|Date} __date a Date object or parseable string, 
 	 * @returns {string}
 	 */
-	formatLocalDate: function(__date) {
-		if (__date == undefined || !moment(__date).isValid())
-			return null;
-		return moment(__date).format('YYYY-MM-DD HH:mm:ss');
-	},
-		/**
+  formatLocalDate: function(__date) {
+    if (__date == undefined || !moment(__date).isValid())
+      return null;
+    return moment(__date).format('YYYY-MM-DD HH:mm:ss');
+  },
+  /**
 	 * Return date in local string format: YYYY-MM-DD HH:mm:ss. Used for data transfer.
 	 * @param {string|Date} __date a Date object or parseable string, 
 	 * @returns {string}
 	 */
-	fromLocalDate: function(__date) {
-		if (__date == undefined || !moment(__date).isValid())
-			return null;
-		return moment(__date,'YYYY-MM-DD HH:mm:ss').toISOString();
-	},
-	/**
+  fromLocalDate: function(__date) {
+    if (__date == undefined || !moment(__date).isValid())
+      return null;
+    return moment(__date,'YYYY-MM-DD HH:mm:ss').toISOString();
+  },
+  /**
 	 * Return date in human- readable format.
 	 * @param {string|Date} __date a Date object or parseable string, 
 	 * @returns {string}
 	 */
-	toHumanDate: function(__date) {
-		if (__date == undefined || !moment(__date).isValid())
-			return null;
+  toHumanDate: function(__date) {
+    if (__date == undefined || !moment(__date).isValid())
+      return null;
 		
-		return moment(__date).format('LL');
-	},
+    return moment(__date).format('LL');
+  },
 
-	/**
+  /**
 	 * convert date from human format to date.
 	 * @param {string} __date a parseable string, 
 	 * @returns {Date}
 	 */
-	fromHumanDate: function(__date) {
-		if (__date == undefined || !moment(__date, DateTime._humanDate).isValid())
-			return null;
-		return moment(__date, DateTime._humanDate).toDate();
-	},
-	/**
+  fromHumanDate: function(__date) {
+    if (__date == undefined || !moment(__date, DateTime._humanDate).isValid())
+      return null;
+    return moment(__date, DateTime._humanDate).toDate();
+  },
+  /**
 	 * Return time in human- readable format.
 	 * @param {string|Date} __date a Date object or parseable string, 
 	 * @returns {string}
 	 */
-	toHumanTime: function(__date) {
-		if (__date == undefined || !moment(__date).isValid())
-			return null;
+  toHumanTime: function(__date) {
+    if (__date == undefined || !moment(__date).isValid())
+      return null;
 		
-		return moment(__date).format(DateTime._humanTime);
-	},
-	/**
+    return moment(__date).format(DateTime._humanTime);
+  },
+  /**
 	 * Return convert readable format to date
 	 * @param {string|Date} __date a Date object or parseable string, 
 	 * @returns {Date}
 	 */
-	fromHumanTime: function(__date) {
-		if (__date == undefined || !moment(__date, DateTime._humanTime).isValid())
-			return null;	
-		return moment(__date, DateTime._humanTime).toDate();
-	},
+  fromHumanTime: function(__date) {
+    if (__date == undefined || !moment(__date, DateTime._humanTime).isValid())
+      return null;	
+    return moment(__date, DateTime._humanTime).toDate();
+  },
 	
-	/**
+  /**
 	 * convert date from human format to date.
 	 * @param {string} __date a parseable string, 
 	 * @returns {Date}
 	 */
-	fromHumanDateTime: function(__date) {
-		if (__date == undefined || !moment(__date,DateTime._humanDateTime).isValid())
-			return null;
-		return moment(__date,DateTime._humanDateTime).toDate();
-	},
-	/**
+  fromHumanDateTime: function(__date) {
+    if (__date == undefined || !moment(__date,DateTime._humanDateTime).isValid())
+      return null;
+    return moment(__date,DateTime._humanDateTime).toDate();
+  },
+  /**
 	 * Return date in human- readable format.
 	 * @param {string|Date} __date a Date object or parseable string, 
 	 * @returns {string}
 	 */
-	toHumanDateTime: function(__date) {
-		if (__date == undefined || !moment(__date).isValid())
-			return null;	
-		return moment(__date).format(DateTime._humanDateTime);
-	},
+  toHumanDateTime: function(__date) {
+    if (__date == undefined || !moment(__date).isValid())
+      return null;	
+    return moment(__date).format(DateTime._humanDateTime);
+  },
 	
-	/**
+  /**
 	 * Return date in specified format
 	 * @param {string|Date} __date a Date object or parseable string, 
 	 * @param {string} [format] - defaults to MM/DD/YYYY
 	 * @returns {string}
 	 */
-	toFormat(__date, format){
-		format = format || DateTime._humanMMDDYYYY;
-		if (__date == undefined || !moment(__date).isValid())
-			return null;
-		return moment(__date).format(format);
-	},
+  toFormat(__date, format){
+    format = format || DateTime._humanMMDDYYYY;
+    if (__date == undefined || !moment(__date).isValid())
+      return null;
+    return moment(__date).format(format);
+  },
 
 
-	moment: moment,
+  moment: moment,
 
-	toJSONDate: function(__date){
-		if (__date == undefined || !moment(__date).isValid())
-			return null;
+  toJSONDate: function(__date){
+    if (__date == undefined || !moment(__date).isValid())
+      return null;
 		
-		return moment(__date).format(DateTime._JSONDate);
-	},
+    return moment(__date).format(DateTime._JSONDate);
+  },
 
-	fromJSONDate: function(__date){
-		if (__date == undefined || !moment(__date).isValid())
-			return null;
-		return moment(__date,DateTime._JSONDate);
-	},
+  fromJSONDate: function(__date){
+    if (__date == undefined || !moment(__date).isValid())
+      return null;
+    return moment(__date,DateTime._JSONDate);
+  },
 
-	/**
+  /**
 	 * Return Device Date-Time
 	 */
-	fromJSONDeviceDate: function(__date){
-		if (__date == undefined || !moment(__date).isValid())
-			return null;
-		var v = moment(__date,DateTime._JSONDate).parseZone().format('LLLL');	
-		var v2= moment(v,'LLLL');
-		return v2;
-	},
+  fromJSONDeviceDate: function(__date){
+    if (__date == undefined || !moment(__date).isValid())
+      return null;
+    var v = moment(__date,DateTime._JSONDate).parseZone().format('LLLL');	
+    var v2= moment(v,'LLLL');
+    return v2;
+  },
 
-	/**
+  /**
 	 * 
 	 * @param {Date} date 
 	 * @param {Date} time 
 	 */
-	combineDateTime(date, time){
-		var time_m = moment(time);
-		var cH = time_m.hour();
-		var cM = time_m.minute();
-		var cS = time_m.second();
+  combineDateTime(date, time){
+    var time_m = moment(time);
+    var cH = time_m.hour();
+    var cM = time_m.minute();
+    var cS = time_m.second();
 
-		var date_m = moment(date);
-		date_m.set('hour',cH);
-		date_m.set('minute',cM);
-		date_m.set('second',cS);
+    var date_m = moment(date);
+    date_m.set('hour',cH);
+    date_m.set('minute',cM);
+    date_m.set('second',cS);
 
-		return date_m.toDate();
-	},
+    return date_m.toDate();
+  },
 
-	setLocale(lang){
-		moment.locale(lang);
-	},
+  setLocale(lang){
+    moment.locale(lang);
+  },
 
-	_humanTime:"LT",
-	_humanDateTime:"LLLL",
-	_humanDate:"LL",
-	_JSONDate:'YYYY-MM-DD[T]HH:mm:ssZ',
-	_humanMMDDYYYY:"MM/DD/YYYY",
-}
+  _humanTime:"LT",
+  _humanDateTime:"LLLL",
+  _humanDate:"LL",
+  _JSONDate:'YYYY-MM-DD[T]HH:mm:ssZ',
+  _humanMMDDYYYY:"MM/DD/YYYY",
+};

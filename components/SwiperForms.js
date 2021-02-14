@@ -5,25 +5,25 @@ import 'swiper/dist/css/swiper.css';
 import { tryCall } from "./../core/helpers";
 
 
-/**
- * 
- * @param {FieldTemplate[]} formTemplate 
- * @param {*} [dataName]
- * @param {*} [errorsName]
- * @param {{navButtons?: true,submitButton?:boolean,pagination?:true, navigation?:boolean}} [options]
- * @return {{html: string, swiper: Swiper, validator: FormValidator,methods:{init:function(),slideToInvalid: function()}}}
- */
-export class SwiperForms extends Forms{
 
-	constructor(formTemplate, data, errors,options){
-		super(formTemplate, data, errors, {}, {formClass:'swiper-slide scroll'});
+export class SwiperForms extends Forms{
+	/**
+	 * 
+	 * @param {FieldTemplate[]} formTemplate 
+	 * @param {*} data
+	 * @param {*} [errors]
+ 	 * @param {*} [attrs]
+	 * @param {{navButtons?: true,submitButton?:boolean,pagination?:true, navigation?:boolean, nestedData?:boolean}} [options]
+	 */
+	constructor(formTemplate, data, errors, attrs={} ,options){
+		super(formTemplate, data, errors, attrs, {formClass:'swiper-slide scroll',nestedData:options.nestedData});
 		this.formTemplate = formTemplate;
-		this.options = options;
+		//this.options = options;
 		
 		/** @type {Swiper} */
 		this.swiper = null;
 		this.index = 0;
-		this.options = $.extend({
+		this.options = Object.assign({},{
 			navButtons: false,
 			submitButton: false,
 			pagination: true,
@@ -32,9 +32,9 @@ export class SwiperForms extends Forms{
 		},options);
 
 		/*this html comes from the Forms class*/
-		var formsHTML = this.html;
+		var formsHTML = this.template;
 
-		this.html = `
+		this.template = `
 		<div class="swiper-container" id="generatedform">
 			<div class="swiper-wrapper">
 				`+formsHTML+`
@@ -43,17 +43,21 @@ export class SwiperForms extends Forms{
 			<!-- Add Pagination -->
 			<div class="swiper-pagination"></div>
 			<!-- Add Nav Buttons -->
-			<div [if]="component.options.navigation" class="swiper-navigation">
-				<button [if]="!component.swiper.isBeginning" 
-					onclick="if (component.onBackClicked()!== false ) component.swiper.slidePrev()" name="back">Back</button>
-				<button [if]="!component.swiper.isEnd" 
-					onclick="if (component.onNextClicked()!== false ) component.swiper.slideNext()" class="item-right" name="next">Next</button>
-				<button [if]="component.swiper.isEnd && component.options.submitButton" 
-					onclick="component.onSubmitClicked()" class="item-right" name="submit">Submit</button>
+			<div [if]="this.options.navigation" class="swiper-navigation">
+				<button [if]="!this.swiper.isBeginning" 
+					onclick="if (this.onBackClicked()!== false ) this.swiper.slidePrev()" name="back">Back</button>
+				<button [if]="!this.swiper.isEnd" 
+					onclick="if (this.onNextClicked()!== false ) this.swiper.slideNext()" class="item-right" name="next">Next</button>
+				<button [if]="this._isShowSubmitButton()" 
+					onclick="this.onSubmitClicked()" class="item-right" name="submit">Submit</button>
 			</div>
 			
 		</div>
 		`
+	}
+
+	_isShowSubmitButton(){
+		return this.swiper.isEnd && this.options.submitButton;
 	}
 
 	/**
@@ -106,25 +110,27 @@ export class SwiperForms extends Forms{
 
 
 	
-	init(container){
-		super.init(container);
-		var sw = new Swiper($(container).find('#generatedform')[0],{
-			threshold:50,
-			initialSlide:this.index,
-			noSwiping: true,
-			iOSEdgeSwipeDetection: true,
-			pagination: $.extend({},this.options.pagination ?
-				{
-					el: '.swiper-pagination'
-				} : null),
+	onInit(container){
+		super.onInit(container);
+		setTimeout(()=>{
+			this.swiper = new Swiper(container,{
+				threshold:50,
+				//initialSlide:this.index,
+				noSwiping: true,
+				iOSEdgeSwipeDetection: true,
+				pagination: Object.assign({},this.options.pagination ?
+					{
+						el: '.swiper-pagination'
+					} : null),
+			});
+
+			this.swiper.on('slideChange',()=>{
+				this.index = this.swiper.activeIndex;
+
+				//Notify listener that the page has changed
+				this.onSlideChange(this.index);
+			})
+			this.swiper.slideTo(0);
 		});
-		this.swiper = $(container).find('#generatedform')[0].swiper;
-		this.swiper.on('slideChange',(v)=>{
-			this.index = this.swiper.realIndex;
-			this.binder.updateElements();
-			tryCall(this,this.onSlideChange,this.index);
-		})
-		//this.swiper.slideTo(0);
-		//this.binder.updateElements();
 	}
 }
