@@ -1,6 +1,6 @@
 import './MenuPage.scss';
 import { BasePage } from "./../BasePage"; 
-import { isFunction } from 'util';
+import { isFunction } from './../../core/helpers';
 import { Injector } from './../../core/Injector';
 import { DOM } from '../../core/DOM';
 

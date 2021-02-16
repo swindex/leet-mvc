@@ -132,6 +132,10 @@ export function isString(value){
 export function isNumber(value){
   return typeof value === "number"
 }
+
+export function isBoolean(value){
+  return typeof value === "boolean"
+}
 export function isObject(value){
   return value !== null && typeof value === 'object'
 
@@ -141,4 +145,8 @@ export function isArray(value){
 }
 export function isFunction(value){
   return typeof value === "function"
+}
+
+export function isDate(value){
+  return value instanceof Date
 }

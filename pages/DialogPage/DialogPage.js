@@ -2,8 +2,7 @@ import { BasePage } from "../BasePage";
 // @ts-ignore
 import * as template from './DialogPage.html';
 import './DialogPage.scss';
-import { tryCall } from "../../core/helpers";
-import { isString } from "util";
+import { isString, tryCall } from "../../core/helpers";
 import { Forms } from "../../components/Forms";
 import { Injector } from "../../core/Injector";
 import { NavController } from "../../core/NavController";

@@ -1,5 +1,4 @@
-import { isObject, isString } from "util";
-import { isArray } from "util";
+import { isArray, isObject, isString } from "leet-mvc/core/helpers";
 
 export const Objects = {
   filter: function (data, callback) {

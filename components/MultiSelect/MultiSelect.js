@@ -2,7 +2,7 @@ import { BaseComponent } from "../../components/BaseComponent";
 import { Objects } from "../../core/Objects";
 import { OptionsDialogPage } from "../../pages/OptionsDialogPage/OptionsDialogPage";
 import { Injector } from "../../core/Injector";
-import { isArray } from "util";
+import { isArray } from "./../../core/helpers";
 
 export class MultiSelect extends BaseComponent {
 

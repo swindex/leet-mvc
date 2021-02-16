@@ -1,7 +1,5 @@
-import { isArray, isFunction } from "util";
-import { isObject } from "util";
+import { isArray, isFunction, isObject, isBoolean } from "./helpers";
 import { Objects } from "./Objects";
-import { isBoolean } from "util";
 
 var ANY_KEY = Symbol("__KEY__");
 export var DataShape = {

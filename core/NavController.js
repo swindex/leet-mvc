@@ -1,9 +1,9 @@
-import { tryCall, argumentsToArray } from "./helpers";
+import { tryCall, argumentsToArray, empty } from "./helpers";
 import { BasePage } from "../pages/BasePage";
 import { isSkipUpdate } from "./Watcher";
 import { Objects } from "./Objects";
 import { DOM } from "./DOM";
-import { isObject } from "util";
+import { isObject } from "./helpers";
 
 export class NavController{
   constructor(){

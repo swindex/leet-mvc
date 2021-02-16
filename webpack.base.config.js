@@ -26,8 +26,8 @@ const path = require('path');
 
 
 
-module.exports = (env, overrideConfig) => {
-  var mode = (env && env.build) ? env.build : 'development';
+module.exports = (overrideConfig) => {
+  var mode = overrideConfig.mode;
 
   var plugins = [
     new ProgressBarPlugin(),
@@ -43,7 +43,7 @@ module.exports = (env, overrideConfig) => {
 
   //if production, use additional plugins
   if (mode === "production") {
-    plugins.push(new WebpackCleanupPlugin(['www']));
+    //plugins.push(new WebpackCleanupPlugin(['www']));
   }
 
   var base = {
@@ -66,7 +66,7 @@ module.exports = (env, overrideConfig) => {
         return `webpack:///${path.normalize(info.resourcePath)}`;
       },
     },
-    optimization: {
+    /*optimization: {
       usedExports: true,
       //sideEffects: true,
       minimizer: [new UglifyJsPlugin({
@@ -78,14 +78,14 @@ module.exports = (env, overrideConfig) => {
           keep_fnames: true//needed for automatic page classname and selector identification
         }
       }), new OptimizeCSSAssetsPlugin({})],
-    },
+    },*/
     module: {
       rules: [
-        {
+        /*{
           test: /\.js$/,
           exclude: /@babel(?:\/|\\{1,2})runtime|core-js/,
           loader: 'babel-loader',
-        },
+        },*/
         {
           test: /\.html$/,
           use: [
@@ -96,42 +96,15 @@ module.exports = (env, overrideConfig) => {
         },
         { test: /\.(jpg|png|gif)$/, loader: "file-loader", options: { name: '[name].[ext]', outputPath: 'img/' } },
         {
-          test: /\.(scss|css)$/,
+          test: /\.s[ac]ss$/i,
           use: [
-            {
-              loader: MiniCssExtractPlugin.loader,
-            },
-            {
-              loader: 'css-loader',
-              options: {
-                importLoaders: 1,
-                minimize: mode != "production" ? true : false,
-              }
-            },
-            {
-              loader: 'external-downloader'
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                ident: 'postcss',
-                plugins: [
-                  autoprefixer({
-
-                    browsers: ['Android >= 7', 'iOS >=9']
-                  }),
-                  cssnano({})
-                ],
-              }
-            },
-
-            {
-              loader: 'sass-loader',
-              options: {
-                sourceMap: mode != "production" ? true : false,
-              }
-            }
-          ]
+            // Creates `style` nodes from JS strings
+            "style-loader",
+            // Translates CSS into CommonJS
+            "css-loader",
+            // Compiles Sass to CSS
+            "sass-loader",
+          ],
         },
         { test: /\.(woff|woff2|eot|ttf|svg)$/, loader: 'file-loader', options: { name: '[name].[ext]', outputPath: 'fonts/' } },
 
@@ -139,6 +112,6 @@ module.exports = (env, overrideConfig) => {
     },
     plugins: plugins
   };
-  return merge(base, overrideConfig);
+  return merge.merge(base, overrideConfig);
 };
 exports.raw = true;

@@ -1,11 +1,9 @@
 import { empty, tryCall, numberFromLocaleString, isObjLiteral } from "./helpers";
 import { BaseComponent } from "../components/BaseComponent";
-import { isObject, isString, isBoolean } from "util";
+import { isObject, isString, isBoolean, isArray, isFunction } from "./helpers";
 
 import { isSkipUpdate, Watcher } from "./Watcher";
 import { DateTime } from "./DateTime";
-import { isArray } from "util";
-import { isFunction } from "util";
 import { Objects } from "./Objects";
 import { DOM } from "./DOM";
 
@@ -1363,6 +1361,8 @@ export var Binder = function (context) {
   }
 
   function isElementSettingOnInput(elem) {
+    if (elem.tagName == "TEXTAREA")
+      return true;
     switch (elem.tagName + ":" + elem.type) {
       case "INPUT:text":
       case "INPUT:password":
@@ -1379,8 +1379,6 @@ export var Binder = function (context) {
       case "INPUT:date":
       case "INPUT:color":
       case "INPUT:file":
-      case "TEXTAREA":
-
         return true;
       default:
         return false;

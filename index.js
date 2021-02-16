@@ -1,4 +1,3 @@
-require('./core/polyfill');
 
 
 import { MapElement } from "./core/MapElement";

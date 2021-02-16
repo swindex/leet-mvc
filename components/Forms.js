@@ -2,7 +2,7 @@ import { Objects } from "./../core/Objects";
 import { FormValidator } from "./../core/form_validator";
 import { Text } from "./../core/text";
 import { BaseComponent } from "./BaseComponent";
-import { isNumber, isArray, isString, isObject } from "./../core/helpers";
+import { isNumber, isArray, isString, isObject, empty } from "./../core/helpers";
 import { DateTime } from "./../core/DateTime";
 import { Translate } from "../core/Translate";
 import { tryCall, round } from '../core/helpers';

@@ -1,4 +1,5 @@
-import { isObject, isArray, isSymbol, isDate } from "util";
+import { isArray, isDate, isObject } from "leet-mvc/core/helpers";
+
 
 let isProxy = Symbol("isProxy");
 let isWatched = Symbol("isWatched");
@@ -48,7 +49,7 @@ export var Watcher={
       if (//value === isSkipUpdate ||
         updatesHalted == true ||
         target[property] === value ||
-        isSymbol(property) ||
+        typeof property == "symbol" ||
         //property === isSkipUpdate ||
         !object[isWatched]){
 

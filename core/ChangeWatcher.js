@@ -1,5 +1,3 @@
-import { isObject, isArray, isFunction, isSymbol, isDate } from "util";
-
 import { Watcher, isSkipUpdate } from './Watcher.js';
 
 const propChangeHanler = Symbol('propChangeHanler');
@@ -12,10 +10,10 @@ export class ChangeWatcher {
     //var updateRequested = false;
     this[propChangeHanler] = (target,property,value)=>{
       if (target===this){
-        if (isFunction(this[property+"Change_2"])) {
+        if (typeof this[property+"Change_2"] == "function") {
           this[property+"Change_2"](value);
         }
-        if (isFunction(this[property+"Change"])) {
+        if (typeof this[property+"Change"] == "function") {
           this[property+"Change"](value);
         }
       }

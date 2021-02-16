@@ -1,5 +1,5 @@
 import { Injector } from "./Injector";
-import { isString } from "util";
+import { isString } from "./helpers";
 import { argumentsToArray } from "./helpers";
 import { Objects } from "./Objects";
 
