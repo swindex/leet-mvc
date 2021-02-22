@@ -11,7 +11,7 @@ import { HeaderPage } from "./../HeaderPage/HeaderPage";
 import { Translate } from "./../../core/Translate";
 import { Injector } from "./../../core/Injector";
 import { ConfirmDanger } from "./../../core/simple_confirm";
-import { isArray, isFunction } from "./../../core/helpers";
+import { empty, isArray, isFunction } from "./../../core/helpers";
 import { DOM } from "./../../core/DOM";
 
 export class Calendar2Page extends HeaderPage {

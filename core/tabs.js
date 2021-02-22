@@ -1,3 +1,5 @@
+import { empty } from "./helpers";
+
 export var Tabs = {
   activate: function(this_ctrl) {
     var ctrl = this_ctrl || this;

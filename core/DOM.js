@@ -1,4 +1,4 @@
-import { isIterable } from './helpers';
+import { isIterable, empty } from './helpers';
 
 
 const identitySymbol = Symbol('identitySymbol');

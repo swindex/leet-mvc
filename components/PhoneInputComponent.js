@@ -3,6 +3,7 @@ import { Text } from '../core/text';
 import { DOM } from '../core/DOM';
 import { RegisterComponent } from '../core/Register';
 import { Forms } from './Forms';
+import { empty } from '../core/helpers';
 export class PhoneInputComponent extends BaseComponent {
   constructor() {
     super();

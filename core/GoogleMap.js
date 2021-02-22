@@ -1,6 +1,6 @@
 import GoogleMapsLoader from 'google-maps';
 import { Loader } from '../pages/Loader/Loader';
-import { tryCall } from './helpers';
+import { empty, tryCall } from './helpers';
 import { Dialog } from './../pages/DialogPage/DialogPage';
 import { Translate } from './Translate';
 

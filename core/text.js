@@ -1,4 +1,5 @@
 import { isString } from "leet-mvc/core/helpers";
+import { empty } from "./helpers";
 
 export var Text = {
   escapeHTML:function(unsafe, convertNewlines) {
