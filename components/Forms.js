@@ -400,7 +400,7 @@ ${(noErrorHint ? '' : this.addErrorHint(el))}
     if (empty(_name)) {
       return true;
     }
-    return !this.fields[_name].attributes.hidden;
+    return !this.fields[_name].attributes.hidden && !this.fields[_name].attributes.forcehide;
   }
 
   getClassName(_name) {
