@@ -154,7 +154,7 @@ export class LoginPage extends HeaderPage {
     this.passwordType = this.passwordType==="text" ? "password" : "text";
   }
 }
-LoginPage.selector = 'page-login';
+LoginPage.className = 'page-LoginPage';
 var template = `
 	<div id="logo" [style]="{backgroundSize:this.backgroundSize}">
 		<span bind="Translate('AppSlogan')"></span>
