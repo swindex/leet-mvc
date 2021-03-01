@@ -114,6 +114,7 @@ export class Forms extends BaseComponent {
   updateTemplate(formTemplate) {
     this.formTemplate = Objects.copy(formTemplate);
 
+    Objects.overwrite(this.errors, {});
     this.validator = new FormValidator(this.data,  this.formTemplate, this.errors, this.options);
     this.fields = this.validator.fields;
     this.setDataValuesFromFields();
