@@ -32,10 +32,13 @@ export function Translate(keyOrText, replaceValues){
 
   if (Array.isArray(keyOrText)) {
     var val = Objects.getPropertyByPath(Inject['LNG'], keyOrText);
-    if (val == null) {
+    if (val === undefined) {
       var newk = keyOrText.slice();
       newk[keyOrText.length-1] = "" // get default key
       val = Objects.getPropertyByPath(Inject['LNG'], newk);
+      if (val === undefined) {
+        val = keyOrText[keyOrText.length-1]
+      }
     }
     var ret = val;
   } else { 
