@@ -14,6 +14,13 @@ export var Text = {
 			 .replace(/\n/g, convertNewlines ? "<br />" : '');
   },
 
+  escapeAttribute:function(unsafe) {
+    if (!isString(unsafe)) return "";
+
+    return unsafe
+			 .replace(/"/g, "&quot;");
+  },
+
   /**
    * Safely convert to string. Null or undefined convert to an empty string
    * @param {any} val 
