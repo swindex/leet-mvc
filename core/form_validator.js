@@ -465,8 +465,13 @@ export function FormValidator(data, template, errors, options) {
     if (otherFieldValue === undefined || otherFieldValue === null) {
       otherFieldValue = "null";
     }
+
     otherFieldValue = "" + otherFieldValue;
 
+    if (!fields[otherFieldName]){
+      throw new Error(`Trying to execute displayRule:'${f.displayRule}' referring to a non-existing field called:'${otherFieldName}'!`)
+    }
+    
     if (rule == "true_if") {
       if (fields[otherFieldName].attributes.hidden) {
         return otherfieldCompareValues.indexOf("null") >= 0;
