@@ -1,6 +1,6 @@
 
 import { Objects } from "./Objects";
-import { empty, tryCall, round, isArray, isObject, isString, isDate } from "./helpers";
+import { empty, tryCall, round, isArray, isObject, isString, isDate, isBoolean } from "./helpers";
 import { Translate } from "./Translate";
 import { Parser } from 'expr-eval';
 import { Text } from "./text";
