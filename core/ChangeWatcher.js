@@ -14,6 +14,9 @@ export class ChangeWatcher {
           this[property+"Change_2"](value);
         }
         if (typeof this[property+"Change"] == "function") {
+          if (typeof value == "symbol") {
+            return;
+          }
           this[property+"Change"](value);
         }
       }
