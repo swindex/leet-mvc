@@ -1079,11 +1079,14 @@ export var Binder = function (context) {
           //link componenet properties to getter values
           Objects.forEach(p_vDom.getters, (getter, key) => {
             c_vDom.getters[key] = getter;
-            if (component[key] === undefined && !attributes[key]){
-              console.warn(`Warning. Trying to set undefined property '${key}' in Component '${getClassName(component)}'. Please define property in component constructor!`);
+            if (key.indexOf(".") >= 0) {
+              Objects.setPropertyByPath(component, key, getter(inject));
+            } else {
+              if (component[key] === undefined && !attributes[key]){
+                console.warn(`Warning. Trying to set undefined property '${key}' in Component '${getClassName(component)}'. Please define property in component constructor!`);
+              }
+              component[key] = getter(inject);
             }
-
-            component[key] = getter(inject);
           });
 
           var dynamicEvents = [];
