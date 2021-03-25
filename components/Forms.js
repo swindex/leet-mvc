@@ -371,7 +371,11 @@ ${childrenHTML}
   }
 
   renderFieldGroupHTML(el, elHTML, noTitle = false, noErrorHint = false) {
-    var isRequired = el.validateRule ? el.validateRule.includes('required') : null;
+    var isRequired = el.validateRule ? el.validateRule.match(/\brequired\b/) : null;
+    if (isRequired) {
+      //required can not be inside a template.
+      isRequired = !el.validateRule.match(/{{.*\brequired\b.*}}/);
+    }
 
     return `
 <div class="${this.options.fieldClass} ${el.class ? ' ' + el.class : ''} ${el.type ? ' ' + el.type : ''} ${isRequired ? 'required' : ''} ${el.icon ? 'hasIcon' : ''}" [class]="this.getClassName('${el._name ? el._name : ''}')" [if]="this.getIsVisible('${el._name ? el._name : ''}')">

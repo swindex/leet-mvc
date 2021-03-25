@@ -506,8 +506,21 @@ export function FormValidator(data, template, errors, options) {
    * @param {FieldTemplate} f 
    */
   function is_field_invalid(f, propName) {
+    //execute templates
+    var rule = f[propName];
+    rule = rule.replace(/{{([^{}]*)}}/g, function(a, b){
+      var getter = new Function('data',
+        `return ${b};`
+      );
+      try {
+        return getter(data);
+      } catch (ex){
+        console.error(`Error executing validation rule ${rule} :\n${ex}`);
+        return "";
+      }
+    })
     //iterate through messages to see if any keys match rule "required|max"
-    var rules = f[propName].split("|"); //split rules
+    var rules = rule.split("|"); //split rules
     var errmsg = "";
     //check if errmsg is an array and then assign a proper errormsg
     var type = "string";
@@ -544,6 +557,7 @@ export function FormValidator(data, template, errors, options) {
 
     //iterate through rules
     for (var r in rules) {
+      if (rules[r]=="") continue;
       var rr = splitFirst(rules[r], ":");
       var conditions = "";
 
