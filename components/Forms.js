@@ -962,7 +962,7 @@ Forms.field_definitions = {
     return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'tel', oninput: "this._formatPhoneNumber($event)",autocomplete:"false" })]);
   },
   hidden(forms, el, parentPath) {
-    return "";
+    return forms.addInput(el, { type: 'hidden' });
   },
   textarea(forms, el, parentPath) {
     return forms.renderFieldGroupHTML(el, [forms.addTextArea(el, null)]);
