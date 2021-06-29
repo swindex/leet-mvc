@@ -40,7 +40,7 @@ declare namespace ObjectsModule{
 		 * @param callback The function that will be executed on every object. Return false to stop iteration. Return any to skip rest of block
 		 * @return {T}
 		 */
-		forEach<T>(obj: Iterable<T>, callback: (valueOfProperty: T, propertyName: any) => false | any): void;,
+		forEach<T>(obj: Iterable<T>, callback: (valueOfProperty: T, propertyName: string|number) => false | any): void;,
 
 		/**
 		 * Convert array of objects to key-value pair collection

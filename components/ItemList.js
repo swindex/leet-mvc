@@ -26,11 +26,7 @@ export class ItemList extends BaseComponent {
     this.perPage = 20;
     this._displayFrom = 0;
     this._displayTo = 0;
-    this.template = `
-			<div>
-
-			</div>
-		`;
+    this.template = `<div></div>`;
   }
 
 	/**
