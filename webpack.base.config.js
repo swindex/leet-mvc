@@ -112,6 +112,6 @@ module.exports = (overrideConfig) => {
     },
     plugins: plugins
   };
-  return merge.merge(base, overrideConfig);
+  return merge(base, overrideConfig);
 };
 exports.raw = true;

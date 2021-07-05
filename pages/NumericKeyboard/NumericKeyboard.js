@@ -540,7 +540,7 @@ class NumericKeyboardPage extends BasePage {
   stopBlinker() {
     this.isTextSelected = false;
     clearInterval(this.blinker);
-    this.setValue(this.getValue());
+    this.setValue(this.getValue().replace(/(,|\.)*$/,''));
   }
   type_char(chr) {
     var r_val = this.getValue();

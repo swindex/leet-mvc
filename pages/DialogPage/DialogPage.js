@@ -73,6 +73,15 @@ export class DialogPage extends BasePage{
 		
     return this;	
   }
+
+  addRadio(name, title, value, required, items, attrs=null) {
+    var valRule = (isString(required) ? required : (required ? "required" : null));
+    this.controls.push({name: name, type: "radio", title: title, validateRule: valRule, items: items, attributes:attrs});
+    this.data[name] = value;
+    this.render();
+		
+    return this;	
+  }
 	
   addInput(name, title, type, value, required, attrs=null) {
     var valRule = (isString(required) ? required : (required ? "required" : null));

@@ -1,3 +1,4 @@
+import { Objects } from '../core/Objects';
 import Swiper from 'swiper/bundle';
 import 'swiper/swiper-bundle.css';
 
@@ -16,10 +17,18 @@ export class SwiperComponent extends BaseComponent{
 		this.swiper = null;
 		this.index= null;
 		this.options = Object.assign({},{
+      threshold: 50,
+      //initialSlide:this.index,
+      noSwiping: true,
+      iOSEdgeSwipeDetection: true,
+      slidesPerView: 1,
+      calculateHeight: false,
 			navigation: true,
 			submitButton: "Submit",
-			pagination: true,
-			slidesPerView: 1,
+      centerInsufficientSlides:true,
+      pagination:{
+          el: '.swiper-pagination'
+        }
 		},options);
 
 		this.template = `
@@ -104,23 +113,8 @@ export class SwiperComponent extends BaseComponent{
 
 	onInit(container){
 		setTimeout(()=>{
-			this.swiper = new Swiper(this.container,{
-				threshold: 50,
-				//initialSlide:this.index,
-				noSwiping: true,
-				iOSEdgeSwipeDetection: true,
-				slidesPerView: this.options.slidesPerView,
-				/*breakpoints:{
-					640:{
-						slidesPerView: 1
-					}
-				},*/
-				centerInsufficientSlides:true,
-				pagination: Object.assign({},this.options.pagination ?
-					{
-						el: '.swiper-pagination'
-					} : null),
-			});
+      var options = Object.assign({}, this.options)
+			this.swiper = new Swiper(this.container, options);
 
 			this.swiper.on('slideChange',()=>{
 				var old = this.index;
@@ -142,6 +136,6 @@ export class SwiperComponent extends BaseComponent{
 			
 			this.index = 0;
 			this.slideTo(this.index);
-		});
+		}, 15); //give it 15 ms to make sure all is renderd
 	}
 }
