@@ -118,7 +118,7 @@ export function State2(data){
       var callback = Queue[i]._onSet;
       if (callback){
         try {
-          tryCall(null, callback, Objects.copy(data));
+          tryCall(null, callback, Objects.copy(Data));
         } catch (ex) {
           console.warn(ex);
         }

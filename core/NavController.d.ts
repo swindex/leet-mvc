@@ -26,6 +26,7 @@ declare namespace NavControllerModule{
     onPageNavigateBack(pageName: string, pageObject: BasePage): void;
     onDestroyPage(pageName: string, pageObject: BasePage, frameIndex: number): void;
 		onPageCreated(PageInstance: BasePage):void;
+    onRootPageRemoved(PageInstance: BasePage):void;
 		onRootPageBackPressed(): void;
 		getPages(): PageFrame[];
 		destroy():void;

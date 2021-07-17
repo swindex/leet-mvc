@@ -156,6 +156,8 @@ export class NavController{
     var lastEntry = this.stack[this.stack.length-1];
     if (lastEntry){
       this.onPageNavigateBack(lastEntry.name, lastEntry.page);
+    } else {
+      this.onRootPageRemoved(pageObject);
     }
   };
   /**
@@ -290,7 +292,6 @@ export class NavController{
     tryCall(frame.page, frame.page.onLeave);
     tryCall(frame.page, frame.page._onDestroy);
     this.onDestroyPage(frame.name, frame.page, frameIndex);
-
     this.hidePageElement(frame, true);
     //history.pop();		
 
@@ -470,6 +471,8 @@ export class NavController{
 	 */
   onPageNavigateTo(name, pageObject, args) { }
 
+  /** @abstract */
+  onRootPageRemoved(pageObject) {}
   /**
 	 * ***Override***
 	 * Callback fired when page is created

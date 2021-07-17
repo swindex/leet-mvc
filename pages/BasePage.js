@@ -35,6 +35,8 @@ export class BasePage extends ChangeWatcher{
     this.className = this.constructor.className;
     this.visibleParent = this.constructor.visibleParent;
 
+    this.routingUrl = null; //for router
+
     this.classNames = [];
 
     //Be lazy. This allows us to directly pass page methods without having to worry about "this"
