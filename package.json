@@ -70,7 +70,7 @@
     "sass": "^1.45.0",
     "sass-loader": "^7.0.1",
     "script-loader": "^0.7.2",
-    "shelljs": "^0.8.3",
+    "shelljs": "^0.8.5",
     "style-loader": "^0.20.3",
     "sync-request": "^6.1.0",
     "typescript": "^2.9.2",
