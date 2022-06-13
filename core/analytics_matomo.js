@@ -268,6 +268,11 @@ class Matomo {
     return this;
   }
 
+  setReferrerURL(name) {
+    this.options._ref = name;
+    return this;
+  }
+
   /**
 	 * 
 	 * @param {number} ver 
