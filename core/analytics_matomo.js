@@ -44,14 +44,15 @@ export class Analytics {
     this.config = config;
 
     //only init if device is initialized
-    if (typeof window.device !== 'undefined') {
+    /*if (typeof window.device !== 'undefined') {
       this.Tracker = new Matomo(config.SiteId, config.URL);
-    }
+    }*/
 
     this.PrevScreenUrl = null;
     this.PrevScreenName = null;
   }
 
+  /** Create tracker instance */
   init() {
     this.Tracker = new Matomo(this.config.SiteId, this.config.URL);
   }
@@ -393,18 +394,17 @@ class Matomo {
     this.makeRequest(formData);
   }
 
-  /** @override */
+  /** @canoverride */
   makeRequest(data){
     window.fetch(this._URL,
       {
         method: 'POST',
-        //headers: new Headers([['Content-Type','application/json']]),
         mode: 'no-cors',
         body: data
       }).then((ret) => {
         //console.log("SPY OK");
       }).catch((err) => {
-        //console.log("SPY Err:" + JSON.stringify(this._URL)+ JSON.stringify(payload) + JSON.stringify(err));
+        console.error(err)
       });
   }
   /**
