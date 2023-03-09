@@ -288,9 +288,10 @@ export class NavController{
 
   removeFrameN(frameIndex) {
     var frame = this.stack.splice(frameIndex, 1)[0];
-
+    tryCall(frame.page, frame.page.onBeforeDestroy);
     tryCall(frame.page, frame.page.onLeave);
-    tryCall(frame.page, frame.page._onDestroy);
+    
+    //tryCall(frame.page, frame.page._onDestroy);
     this.onDestroyPage(frame.name, frame.page, frameIndex);
     this.hidePageElement(frame, true);
     //history.pop();		
