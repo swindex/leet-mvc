@@ -78,8 +78,13 @@ export class BasePage extends ChangeWatcher{
     if (this.Nav){
       //tell Nav to remove the page from the stack
       this.Nav.remove(this);
-    } else {
-      //Nav does not exist any more: delete the page
+    } 
+  }
+
+  /**
+   * Method called by Nav controller to clean up the resources
+   */
+  _cleanup() {
       //notify whoever implements, that page is to be destroyed.
       this.onDestroy();		
 					
@@ -101,7 +106,6 @@ export class BasePage extends ChangeWatcher{
       this.stopWatch();
       Objects.strip(this);
       this.isDeleted = true;
-    }
   }
 
   //Implementation of Lifecycle callbacks that are called by NavController

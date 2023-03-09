@@ -1,4 +1,4 @@
-import { isArray, isDate, isObject } from "leet-mvc/core/helpers";
+import { isArray, isDate, isObject } from "./helpers";
 
 
 let isProxy = Symbol("isProxy");

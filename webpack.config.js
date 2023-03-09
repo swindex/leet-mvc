@@ -2,6 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin'); //installed via npm
 const baseConfig = require("./webpack.base.config");
 const merge = require("webpack-merge");
 const path = require('path');
+const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
 module.exports = (env) => {
   var mode = (env && env.build) ? env.build : 'development';

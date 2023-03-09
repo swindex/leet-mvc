@@ -1,4 +1,4 @@
-import { isString } from "leet-mvc/core/helpers";
+import { isString } from "./helpers";
 import { empty } from "./helpers";
 
 export var Text = {

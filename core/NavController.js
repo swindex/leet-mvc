@@ -51,7 +51,7 @@ export class NavController{
   }
   documentBackButtonHandler(){
     var cf = this.currentFrame();
-    if (cf && tryCall(cf.page, cf.page.onBackNavigate) !== false && tryCall(cf.page, cf.page.onBeforeDestroy) !== false && this.back() === null) {
+    if (cf && tryCall(cf.page, cf.page.onBackNavigate) !== false && this.back() === null) {
       this.onRootPageBackPressed(cf.name);
     }
   }
@@ -133,6 +133,8 @@ export class NavController{
       }, this.backTimeout);
 
       var cf = this.currentFrame();
+      if (this.checkPageOnBeforeDestroy(cf)===false)
+        return false;  
       this.removeLastFrame();
       this.onPageNavigateBack(cf.name, cf.page);
       this._resetPagesVisibility();
@@ -146,12 +148,13 @@ export class NavController{
 	 * @param {Page} pageObject 
 	 */
   remove(pageObject) {
-    for (var i = 0; i < this.stack.length; i++) {
-      if (this.stack[i].page === pageObject) {
-        this.removeFrameN(i);
-        break;
-      }
-    }
+    let frame = this.stack.find(el=>el.page === pageObject)
+
+    if (this.checkPageOnBeforeDestroy(frame)===false)
+      return null;  
+
+    this.removeFrame(frame)
+
     this._resetPagesVisibility();
     var lastEntry = this.stack[this.stack.length-1];
     if (lastEntry){
@@ -286,9 +289,15 @@ export class NavController{
     return maxZ;
   }
 
-  removeFrameN(frameIndex) {
-    var frame = this.stack.splice(frameIndex, 1)[0];
-    tryCall(frame.page, frame.page.onBeforeDestroy);
+  checkPageOnBeforeDestroy(frame) {
+    return tryCall(frame.page, frame.page.onBeforeDestroy);
+  }
+
+  removeFrame(frame) {
+    let frameIndex = this.stack.findIndex(el=>el === frame)
+    //remove from stack
+    this.stack.splice(frameIndex, 1)[0];
+    //tryCall(frame.page, frame.page.onBeforeDestroy);
     tryCall(frame.page, frame.page.onLeave);
     
     //tryCall(frame.page, frame.page._onDestroy);
@@ -299,11 +308,13 @@ export class NavController{
     frame = null;
     return true;
   }
+
   removeLastFrame() {
     if (this.stack.length === 0)
       return null;
-    return this.removeFrameN(this.stack.length - 1);
+    return this.removeFrame(this.stack[this.stack.length - 1]);
   }
+  
   /**
 	 * Return current page frame
 	 * @return {PageFrame}
@@ -316,6 +327,11 @@ export class NavController{
   removeAllFrames() {
     if (this.stack.length === 0)
       return null;
+
+    let frame = this.stack[this.stack.length - 1]  
+    if (this.checkPageOnBeforeDestroy(frame)===false)  {
+      console.warn("Warning: Page "+ frame.name + " was deleted despite it's onBeforeDestroy returning false!")
+    }
 
     if (this.removeLastFrame())
       this.removeAllFrames();
@@ -432,7 +448,7 @@ export class NavController{
         if (isDeleting) {
           frame.page[isSkipUpdate] = true;
           frame.page.Nav = null;
-          frame.page.destroy(true);
+          frame.page._cleanup(true);
         }
       });
     }

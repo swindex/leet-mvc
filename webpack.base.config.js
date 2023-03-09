@@ -26,8 +26,8 @@ const path = require('path');
 
 
 
-module.exports = (overrideConfig) => {
-  var mode = overrideConfig.mode;
+module.exports = (env) => {
+  var mode = (env && env.build) ? env.build : 'development';
 
   var plugins = [
     new ProgressBarPlugin(),
@@ -101,9 +101,21 @@ module.exports = (overrideConfig) => {
             // Creates `style` nodes from JS strings
             "style-loader",
             // Translates CSS into CommonJS
-            "css-loader",
+            {
+              loader: 'css-loader',
+              options: {
+                importLoaders: 1,
+                minimize: mode != "production" ? true : false,
+              }
+            },
             // Compiles Sass to CSS
-            "sass-loader",
+            {
+              loader: 'sass-loader',
+              options: {
+                implementation: require("sass"),
+                sourceMap: mode != "production" ? true : false
+              }
+            },
           ],
         },
         { test: /\.(woff|woff2|eot|ttf|svg)$/, loader: 'file-loader', options: { name: '[name].[ext]', outputPath: 'fonts/' } },
@@ -112,6 +124,6 @@ module.exports = (overrideConfig) => {
     },
     plugins: plugins
   };
-  return merge(base, overrideConfig);
+  return base;
 };
 exports.raw = true;
