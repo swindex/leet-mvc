@@ -998,7 +998,7 @@ FormValidator.rules = {
     var re = new RegExp(condition);
 
     if (re.test(value) == false) {
-      return conditions[1] ? conditions[1] : "";
+      return conditions[1] ? conditions[1] : false;
     }
     return true;
   },

@@ -56,6 +56,20 @@ export class DialogPage extends BasePage{
     this.content.updateTemplate(this.controls);
   }
 
+  /**
+   * 
+   * @param {FieldTemplate} fieldTemplate 
+   * @param {any} value 
+   * @returns 
+   */
+  addField(fieldTemplate, value) {
+    this.controls.push(fieldTemplate);
+    this.data[fieldTemplate.name] = value;
+    this.render();
+		
+    return this;	
+  }
+
   addCheck(name, title, value, required, attrs = null) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type:'checkbox', title:title, validateRule: valRule, attributes:attrs});
