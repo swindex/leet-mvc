@@ -65,7 +65,7 @@ export class BasePage extends ChangeWatcher{
 	 * Command the nav controller to remove this page from the stack
 	 */
   destroy(){
-    if (this.isDeleted) {
+    if (this.isDeleted || this.isDeleting) {
       return;
     }
 		

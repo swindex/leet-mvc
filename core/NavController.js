@@ -150,11 +150,16 @@ export class NavController{
   remove(pageObject) {
     let frame = this.stack.find(el=>el.page === pageObject)
 
-    if (this.checkPageOnBeforeDestroy(frame)===false)
-      return null;  
+    if (!frame) {
+      console.warn(`Can't remove page ${pageObject?.constructor?.name} from the stack because it's already gone!`);
+    } else {
+      if (this.checkPageOnBeforeDestroy(frame)===false){
+        return null;  
+      }
+      this.removeFrame(frame)
+    }
 
-    this.removeFrame(frame)
-
+    
     this._resetPagesVisibility();
     var lastEntry = this.stack[this.stack.length-1];
     if (lastEntry){
