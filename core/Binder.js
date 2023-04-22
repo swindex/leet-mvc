@@ -522,17 +522,15 @@ export var Binder = function (context) {
         let s_name = attr.name.substr(2);
 
         let handler = function (evt) {
-          //console.log(evt.type)
-          //console.log(evt.target.value);
-          updateBoundContextProperty(evt.target);
-          
+          let target = evt.currentTarget;
+          updateBoundContextProperty(target);
           var inj = Object.assign({}, self.injectVars, { '$event': evt }, inject, findElemInject(elem));
           var eventHandler = createCaller(attr.value, inj);
           eventHandler(inj);
           //Immediately update the target HTML element value in case eventHandler has changed the element value. 
           //This is required if a multiple events are fired for the same element in one update cycle
-          if (evt.target && evt.target.VDOM && isElementSetting(evt.target) && evt.target.getAttribute("bind")) {
-            attributes["bind"](evt.target.VDOM, inject);
+          if (target && target.VDOM && isElementSetting(target) && target.getAttribute("bind")) {
+            attributes["bind"](target.VDOM, inject);
           }
         };
 
