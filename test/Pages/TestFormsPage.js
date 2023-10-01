@@ -54,8 +54,8 @@ export class TestFormsPage extends HeaderPage {
     console.log(typeof (BasePage.prototype));
     console.log(typeof ((new BasePage().prototype)));
 
-    //NumericKeyboard.enable();
-    //NumericKeyboard.options.layout = 1;
+    NumericKeyboard.enable();
+    NumericKeyboard.options.layout = 1;
   }
 
   onClicked() {

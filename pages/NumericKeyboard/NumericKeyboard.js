@@ -5,6 +5,7 @@ import { BasePage } from './../BasePage';
 import { Injector } from "./../../core/Injector";
 import { DOM } from '../../core/DOM';
 import { Objects } from '../../core/Objects';
+import { DeBouncer } from '../../core/DeBouncer';
 
 export var NumericKeyboard = {
   isEnabled: false,
@@ -207,21 +208,18 @@ class NumericKeyboardPage extends BasePage {
 
   hookEvents() {
 
-    if (isTouchDevice()) {
+    /*if (isTouchDevice()) {
       var ev_name = 'touchstart';
     } else {
       var ev_name = 'click';
-    }
-    //stop events bubbling past keyboard element
-    DOM(this.page).on(ev_name, (ev) => {
-      ev.stopPropagation();
-    });
-    //attach button events
-    DOM(this.page).on(ev_name, (ev) => {
+    }*/
+    var ev_name = "mousedown"
+    this.longDeleteInterval = null;
+    this.longDeleteDelay = null;
+    let debouncehit = DeBouncer.timeoutFirst(10, (ev)=>{
       if (ev.target.tagName != "BUTTON") {
         return;
       }
-      ev.stopPropagation();
       ev.target.classList.add('active');
       setTimeout(() => {
         ev.target.classList.remove('active');
@@ -229,6 +227,14 @@ class NumericKeyboardPage extends BasePage {
       var v = ev.target.value;
       if (v == "d") {
         this.backspace();
+        if (this.longDeleteInterval) clearInterval(this.longDeleteInterval);
+        this.longDeleteDelay = setTimeout(()=>{
+          if (this.longDeleteDelay)
+            this.longDeleteInterval = setInterval(() => {
+              if (this.longDeleteInterval)
+                this.backspace()
+            },50);
+        }, 500);
       } else if (v == "e") {
         this.destroyKB();
       } else if (v == "-") {
@@ -236,7 +242,37 @@ class NumericKeyboardPage extends BasePage {
       } else {
         this.type_char(ev.target.value);
       }
+    })
+
+    this.touchesTrigger = false;
+
+    //handle both events, in case one of them isnt avaialable
+    DOM(this.page).on("touchstart", (ev) => {
+      ev.stopPropagation();
+      //ev.preventDefault();
+      this.touchesTrigger = true;
+      debouncehit(ev);
+    },true);
+    DOM(this.page).on("mousedown", (ev) => {
+      ev.stopPropagation();
+      //ev.preventDefault();
+      if (this.touchesTrigger) {
+        return;
+      }
+      debouncehit(ev)
     }, true);
+
+    DOM(this.page).on("mouseup", (ev) => {
+      ev.stopPropagation();
+      //ev.preventDefault();
+      this.clearLongTimeouts()
+    },true)
+
+    /*DOM(this.page).on("click", (ev) => {
+      ev.stopPropagation();
+      //ev.preventDefault();
+    },true)*/
+
     var self = this;
     //handle hardware keyboard input
     DOM(document).on('keydown.virtual_keyboard', (ev) => { self.customKB_keydownhandler(ev); });
@@ -290,6 +326,11 @@ class NumericKeyboardPage extends BasePage {
     DOM(this.page).css({ top: (w_h - kb_h) + "px" });
     this.listenResize = true;
     this._resizeBody(true);
+  }
+
+  clearLongTimeouts(){
+    clearInterval(this.longDeleteInterval)
+    clearTimeout(this.longDeleteDelay)
   }
 
   setCursorPosition(posIndex){
@@ -355,6 +396,8 @@ class NumericKeyboardPage extends BasePage {
 
   //prepare for removing the keyboard page
   onBeforeDestroy() {
+    clearInterval(this.longDeleteInterval);
+    clearTimeout(this.longDeleteDelay);
     this.unFocusCurrentElement();
     DOM(this.page).removeAllEventListeners();
     DOM(document).off('keydown.virtual_keyboard');
@@ -581,6 +624,9 @@ class NumericKeyboardPage extends BasePage {
       this.cursorPosition --;
 
       this.setValue(digits.join('')); //remove last char and add caret
+      if (this.cursorPosition<=0) {
+        this.clearLongTimeouts();
+      }
       this.old_input.dispatchEvent(new Event('input'));
     }
 

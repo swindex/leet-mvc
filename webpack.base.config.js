@@ -1,14 +1,8 @@
+const TerserPlugin = require("terser-webpack-plugin");
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin'); //installed via npm
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const autoprefixer = require('autoprefixer');
-const cssnano = require('cssnano');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const merge = require("webpack-merge");
-//const require("resolve-url-loader")
 
 const path = require('path');
 
@@ -29,17 +23,11 @@ const path = require('path');
 module.exports = (env) => {
   var mode = (env && env.build) ? env.build : 'development';
 
-  var plugins = [
-    new ProgressBarPlugin(),
-    //new BundleAnalyzerPlugin(),
-    new MomentLocalesPlugin({
-      localesToKeep: [/*'fr', 'es'*/],
-    }),
-    new MiniCssExtractPlugin({
-      filename: "[name].bundle.[contenthash].css",
-      ignoreOrder: false
-    })
-  ];
+  var plugins = []
+
+  plugins.push(new ProgressBarPlugin());
+  plugins.push(new MomentLocalesPlugin({localesToKeep: [/*'fr', 'es'*/]}))
+  //plugins.push(new HtmlWebpackPlugin({ template: './src/index.html' }));
 
   //if production, use additional plugins
   if (mode === "production") {
@@ -54,38 +42,32 @@ module.exports = (env) => {
       port: 9000,
       disableHostCheck: true
     },
+    optimization: (mode=="production" ? {
+      minimize: true,
+      minimizer: [new TerserPlugin({
+        terserOptions: {
+          keep_classnames: true,
+          keep_fnames: true
+        },
+      })],
+    } : {}),
     devtool: mode != "production" ? "inline-source-map" : false,
     output: {
       path: path.resolve(__dirname, 'www'),
       filename: 'bundle.js',
-      devtoolModuleFilenameTemplate: (info) => {
-        const isGeneratedDuplicate = info.resourcePath.match(/\.vue$/) && info.allLoaders;
-        if (isGeneratedDuplicate) {
-          return `webpack-generated:///${info.resourcePath}?${info.hash}`;
-        }
-        return `webpack:///${path.normalize(info.resourcePath)}`;
-      },
     },
-    /*optimization: {
-      usedExports: true,
-      //sideEffects: true,
-      minimizer: [new UglifyJsPlugin({
-        parallel: 4,
-        uglifyOptions: {
-          mangle: true,
-          compress: true,
-          keep_classnames: true, //needed for automatic page classname and selector identification
-          keep_fnames: true//needed for automatic page classname and selector identification
-        }
-      }), new OptimizeCSSAssetsPlugin({})],
-    },*/
     module: {
       rules: [
-        /*{
+        {
           test: /\.js$/,
           exclude: /@babel(?:\/|\\{1,2})runtime|core-js/,
           loader: 'babel-loader',
-        },*/
+        },
+        {
+          test: /\.ts$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+        },
         {
           test: /\.html$/,
           use: [
@@ -101,21 +83,9 @@ module.exports = (env) => {
             // Creates `style` nodes from JS strings
             "style-loader",
             // Translates CSS into CommonJS
-            {
-              loader: 'css-loader',
-              options: {
-                importLoaders: 1,
-                minimize: mode != "production" ? true : false,
-              }
-            },
+            "css-loader",
             // Compiles Sass to CSS
-            {
-              loader: 'sass-loader',
-              options: {
-                implementation: require("sass"),
-                sourceMap: mode != "production" ? true : false
-              }
-            },
+            "sass-loader",
           ],
         },
         { test: /\.(woff|woff2|eot|ttf|svg)$/, loader: 'file-loader', options: { name: '[name].[ext]', outputPath: 'fonts/' } },

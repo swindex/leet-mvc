@@ -11,13 +11,27 @@
 		},
 		{
 			"type": "npm",
-			"script": "webpack-dev-server",
+			"script": "webpack--prod",
 			"problemMatcher": []
 		},
 		{
 			"type": "npm",
+			"script": "webpack serve",
+			"problemMatcher": [],
+			"label": "webpack serve"
+		},
+		{
+			"type": "npm",
 			"script": "webpack--prod",
-			"problemMatcher": []
+			"problemMatcher": [],
+			"label": ""
+		},
+		{
+			"type": "npm",
+			"script": "serve",
+			"problemMatcher": [],
+			"label": "npm: serve",
+			"detail": "webpack serve"
 		}
 	]
 }
