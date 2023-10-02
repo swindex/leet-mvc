@@ -1,48 +1,29 @@
 const TerserPlugin = require("terser-webpack-plugin");
-const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin'); //installed via npm
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 const path = require('path');
 
-//--env.build = production
-
-/*
-//Use the following path overrides for debuging.
-"sourceMapPathOverrides": {
-	"webpack:///src/*": "${workspaceFolder}/src/*",
-	"webpack:///./src/*": "${workspaceFolder}/src/*",
-	"webpack-generated:///src/*": "${workspaceFolder}/src/*",
-	"webpack:///node_modules/*": "${workspaceFolder}/node_modules/*",
-}
-*/
-
-
-
 module.exports = (env) => {
-  var mode = (env && env.build) ? env.build : 'development';
+  var production = env.production
 
   var plugins = []
 
   plugins.push(new ProgressBarPlugin());
   plugins.push(new MomentLocalesPlugin({localesToKeep: [/*'fr', 'es'*/]}))
+
   //plugins.push(new HtmlWebpackPlugin({ template: './src/index.html' }));
 
-  //if production, use additional plugins
-  if (mode === "production") {
-    //plugins.push(new WebpackCleanupPlugin(['www']));
-  }
+
 
   var base = {
-    mode: mode,
+    mode: production ? "production":"development",
     devServer: {
-      contentBase: path.join(__dirname, ''),
       compress: true,
       port: 9000,
-      disableHostCheck: true
     },
-    optimization: (mode=="production" ? {
+    optimization: (production ? {
       minimize: true,
       minimizer: [new TerserPlugin({
         terserOptions: {
@@ -51,10 +32,14 @@ module.exports = (env) => {
         },
       })],
     } : {}),
-    devtool: mode != "production" ? "inline-source-map" : false,
+    devtool: !production ? "inline-source-map" : false,
     output: {
       path: path.resolve(__dirname, 'www'),
       filename: 'bundle.js',
+      clean: true,
+    },
+    resolve: {
+      extensions: ['.ts', '.js', '.json']
     },
     module: {
       rules: [
@@ -72,24 +57,54 @@ module.exports = (env) => {
           test: /\.html$/,
           use: [
             {
-              loader: 'raw-loader',
+              loader: 'html-loader',
+              options:{
+                esModule:false
+              }
             },
           ],
         },
-        { test: /\.(jpg|png|gif)$/, loader: "file-loader", options: { name: '[name].[ext]', outputPath: 'img/' } },
         {
-          test: /\.s[ac]ss$/i,
+          test: /\.(scss|css)$/i,
           use: [
-            // Creates `style` nodes from JS strings
             "style-loader",
-            // Translates CSS into CommonJS
-            "css-loader",
-            // Compiles Sass to CSS
-            "sass-loader",
+            { 
+              loader:"css-loader", 
+              options: {
+                modules:"global"
+              }
+            },
+            {
+              loader:"postcss-loader",
+              options: {
+                postcssOptions: {
+                  plugins: [
+                    [
+                      "autoprefixer",
+                    ],
+                  ],
+                },
+              },
+            },
+            {
+              loader:"sass-loader"
+            },
           ],
         },
-        { test: /\.(woff|woff2|eot|ttf|svg)$/, loader: 'file-loader', options: { name: '[name].[ext]', outputPath: 'fonts/' } },
-
+        { 
+          test: /\.(jpg|png|gif)$/, 
+          type: 'asset/resource',
+          generator: {
+            filename: 'img/[name][ext]',
+          },
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|svg)$/,
+          type: 'asset/resource',
+          generator: {
+            filename: 'fonts/[name][ext]',
+          },
+        },
       ]
     },
     plugins: plugins
