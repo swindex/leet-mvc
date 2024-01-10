@@ -17,6 +17,7 @@ export var NumericKeyboard = {
     selectOnFocus: false,
     selectForeColor: 'white',
     selectBackColor: '#039be5',
+    bodyResizeDelay: 400,
     theme: '',
   },
   enable() {
@@ -68,14 +69,6 @@ function focusEventHandler(event) {
   }
 }
 
-function isTouchDevice() {
-  try {
-    document.createEvent("TouchEvent");
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
 function getPxNumber(val) {
   val = val + "";
   return Number(val.split('px')[0]);
@@ -119,7 +112,7 @@ class NumericKeyboardPage extends BasePage {
 
   /**
 	 * 
-	 * @param {{layout:number,selectOnFocus: boolean,selectForeColor: string,selectBackColor:string}} value 
+	 * @param {{layout:number,selectOnFocus: boolean,selectForeColor: string,selectBackColor:string, theme:string, bodyResizeDelay: number}} value 
 	 */
   setOptions(value) {
     this._options = value;
@@ -363,7 +356,11 @@ class NumericKeyboardPage extends BasePage {
 
       DOM(self.page).css({ top: (w_h - kb_h) + "px" });
 
-      DOM('body').css({ height: b_h + "px", overflow: 'visible', position: 'relative' });
+      DOM('body').css({
+        height: b_h + "px",
+        overflow: 'visible',
+        position: 'relative'
+      });
       if (emitResize) {
         window.dispatchEvent(new Event('resize'));
       }
@@ -382,17 +379,13 @@ class NumericKeyboardPage extends BasePage {
 
       }
 
-    }, 400);
+    }, this._options.bodyResizeDelay);
   }
 
 
   destroyKB() {
     this.destroy();
   }
-  /*onBackNavigate(){
-		this.destroyKB();
-		return true;
-	}*/
 
   //prepare for removing the keyboard page
   onBeforeDestroy() {
@@ -511,18 +504,35 @@ class NumericKeyboardPage extends BasePage {
     }
   }
 
+  /**
+   * Sanitize the plaintext string after input to make sure it looks like a number
+   * @param {string} value 
+   */
+  sanitizePlainTextValue(value){
+    if (value==null) {
+      value="";
+    }
+    value = String(value);
+
+    let t_exploded = value.split('');
+    if (t_exploded[0] == "0" && t_exploded.length >= 2 && t_exploded[1] != ".") {
+      t_exploded.splice(1, 0, ".");
+      value = t_exploded.join('');
+      this.cursorPosition ++;
+    }
+    return value;
+  }
+
+  /**
+   * 
+   * @param {string} t 
+   */
   setValue(t) {
+    //sanitize value
+    t = this.sanitizePlainTextValue(t);
+
     this.value = t;
     this.old_input.value = t;
-    /*var v = Number(t);
-    if (!isNaN(v)) {
-      //v = numberFromLocaleString(t);
-      //this.old_input.value = v;
-    } else {
-      //this.old_input.value = t;
-    }*/
-
-
 
     var style = "";
     if (this.isTextSelected) {
@@ -531,7 +541,7 @@ class NumericKeyboardPage extends BasePage {
     var pipechar = `<span style="border-left:1px solid ${this.inputStyle['color']};">&nbsp;</span>`;
     
     var items = (t+"").split('');
-    
+  
     var digits = Objects.map(items, (d,i) => {
       var cstyle = "";
       if (i == this.cursorPosition) {
@@ -596,14 +606,6 @@ class NumericKeyboardPage extends BasePage {
     //if DOT already exists, do nothing
     if (chr == "." && r_val.indexOf(".") >= 0) {
       return;
-    }
-    //if first char is 0, add DOT after
-    if (r_val == "0" && chr !== ".") {
-      r_val = r_val + ".";
-    }
-    //if first char is DOT, add 0 before
-    if (r_val == "" && chr == ".") {
-      r_val = r_val + "0"; //. will be added later
     }
 
     var digits = (r_val+"").split('');
