@@ -582,7 +582,7 @@ export function FormValidator(data, template, errors, options) {
         var title = f.title;
 
         if (!title || (isString(title) && title.length > 25)) {
-          title = "Field";
+          title = _messages[":attribute"] || "field";
         }
 
         errmsg = phReplace(errmsg,"attribute", title);

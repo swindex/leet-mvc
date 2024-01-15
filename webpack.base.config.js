@@ -55,13 +55,14 @@ module.exports = (env) => {
         },
         {
           test: /\.html$/,
+          exclude: /index\.html$/,  // Exclude index.html from html-loader
           use: [
             {
               loader: 'html-loader',
               options:{
                 esModule:false,
                 // Disables attributes processing
-                sources: false,
+                //sources: false,
               }
             },
           ],
