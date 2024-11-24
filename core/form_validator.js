@@ -833,7 +833,7 @@ FormValidator.rules = {
       //return validator.fields[name].attributes.isValid
     }
     
-    return (value !== "" && value != null && value != false) ? true : msg;
+    return (value !== "" && value != null && value !== false) ? true : msg;
   },
   filled(value, type, conditions, validator) {
     return FormValidator.rules.required(value, type, conditions, validator);
