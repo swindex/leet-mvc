@@ -37,6 +37,8 @@ export class DialogPage extends BasePage{
     /** @type {KeyValuePair} */
     this.errors={};
 
+    this.close_on_click_outside = true;
+
     /** @type {Forms} */
     this.content= new Forms(this.controls,this.data,this.errors);
   }
@@ -49,6 +51,11 @@ export class DialogPage extends BasePage{
 
   onButtonClicked(button_title){
     if (tryCall(this, this.buttons[button_title], this) != false)
+      this.destroy();
+  }
+
+  onClickedOutside() {
+    if (this.close_on_click_outside)
       this.destroy();
   }
 
