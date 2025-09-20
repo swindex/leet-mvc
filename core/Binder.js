@@ -1297,11 +1297,8 @@ export var Binder = function (context) {
             sel.selected = true;
             elem.value = v; //this is important
           } else {
-            if (firstOption) {
-              firstOption.selected = true;
-            }
-            //opdate data property to keep it in sync with element; 
-            updateBoundContextProperty(elem);
+            // If no matching option is found remove the selection from any options
+            DOM(elem).find("option[selected]").attr("selected", null);
           }
         }
         //});
