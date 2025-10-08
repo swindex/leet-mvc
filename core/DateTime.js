@@ -1,6 +1,25 @@
-import * as moment from "moment";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import "dayjs/locale/en";
+import "dayjs/locale/fr";
+
 import { empty } from "./helpers";
 import { Translate } from "./Translate";
+
+// Initialize dayjs plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(localizedFormat);
+dayjs.extend(customParseFormat);
+dayjs.extend(weekOfYear);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 export var DateTime = {
   /**
@@ -13,13 +32,13 @@ export var DateTime = {
     outputOffset = outputOffset || false;
     if (empty(value))
       return null;
-    //moment.locale(this.GUser.settings.language);
+    //dayjs.locale(this.GUser.settings.language);
 		
-    var now = moment();
+    var now = dayjs();
 
-    var date = moment(value);
-    var offset = moment.parseZone(value).utcOffset();
-    var hasZone = typeof date._tzm !=='undefined';
+    var date = dayjs(value);
+    var offset = dayjs(value).utcOffset();
+    var hasZone = value && (typeof value === 'string' && value.includes('T') && (value.includes('+') || value.includes('-') || value.includes('Z')));
 
     var sameZone = !hasZone ||  (hasZone && now.utcOffset() === date.utcOffset());
 
@@ -71,9 +90,9 @@ export var DateTime = {
 	
     var ret = null;
     if ( hasZone && !sameZone )				
-      ret = moment(value).utcOffset(offset).format(f);
+      ret = dayjs(value).utcOffset(offset).format(f);
     else	
-      ret = moment(value).format(f);
+      ret = dayjs(value).format(f);
 			
     return ret;	
   },
@@ -83,9 +102,9 @@ export var DateTime = {
 	 * @returns {string}
 	 */
   formatLocalDate: function(__date) {
-    if (__date == undefined || !moment(__date).isValid())
+    if (__date == undefined || !dayjs(__date).isValid())
       return null;
-    return moment(__date).format('YYYY-MM-DD HH:mm:ss');
+    return dayjs(__date).format('YYYY-MM-DD HH:mm:ss');
   },
   /**
 	 * Return date in local string format: YYYY-MM-DD HH:mm:ss. Used for data transfer.
@@ -93,9 +112,24 @@ export var DateTime = {
 	 * @returns {string}
 	 */
   fromLocalDate: function(__date) {
-    if (__date == undefined || !moment(__date).isValid())
-      return null;
-    return moment(__date,'YYYY-MM-DD HH:mm:ss').toISOString();
+    if (__date == undefined) return null;
+    
+    let parsed;
+    if (typeof __date === 'string') {
+      // Try parsing as local date format first
+      parsed = dayjs(__date, 'YYYY-MM-DD HH:mm:ss');
+      if (!parsed.isValid()) {
+        // Try default parsing
+        parsed = dayjs(__date);
+      }
+    } else {
+      // Handle Date object
+      parsed = dayjs(__date);
+    }
+    
+    if (!parsed.isValid()) return null;
+    
+    return parsed.toISOString();
   },
   /**
 	 * Return date in human- readable format.
@@ -103,10 +137,10 @@ export var DateTime = {
 	 * @returns {string}
 	 */
   toHumanDate: function(__date) {
-    if (__date == undefined || !moment(__date).isValid())
+    if (__date == undefined || !dayjs(__date).isValid())
       return null;
 		
-    return moment(__date).format('LL');
+    return dayjs(__date).format('LL');
   },
 
   /**
@@ -115,9 +149,25 @@ export var DateTime = {
 	 * @returns {Date}
 	 */
   fromHumanDate: function(__date) {
-    if (__date == undefined || !moment(__date, DateTime._humanDate).isValid())
-      return null;
-    return moment(__date, DateTime._humanDate).toDate();
+    if (__date == undefined) return null;
+    
+    // Try multiple date formats that are commonly used
+    const formats = [DateTime._humanDate, 'LL', 'MMM DD, YYYY', 'MMM D, YYYY', 'MMMM DD, YYYY', 'MMMM D, YYYY'];
+    
+    for (let format of formats) {
+      const parsed = dayjs(__date, format);
+      if (parsed.isValid()) {
+        return parsed.toDate();
+      }
+    }
+    
+    // Try default parsing as fallback
+    const defaultParsed = dayjs(__date);
+    if (defaultParsed.isValid()) {
+      return defaultParsed.toDate();
+    }
+    
+    return null;
   },
   /**
 	 * Return time in human- readable format.
@@ -125,10 +175,10 @@ export var DateTime = {
 	 * @returns {string}
 	 */
   toHumanTime: function(__date) {
-    if (__date == undefined || !moment(__date).isValid())
+    if (__date == undefined || !dayjs(__date).isValid())
       return null;
 		
-    return moment(__date).format(DateTime._humanTime);
+    return dayjs(__date).format(DateTime._humanTime);
   },
   /**
 	 * Return convert readable format to date
@@ -136,9 +186,25 @@ export var DateTime = {
 	 * @returns {Date}
 	 */
   fromHumanTime: function(__date) {
-    if (__date == undefined || !moment(__date, DateTime._humanTime).isValid())
-      return null;	
-    return moment(__date, DateTime._humanTime).toDate();
+    if (__date == undefined) return null;
+    
+    // Try multiple time formats
+    const timeFormats = [DateTime._humanTime, 'LT', 'HH:mm', 'H:mm', 'h:mm A', 'h:mm a', 'HH:mm:ss', 'H:mm:ss'];
+    
+    for (let format of timeFormats) {
+      const parsed = dayjs(__date, format);
+      if (parsed.isValid()) {
+        return parsed.toDate();
+      }
+    }
+    
+    // Try default parsing as fallback
+    const defaultParsed = dayjs(__date);
+    if (defaultParsed.isValid()) {
+      return defaultParsed.toDate();
+    }
+    
+    return null;
   },
 	
   /**
@@ -147,9 +213,33 @@ export var DateTime = {
 	 * @returns {Date}
 	 */
   fromHumanDateTime: function(__date) {
-    if (__date == undefined || !moment(__date,DateTime._humanDateTime).isValid())
-      return null;
-    return moment(__date,DateTime._humanDateTime).toDate();
+    if (__date == undefined) return null;
+    
+    // Try multiple datetime formats
+    const dateTimeFormats = [
+      DateTime._humanDateTime, 'LLLL', 
+      'dddd, MMMM D, YYYY h:mm A', 'dddd, MMMM DD, YYYY h:mm A',
+      'MMMM D, YYYY h:mm A', 'MMMM DD, YYYY h:mm A',
+      'MMM D, YYYY h:mm A', 'MMM DD, YYYY h:mm A',
+      'dddd, MMMM D, YYYY HH:mm', 'dddd, MMMM DD, YYYY HH:mm',
+      'MMMM D, YYYY HH:mm', 'MMMM DD, YYYY HH:mm',
+      'MMM D, YYYY HH:mm', 'MMM DD, YYYY HH:mm'
+    ];
+    
+    for (let format of dateTimeFormats) {
+      const parsed = dayjs(__date, format);
+      if (parsed.isValid()) {
+        return parsed.toDate();
+      }
+    }
+    
+    // Try default parsing as fallback
+    const defaultParsed = dayjs(__date);
+    if (defaultParsed.isValid()) {
+      return defaultParsed.toDate();
+    }
+    
+    return null;
   },
   /**
 	 * Return date in human- readable format.
@@ -157,9 +247,9 @@ export var DateTime = {
 	 * @returns {string}
 	 */
   toHumanDateTime: function(__date) {
-    if (__date == undefined || !moment(__date).isValid())
+    if (__date == undefined || !dayjs(__date).isValid())
       return null;	
-    return moment(__date).format(DateTime._humanDateTime);
+    return dayjs(__date).format(DateTime._humanDateTime);
   },
 	
   /**
@@ -170,35 +260,35 @@ export var DateTime = {
 	 */
   toFormat(__date, format){
     format = format || DateTime._humanMMDDYYYY;
-    if (__date == undefined || !moment(__date).isValid())
+    if (__date == undefined || !dayjs(__date).isValid())
       return null;
-    return moment(__date).format(format);
+    return dayjs(__date).format(format);
   },
 
 
-  moment: moment,
+  moment: dayjs,
 
   toJSONDate: function(__date){
-    if (__date == undefined || !moment(__date).isValid())
+    if (__date == undefined || !dayjs(__date).isValid())
       return null;
 		
-    return moment(__date).format(DateTime._JSONDate);
+    return dayjs(__date).format(DateTime._JSONDate);
   },
 
   fromJSONDate: function(__date){
-    if (__date == undefined || !moment(__date).isValid())
+    if (__date == undefined || !dayjs(__date).isValid())
       return null;
-    return moment(__date,DateTime._JSONDate);
+    return dayjs(__date,DateTime._JSONDate);
   },
 
   /**
 	 * Return Device Date-Time
 	 */
   fromJSONDeviceDate: function(__date){
-    if (__date == undefined || !moment(__date).isValid())
+    if (__date == undefined || !dayjs(__date).isValid())
       return null;
-    var v = moment(__date,DateTime._JSONDate).parseZone().format('LLLL');	
-    var v2= moment(v,'LLLL');
+    var v = dayjs(__date,DateTime._JSONDate).utc().format('LLLL');	
+    var v2= dayjs(v,'LLLL');
     return v2;
   },
 
@@ -208,21 +298,21 @@ export var DateTime = {
 	 * @param {Date} time 
 	 */
   combineDateTime(date, time){
-    var time_m = moment(time);
+    var time_m = dayjs(time);
     var cH = time_m.hour();
     var cM = time_m.minute();
     var cS = time_m.second();
 
-    var date_m = moment(date);
-    date_m.set('hour',cH);
-    date_m.set('minute',cM);
-    date_m.set('second',cS);
+    var date_m = dayjs(date);
+    date_m = date_m.hour(cH);
+    date_m = date_m.minute(cM);
+    date_m = date_m.second(cS);
 
     return date_m.toDate();
   },
 
   setLocale(lang){
-    moment.locale(lang);
+    dayjs.locale(lang);
   },
 
   _humanTime:"LT",

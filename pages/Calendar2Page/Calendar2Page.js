@@ -1,5 +1,24 @@
-import * as moment from "moment";
+import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import utc from "dayjs/plugin/utc";
+import isBetween from "dayjs/plugin/isBetween";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import "dayjs/locale/en";
 import './Calendar2Page.scss';
+
+// Initialize dayjs plugins
+dayjs.extend(isoWeek);
+dayjs.extend(weekOfYear);
+dayjs.extend(localizedFormat);
+dayjs.extend(customParseFormat);
+dayjs.extend(utc);
+dayjs.extend(isBetween);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 import { OptionsDialogPage } from "./../OptionsDialogPage/OptionsDialogPage";
 import { Objects } from "./../../core/Objects";
 import { SimpleTabs } from "./../../components/SimpleTabs/SimpleTabs";

@@ -1,11 +1,11 @@
 import { DateTime } from "../../core/DateTime";
-import * as moment from "moment";
+import dayjs from "dayjs";
 
 describe('test DateTime methods', function() {
 
   beforeEach(function() {
-    // Reset moment locale before each test
-    moment.locale('en');
+    // Reset dayjs locale before each test
+    dayjs.locale('en');
   });
 
   describe('smartFormat method', function() {
@@ -22,8 +22,8 @@ describe('test DateTime methods', function() {
     });
 
     it('should format dates within the same week with day name', function() {
-      const now = moment();
-      const yesterday = moment().subtract(1, 'day');
+      const now = dayjs();
+      const yesterday = dayjs().subtract(1, 'day');
       if (now.week() === yesterday.week()) {
         const result = DateTime.smartFormat(yesterday.toDate());
         expect(result).toMatch(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)/);
@@ -31,8 +31,8 @@ describe('test DateTime methods', function() {
     });
 
     it('should format dates in different week of same month with MMM D LT', function() {
-      const now = moment();
-      const differentWeek = moment().subtract(2, 'weeks');
+      const now = dayjs();
+      const differentWeek = dayjs().subtract(2, 'weeks');
       if (now.month() === differentWeek.month() && now.year() === differentWeek.year()) {
         const result = DateTime.smartFormat(differentWeek.toDate());
         expect(result).toMatch(/^\w{3} \d{1,2} \d{1,2}:\d{2}/);
@@ -40,8 +40,8 @@ describe('test DateTime methods', function() {
     });
 
     it('should format dates in different month of same year with MMM D LT', function() {
-      const now = moment();
-      const differentMonth = moment().subtract(2, 'months');
+      const now = dayjs();
+      const differentMonth = dayjs().subtract(2, 'months');
       if (now.year() === differentMonth.year()) {
         const result = DateTime.smartFormat(differentMonth.toDate());
         expect(result).toMatch(/^\w{3} \d{1,2} \d{1,2}:\d{2}/);
@@ -49,7 +49,7 @@ describe('test DateTime methods', function() {
     });
 
     it('should format dates in different year with MMM D, YYYY LT', function() {
-      const differentYear = moment().subtract(1, 'year');
+      const differentYear = dayjs().subtract(1, 'year');
       const result = DateTime.smartFormat(differentYear.toDate());
       expect(result).toMatch(/^\w{3} \d{1,2}, \d{4} \d{1,2}:\d{2}/);
     });
@@ -280,13 +280,13 @@ describe('test DateTime methods', function() {
   });
 
   describe('setLocale method', function() {
-    it('should change moment locale', function() {
+    it('should change dayjs locale', function() {
       DateTime.setLocale('fr');
-      expect(moment.locale()).toBe('fr');
+      expect(dayjs.locale()).toBe('fr');
       
       // Reset to English for other tests
       DateTime.setLocale('en');
-      expect(moment.locale()).toBe('en');
+      expect(dayjs.locale()).toBe('en');
     });
 
     it('should affect date formatting in different locales', function() {
@@ -315,7 +315,7 @@ describe('test DateTime methods', function() {
       expect(DateTime._humanMMDDYYYY).toBe('MM/DD/YYYY');
     });
 
-    it('should expose moment library', function() {
+    it('should expose dayjs library', function() {
       expect(DateTime.moment).toBeDefined();
       expect(typeof DateTime.moment).toBe('function');
       expect(DateTime.moment()).toBeTruthy();

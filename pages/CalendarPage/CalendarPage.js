@@ -1,7 +1,15 @@
 import { DialogPage } from "../DialogPage/DialogPage";
 import { SimpleTabs } from "../../components/SimpleTabs/SimpleTabs";
-import * as moment from "moment";
+import dayjs from "dayjs";
+import isoWeek from "dayjs/plugin/isoWeek";
+import weekOfYear from "dayjs/plugin/weekOfYear";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 import './CalendarPage.scss';
+
+// Initialize dayjs plugins
+dayjs.extend(isoWeek);
+dayjs.extend(weekOfYear);
+dayjs.extend(localizedFormat);
 import { OptionsDialogPage } from "./../OptionsDialogPage/OptionsDialogPage";
 import { Objects } from "./../../core/Objects";
 import { DOM } from "../../core/DOM";
@@ -25,7 +33,7 @@ export class CalendarPage extends DialogPage {
 
     this.isAM = true;
 
-    this._currDate = moment(startDate || new Date());
+    this._currDate = dayjs(startDate || new Date());
     this._currMonth = this._currDate.clone();
 
     /** @type {{dateTime: Date}[]} */
@@ -36,7 +44,7 @@ export class CalendarPage extends DialogPage {
     //start with empty weeks.
     this._weeks = [];
     this._weekDayNames = Array.apply(null, Array(7)).map(function (_, i) {
-      return moment(i, 'e').startOf('week').isoWeekday(i + 1).format('ddd');
+      return dayjs().day(i).format('ddd');
     });
 
     this._hours = [
@@ -55,19 +63,19 @@ export class CalendarPage extends DialogPage {
     ];
 
     this._minutes = Array.apply(null, Array(12)).map(function (_, i) {
-      return { value: i * 5, title: moment(i * 5, 'm').startOf('hour').minute(i * 5).format('mm') };
+      return { value: i * 5, title: dayjs().minute(i * 5).format('mm') };
     });
 
     this._months = Array.apply(null, Array(12)).map(function (_, i) {
-      return { value: i + 1, title: moment(i + 1, 'MM').format('MMMM') };
+      return { value: i + 1, title: dayjs().month(i).format('MMMM') };
     });
 
     this._years = Array.apply(null, Array(200)).map(function (_, i) {
-      var v = moment().add(i - 100, "years").format('YYYY');
+      var v = dayjs().add(i - 100, "years").format('YYYY');
       return { value: v, title: v };
     });
 
-    this.hasMeridiem = moment.localeData().longDateFormat('LT').toLowerCase().indexOf('a') >= 0;
+    this.hasMeridiem = dayjs().format('LT').toLowerCase().indexOf('a') >= 0;
 
     this._setProps();
   }
@@ -112,7 +120,7 @@ export class CalendarPage extends DialogPage {
 
       var apts = [];
       this.appointments.forEach((el) => {
-        var mEl = moment(el.dateTime);
+        var mEl = dayjs(el.dateTime);
         if (mEl.format('YYY-MM-DD') == dayF) {
           apts.push("apt-" + mEl.format('HH'));
         }
@@ -249,10 +257,10 @@ export class CalendarPage extends DialogPage {
     var cM = this._currDate.minute();
     var cS = this._currDate.second();
 
-    this._currDate = moment(date);
-    this._currDate.set('hour', cH);
-    this._currDate.set('minute', cM);
-    this._currDate.set('second', cS);
+    this._currDate = dayjs(date);
+    this._currDate = this._currDate.hour(cH);
+    this._currDate = this._currDate.minute(cM);
+    this._currDate = this._currDate.second(cS);
 
     this._currMonth = this._currDate.clone();
     this._setProps();

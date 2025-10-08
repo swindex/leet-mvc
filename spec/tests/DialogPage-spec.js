@@ -3,8 +3,8 @@ import './../../index';
 import { NavController } from "../../core/NavController";
 import { Dialog, DialogPage } from "../../pages/DialogPage/DialogPage";
 import { Injector } from "../../core/Injector";
-import { doesNotReject } from 'assert';
 import { Override } from '../../core/helpers';
+import { DOM } from '../../core/DOM';
 
 
 var I = Injector.implement({
@@ -36,10 +36,10 @@ describe('Test DialogPage',function(){
 
 	it("Title change",function(done){
 		//console.log(page.page.html());
-		expect(page.page.html()).toContain("str_Title");
+		expect(page.page.innerHTML).toContain("str_Title");
 		page.title = "str_Title2"
 		setTimeout(()=>{
-			expect(page.page.html()).toContain("str_Title2");
+			expect(page.page.innerHTML).toContain("str_Title2");
 			done();
 		},100);
 	});
@@ -48,11 +48,11 @@ describe('Test DialogPage',function(){
 		page.buttons.btn_Ok = function(){};
 
 		setTimeout(()=>{
-			expect(page.page.html()).toContain("btn_Ok");
+			expect(page.page.innerHTML).toContain("btn_Ok");
 	
 			page.buttons.btn_Cancel = null;
 			setTimeout(()=>{
-				expect(page.page.html()).toContain("btn_Cancel");
+				expect(page.page.innerHTML).toContain("btn_Cancel");
 				done();
 			});
 		});
@@ -64,8 +64,8 @@ describe('Test DialogPage',function(){
 		};
 
 		setTimeout(()=>{
-			expect(page.page.html()).toContain("btn_Ok");
-			page.page.find("#dialogButtonbtn_Ok")[0].dispatchEvent(new Event("click"));
+			expect(page.page.innerHTML).toContain("btn_Ok");
+			DOM(page.page).find("#dialogButtonbtn_Ok")[0].dispatchEvent(new Event("click"));
 		});
 	});
 
@@ -81,8 +81,8 @@ describe('Test DialogPage',function(){
 
 
 		setTimeout(()=>{
-			expect(page.page.html()).toContain("btn_Ok");
-			page.page.find("#dialogButtonbtn_Ok")[0].dispatchEvent(new Event("click"));
+			expect(page.page.innerHTML).toContain("btn_Ok");
+			DOM(page.page).find("#dialogButtonbtn_Ok")[0].dispatchEvent(new Event("click"));
 		});
 	});
 });

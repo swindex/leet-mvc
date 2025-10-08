@@ -2,7 +2,7 @@ import './OptionsDialogPage.scss';
 import { DialogPage } from "../DialogPage/DialogPage";
 import { Objects } from '../../core/Objects';
 import { DOM } from '../../core/DOM';
-import { isObject } from 'leet-mvc/core/helpers';
+import { isObject } from '../../core/helpers';
 
 export class OptionsDialogPage extends DialogPage{
   constructor(){
