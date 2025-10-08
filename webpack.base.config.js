@@ -1,6 +1,4 @@
 const TerserPlugin = require("terser-webpack-plugin");
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 const path = require('path');
@@ -11,11 +9,6 @@ module.exports = (env) => {
   var plugins = []
 
   plugins.push(new ProgressBarPlugin());
-  plugins.push(new MomentLocalesPlugin({localesToKeep: [/*'fr', 'es'*/]}))
-
-  //plugins.push(new HtmlWebpackPlugin({ template: './src/index.html' }));
-
-
 
   var base = {
     mode: production ? "production":"development",
