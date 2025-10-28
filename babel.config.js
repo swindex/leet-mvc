@@ -17,7 +17,6 @@ module.exports = {
 	], 
 	"plugins": [
     "@babel/plugin-proposal-class-properties",
-		"transform-es2015-template-literals",
 		"@babel/plugin-syntax-dynamic-import"
 	]
 }
