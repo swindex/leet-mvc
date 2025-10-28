@@ -1,117 +1,116 @@
 @import '_variables';
+
 button[none],
-input[type=button][none]
-{
-  width: auto;
-  background-color: transparent;
-  border: none;
-  margin: 0;
-  padding: 0;
-  -webkit-appearance: none;
-  box-shadow: none;
+input[type=button][none] {
+	width: auto;
+	background-color: transparent;
+	border: none;
+	margin: 0;
+	padding: 0;
+	-webkit-appearance: none;
+	box-shadow: none;
 }
 
 button,
 input[type=button] {
-  &:focus{
-    outline:none;
-  }
+	&:focus {
+		outline: none;
+	}
 }
+
 .fieldgroup {
 	display: flex;
 	flex-direction: column;
 	position: relative;
 	margin-bottom: $margin-lg;
-	*{
+
+	* {
 		box-sizing: border-box;
 	}
 
-	input[type=text], 
-	input[type=email], 
-	input[type=password], 
-	input[type=number], 
+	input[type=text],
+	input[type=email],
+	input[type=password],
+	input[type=number],
 	input[type=date],
 	input[type=tel],
 	textarea,
 	select,
 	select-multiple,
-	.input
-	{
+	.input {
 		font-size: $size-f-input;
 		border-collapse: collapse;
 		padding-left: 0;
 		border: none;
-    border-bottom: $size-border solid $color-border;
-    margin-bottom: $size-border-active - $size-border; //space for the border
+		border-bottom: $size-border solid $color-border;
+		margin-bottom: $size-border-active - $size-border; //space for the border
 		-webkit-appearance: none;
 		padding: $margin-sm 0;
 		//padding-right: $size-input-i-md; //this used for hiding text under icon	
 		background-color: transparent;
-		&[disabled], &[readonly]{
+		width: 100%;
+
+		&[disabled],
+		&[readonly] {
 			border-bottom: $size-border solid $color-border-disabled;
 		}
 
-		&:focus, &.focus, &.focus-blink{
+		&:focus,
+		&.focus,
+		&.focus-blink {
 			outline: none;
 			box-shadow: none;
 			border-bottom: $size-border-active solid $color-border-active;
 			margin-bottom: 0;
 		}
-		&[readonly]:focus, &.focus-blink{
+
+		&[readonly]:focus,
+		&.focus-blink {
 			animation: focus_blink 0.5s;
 			animation-iteration-count: 3;
 		}
-		width: 100%;
-		
-  }
+	}
 
-  /*select,
-  select-multiple{
-    background-image: url(../img/angle-down-solid.svg);
-    background-size: $size-input-i-sm;
-    background-repeat: no-repeat;
-    background-position: right 50%;
-  }*/
-  textarea{
-    min-height: 4em;
-    width: 100% !important;
-  }
+	textarea {
+		min-height: 4em;
+		width: 100% !important;
+	}
 
-  &.hasIcon {
-    input[type=text], 
-    input[type=email], 
-    input[type=password], 
-    input[type=number], 
-    input[type=date],
-    input[type=tel],
-    textarea,
-    select,
-    select-multiple,
-    .input
-    {
-      padding-right: $size-input-i-md;
-    }
-  }
+	&.hasIcon {
 
-  div.icon{
-    position: absolute;
-    top: 0;
-    right: $margin-sm;
-    font-weight: bold;
-    font-size: $size-f-input;
-    pointer-events: none;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    padding-left: inherit;
-    padding-right: inherit;
-    
-    &[onclick]{
-      pointer-events: all;
-    }
-  }
+		input[type=text],
+		input[type=email],
+		input[type=password],
+		input[type=number],
+		input[type=date],
+		input[type=tel],
+		textarea,
+		select,
+		select-multiple,
+		.input {
+			padding-right: $size-input-i-md;
+		}
+	}
+
+	div.icon {
+		position: absolute;
+		top: 0;
+		right: $margin-sm;
+		font-weight: bold;
+		font-size: $size-f-input;
+		pointer-events: none;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		padding-left: inherit;
+		padding-right: inherit;
+
+		&[onclick] {
+			pointer-events: all;
+		}
+	}
 
 	>label {
 		color: #333;
@@ -120,61 +119,73 @@ input[type=button] {
 		padding-left: 0;
 		font-size: $size-f-toplabel;
 		text-align: left;
-    display: inline-block;
-    white-space: nowrap;
-    height: 1.0em;
-    line-height: 1em;
+		display: inline-block;
+		white-space: nowrap;
+		height: 1.0em;
+		line-height: 1em;
+
 		i {
-      color: #0874B7;
-      margin-left: $margin-sm;
+			color: #0874B7;
+			margin-left: $margin-sm;
 		}
-  }
-  &.label {
-    label {
-      white-space: normal;
-      height: auto;
-    }
-  }
+	}
+
+	&.label {
+		label {
+			white-space: normal;
+			height: auto;
+		}
+	}
+
 	&.short {
-		padding-bottom:20px;
+		padding-bottom: 20px;
+
 		.label {
 			margin-left: 5px;
 		}
-  }
+	}
 
 	.hint {
 		font-size: 12px;
+
 		&.error {
-      color: $color-error;
-      white-space: pre-wrap;
+			color: $color-error;
+			white-space: pre-wrap;
 		}
 	}
-	.message{
+
+	.message {
 		text-align: center;
 		font-size: 1.25em;
 	}
+
 	.split-input {
 		display: flex;
-		.short{
-			width:3em,
+
+		.short {
+			width: 3em,
 		}
 	}
-	.split{
+
+	.split {
 		width: 50%;
 		padding-right: $margin-md;
 		position: relative;
+
 		.icon {
 			right: $margin-sm + $margin-md;
 		}
-		&:last-child{
+
+		&:last-child {
 			padding-right: 0px;
+
 			.icon {
 				right: $margin-sm;
 			}
 		}
-  }
-  
-  /*&.filled,
+	}
+
+	/*&.filled,
   &.active{
     label {
       top: 0;
@@ -183,7 +194,7 @@ input[type=button] {
     }
   }*/
 
-  /*.label {
+	/*.label {
     color: #333;
     z-index: 5;
     background-color: transparent;
@@ -202,53 +213,61 @@ input[type=button] {
 		position: relative;
 		display: flex;
 		align-items: center;
-    flex-wrap: wrap; //allow 100% wide children to form column
-    overflow: hidden;
-		&.field >* {
+		flex-wrap: wrap; //allow 100% wide children to form column
+		overflow: hidden;
+
+		&.field>* {
 			//padding-bottom: $margin-md;
 		}
 	}
+
 	&.required {
 		>label:first-child:after {
 			content: '*';
 			color: red;
 			padding-left: 5px;
 		}
-  }
-  &.checkbox {
-    align-self: center;
-  }
-  @keyframes focus_blink {
-    50% {
-      border-bottom: $size-border-active solid $color-border;
-    }
-  }
+	}
+
+	&.checkbox {
+		align-self: center;
+	}
+
+	@keyframes focus_blink {
+		50% {
+			border-bottom: $size-border-active solid $color-border;
+		}
+	}
 }
+
 //custom override for select-multiple
-select-multiple{
-	padding:0 !important;
-	>div{
+select-multiple {
+	padding: 0 !important;
+
+	>div {
 		height: 100%;
 		padding: 3px 0px;
 		margin-right: 1em;
 	}
 }
+
 //fildgroup with label in it
 .fieldgroup {
-	>div.label{
+	>div.label {
 		color: #333;
 		font-size: $size-f-input;
 		width: 100%;
 		align-self: center;
 		//padding: $margin-sm 0;
 		padding-right: $size-input-i-md; //this used for hiding text under icon	
-	
-		&.link{
+
+		&.link {
 			text-decoration: underline;
 			color: $color-link;
 		}
 	}
-	>div.link{
+
+	>div.link {
 		width: 100%;
 		font-size: $size-f-input;
 		text-decoration: underline;
@@ -258,93 +277,107 @@ select-multiple{
 		padding-right: $size-input-i-md; //this used for hiding text under icon	
 	}
 }
+
 //special case: label contains input[file]
 .fieldgroup {
-	.input{
+	.input {
 		overflow: hidden;
 		white-space: nowrap;
-    text-overflow: ellipsis;
-    height: auto;
-    line-height: inherit;
-    span{
+		text-overflow: ellipsis;
+		height: auto;
+		line-height: inherit;
 
-    }
+		span {}
+
 		//background-image: url(../img/file_ico.png);
-		input[type=file]{
+		input[type=file] {
 			width: 0.1px;
 			height: 0.1px;
 			opacity: 0;
 			overflow: hidden;
 			position: absolute;
 			z-index: -1;
-		}	
+		}
 	}
 }
+
 .fieldgroup.file {
-  overflow: hidden;
+	overflow: hidden;
 }
 
 //special case: label contains inpuit chechbox
-.fieldgroup{
-  label.radio,
-	label.toggle{
-		display:flex;
+.fieldgroup {
+
+	label.radio,
+	label.toggle {
+		display: flex;
 		align-items: center;
 		width: 100%;
 		font-size: $size-f-input;
-    padding: $margin-md 0  $margin-md 0;
-    height: auto;
-    .text {
-      max-width: 100%;
-      white-space: break-spaces;
-    }
+		padding: $margin-md 0 $margin-md 0;
+		height: auto;
+
+		.text {
+			max-width: 100%;
+			white-space: break-spaces;
+		}
+
 		input {
 			display: none;
+
 			&:checked {
 				&+.slider {
 					background-color: #2196F3;
+
 					&:before {
 						transform: translateX(1.75em);
 					}
 				}
+
 				&+.radio {
-          //background-color: #2196F3;
-          border-color: #2196f3;
+					//background-color: #2196F3;
+					border-color: #2196f3;
+
 					&:before {
 						background-color: #2196f3;
-            opacity: 1;
-          }
-          &.square {
-            &:before{
-              background-color: transparent;
-              content: '\2714';
-              color: #2196f3;
-              font-size: 1.25em;
-              font-weight: bold;
-            }
-          }
+						opacity: 1;
+					}
+
+					&.square {
+						&:before {
+							background-color: transparent;
+							content: '\2714';
+							color: #2196f3;
+							font-size: 1.25em;
+							font-weight: bold;
+						}
+					}
 				}
 
 			}
+
 			&:focus {
 				&+.slider {
 					box-shadow: 0 0 1px #2196F3;
 				}
+
 				&+.radio {
-          //box-shadow: 0 0 1px #2196F3;
-          border-color: #333;
+					//box-shadow: 0 0 1px #2196F3;
+					border-color: #333;
 				}
 			}
 		}
+
 		.slider {
 			position: relative;
 			cursor: pointer;
 			background-color: #ccc;
 			transition: .4s;
-			width: 3em; 
+			width: 3em;
 			min-width: 3em;
-			height: 1.375em; 
+			height: 1.375em;
 			margin-left: auto;
+
 			&:before {
 				position: absolute;
 				content: "";
@@ -356,21 +389,26 @@ select-multiple{
 				transition: .2s;
 				box-shadow: 0 0px 2px #333;
 			}
+
 			&.round {
 				border-radius: 1em;
 				margin-right: 4px;
+
 				&:before {
 					border-radius: 50%;
 				}
 			}
+
 			&.square {
 				border-radius: 0em;
 				margin-right: 4px;
+
 				&:before {
 					border-radius: 0%;
 				}
 			}
 		}
+
 		.radio {
 			position: relative;
 			cursor: pointer;
@@ -385,6 +423,7 @@ select-multiple{
 			//
 			margin-right: $margin-md;
 			padding: 4px;
+
 			&:before {
 				//position: absolute;
 				display: block;
@@ -395,125 +434,141 @@ select-multiple{
 				opacity: 0;
 				//border-radius: 50%;
 			}
+
 			&.round {
-        border-radius: 50%;
-        border: 2px solid #9e9e9e;
+				border-radius: 50%;
+				border: 2px solid #9e9e9e;
+
 				&:before {
 					border-radius: 50%;
 				}
 			}
+
 			&.square {
-        border-radius: 2px;
-        border: 2px solid #9e9e9e;
+				border-radius: 2px;
+				border: 2px solid #9e9e9e;
+
 				&:before {
 					border-radius: 0;
 				}
 			}
-    }
-    
-    i[onclick]{
-      color: #0874B7;
-      margin-left: $margin-sm;
-      cursor: pointer;
-    }
-		
+		}
+
+		i[onclick] {
+			color: #0874B7;
+			margin-left: $margin-sm;
+			cursor: pointer;
+		}
+
 	}
+
 	&.required {
 		>label.toggle:first-child:after {
 			display: none;
 		}
+
 		>label>span.text:after {
 			content: '*';
 			color: red;
 			padding-left: 5px;
 		}
-  }
-  &.flat {
-    label.toggle{
-      width: auto;
-      margin-right: $margin-lg;
-    }
-  }
+	}
+
+	&.flat {
+		label.toggle {
+			width: auto;
+			margin-right: $margin-lg;
+		}
+	}
 }
 
-div[ion-fab]{
+div[ion-fab] {
 
 	position: absolute;
-  z-index: 10;
- 
-	&[round]{
+	z-index: 10;
+
+	&[round] {
 		width: $size-input-h-lg;
-    height: $size-input-h-lg;
-    
-		button{
-		  border-radius: $size-input-h-lg;
-			
+		height: $size-input-h-lg;
+
+		button {
+			border-radius: $size-input-h-lg;
+
 			width: 100%;
 			height: 100%;
 			padding: 0;
 		}
 	}
-	
-	&[top]{
+
+	&[top] {
 		top: $margin-lg;
-	} 
-	&[right]{
+	}
+
+	&[right] {
 		right: $margin-lg;
 	}
-	&[bottom]{
+
+	&[bottom] {
 		bottom: $margin-lg;
 	}
-	&[left]{
+
+	&[left] {
 		left: $margin-lg;
-  }
-  
-	button{
-    position: relative;
-    font-size: $size-input-i-lg;
-    padding: 6px 12px;
-    background-color: $color-button-bg;
-    color: $color-button-fg;
-    border: none;
-    box-shadow: $shadow-b-up;
-    &:active {
-      box-shadow: $shadow-b-down;
-    }
-  }
+	}
+
+	button {
+		position: relative;
+		font-size: $size-input-i-lg;
+		padding: 6px 12px;
+		background-color: $color-button-bg;
+		color: $color-button-fg;
+		border: none;
+		box-shadow: $shadow-b-up;
+
+		&:active {
+			box-shadow: $shadow-b-down;
+		}
+	}
 }
 
-button{
-	&[text-only]{
+button {
+	&[text-only] {
 		background-color: transparent !important;
 		border: none !important;
 		box-shadow: none !important;
 	}
-	&[outline]{
+
+	&[outline] {
 		background-color: transparent !important;
 		border: $size-border solid $color-border !important;
-		color:$color-border !important;
+		color: $color-border !important;
 		box-shadow: none !important;
 	}
-	&[link]{
+
+	&[link] {
 		color: $color-link !important;
 	}
 }
 
 
 @keyframes moving-gradient {
-  0% { background-position: left bottom; }
-  100% { background-position: right bottom; }
+	0% {
+		background-position: left bottom;
+	}
+
+	100% {
+		background-position: right bottom;
+	}
 }
 
 .fieldgroup.isLoading {
-  background: -webkit-linear-gradient(
-      left,
-      rgba(255, 255, 255, 0) 30%,
-      #89c8fb 100%
-  ) repeat;
-  
-  background-size: 50% 100%;
-  animation-name: moving-gradient;
-  animation-duration: 1s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
+	background: -webkit-linear-gradient(left,
+			rgba(255, 255, 255, 0) 30%,
+			#89c8fb 100%) repeat;
+
+	background-size: 50% 100%;
+	animation-name: moving-gradient;
+	animation-duration: 1s;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
 }
