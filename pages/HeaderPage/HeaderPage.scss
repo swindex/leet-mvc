@@ -30,7 +30,7 @@
 		align-items: center;
 		*{
 			z-index: 10;
-		}
+	}
 
 		button{
 			position: relative;
@@ -45,7 +45,7 @@
 			width: $height-top-bar;
 			height: $height-top-bar;
 			z-index: 10;
-			border-radius: $height-top-bar / 2;
+			border-radius: calc($height-top-bar / 2);
 			background-color: transparent;
 			box-shadow: none;
 			border: none;

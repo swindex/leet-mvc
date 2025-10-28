@@ -1,5 +1,4 @@
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
-import { inherits } from "../../dist-test/bundle";
 import { NavController } from "../../core/NavController";
 import { DOM } from "../../core/DOM";
 import { BasePage } from "../../pages/BasePage";
