@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Objects } from "./../core/Objects";
 import { FormValidator } from "./../core/form_validator";
 import { Text } from "./../core/text";

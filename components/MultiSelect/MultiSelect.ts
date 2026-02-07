@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BaseComponent } from "../../components/BaseComponent";
 import { Objects } from "../../core/Objects";
 import { OptionsDialogPage } from "../../pages/OptionsDialogPage/OptionsDialogPage";

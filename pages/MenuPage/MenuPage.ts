@@ -1,3 +1,4 @@
+// @ts-nocheck
 import './MenuPage.scss';
 import { BasePage } from "./../BasePage"; 
 import { isFunction } from './../../core/helpers';

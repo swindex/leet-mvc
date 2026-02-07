@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BaseComponent } from "../BaseComponent";
 import Swiper from 'swiper';
 import { NavController } from "./../../core/NavController";

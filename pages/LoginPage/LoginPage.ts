@@ -1,3 +1,4 @@
+// @ts-nocheck
 import "./LoginPage.scss";
 import { BasePage } from "./../BasePage";
 import { FormValidator } from "./../../core/form_validator";

@@ -13,7 +13,7 @@ var htmlparser = require("htmlparser2");
  * @constructor 
  * @param {*} context
  */
-export var Binder = function (context) {
+export var Binder = function (context:object) {
   var getterCashe = {};
   /** @type {Binder} */
   var self = this;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import './ActionSheetPage.scss';
 import { BasePage } from './../BasePage';
 

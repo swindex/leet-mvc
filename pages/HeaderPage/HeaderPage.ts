@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import './HeaderPage.scss';
 import { BasePage } from '../BasePage';

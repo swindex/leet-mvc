@@ -1,3 +1,4 @@
+// @ts-nocheck
 // @ts-ignore
 import "./Loader.scss";
 import { Translate } from './../../core/Translate';

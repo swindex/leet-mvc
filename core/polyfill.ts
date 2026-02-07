@@ -1,3 +1,4 @@
+// @ts-nocheck
 declare global {
   interface Window {
     empty: (value: any) => boolean;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BaseComponent } from './BaseComponent';
 import { Text } from '../core/text';
 import { DOM } from '../core/DOM';

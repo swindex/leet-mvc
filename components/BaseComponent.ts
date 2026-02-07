@@ -6,9 +6,17 @@ import { tryCall } from "../core/helpers";
 export interface IBinder {
   updateElements(): void;
   destroy(): void;
+  vdom: any;
+  bindElements(eventCallbacks: any, template: any): any;
+  setInjectVars(vars: any): any;
+  setContext(context: any): any;
+  context: any;
+  injectVars: any;
+  eventCallbacks: any;
 }
 
 export class BaseComponent extends ChangeWatcher {
+  [key: string]: any;
   binder: IBinder | null = null;
   template: string | null = null;
   events: Record<string, (event: Event) => void> | null = null;

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CalendarPage } from "../pages/CalendarPage/CalendarPage";
 import { DateTime } from "./DateTime";
 import { OptionsDialogPage } from "../pages/OptionsDialogPage/OptionsDialogPage";

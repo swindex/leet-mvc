@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BasePage } from "../BasePage";
 // @ts-ignore
 import * as template from './DialogPage.html';

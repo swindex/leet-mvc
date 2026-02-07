@@ -1,17 +1,17 @@
 import { isArray, isObject, isString } from "./helpers";
 
-export type FilterCallback<T> = (elem: T, key: string | number) => boolean;
-export type MapCallback<T, R> = (elem: T, key: string | number) => R;
-export type FindCallback<T> = (elem: T, key: string | number) => boolean;
-export type ForEachCallback<T> = (elem: T, key: string | number) => boolean | void;
+export type FilterCallback<T = any> = (elem: T, key: string | number) => boolean;
+export type MapCallback<T = any, R = any> = (elem: T, key: string | number) => R;
+export type FindCallback<T = any> = (elem: T, key: string | number) => boolean;
+export type ForEachCallback<T = any> = (elem: T, key: string | number) => boolean | void;
 export type WalkCallback = (obj: any, key: string | number) => boolean | void;
 export type Walk2Callback = (obj1: any, obj2: any, key: string | number) => any;
 
 export const Objects = {
-  filter: function <T>(data: Record<string, T> | T[], callback: FilterCallback<T>): Record<string, T> | T[] | undefined {
+  filter: function <T = any>(data: Record<string, T> | T[] | any, callback: FilterCallback<T>): Record<string, T> | T[] | undefined {
     let ret: Record<string, T> | T[] | undefined;
     if (isObject(data) && !isArray(data)) {
-      ret = {};
+      ret = {} as Record<string, T>;
       for (const key in data) {
         if (!data.hasOwnProperty(key)) continue;
         const elem = data[key];
@@ -31,10 +31,10 @@ export const Objects = {
     return ret;
   },
 
-  map: function <T, R>(data: Record<string, T> | T[], callback: MapCallback<T, R>): Record<string, R> | R[] | undefined {
+  map: function <T = any, R = any>(data: Record<string, T> | T[] | any, callback: MapCallback<T, R>): Record<string, R> | R[] | undefined {
     let ret: Record<string, R> | R[] | undefined;
     if (isObject(data) && !isArray(data)) {
-      ret = {};
+      ret = {} as Record<string, R>;
       for (const key in data) {
         if (!data.hasOwnProperty(key)) continue;
         const elem = data[key];
@@ -54,7 +54,7 @@ export const Objects = {
     return ret;
   },
 
-  find: function <T>(data: Record<string, T> | T[], callback: FindCallback<T>): T | undefined {
+  find: function <T = any>(data: Record<string, T> | T[] | any, callback: FindCallback<T>): T | undefined {
     if (isArray(data)) {
       for (let i = 0; i < data.length; i++) {
         const elem = data[i];
@@ -77,7 +77,7 @@ export const Objects = {
   /**
    * Cycle through objects in an array
    */
-  forEach: function <T>(data: Record<string, T> | T[], callback: ForEachCallback<T>): void {
+  forEach: function <T = any>(data: Record<string, T> | T[] | any, callback: ForEachCallback<T>): void {
     if (isArray(data)) {
       for (let i = 0; i < data.length; i++) {
         if (callback(data[i], i) === false)

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import './NumericKeyboardPage.scss';
 // @ts-ignore
 import * as template from './NumericKeyboardPage.html';

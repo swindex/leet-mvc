@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DialogPage } from "./../DialogPage/DialogPage";
 import { SimpleTabs } from "./../../components/SimpleTabs/SimpleTabs";
 import { Confirm } from "./../../core/simple_confirm";

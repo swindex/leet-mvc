@@ -6,19 +6,38 @@ import { BaseComponent } from '../components/BaseComponent';
 import { Objects } from '../core/Objects';
 
 export class BasePage extends ChangeWatcher{
+  [key: string]: any;
+  page: HTMLElement | null = null;
+  Nav!: NavController;
+  style: CSSStyleDeclaration | Record<string, any> = {};
+  components: BaseComponent[] | null = null;
+  binder: any = null;
+  name: string | null = null;
+  isDeleting: boolean | null = null;
+  isCreating: boolean | null = null;
+  isHiding: boolean | null = null;
+  isShowing: boolean | null = null;
+  isVisible: boolean | null = null;
+  isDeleted: boolean | null = null;
+  isHidden: boolean | null = null;
+  isRoot: boolean | null = null;
+  selector: string | null = null;
+  className: string | null = null;
+  visibleParent: boolean | null = null;
+  routingUrl: string | null = null;
+  classNames: string[] = [];
+
+  static visibleParent: boolean | null = null;
+  static selector: string | null = null;
+  static className: string | null = null;
+
   constructor(){
     super();
-    /** @type {HTMLElement}*/
     this.page = null;
-    /** @type {NavController} */
-    this.Nav;
-    /** @type {CSSStyleDeclaration} */
-    this.style;
-		
     // @ts-ignore
     this.style = {};
     this.components = null;
-    this.binder = new Binder(this);
+    this.binder = new (Binder as any)(this);
 
     this.name = null;
 
@@ -29,11 +48,11 @@ export class BasePage extends ChangeWatcher{
     this.isVisible = null;
     this.isDeleted = null;
     this.isHidden = null;
-    this.isRoot = null,
+    this.isRoot = null;
 
-    this.selector = this.constructor.selector;
-    this.className = this.constructor.className;
-    this.visibleParent = this.constructor.visibleParent;
+    this.selector = (this.constructor as any).selector;
+    this.className = (this.constructor as any).className;
+    this.visibleParent = (this.constructor as any).visibleParent;
 
     this.routingUrl = null; //for router
 
@@ -86,10 +105,10 @@ export class BasePage extends ChangeWatcher{
       //Call destroy on all child components
       if (this.components){
         for (let i in this.components){
-          var comp = this.components[i];
+          var comp = (this.components as any)[i];
           if (comp instanceof BaseComponent){
             tryCall(comp, comp.destroy);
-            delete this.components[i];
+            delete (this.components as any)[i];
           }
         }
       }
@@ -108,11 +127,11 @@ export class BasePage extends ChangeWatcher{
 	 * ***OverrideCallSuper***
 	 * Initialize binder
 	 */
-  _init(binderEvent){
+  _init(binderEvent: any){
  		//this.template = BasePage.template.replace('<!--child-template-->', this.template);
 
-    this.binder.bindElements(binderEvent, this.template);
-    this.page = this.binder.vdom.elem;
+    this.binder!.bindElements(binderEvent, this.template);
+    this.page = this.binder!.vdom.elem as HTMLElement;
     super.startWatch();
   }
 
@@ -121,7 +140,7 @@ export class BasePage extends ChangeWatcher{
 	 * Called after page is created and inserted into the document but before it is rendered
 	 * @param {HTMLElement} page 
 	 */
-  onInit(page){
+  onInit(page: HTMLElement){
 		
   }
   /**
@@ -171,14 +190,14 @@ export class BasePage extends ChangeWatcher{
 	 * ***Override***
 	 * @param {{width:number, height:number}} windowSize
 	 */
-  onResize(windowSize){
+  onResize(windowSize: {width: number, height: number}){
 
   }
   /**
 	 * ***OverrideCallSuper***
 	 * @param {{width:number, height:number}} windowSize
 	 */
-  resize(windowSize){
+  resize(windowSize: {width: number, height: number}){
     this.onResize(windowSize);
   }
 
@@ -196,7 +215,7 @@ export class BasePage extends ChangeWatcher{
 	 * @return {any|false}
 	 * @override
 	 */
-  onBeforeDestroy(){
+  onBeforeDestroy(): any {
     return true;
   }
 	
@@ -216,7 +235,7 @@ export class BasePage extends ChangeWatcher{
 	 * @param {string} super_template 
 	 * @param {string} child_template 
 	 */
-  extendTemplate(super_template, child_template){
+  extendTemplate(super_template: string, child_template: string){
     return super_template.replace('<!--child-template-->', child_template );
   }
 
@@ -228,7 +247,7 @@ export class BasePage extends ChangeWatcher{
 	 * ***Readonly*** property that returns the template string
 	 *   You can extend base template by returning this.extendTemplate(super.template,'child template string');
 	 */
-  get template (){
+  get template(): string {
     return `<div page [class]="this.getClassName()" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}"><!--child-template--></div>`;
   }
 }

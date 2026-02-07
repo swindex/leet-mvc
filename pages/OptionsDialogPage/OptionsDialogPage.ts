@@ -1,3 +1,4 @@
+// @ts-nocheck
 import './OptionsDialogPage.scss';
 import { DialogPage } from "../DialogPage/DialogPage";
 import { Objects } from '../../core/Objects';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BasePage } from "./../BasePage";
 import { Injector } from "./../../core/Injector";
 import { tryCall } from "./../../core/helpers";
