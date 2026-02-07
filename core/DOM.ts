@@ -52,7 +52,7 @@ interface ExtendedHTMLElement extends HTMLElement {
   _DOM_oldStyle?: Record<string, string>;
 }
 
-type DOMQueryInput = Window | HTMLElement | DocumentFragment | Element | string | number | NodeList | HTMLCollection | Node[] | DOMInstance;
+type DOMQueryInput = Window | Document | HTMLElement | DocumentFragment | Element | string | number | NodeList | HTMLCollection | Node[] | DOMInstance;
 
 /**
  * jQuery replacement

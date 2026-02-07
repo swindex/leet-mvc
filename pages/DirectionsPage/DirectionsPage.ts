@@ -1,7 +1,7 @@
 import { DialogPage } from "./../DialogPage/DialogPage";
 import { SimpleTabs } from "./../../components/SimpleTabs/SimpleTabs";
 import { Confirm } from "./../../core/simple_confirm";
-import { MapElement } from "./../../core/MapElement.js"; 
+import { MapElement } from "./../../core/MapElement";
 
 // @ts-ignore
 import img_house from './m_house.png';
