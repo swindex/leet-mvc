@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { BaseComponent } from '../../components/BaseComponent';
 import { DOM } from "../../core/DOM";
@@ -6,6 +7,9 @@ import { Watcher } from "../../core/Watcher";
 
 
 export class TestComponentPage extends HeaderPage {
+  counter: number;
+  comp: any;
+
   constructor(){
     super();
     this.counter = 0
@@ -28,14 +32,11 @@ export class TestComponentPage extends HeaderPage {
     el.append(c.binder.vdom.elem);
 
 
-    Watcher.on(this, (target, prop, val)=>{
+    Watcher.on(this, (target: any, prop: string, val: any)=>{
       if (prop=="counter"){
         c.counter = val;
       }
     })
-
-    //c.update();
-
 
     this.comp = c;
 
@@ -55,6 +56,9 @@ export class TestComponentPage extends HeaderPage {
 }
 
 class TestComponenet extends BaseComponent{
+  counter: number;
+  template: string;
+
   constructor(){
     super();
     this.counter = 0;

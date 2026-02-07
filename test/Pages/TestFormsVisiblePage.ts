@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BasePage } from "../../pages/BasePage";
 import { Forms } from "../../components/Forms";
 import { Alert } from "../../core/simple_confirm";
@@ -5,6 +6,14 @@ import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { NumericKeyboard } from "../../pages/NumericKeyboard/NumericKeyboard";
 
 export class TestFormsVisiblePage extends HeaderPage {
+	form1data: any;
+	form1errors: any;
+	form1attributes: any;
+	form1template: any[];
+	form1: Forms;
+	visibleForm1data: any;
+	isValid: boolean;
+
 	constructor(){
 		super();
 		this.form1data = {}

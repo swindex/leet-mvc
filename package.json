@@ -7,12 +7,12 @@
   ],
   "version": "4.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "karma start",
     "webpack--watch": "npx webpack --watch",
     "serve": "npx webpack serve",
-    "webpack--prod": "npx webpack --env.build=production"
+    "webpack--prod": "npx webpack"
   },
   "author": "",
   "license": "ISC",
@@ -56,7 +56,6 @@
     "typescript": "^5.0.2",
     "webpack": "^5.88.2",
     "webpack-bundle-analyzer": "^4.10.2",
-    "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.2.2",
     "webpack-merge": "^5.9.0"
   },
@@ -67,6 +66,7 @@
     "karma-jasmine": "^5.1.0",
     "karma-sourcemap-loader": "^0.4.0",
     "karma-spec-reporter": "^0.0.36",
-    "karma-webpack": "^5.0.1"
+    "karma-webpack": "^5.0.1",
+    "webpack-cli": "^6.0.1"
   }
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { NavController } from "../../core/NavController";
 import { DOM } from "../../core/DOM";
@@ -6,16 +7,18 @@ import { Objects } from "../../core/Objects";
 import { GUID } from "../../core/helpers";
 
 export class RouterTestPage extends HeaderPage {
+  router: RouterNavigator;
+
   constructor() {
     super();
 
     this.router = new RouterNavigator({
       routes: [
-        { name: "", page: (params) => new Page1("index") },
-        { name: "p1", page: (params) => new Page1(params) },
-        { name: "p2", page: (params) => new Page2("P2") },
-        { name: "p3", page: (params) => new Page3("P3") },
-        { name: "p4", page: (params) => new Page4("P4") }
+        { name: "", page: (params: any) => new Page1("index") },
+        { name: "p1", page: (params: any) => new Page1(params) },
+        { name: "p2", page: (params: any) => new Page2("P2") },
+        { name: "p3", page: (params: any) => new Page3("P3") },
+        { name: "p4", page: (params: any) => new Page4("P4") }
       ]
     });
 
@@ -57,28 +60,46 @@ export class RouterTestPage extends HeaderPage {
   }
 }
 
+interface RouteConfig {
+  name?: string;
+  page: (params?: any) => any;
+}
+
+interface RouterOptions {
+  routes: RouteConfig[];
+}
+
+interface RouterState {
+  name: string;
+  args: any[];
+  index: number;
+  guid: string;
+}
+
 class RouterNavigator extends NavController {
-  /**
-   * @param {{routes:{name?:string, page: *}[]}} options 
-   */
-  constructor(options) {
+  options: RouterOptions;
+  index: number;
+  lastStateIndex: number;
+  initialLength: number;
+  currentState: RouterState | null;
+
+  constructor(options: RouterOptions) {
     super();
     window.addEventListener("popstate", this.onPopState);
     this.index = 0;
     this.options = options;
     this.lastStateIndex = 0;
     this.initialLength = window.history.length;
-    //window.history.pushState(null, '', '');
     this.currentState = null;
   }
 
-  matchLocation(setRoot = false) {
+  matchLocation(setRoot: boolean = false) {
     var href = window.location.href;
     var parts = href.split(/#(.+)/);
     var host = parts[0];
     var routName = parts[1] || "";
 
-    var route = Objects.find(this.options.routes, r => r.name === routName);
+    var route = Objects.find(this.options.routes, (r: RouteConfig) => r.name === routName);
     if (route) {
       var name = route.name;
       if (setRoot)
@@ -94,7 +115,7 @@ class RouterNavigator extends NavController {
     super.destroy();
   }
 
-  onPopState(event) {
+  onPopState(event: PopStateEvent) {
 
     if (event.state == null) {
       return;
@@ -132,7 +153,7 @@ class RouterNavigator extends NavController {
       //push page
       if (typeof stateName == "string") {
         var pageClass = this.getRoute(stateName).page(event.state.args);
-        var ret = super.push(pageClass);
+        var ret: any = super.push(pageClass);
         var guid = event.state && event.state.guid ? event.state.guid : GUID();
         ret.guid = guid;
 
@@ -142,23 +163,17 @@ class RouterNavigator extends NavController {
 
         return ret;
       }
-      //super.push.apply(this, this.usedFrames[stateName]);
     }
     this.lastStateIndex = stateIndex;
   }
 
-  setRoot(name, ...args) {
+  setRoot(name: any, ...args: any[]) {
     if (typeof name == "string") {
       var pageClass = this.getRoute(name).page(args);
       var count = this.stack.length;
-      var ret = super.setRoot(pageClass);
-      /*if (window.history.state && this.currentState && window.history.state.name == this.currentState.name){
-        this.currentState = { name: name, args: args, index: this.index, guid: window.history.state.guid };
-        return;
-      }*/
+      var ret: any = super.setRoot(pageClass);
+
       if (this.index > 0) {
-        //if (window.history.state != null)
-          //window.history.go(-this.index);
       }
 
       var guid = GUID();
@@ -175,10 +190,10 @@ class RouterNavigator extends NavController {
 
   }
 
-  push(name, ...args) {
+  push(name: any, ...args: any[]) {
     if (typeof name == "string") {
       var pageClass = this.getRoute(name).page(args);
-      var ret = super.push(pageClass);
+      var ret: any = super.push(pageClass);
       var guid = GUID();
       ret.guid = guid;
 
@@ -188,23 +203,18 @@ class RouterNavigator extends NavController {
       window.history.pushState(this.currentState, name, `#${name}`);
       return ret;
     } else {
-      var ret = super.push(name, ...args);
+      var ret: any = super.push(name, ...args);
     }
   }
 
-  getRoute(name) {
-    return Objects.find(this.options.routes, r => r.name == name);
+  getRoute(name: string): RouteConfig {
+    return Objects.find(this.options.routes, (r: RouteConfig) => r.name == name);
   }
-
-  // onPageNavigateBack(pageName){
-  //   super.onPageNavigateBack(pageName);
-  // }
-
-
 }
 
 class Page1 extends BasePage {
-  constructor(title) {
+  title: string;
+  constructor(title: string) {
     super();
     this.title = title;
   }
@@ -213,7 +223,8 @@ class Page1 extends BasePage {
   }
 }
 class Page2 extends BasePage {
-  constructor(title) {
+  title: string;
+  constructor(title: string) {
     super();
     this.title = title;
   }
@@ -222,7 +233,8 @@ class Page2 extends BasePage {
   }
 }
 class Page3 extends BasePage {
-  constructor(title) {
+  title: string;
+  constructor(title: string) {
     super();
     this.title = title;
   }
@@ -231,7 +243,8 @@ class Page3 extends BasePage {
   }
 }
 class Page4 extends BasePage {
-  constructor(title) {
+  title: string;
+  constructor(title: string) {
     super();
     this.title = title;
   }
@@ -241,16 +254,17 @@ class Page4 extends BasePage {
 }
 
 var Router = {
-  routes: [],
-  mode: null,
+  routes: [] as any[],
+  mode: null as string | null,
   root: '/',
-  config: function(options) {
+  interval: null as any,
+  config: function(options: any) {
       this.mode = options && options.mode && options.mode == 'history' 
                   && !!(history.pushState) ? 'history' : 'hash';
       this.root = options && options.root ? '/' + this.clearSlashes(options.root) + '/' : '/';
       return this;
   },
-  getFragment: function() {
+  getFragment: function(): string {
       var fragment = '';
       if(this.mode === 'history') {
           fragment = this.clearSlashes(decodeURI(location.pathname + location.search));
@@ -262,10 +276,10 @@ var Router = {
       }
       return this.clearSlashes(fragment);
   },
-  clearSlashes: function(path) {
+  clearSlashes: function(path: string): string {
       return path.toString().replace(/\/$/, '').replace(/^\//, '');
   },
-  add: function(re, handler) {
+  add: function(re: any, handler?: Function) {
       if(typeof re == 'function') {
           handler = re;
           re = '';
@@ -273,8 +287,8 @@ var Router = {
       this.routes.push({ re: re, handler: handler});
       return this;
   },
-  remove: function(param) {
-      for(var i=0, r; i < this.routes.length, r = this.routes[i]; i++) {
+  remove: function(param: any) {
+      for(var i=0, r: any; i < this.routes.length, r = this.routes[i]; i++) {
           if(r.handler === param || r.re.toString() === param.toString()) {
               this.routes.splice(i, 1); 
               return this;
@@ -288,7 +302,7 @@ var Router = {
       this.root = '/';
       return this;
   },
-  check: function(f) {
+  check: function(f?: string) {
       var fragment = f || this.getFragment();
       for(var i=0; i < this.routes.length; i++) {
           var match = fragment.match(this.routes[i].re);
@@ -313,10 +327,10 @@ var Router = {
       this.interval = setInterval(fn, 50);
       return this;
   },
-  navigate: function(path) {
+  navigate: function(path?: string) {
       path = path ? path : '';
       if(this.mode === 'history') {
-          history.pushState(null, null, this.root + this.clearSlashes(path));
+          history.pushState(null, '', this.root + this.clearSlashes(path));
       } else {
           window.location.href = window.location.href.replace(/#(.*)$/, '') + '#' + path;
       }
