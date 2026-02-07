@@ -11,7 +11,7 @@ module.exports = (env) => {
   var out = merge(
     baseConfig(env),
     {
-      entry: ['./test/index.test.js'],
+      entry: ['./test/index.test.ts'],
       output: {
         path: path.resolve(__dirname, 'dist-test')
       },

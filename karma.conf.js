@@ -6,8 +6,8 @@ module.exports = function(config) {
 		browsers: ['Chrome'],
 		files: [
 			// all files ending in "_test"
-			'./spec/tests/*-spec.js',
-			'./spec/tests/**/*-spec.js',
+			'./spec/tests/*-spec.ts',
+			'./spec/tests/**/*-spec.ts',
 			{ pattern: 'src/img/**/*.png', watched: false, included: false, served: true },
 			{ pattern: 'src/img/**/*.svg', watched: false, included: false, served: true },
 			// each file acts as entry point for the webpack configuration
@@ -15,8 +15,8 @@ module.exports = function(config) {
 		webpack: webpackConfig,
 		preprocessors: {
 			// add webpack as preprocessor
-			'./spec/tests/*-spec.js': ['webpack','sourcemap'],
-			//'./spec/tests/**/*-spec.js': ['webpack']
+			'./spec/tests/*-spec.ts': ['webpack','sourcemap'],
+			'./spec/tests/**/*-spec.ts': ['webpack','sourcemap'],
 		},
 
 		proxies: {
