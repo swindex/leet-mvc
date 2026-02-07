@@ -1,0 +1,108 @@
+import { empty } from '../helpers';
+
+/**
+ * Compiles binding expressions into getter, setter, and caller functions.
+ * Uses `new Function()` for dynamic evaluation, bound to the provided context.
+ * Results are cached for performance.
+ */
+export class ExpressionCompiler {
+  private cache: Record<string, Function> = {};
+
+  /**
+   * Create a getter function that evaluates the expression and returns a value.
+   * @param expression - The binding expression (e.g., "this.name", "this.items.length > 0")
+   * @param inject - The current inject variables (used to build the preamble)
+   * @param context - The context object to bind the function to
+   * @param key - The attribute key (for error messages)
+   */
+  createGetter(expression: string, inject: any, context: any, key: string): Function {
+    const preamble = this.buildInjectPreamble(inject);
+    const cacheKey = preamble + expression;
+
+    if (this.cache.hasOwnProperty(cacheKey)) {
+      return this.cache[cacheKey];
+    }
+
+    try {
+      const getter = new Function('inject',
+        `${preamble}; return ${expression};`
+      );
+      const bound = getter.bind(context);
+      this.cache[cacheKey] = bound;
+      return bound;
+    } catch (ex: any) {
+      throw new Error(
+        `${ex.message} creating getter for attribute ${key}="${expression}"\nGetter must be a valid expression`
+      );
+    }
+  }
+
+  /**
+   * Create a setter function that assigns a value to the expression path.
+   * @param expression - The binding expression (must be assignable, e.g., "this.name")
+   * @param inject - The current inject variables
+   * @param context - The context object to bind the function to
+   */
+  createSetter(expression: string, inject: any, context: any): Function | null {
+    const preamble = this.buildInjectPreamble(inject);
+
+    try {
+      const setter = new Function('inject', 'value',
+        `${preamble}; return ${expression} = value;`
+      );
+      return setter.bind(context);
+    } catch (ex) {
+      return null;
+    }
+  }
+
+  /**
+   * Create a caller function that executes the expression without returning a value.
+   * Used for event handlers like (click)="this.doSomething()".
+   * @param expression - The expression to execute
+   * @param inject - The current inject variables
+   * @param context - The context object to bind the function to
+   */
+  createCaller(expression: string, inject: any, context: any): Function | null {
+    const preamble = this.buildInjectPreamble(inject);
+    const cacheKey = preamble + expression;
+
+    if (this.cache.hasOwnProperty(cacheKey)) {
+      return this.cache[cacheKey];
+    }
+
+    try {
+      const caller = new Function('inject',
+        `${preamble}; ${expression};`
+      );
+      const bound = caller.bind(context);
+      this.cache[cacheKey] = bound;
+      return bound;
+    } catch (ex) {
+      return null;
+    }
+  }
+
+  /**
+   * Build the JavaScript preamble that destructures inject variables into local vars.
+   * For example, if inject = { index: 0, item: {...} }, this produces:
+   *   "var index = inject['index'];\nvar item = inject['item'];\n"
+   */
+  buildInjectPreamble(vars: any): string {
+    let preamble = '';
+    if (!empty(vars)) {
+      for (const key in vars) {
+        if (!vars.hasOwnProperty(key)) continue;
+        preamble += `var ${key}= inject['${key}'];\n`;
+      }
+    }
+    return preamble;
+  }
+
+  /**
+   * Clear the expression cache
+   */
+  clearCache(): void {
+    this.cache = {};
+  }
+}
