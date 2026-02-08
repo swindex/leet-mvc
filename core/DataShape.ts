@@ -113,7 +113,7 @@ export const DataShape = {
             console.warn(`A Required Property ${i} of template${path} does not exist in source object${path}`, new Error().stack);
           }
         } else {
-          e = obj[i];
+          e = (obj as any)[i];
         }
         newObj[i] = DataShape.copy(e, tEl, checkSource, path + '.' + i);
       }

@@ -14,7 +14,7 @@ export const Objects = {
       ret = {} as Record<string, T>;
       for (const key in data) {
         if (!data.hasOwnProperty(key)) continue;
-        const elem = data[key];
+        const elem = (data as Record<string, T>)[key];
         if (elem != null && callback(elem, key)) {
           ret[key] = elem;
         }
@@ -37,7 +37,7 @@ export const Objects = {
       ret = {} as Record<string, R>;
       for (const key in data) {
         if (!data.hasOwnProperty(key)) continue;
-        const elem = data[key];
+        const elem = (data as Record<string, T>)[key];
         if (elem != null) {
           ret[key] = callback(elem, key);
         }
@@ -201,8 +201,8 @@ export const Objects = {
     if (isObject(obj1)) {
       for (const i in obj1) {
         if (obj1.hasOwnProperty(i)) {
-          if (callback(obj1, i) !== false && isObject(obj1[i])) {
-            Objects.walk(obj1[i], callback);
+          if (callback(obj1, i) !== false && isObject((obj1 as any)[i])) {
+            Objects.walk((obj1 as any)[i], callback);
           }
         }
       }
@@ -217,8 +217,8 @@ export const Objects = {
       for (const i in obj1) {
         if (obj1.hasOwnProperty(i)) {
           callback(obj1, obj2, i);
-          if (isObject(obj1[i])) {
-            Objects.walk2(obj1[i], isObject(obj2) ? obj2[i] : undefined, callback);
+          if (isObject((obj1 as any)[i])) {
+            Objects.walk2((obj1 as any)[i], isObject(obj2) ? (obj2 as any)[i] : undefined, callback);
           }
         }
       }

@@ -38,9 +38,9 @@ export class CallbackQueue {
   call(...args: any[]): void {
     const queue = this.queue;
     // Execute callbacks in non-blocking fashion
-    setTimeout(function () {
+    setTimeout(() => {
       Objects.forEach(queue, (obj: CallbackWithGUID) => {
-        obj.apply(this, args);
+        obj(...args);
       });
     }, 0);
   }

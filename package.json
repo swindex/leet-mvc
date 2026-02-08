@@ -5,14 +5,15 @@
     "**/*.scss",
     "**/*.vue"
   ],
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "",
   "main": "index.ts",
   "scripts": {
     "test": "karma start",
     "webpack--watch": "npx webpack --watch",
     "serve": "npx webpack serve",
-    "webpack--prod": "npx webpack"
+    "webpack--prod": "npx webpack",
+    "tag": "git tag v%npm_package_version% && git push origin v%npm_package_version%"
   },
   "author": "",
   "license": "ISC",

@@ -200,7 +200,7 @@ function getWatchedObject<T extends object>(
         if (!isObject(value))
           return value;
 
-        if (value && isObject(value) && value[isProxy])
+        if (value && isObject(value) && (value as any)[isProxy])
           return value;
 
         const desc = Object.getOwnPropertyDescriptor(target, property);
@@ -362,7 +362,7 @@ export function objectCloneCompare(
     if (!isArray(newObj) && !isObjLiteral(newObj)) {
       ret[k] = newObj[k];
     } else {
-      ret[k] = objectCloneCompare({}, newObj[k], onPropertyChangeCallback, ignoreProperties);
+      ret[k] = objectCloneCompare({}, (newObj as any)[k], onPropertyChangeCallback, ignoreProperties);
     }
   }
 

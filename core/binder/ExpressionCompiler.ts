@@ -43,7 +43,7 @@ export class ExpressionCompiler {
    * @param inject - The current inject variables
    * @param context - The context object to bind the function to
    */
-  createSetter(expression: string, inject: any, context: any): Function | null {
+  createSetter(expression: string, inject: any, context: any): Function {
     const preamble = this.buildInjectPreamble(inject);
 
     try {
@@ -51,8 +51,9 @@ export class ExpressionCompiler {
         `${preamble}; return ${expression} = value;`
       );
       return setter.bind(context);
-    } catch (ex) {
-      return null;
+    } catch (ex: any) {
+      console.error(`Error creating setter for expression "${expression}": ${ex.message}`);
+      throw ex;
     }
   }
 
