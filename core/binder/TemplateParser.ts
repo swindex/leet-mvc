@@ -100,7 +100,7 @@ export class TemplateParser {
    * containing multiple text nodes if there is.
    */
   private parseTextNode(data: string): IRNode {
-    const escaped = this.escapeForText(data);
+    const escaped = data//this.escapeForText(data);
     const bits = escaped.split(/({{[^{}]*}})/gmi);
 
     // If there's only one bit and no interpolation, return a simple text node
