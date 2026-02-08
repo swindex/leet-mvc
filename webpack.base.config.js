@@ -47,6 +47,20 @@ module.exports = (env) => {
           use: ['babel-loader', 'ts-loader'],
         },
         {
+          test: /\.ts$/,
+          include: /node_modules[\/\\]leet-mvc/,
+          use: ['babel-loader', {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+              configFile: path.resolve(__dirname, '../../tsconfig.json'),
+              compilerOptions: {
+                declaration: false,
+              }
+            }
+          }],
+        },
+        {
           test: /\.html$/,
           exclude: /index\.html$/,  // Exclude index.html from html-loader
           use: [
@@ -107,4 +121,3 @@ module.exports = (env) => {
   };
   return base;
 };
-exports.raw = true;

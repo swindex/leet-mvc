@@ -71,9 +71,9 @@ export class Analytics {
   }
 
   private config: AnalyticsConfig;
-  private Tracker!: Matomo;
+  Tracker!: Matomo;
   private PrevScreenUrl: string | null = null;
-  private PrevScreenName: string | null = null;
+  PrevScreenName: string | null = null;
 
   /**
    * Create Tracker instance
@@ -203,7 +203,7 @@ export class Analytics {
 }
 
 class Matomo {
-  private _URL: string;
+  _URL: string;
   private _enabled: boolean = true;
   options: MatomoTrackOptions;
   private ActionOpts: Record<string, any> = {};

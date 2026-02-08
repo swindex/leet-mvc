@@ -81,14 +81,14 @@ export class NavController {
   /**
    * Remove all pages and load passed page Constructor as Root
    */
-  setRoot<T extends BasePage>(pageConstructor: new (...args: any[]) => T | Promise<new (...args: any[]) => T>, ...parameters: any[]): T | Promise<T> {
+  setRoot<T extends BasePage>(pageConstructor: new (...args: any[]) => T | Promise<new (...args: any[]) => T>, ...parameters: any[]): T {
     this.isLoadingRoot = true;
     this.removeAllFrames();
     //self.onPageNavigateTo(pageConstructor.name);
     const page = this._createPage(this.pageContainer, pageConstructor, argumentsToArray(arguments, 1));
     //self.onPageCreated(page);
     this.isLoadingRoot = false;
-    return page as T | Promise<T>;
+    return page as any;
   }
 
   /**
@@ -101,26 +101,26 @@ export class NavController {
   /**
    * Push a page on top of stack.
    */
-  push<T extends BasePage>(pageConstructor: new (...args: any[]) => T | Promise<new (...args: any[]) => T>, ...parameters: any[]): T | Promise<T> {
+  push<T extends BasePage>(pageConstructor: any, ...parameters: any[]): T {
     if (this.currentFrame())
       tryCall(this.currentFrame()!.page, this.currentFrame()!.page.onLeave);
     //self.onPageNavigateTo(pageConstructor.name);
     const page = this._createPage(this.pageContainer, pageConstructor, argumentsToArray(arguments, 1));
     //self.onPageCreated(page);
     //pushState(pageConstructor.name);
-    return page as T | Promise<T>;
+    return page as T;
   }
 
   /**
    * Push a page on top of stack INTO a specified element
    */
-  pushInto<T extends BasePage>(container: HTMLElement, pageConstructor: new (...args: any[]) => T | Promise<new (...args: any[]) => T>, ...parameters: any[]): T | Promise<T> {
+  pushInto<T extends BasePage>(container: HTMLElement, pageConstructor: new (...args: any[]) => T | Promise<new (...args: any[]) => T>, ...parameters: any[]): T {
     if (this.currentFrame())
       tryCall(this.currentFrame()!.page, this.currentFrame()!.page.onLeave);
     //self.onPageNavigateTo(pageConstructor.name);
     const page = this._createPage(container, pageConstructor, argumentsToArray(arguments, 2));
     //self.onPageCreated(page);
-    return page as T | Promise<T>;
+    return page as T;
   }
 
   /**

@@ -31,7 +31,7 @@
     "@types/promise.prototype.finally": "^2.0.3",
     "autoprefixer": "^10.4.16",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
-    "babel-loader": "^8.0.6",
+    "babel-loader": "^9.1.0",
     "babel-plugin-transform-imports": "^2.0.0",
     "buffer": "^6.0.3",
     "copy-webpack-plugin": "^5.1.1",
