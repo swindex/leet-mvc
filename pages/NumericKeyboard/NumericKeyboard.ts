@@ -1,7 +1,7 @@
 // @ts-nocheck
 import './NumericKeyboardPage.scss';
 // @ts-ignore
-import * as template from './NumericKeyboardPage.html';
+import template from './NumericKeyboardPage.html';
 import { BasePage } from './../BasePage';
 import { Injector } from "./../../core/Injector";
 import { DOM } from '../../core/DOM';

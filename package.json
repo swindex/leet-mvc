@@ -1,11 +1,11 @@
 {
   "name": "leet-mvc",
+  "version": "4.0.5",
   "sideEffects": [
     "**/*.css",
     "**/*.scss",
     "**/*.vue"
   ],
-  "version": "4.0.4",
   "description": "",
   "main": "index.ts",
   "scripts": {

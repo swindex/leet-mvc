@@ -1,5 +1,5 @@
 // @ts-nocheck
-import * as template from './CallPhone.html';
+import template from './CallPhone.html';
 import './CallPhone.scss';
 import { DialogPage } from "../DialogPage/DialogPage";
 

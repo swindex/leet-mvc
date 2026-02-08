@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { BasePage } from "../BasePage";
 // @ts-ignore
-import * as template from './DialogPage.html';
+import template from './DialogPage.html';
 import './DialogPage.scss';
 import { isString, tryCall } from "../../core/helpers";
 import { Forms } from "../../components/Forms";

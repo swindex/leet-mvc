@@ -67,7 +67,7 @@ module.exports = (env) => {
             {
               loader: 'html-loader',
               options:{
-                esModule:false,
+                esModule:true,
                 // Disables attributes processing
                 //sources: false,
               }
