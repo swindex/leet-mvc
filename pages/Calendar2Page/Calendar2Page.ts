@@ -1207,7 +1207,7 @@ function deleteEventFromUnscheduled(title, message, events) {
 
 Calendar2Page.selector = "page-Calendar2Page";
 var template = `
-	<div [directive] = "this._tabs" class="tabs-container">
+	<div [html] = "this._tabs" class="tabs-container">
 		<ul class="tab-buttons">
 			<li for="month">{{ Translate('Month') }}</li>
 			<li for="day">{{ Translate('Day') }}</li>

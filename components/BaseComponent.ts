@@ -18,7 +18,7 @@ export interface IBinder {
 export class BaseComponent extends ChangeWatcher {
   [key: string]: any;
   binder: IBinder | null = null;
-  template: string | null = null;
+  template?: string;
   events: Record<string, (event: Event) => void> | null = null;
   /** fragment with children */
   templateFragment: DocumentFragment | null = null;

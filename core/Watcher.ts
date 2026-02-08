@@ -219,7 +219,23 @@ function getWatchedObject<T extends object>(
         if (ignoreProperties!.indexOf(property as string) < 0)
           onPropertyChange(target, property as string, value);
 
-        return Reflect.set(target, property, value);
+        // Attempt to set the property
+        const result = Reflect.set(target, property, value);
+        
+        // If Reflect.set returns false (e.g., property is read-only), 
+        // check if it's a getter-only property and handle gracefully
+        /*if (!result) {
+          const descriptor = Object.getOwnPropertyDescriptor(target, property) ||
+                            Object.getOwnPropertyDescriptor(Object.getPrototypeOf(target), property);
+          
+          // If it's a getter-only property (no setter), return true to prevent TypeError
+          // This allows the code to continue even when trying to set read-only properties
+          if (descriptor && descriptor.get && !descriptor.set) {
+            return true;
+          }
+        }*/
+        
+        return result;
       },
       defineProperty(target, property, descriptor) {
         if (ignoreProperties!.indexOf(property as string) < 0)

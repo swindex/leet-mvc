@@ -4,11 +4,11 @@ import { EAttrResult } from '../types';
 import type { VDom, DirectiveContext } from '../types';
 
 /**
- * [directive] directive — dynamic template/component injection.
+ * [html] directive — dynamic template/component injection.
  * Accepts an HTML string, DocumentFragment, or BaseComponent instance.
  */
-export function directiveDirective(on: VDom, inject: any, ctx: DirectiveContext): EAttrResult | void {
-  const key = 'directive';
+export function htmlDirective(on: VDom, inject: any, ctx: DirectiveContext): EAttrResult | void {
+  const key = 'html';
   const getter = on.getters[key];
   const html = getter(inject);
 

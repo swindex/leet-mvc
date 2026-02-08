@@ -3,6 +3,7 @@ import '../core/polyfill';
 import './../scss/app.scss';
 import './../scss/forms.scss';
 import './../scss/buttons.scss';
+import './styles.scss'
 
 import { Translate } from '../core/Translate';
 import { Injector } from '../core/Injector';

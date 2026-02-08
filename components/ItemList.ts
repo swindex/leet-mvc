@@ -4,7 +4,7 @@ import { DOM } from "../core/DOM";
 
 /**
  * Buffered ItemList component
- * to be used as [directive] provider for the Binder engine
+ * to be used as [html] provider for the Binder engine
  * this.listComp = new ItemList();
  * this.listComp.displayBufferItems = 50;
  * this.listComp.items = ["item 1","item 2","item 3"];
@@ -12,7 +12,7 @@ import { DOM } from "../core/DOM";
  * 		alert('item was clicked!');	
  * }
  * ...
- * page.template = '<div [directive]="this.listComp">'
+ * page.template = '<div [html]="this.listComp">'
  */
 export class ItemList extends BaseComponent {
   constructor() {

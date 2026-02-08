@@ -35,7 +35,7 @@ export class SwiperComponent extends BaseComponent{
 		this.template = `
 		<div class="swiper-container">
 			<div class="swiper-wrapper">
-				<div class="swiper-wrapper" [directive]="this.templateFragment">
+				<div class="swiper-wrapper" [html]="this.templateFragment">
 				</div>
 			</div>
       <div [if]="this.options.navigation" class="swiper-navigation">

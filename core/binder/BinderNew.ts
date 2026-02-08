@@ -168,8 +168,8 @@ export class Binder {
     if (componentClass && !(this.context instanceof componentClass)) {
       // Inject [component] attribute
       ir.attributes['[component]'] = `Registered('${tag}')`;
-      // Remove [directive] if present — component takes precedence
-      if (ir.directive!.key === '[directive]') {
+      // Remove [html] if present — component takes precedence
+      if (ir.directive!.key === '[html]') {
         delete getters[rType.key];
         const compRType = this.getReactivityType('[component]');
         getters[compRType.key] = this.compiler.createGetter(`Registered('${tag}')`, inject, this.context, compRType.key);
@@ -179,6 +179,25 @@ export class Binder {
     // itemBuilder: lazily creates children from the IR
     const self = this;
     const itemBuilder = (inj: any): VDom => {
+      // Check if [component] was injected into attributes
+      // If so, we need to handle it as a nested directive
+      const hasComponentAttr = ir.attributes['[component]'];
+      
+      if (hasComponentAttr && ir.directive && ir.directive.key !== '[component]') {
+        // Create a new IR node for the component directive
+        const componentIR: IRNode = {
+          type: 'directive',
+          tag: ir.tag,
+          attributes: { ...ir.attributes },
+          directive: { key: '[component]', expression: ir.attributes['[component]'] },
+          children: ir.children,
+        };
+        // Remove [component] from attributes since it's now the directive
+        delete componentIR.attributes['[component]'];
+        
+        return self.createDirectiveNode(componentIR, inj);
+      }
+      
       const childVDom = self.createElementNode(ir, inj);
       // If the element has a "fragment" attribute, convert to DocumentFragment
       if (childVDom.elem instanceof HTMLElement && childVDom.elem.getAttribute && childVDom.elem.getAttribute('fragment') !== null) {

@@ -67,17 +67,17 @@ export class HeaderPage extends BasePage{
 HeaderPage.className = 'page-HeaderPage';
 var template = `
 	<div class="header" [if]="this.header">
-		<div [directive] = "this.header"></div>
+		<div [html] = "this.header"></div>
 	</div>
 	
 	<div class="content">
 		<!--default-template-begin-->
-		<div [directive] = "this.content"></div>
+		<div [html] = "this.content"></div>
 		<!--default-template-end-->
 		<!--child-template-->
 	</div>
 
 	<div class="footer" [if]="this.footer && this.showFooter">
-		<div [directive] = "this.footer"></div>
+		<div [html] = "this.footer"></div>
 	</div>
 `;

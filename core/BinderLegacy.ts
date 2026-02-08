@@ -221,7 +221,7 @@ export var Binder = function (context:object) {
       //add '[component]' attribute only if tag name is registered and current context is NOT the instance of that same component class (avoid callstack exception if same tag name is used inside the component.html)
       if (componenet && !(self.context instanceof componenet)) {
         obj.attribs['[component]'] = `Registered('${tag}')`;
-        delete obj.attribs['[directive]'];
+        delete obj.attribs['[html]'];
       }
 
       //var attrText = "{";
@@ -232,7 +232,7 @@ export var Binder = function (context:object) {
           switch (key) {
             case '[foreach]':
             case '[transition]':
-            case '[directive]':
+            case '[html]':
             case '[component]':
             case '[if]':
               wrapDirective = `"${key}":"${value}"`;
@@ -959,8 +959,8 @@ export var Binder = function (context:object) {
      * @param {vDom} on  
      * @param {*} inject 
      */
-    'directive': function (on, inject) {
-      var key = "directive";
+    'html': function (on, inject) {
+      var key = "html";
       var getter = on.getters[key];
       var html = getter(inject);
 

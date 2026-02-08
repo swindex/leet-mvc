@@ -154,7 +154,7 @@ export class DirectionsPage extends DialogPage{
 }
 DirectionsPage.selector = "page-DirectionsPage";
 var template =`
-<div class = "map_container n_nicole" [directive]="this.mapTabs">
+<div class = "map_container n_nicole" [html]="this.mapTabs">
 	<div id="map-tabs" class="tabs">
 		<div class="tab swiper-no-swiping" id="map">
 			<div class="fill" id="mapDiv"></div>

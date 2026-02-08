@@ -333,7 +333,7 @@ export class CalendarPage extends DialogPage {
 }
 CalendarPage.selector = "page-CalendarPage";
 CalendarPage.content = `
-  <div [directive] = "this._tabs">
+  <div [html] = "this._tabs">
     <ul class="tab-buttons" [show]="this._showClock || (this._showCalendar && this._showClock)">
       <li for="calendar" [show]="this._showCalendar && this._showClock">
         <span bind="this._d_date"></span>

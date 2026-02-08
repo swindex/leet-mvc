@@ -93,7 +93,7 @@ export class Forms extends BaseComponent {
     };
     this.field_definitions = Forms.field_definitions;
 
-    this.template = `<div [directive]="this.formHTML"></div>`;
+    this.template = `<div [html]="this.formHTML"></div>`;
 
     this.updateTemplate(this.formTemplate);
   }
@@ -651,7 +651,7 @@ ${item.info ? this.addItemInfo(el, itemIndex) : ''}
     if (hasSubItems) {
       //this.fields[el._name].component = new Forms([], this.data);
       //items_items += '<div>Sub items go here</div>';
-      //items_items += `<div [directive] = "${this.refactorAttrName('this.fields.' + el._name + '.subitems')}" >Sub items go here</div>`;
+      //items_items += `<div [html] = "${this.refactorAttrName('this.fields.' + el._name + '.subitems')}" >Sub items go here</div>`;
     }
 
     return this.renderFieldGroupHTML(el, elem) + this.renderSelectGroupHTML(el, items_items);

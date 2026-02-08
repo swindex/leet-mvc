@@ -4,7 +4,7 @@
 		<div class = 'prompt' [if]='this.prompt' bind="Translate(this.prompt)">Prompt</div>
 		
 		<div class = 'dialog-content touch-scroll' [style]="{maxHeight:this.dialog_content_max_height}">
-			<div [directive] = "this.content"></div>
+			<div [html] = "this.content"></div>
 			<!--child-template-->
 		</div>
 		<div class = 'dialog-buttons' [if]="this.buttons">

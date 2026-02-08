@@ -8,6 +8,8 @@ import { TestFormsVisiblePage } from "./TestFormsVisiblePage";
 import { TestComponentPage } from "./TestComponentPage";
 import { TestFormsSelectItemsPage } from "./TestFormsSelectItemsPage";
 import { RouterTestPage } from "./RouterTest";
+import { TestRegisterComponentPage } from "./TestRegisterComponentPage";
+import { TestInConstructorComponentPage } from "./TestInConstructorComponentPage";
 
 export class RootPage extends HeaderPage {
   pages: { page: any; name: string }[];
@@ -25,7 +27,9 @@ export class RootPage extends HeaderPage {
 
       { page: TestComponentPage, name: "Test Component" },
       { page: TestFormsSelectItemsPage, name: "Test Forms Select Items" },
-      { page: RouterTestPage, name: "Router Test" }
+      { page: RouterTestPage, name: "Router Test" },
+      { page: TestRegisterComponentPage, name: "Test RegisterComponent" },
+      { page: TestInConstructorComponentPage, name: "Test In-Constructor Component" }
     ];
 
   }

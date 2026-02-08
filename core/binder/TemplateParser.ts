@@ -6,7 +6,7 @@ const htmlparser = require('htmlparser2');
 /**
  * Directive attribute names that create their own scope
  */
-const DIRECTIVE_ATTRS = new Set(['[foreach]', '[transition]', '[directive]', '[component]', '[if]']);
+const DIRECTIVE_ATTRS = new Set(['[foreach]', '[transition]', '[html]', '[component]', '[if]']);
 
 /**
  * Parses HTML template strings into an IR (Intermediate Representation) tree.

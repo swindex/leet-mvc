@@ -20,7 +20,7 @@ export class PageComponent extends BaseComponent{
 		this.tempContainer = null;
 		this.pages = [];
 		this.swiper = null;
-		this.template=`<div class="" style="height:100%;"></div>`;
+		//this.template=``;
 		this.Nav=new NavController();
 	}
 
@@ -72,3 +72,5 @@ export class PageComponent extends BaseComponent{
 		this.Nav.setContainer(this.container);
 	}
 }
+
+PageComponent.prototype.template = `<div class="" style="height:100%;"></div>`;
