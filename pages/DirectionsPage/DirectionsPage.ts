@@ -10,7 +10,6 @@ import './DirectionsPage.scss';
 import { Translate } from "./../../core/Translate";
 import { DOM } from "../../core/DOM";
 
-//var Inject = Injector.implement(InjectTemplate)
 //Google maps leak memory as hell. Cache the map element, so at least we do not do it every time we load the page
 /** @type {MapElement} */
 var map = null;

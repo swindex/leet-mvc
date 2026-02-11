@@ -3,3 +3,4 @@ dist-test/
 debug.log
 dist/
 tasks.json
+.vscode/settings.json

@@ -45,7 +45,7 @@ export class VDomOps {
           VDomOps.insertVDomItemsAfter(item.items, item.elem);
           // If item is a component, re-insert its children too
           if (item.getters.component) {
-            const component = (item.getters.component as any)(null, {});
+            const component = item.values['component'];
             if (component && component.binder) {
               VDomOps.insertVDomElementAfter(component.binder.vdom, item.elem);
             }
@@ -92,7 +92,7 @@ export class VDomOps {
           VDomOps.removeVDomItems(item.items, keepEvents);
           // If item is a component, remove its vDOM element too
           if (item.getters.component) {
-            const component = (item.getters.component as any)(null, {});
+            const component = item.values['component'];
             if (component && component.binder) {
               VDomOps.removeElement(component.binder.vdom.elem, keepEvents);
             }
@@ -136,9 +136,18 @@ export class VDomOps {
     const vdom = on.itemBuilder!(inject);
     if (vdom.elem instanceof DocumentFragment) {
       on.items = vdom.items;
+      VDomOps.insertAfter(vdom.elem!, on.elem!);
     } else {
       on.items.push(vdom);
+      VDomOps.insertAfter(vdom.elem!, on.elem!);
+      
+      // If the created vdom is a component directive, also insert the component's rendered template
+      if (vdom.elem instanceof Comment && vdom.getters.component) {
+        const component = vdom.values['component'];
+        if (component && component.binder) {
+          VDomOps.insertVDomElementAfter(component.binder.vdom, vdom.elem);
+        }
+      }
     }
-    VDomOps.insertAfter(vdom.elem!, on.elem!);
   }
 }

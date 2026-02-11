@@ -19,29 +19,20 @@ class CounterComponent extends BaseComponent {
   onIncrement() {
     this.count++;
     this.value++;
-    
-    // Trigger event callback if provided
-    if (typeof this.onCountChange === 'function') {
-      this.onCountChange(this.count);
-    }
-    
-    // Trigger two-way binding update
-    if (typeof this.valueChange_2 === 'function') {
-      this.valueChange_2(this.value);
-    }
   }
 
   onDecrement() {
     this.count--;
     this.value--;
     
-    if (typeof this.onCountChange === 'function') {
-      this.onCountChange(this.count);
-    }
-    
-    if (typeof this.valueChange_2 === 'function') {
-      this.valueChange_2(this.value);
-    }
+  }
+
+  valueChange(newValue: number) {
+    this.onCountChange(newValue);
+  }
+
+  onCountChange(newCount: number) {
+    // Placeholder for event binding callback
   }
 
   get template() {
@@ -163,8 +154,7 @@ var template = `
     <button onclick="this.onResetParent()" style="padding:5px 15px;">Reset</button>
   </div>
   <p>Component with bound <code>[count]</code> property:</p>
-  <div [component]="this.myComponent2">
-    <div [label]="'One-Way Bound'" [count]="this.parentCounter"></div>
+  <div [component]="this.myComponent2" [label]="'One-Way Bound'" [count]="this.parentCounter">
   </div>
 
   <hr style="margin:20px 0;"/>
@@ -172,16 +162,14 @@ var template = `
   <h4>3. Two-Way Binding</h4>
   <p>Parent counter (two-way bound): <strong style="color:#0066cc;">{{ this.parentCounter }}</strong></p>
   <p>Changes in the component will update the parent counter.</p>
-  <div [component]="this.myComponent4">
-    <div [label]="'Two-Way Bound'" [(value)]="this.parentCounter"></div>
+  <div [component]="this.myComponent4" [label]="'Two-Way Bound'" [(value)]="this.parentCounter">
   </div>
 
   <hr style="margin:20px 0;"/>
 
   <h4>4. Event Callbacks</h4>
   <p>Component with event callback <code>(onCountChange)</code>:</p>
-  <div [component]="this.myComponent5">
-    <div [label]="'With Events'" (onCountChange)="this.onCountChanged($event)"></div>
+  <div [component]="this.myComponent5" (onCountChange)="this.onCountChanged($event) ">
   </div>
   <div style="margin-top:10px;">
     <strong>Event Log ({{ this.eventLog.length }} events):</strong>
@@ -199,8 +187,7 @@ var template = `
   <h4>5. Dynamic Label Binding</h4>
   <p>Current label: <strong style="color:#0066cc;">{{ this.componentLabel }}</strong></p>
   <button onclick="this.onChangeLabel()" style="padding:5px 15px; margin-bottom:10px;">Toggle Label</button>
-  <div [component]="this.myComponent6">
-    <div [label]="this.componentLabel" [count]="10"></div>
+  <div [component]="this.myComponent6" [label]="this.componentLabel" [count]="10">
   </div>
 
   <hr style="margin:20px 0;"/>
@@ -211,8 +198,7 @@ var template = `
       Toggle Component ({{ this.showComponent ? 'visible' : 'hidden' }})
     </button>
   </p>
-  <div [component]="this.myComponent7">
-    <div [if]="this.showComponent" [label]="'Conditional Render'"></div>
+  <div [component]="this.myComponent7" [if]="this.showComponent" [label]="'Conditional Render'">
   </div>
 
   <hr style="margin:20px 0;"/>

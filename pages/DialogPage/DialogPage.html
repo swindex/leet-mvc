@@ -1,7 +1,7 @@
 <div class="backdrop" onclick="this.onClickedOutside()">
 	<div class='popup' onclick="$event.stopPropagation()">
-		<div class = 'title' [if]='this.title'  bind="Translate(this.title)">Dialog title</div>
-		<div class = 'prompt' [if]='this.prompt' bind="Translate(this.prompt)">Prompt</div>
+		<div class = 'title' [if]='this.title'>{{Translate(this.title)}}</div>
+		<div class = 'prompt' [if]='this.prompt'>{{Translate(this.prompt)}}</div>
 		
 		<div class = 'dialog-content touch-scroll' [style]="{maxHeight:this.dialog_content_max_height}">
 			<div [html] = "this.content"></div>

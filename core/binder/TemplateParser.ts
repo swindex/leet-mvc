@@ -57,19 +57,20 @@ export class TemplateParser {
     // Element node
     const tag = obj.name;
     const attributes: Record<string, string> = {};
-    let directive: { key: string; expression: string } | undefined;
+    const directives: Array<{ key: string; expression: string }> = [];
 
     if (obj.attribs) {
       Objects.forEach(obj.attribs, (value: string, key: string | number) => {
         const k = String(key);
         if (DIRECTIVE_ATTRS.has(k)) {
-          directive = { key: k, expression: value };
+          directives.push({ key: k, expression: value });
         } else {
           attributes[k] = value;
         }
       });
     }
 
+    // Parse children first
     const children: IRNode[] = [];
     if (obj.children && obj.children.length > 0) {
       for (const child of obj.children) {
@@ -79,6 +80,43 @@ export class TemplateParser {
         }
       }
     }
+
+    // Handle multiple directives - nest them with proper priority
+    // Priority order: [if] > [foreach] > [component] > others
+    if (directives.length > 1) {
+      directives.sort((a, b) => {
+        const priority: Record<string, number> = {
+          '[if]': 1,
+          '[foreach]': 2,
+          '[component]': 3,
+          '[transition]': 4,
+          '[html]': 5,
+        };
+        return (priority[a.key] || 99) - (priority[b.key] || 99);
+      });
+
+      // Create outer directive with inner directives preserved in attributes
+      const outerDirective = directives[0];
+      const innerDirectives = directives.slice(1);
+
+      // Put inner directives back into attributes
+      const innerAttributes: Record<string, string> = { ...attributes };
+      for (const dir of innerDirectives) {
+        innerAttributes[dir.key] = dir.expression;
+      }
+
+      // Return outer directive node with inner directives in attributes
+      return {
+        type: 'directive',
+        tag,
+        attributes: innerAttributes,
+        children,
+        directive: outerDirective,
+      };
+    }
+
+    // Single directive or no directive
+    const directive = directives.length === 1 ? directives[0] : undefined;
 
     const irNode: IRNode = {
       type: directive ? 'directive' : 'element',

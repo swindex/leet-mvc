@@ -2,7 +2,7 @@ import { Injector } from "./Injector";
 import { isString, argumentsToArray } from "./helpers";
 import { Objects } from "./Objects";
 
-const Inject = Injector;
+const Inject = Injector as typeof Injector & { LNG?: any };
 
 /**
  * This function replaces {1},{2},{3}, in LangConstText with corresponding replaceValues

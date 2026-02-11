@@ -99,7 +99,14 @@ function wireEventCallers(
         `Component ${getClassName(component)} can not override 2-way event (${k})!`
       );
     }
-    cVDom.callers[k] = (component as any)[k] = caller;
+    
+    // Wrap the caller to inject $event from the first argument
+    const wrappedCaller = function(...args: any[]) {
+      const eventInject = Object.assign({}, pVDom.INJECT || {}, { $event: args[0] });
+      return caller(eventInject);
+    };
+    
+    cVDom.callers[k] = (component as any)[k] = wrappedCaller;
   });
 }
 
@@ -155,8 +162,8 @@ export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext)
     if (component.template) {
       on.values[key] = component;
 
-      // Build parent vDom in the parent scope
-      const pVDom = on.itemBuilder!(inject);
+      // Build parent vDom in the parent scope, with component detection disabled to avoid infinite recursion
+      const pVDom = on.itemBuilder!(Object.assign({}, inject, { __skipComponentDetection: false }));
       if (pVDom instanceof DocumentFragment) {
         throw Error('Component container ' + JSON.stringify(on.elem) + ' can not be a fragment!');
       }

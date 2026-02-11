@@ -12,11 +12,11 @@ import { NavController } from '../core/NavController';
 import { RootPage } from './Pages/RootPage';
 import { DOM } from '../core/DOM';
 import { Forms } from '../components/Forms';
+import { Dialog } from '../pages/DialogPage/DialogPage';
 
 (window as any)['Translate'] = Translate;
 (window as any)['DOM'] = DOM;
 
-var Inject = Injector.implement(InjectTemplate);
-Inject.Nav = new NavController();
+Injector.Nav = new NavController();
 
-var v = Inject.Nav.setRoot(RootPage);
+var v = Injector.Nav.setRoot(RootPage);

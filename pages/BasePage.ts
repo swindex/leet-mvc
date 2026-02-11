@@ -37,7 +37,7 @@ export class BasePage extends ChangeWatcher{
     // @ts-ignore
     this.style = {};
     this.components = null;
-    this.binder = new (Binder as any)(this);
+    this.binder = new Binder(this);
 
     this.name = null;
 

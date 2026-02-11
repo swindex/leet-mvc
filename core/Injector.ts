@@ -1,15 +1,11 @@
 // Poor man's dependency injection
 // Import this into the index.ts and inject your objects into it
-// var Inject = Injector.implement(InjectTemplate)
-// Inject.Config = Config ;
 
-export interface InjectorType {
-  implement: <T>(InjectTemplate: T) => InjectorType & T;
-  [key: string]: any;
+
+import { NavController } from "./NavController";
+
+export interface IInjector {
+  Nav: NavController;
 }
 
-export const Injector: InjectorType = {
-  implement: function <T>(InjectTemplate: T): InjectorType & T {
-    return Injector as InjectorType & T;
-  }
-};
+export const Injector = <IInjector>{};

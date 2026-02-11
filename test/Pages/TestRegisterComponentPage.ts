@@ -41,25 +41,35 @@ class CounterWidget extends BaseComponent {
   onIncrement() {
     this.count++;
     this.value++;
-    if (typeof this.onCountChange === 'function') {
+    /*if (typeof this.onCountChange === 'function') {
       this.onCountChange(this.count);
     }
     // Trigger two-way binding update
     if (typeof this.valueChange_2 === 'function') {
       this.valueChange_2(this.value);
-    }
+    }*/
+  }
+
+  valueChange(newValue: number) {
+    this.onCountChange(newValue);
   }
 
   onDecrement() {
     this.count--;
     this.value--;
-    if (typeof this.onCountChange === 'function') {
+    /*if (typeof this.onCountChange === 'function') {
       this.onCountChange(this.count);
     }
     if (typeof this.valueChange_2 === 'function') {
       this.valueChange_2(this.value);
-    }
+    }*/
   }
+
+  // Placeholder for event binding callback
+  onCountChange(newCount: number) {
+    // Placeholder for event binding callback
+  }
+  
 
   get template() {
     return `
@@ -87,7 +97,7 @@ export class TestRegisterComponentPage extends HeaderPage {
     this.title = "Test RegisterComponent";
     this.counter = 0;
     this.label = "My Counter";
-    this.showWidget = true;
+    this.showWidget = false;
     this.infoTitle = "Info Card Title";
     this.infoDesc = "This is a description passed via property binding.";
     this.eventLog = [];
@@ -168,7 +178,18 @@ var template = `
   <p>
     <button onclick="this.onToggleWidget()">Toggle Widget ({{ this.showWidget ? 'visible' : 'hidden' }})</button>
   </p>
-  <app-counter-widget [_if]="this.showWidget" [label]="'Conditional'"></app-counter-widget>
+  <div>
+    If directive on component template:
+  </div>
+  <app-counter-widget [if]="this.showWidget" [label]="'Conditional'"></app-counter-widget>
+
+  <!--<div>
+    If directive outside component template:
+  </div>
+  <div [if]="this.showWidget">
+    <app-counter-widget [label]="'Conditional Inside'" [count]="10">
+    </app-counter-widget>
+  </div>-->
 
   <hr/>
   <h4>6. Multiple Instances</h4>
@@ -176,3 +197,19 @@ var template = `
   <app-counter-widget [label]="'Instance B'"></app-counter-widget>
 </div>
 `;
+
+template = `
+<div style="padding:10px;">
+  <h4>5. Conditional Rendering [if]</h4>
+  <p>
+    <button onclick="this.onToggleWidget()">Toggle Widget ({{ this.showWidget ? 'visible' : 'hidden' }})</button>
+  </p>
+  <div>
+    If directive on component template:
+  </div>
+  <app-counter-widget [label]="'Always visible'"></app-counter-widget>
+  
+  <app-counter-widget [if]="this.showWidget" [label]="'Conditional Off by default'"></app-counter-widget>
+
+  <app-counter-widget [if]="!this.showWidget" [label]="'Conditional On by default'" [count]="10"></app-counter-widget>
+</div>`

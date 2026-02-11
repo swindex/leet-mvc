@@ -15,9 +15,7 @@ import { Objects } from "../../core/Objects";
  * @param {'flexible'|'large'} [popupStyle]
  */
 export function Dialog(title, popupStyle = "flexible" ){
-  /** @type {NavController} */
-  var nav = Injector.Nav;
-  var d = nav.push(DialogPage);
+  var d = Injector.Nav.push(DialogPage);
   d.title = title;
   d.classNames.push(popupStyle)
   return d;

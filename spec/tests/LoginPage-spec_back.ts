@@ -3,9 +3,8 @@ import { NavController } from "../../core/NavController";
 import { Injector } from "../../core/Injector";
 import { LoginPage } from "../../pages/LoginPage/LoginPage";
 
-var Inject = Injector.implement({
-	Nav: null,
-})
+const I= Injector;
+
 
 Inject.Nav = new NavController();
 

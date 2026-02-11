@@ -49,8 +49,11 @@ export class TestComponentPage extends HeaderPage {
 
   get template(){
     return super.extendTemplate(super.template, `
-    <div><button onclick="this.onCreateCompClicked();">Create</button> <button onclick="this.onIncrementClicked();">Increment</button></div>
-      <div id="placeholder">Old content</div>
+    <div>
+      <button onclick="this.onCreateCompClicked();">Create</button>
+      <button onclick="this.onIncrementClicked();">Increment</button>
+      </div>
+    <div id="placeholder">Old content</div>
     `);
   }
 }

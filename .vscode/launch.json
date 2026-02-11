@@ -9,13 +9,25 @@
 			"request": "launch",
 			"name": "Launch Chrome against localhost",
 			"url": "http://localhost:9000/",
-			"webRoot": "${workspaceFolder}/dist-test",
+			"webRoot": "${workspaceFolder}",
 			"sourceMapPathOverrides": {
-				"webpack:///*": "${workspaceFolder}/*",
-				"webpack:///./*": "${workspaceFolder}/*",
-				"webpack-generated:///*": "${workspaceFolder}/*",
-				"webpack:///node_modules/*": "${workspaceFolder}/node_modules/*",
+				"webpack:/leet-mvc/*": "${webRoot}/*",
+				"webpack:///leet-mvc/*": "${webRoot}/*",
+				"webpack://leet-mvc/*": "${webRoot}/*"
 			}
-		}
+		},
+		//debug current jest test file
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug Jest (current file)",
+			"program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
+			"args": [
+				"${fileBasenameNoExtension}",
+				"--runInBand"
+			],
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen"
+			}
 	]
 }

@@ -10,6 +10,13 @@ import { TestFormsSelectItemsPage } from "./TestFormsSelectItemsPage";
 import { RouterTestPage } from "./RouterTest";
 import { TestRegisterComponentPage } from "./TestRegisterComponentPage";
 import { TestInConstructorComponentPage } from "./TestInConstructorComponentPage";
+import { TestDirectivesPage } from "./TestDirectivesPage";
+import { TestBindDirectivePage } from "./TestBindDirectivePage";
+import { TestAttributesPage } from "./TestAttributesPage";
+import { TestHtmlContentPage } from "./TestHtmlContentPage";
+import { TestNestedDirectivesPage } from "./TestNestedDirectivesPage";
+import { TestTransitionsPage } from "./TestTransitionsPage";
+import { TestDialogPage } from "./TestDialogPage";
 
 export class RootPage extends HeaderPage {
   pages: { page: any; name: string }[];
@@ -29,7 +36,15 @@ export class RootPage extends HeaderPage {
       { page: TestFormsSelectItemsPage, name: "Test Forms Select Items" },
       { page: RouterTestPage, name: "Router Test" },
       { page: TestRegisterComponentPage, name: "Test RegisterComponent" },
-      { page: TestInConstructorComponentPage, name: "Test In-Constructor Component" }
+      { page: TestInConstructorComponentPage, name: "Test In-Constructor Component" },
+      
+      { page: TestDirectivesPage, name: "Test Directives ([if], [show], [display])" },
+      { page: TestBindDirectivePage, name: "Test [bind] Directive" },
+      { page: TestAttributesPage, name: "Test Attribute Directives" },
+      { page: TestHtmlContentPage, name: "Test HTML Content & Expressions" },
+      { page: TestTransitionsPage, name: "Test [transition] Directive" },
+      { page: TestNestedDirectivesPage, name: "Test Nested Directives" },
+      { page: TestDialogPage, name: "Test Dialog Component" }
     ];
 
   }

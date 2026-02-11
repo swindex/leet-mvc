@@ -30,6 +30,7 @@ module.exports = (env) => {
       path: path.resolve(__dirname, 'www'),
       filename: 'bundle.js',
       clean: true,
+      //devtoolModuleFilenameTemplate: info => `webpack:/leet-mvc/${info.resourcePath.replace(/^\.\//, "")}`,
     },
     resolve: {
       extensions: ['.ts', '.js', '.json']
@@ -43,22 +44,32 @@ module.exports = (env) => {
         },
         {
           test: /\.ts$/,
-          exclude: /node_modules/,
-          use: ['babel-loader', 'ts-loader'],
-        },
-        {
-          test: /\.ts$/,
-          include: /node_modules[\/\\]leet-mvc/,
-          use: ['babel-loader', {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
-              configFile: path.resolve(__dirname, '../../tsconfig.json'),
-              compilerOptions: {
-                declaration: false,
-              }
-            }
-          }],
+          oneOf: [
+            {
+              include: /node_modules[\/\\]leet-mvc/,
+              use: [
+                { loader: "babel-loader", options: { sourceMaps: true } },
+                {
+                  loader: "ts-loader",
+                  options: {
+                    transpileOnly: true,
+                    configFile: path.resolve(__dirname, "../../tsconfig.json"),
+                    compilerOptions: { declaration: false, sourceMap: true, inlineSources: true },
+                  },
+                },
+              ],
+            },
+            {
+              exclude: /node_modules/,
+              use: [
+                { loader: "babel-loader", options: { sourceMaps: true } },
+                {
+                  loader: "ts-loader",
+                  options: { compilerOptions: { sourceMap: true, inlineSources: true } },
+                },
+              ],
+            },
+          ],
         },
         {
           test: /\.html$/,

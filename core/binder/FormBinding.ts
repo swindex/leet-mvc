@@ -212,6 +212,9 @@ export class FormBinding {
         }
         break;
       }
+      case 'TEXTAREA':
+        elem.value = FormBinding.toInputValue(v);
+        break;
       case 'OPTION':
       case 'INPUT':
         switch ((elem as HTMLInputElement).type) {

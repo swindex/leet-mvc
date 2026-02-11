@@ -148,7 +148,7 @@ export class Binder {
     const rType = this.getReactivityType(dirKey);
     const key = rType.key;
 
-    // Create comment anchor
+    // Create comment anchor for the directive [if], [component], etc. 
     const elem = document.createComment(`${dirKey}=${dirExpression} `);
     directiveFragment.appendChild(elem);
 
@@ -162,42 +162,46 @@ export class Binder {
       }
     }
 
-    // Check for registered component tag
-    const tag = ir.tag!;
-    const componentClass = this.tryGetComponent(tag);
-    if (componentClass && !(this.context instanceof componentClass)) {
-      // Inject [component] attribute
-      ir.attributes['[component]'] = `Registered('${tag}')`;
-      // Remove [html] if present — component takes precedence
-      if (ir.directive!.key === '[html]') {
-        delete getters[rType.key];
-        const compRType = this.getReactivityType('[component]');
-        getters[compRType.key] = this.compiler.createGetter(`Registered('${tag}')`, inject, this.context, compRType.key);
-      }
-    }
-
     // itemBuilder: lazily creates children from the IR
     const self = this;
     const itemBuilder = (inj: any): VDom => {
-      // Check if [component] was injected into attributes
-      // If so, we need to handle it as a nested directive
-      const hasComponentAttr = ir.attributes['[component]'];
-      
-      if (hasComponentAttr && ir.directive && ir.directive.key !== '[component]') {
-        // Create a new IR node for the component directive
-        const componentIR: IRNode = {
-          type: 'directive',
-          tag: ir.tag,
-          attributes: { ...ir.attributes },
-          directive: { key: '[component]', expression: ir.attributes['[component]'] },
-          children: ir.children,
-        };
-        // Remove [component] from attributes since it's now the directive
-        delete componentIR.attributes['[component]'];
-        
-        return self.createDirectiveNode(componentIR, inj);
+      // Check if the IR has directive attributes (for nested directives like [if] + [component])
+      const DIRECTIVE_ATTRS = new Set(['[foreach]', '[transition]', '[html]', '[component]', '[if]']);
+      let hasDirectiveAttr = false;
+      for (const attrKey in ir.attributes) {
+        if (DIRECTIVE_ATTRS.has(attrKey)) {
+          hasDirectiveAttr = true;
+          break;
+        }
       }
-      
+
+      // If there are directive attributes, create a new IR node with the first directive
+      if (hasDirectiveAttr) {
+        const directives: Array<{ key: string; expression: string }> = [];
+        const nonDirectiveAttrs: Record<string, string> = {};
+        
+        for (const attrKey in ir.attributes) {
+          if (DIRECTIVE_ATTRS.has(attrKey)) {
+            directives.push({ key: attrKey, expression: ir.attributes[attrKey] });
+          } else {
+            nonDirectiveAttrs[attrKey] = ir.attributes[attrKey];
+          }
+        }
+
+        // Create a directive IR node for the first directive found
+        if (directives.length > 0) {
+          const directiveIR: IRNode = {
+            type: 'directive',
+            tag: ir.tag,
+            attributes: nonDirectiveAttrs,
+            children: ir.children,
+            directive: directives[0],
+          };
+          return self.createDirectiveNode(directiveIR, inj);
+        }
+      }
+
+      // No directive attributes, process as normal element
       const childVDom = self.createElementNode(ir, inj);
       // If the element has a "fragment" attribute, convert to DocumentFragment
       if (childVDom.elem instanceof HTMLElement && childVDom.elem.getAttribute && childVDom.elem.getAttribute('fragment') !== null) {
@@ -236,6 +240,21 @@ export class Binder {
         frag.appendChild(childVDom.elem!);
       }
       return createVDomNode({ elem: frag, items, context: this.context });
+    }
+
+    // Check if this tag is a registered component (but not if we're inside a component directive's itemBuilder)
+    const tag = ir.tag!;
+    const componentClass = this.tryGetComponent(tag);
+    if (componentClass && !(this.context instanceof componentClass) && !inject.__skipComponentDetection) {
+      // Convert this element into a component directive
+      const componentIR: IRNode = {
+        type: 'directive',
+        tag: 'component-tag-does-not-render',
+        attributes: { ...ir.attributes },
+        directive: { key: '[component]', expression: `Registered('${tag}')` },
+        children: ir.children,
+      };
+      return this.createDirectiveNode(componentIR, inject);
     }
 
     let elem: HTMLElement | DocumentFragment = document.createElement(ir.tag!);
@@ -336,6 +355,10 @@ export class Binder {
 
     return vdom;
   }
+  
+  dumpHumanDeadableError(msg: string, elem: HTMLElement, ex: Error) {
+    console.error(msg, elem.innerText, ex);
+  }
 
   // --- Attribute Execution ---
 
@@ -349,7 +372,7 @@ export class Binder {
     try {
       const handler = directiveRegistry[attribute];
       if (handler) {
-        ret = handler(on, inject, this.createDirectiveContext(inject));
+        ret = handler(on, inject, this.createDirectiveContext());
       } else {
         // Custom/unknown attribute — apply getter value
         if (on.getters[attribute]) {
@@ -406,9 +429,6 @@ export class Binder {
    * Parse an attribute name to determine its reactivity type.
    */
   private getReactivityType(attrName: string): ReactivityType {
-    if (attrName === 'bind') {
-      return { type: 'get-set', key: attrName };
-    }
     // [()]
     let matches = attrName.match(/^\[\((.*)\)\]$/);
     if (matches) return { type: 'get-set', key: matches[1] };
@@ -417,7 +437,18 @@ export class Binder {
     if (matches) return { type: 'call', key: matches[1] };
     // []
     matches = attrName.match(/^\[(.*)\]$/);
-    if (matches) return { type: 'get', key: matches[1] };
+    if (matches) {
+      const key = matches[1];
+      // Special case: [bind] should be get-set for two-way binding, not just get
+      if (key === 'bind') {
+        return { type: 'get-set', key };
+      }
+      return { type: 'get', key };
+    }
+    // Plain bind without brackets (for backward compatibility)
+    if (attrName === 'bind') {
+      return { type: 'get-set', key: attrName };
+    }
 
     return { type: null, key: attrName };
   }
@@ -444,7 +475,7 @@ export class Binder {
           if (target && target.VDOM && FormBinding.isFormElement(target) && target.getAttribute('bind')) {
             const bindHandler = directiveRegistry['bind'];
             if (bindHandler) {
-              bindHandler(target.VDOM, inject, self.createDirectiveContext(inject));
+              bindHandler(target.VDOM, inject, self.createDirectiveContext());
             }
           }
         };
@@ -566,7 +597,7 @@ export class Binder {
   /**
    * Create the DirectiveContext object that is passed to all directive handlers.
    */
-  private createDirectiveContext(inject: any): DirectiveContext {
+  private createDirectiveContext(): DirectiveContext {
     return {
       binder: this,
       executeAttribute: (attr, on, inj) => this.executeAttribute(attr, on, inj),
