@@ -34,5 +34,8 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
-  testTimeout: 10000
+  testTimeout: 5000,
+  bail: 1,              // Stop after first test failure
+  forceExit: true,      // Force exit even with open handles
+  detectOpenHandles: false  // Set to true when debugging hanging tests
 };

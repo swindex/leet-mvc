@@ -78,6 +78,7 @@ class CounterWidget extends BaseComponent {
         <button onclick="this.onDecrement()" style="margin-left:8px;">-</button>
         <button onclick="this.onIncrement()">+</button>
       </div>
+      <diV>second root will break conditional component</diV>
     `;
   }
 }
@@ -142,74 +143,70 @@ var template = `
 
   <hr/>
   <h4>1. Basic Rendering (app-info-card)</h4>
-  <p>Static property binding:</p>
-  <app-info-card [title]="'Hello World'" [description]="'This card has static string props.'"></app-info-card>
+  <div id="test-section-basic-rendering">
+    <p>Static property binding:</p>
+    <app-info-card [title]="'Hello World'" [description]="'This card has static string props.'"></app-info-card>
 
-  <p>Dynamic property binding:</p>
-  <app-info-card [title]="this.infoTitle" [description]="this.infoDesc"></app-info-card>
+    <p>Dynamic property binding:</p>
+    <app-info-card [title]="this.infoTitle" [description]="this.infoDesc"></app-info-card>
+  </div>
 
   <hr/>
   <h4>2. Property Binding (app-counter-widget)</h4>
-  <p>Parent counter value: <strong>{{ this.counter }}</strong></p>
-  <p>
-    <button onclick="this.onIncrementFromParent()">Increment from Parent</button>
-    <button onclick="this.onResetCounter()">Reset</button>
-    <button onclick="this.onChangeLabel()">Toggle Label</button>
-  </p>
-  <app-counter-widget [label]="this.label" [count]="this.counter"></app-counter-widget>
+  <div id="test-section-property-binding">
+    <p>Parent counter value: <strong>{{ this.counter }}</strong></p>
+    <p>
+      <button onclick="this.onIncrementFromParent()">Increment from Parent</button>
+      <button onclick="this.onResetCounter()">Reset</button>
+      <button onclick="this.onChangeLabel()">Toggle Label</button>
+    </p>
+    <app-counter-widget [label]="this.label" [count]="this.counter"></app-counter-widget>
+  </div>
 
   <hr/>
   <h4>3. Two-Way Binding [(value)]</h4>
-  <p>Parent counter (two-way bound): <strong>{{ this.counter }}</strong></p>
-  <app-counter-widget [label]="'Two-Way'" [(value)]="this.counter"></app-counter-widget>
+  <div id="test-section-two-way-binding">
+    <p>Parent counter (two-way bound): <strong>{{ this.counter }}</strong></p>
+    <app-counter-widget [label]="'Two-Way'" [(value)]="this.counter"></app-counter-widget>
+  </div>
 
   <hr/>
   <h4>4. Event Binding (onCountChange)</h4>
-  <app-counter-widget [label]="'With Events'" (onCountChange)="this.onCountChanged($event)"></app-counter-widget>
-  <p>Event log ({{ this.eventLog.length }} events): <button onclick="this.onClearLog()">Clear</button></p>
-  <div style="max-height:100px; overflow-y:auto; border:1px solid #ccc; padding:4px; font-size:12px;">
-    <div [foreach]="i in this.eventLog as entry">
-      <div>{{ entry }}</div>
+  <div id="test-section-event-binding">
+    <app-counter-widget [label]="'With Events'" (onCountChange)="this.onCountChanged($event)"></app-counter-widget>
+    <p>Event log ({{ this.eventLog.length }} events): <button onclick="this.onClearLog()">Clear</button></p>
+    <div style="max-height:100px; overflow-y:auto; border:1px solid #ccc; padding:4px; font-size:12px;">
+      <div [foreach]="i in this.eventLog as entry">
+        <div>{{ entry }}</div>
+      </div>
     </div>
   </div>
 
   <hr/>
   <h4>5. Conditional Rendering [if]</h4>
-  <p>
-    <button onclick="this.onToggleWidget()">Toggle Widget ({{ this.showWidget ? 'visible' : 'hidden' }})</button>
-  </p>
-  <div>
-    If directive on component template:
-  </div>
-  <app-counter-widget [if]="this.showWidget" [label]="'Conditional'"></app-counter-widget>
+  <div id="test-section-conditional-rendering">
+    <p>
+      <button onclick="this.onToggleWidget()">Toggle Widget ({{ this.showWidget ? 'visible' : 'hidden' }})</button>
+    </p>
+    <div>
+      If directive on component template:
+    </div>
+    <app-counter-widget [if]="this.showWidget" [label]="'Conditional Label'"></app-counter-widget>
 
-  <!--<div>
-    If directive outside component template:
+    <!--<div>
+      If directive outside component template:
+    </div>
+    <div [if]="this.showWidget">
+      <app-counter-widget [label]="'Conditional Inside'" [count]="10">
+      </app-counter-widget>
+    </div>-->
   </div>
-  <div [if]="this.showWidget">
-    <app-counter-widget [label]="'Conditional Inside'" [count]="10">
-    </app-counter-widget>
-  </div>-->
 
   <hr/>
   <h4>6. Multiple Instances</h4>
-  <app-counter-widget [label]="'Instance A'"></app-counter-widget>
-  <app-counter-widget [label]="'Instance B'"></app-counter-widget>
+  <div id="test-section-multiple-instances">
+    <app-counter-widget [label]="'Instance A'"></app-counter-widget>
+    <app-counter-widget [label]="'Instance B'"></app-counter-widget>
+  </div>
 </div>
 `;
-
-template = `
-<div style="padding:10px;">
-  <h4>5. Conditional Rendering [if]</h4>
-  <p>
-    <button onclick="this.onToggleWidget()">Toggle Widget ({{ this.showWidget ? 'visible' : 'hidden' }})</button>
-  </p>
-  <div>
-    If directive on component template:
-  </div>
-  <app-counter-widget [label]="'Always visible'"></app-counter-widget>
-  
-  <app-counter-widget [if]="this.showWidget" [label]="'Conditional Off by default'"></app-counter-widget>
-
-  <app-counter-widget [if]="!this.showWidget" [label]="'Conditional On by default'" [count]="10"></app-counter-widget>
-</div>`

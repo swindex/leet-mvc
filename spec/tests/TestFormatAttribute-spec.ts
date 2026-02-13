@@ -150,7 +150,7 @@ describe('Format Attribute Tests', () => {
   describe('Format without directive', () => {
     it('should work with bind on text content (mustache)', () => {
       const context = { price: 123.456 };
-      const template = '<div><span bind="this.price" format="number:2"></span></div>';
+      const template = '<div><span [text]="this.price" format="number:2"></span></div>';
       
       const binder = new Binder(context).bindElements(null, template);
       container.appendChild(binder.vdom!.elem!);

@@ -16,33 +16,21 @@ function getClassName(object: any): string {
 }
 
 /**
- * Copy HTML attributes from parent element to child element.
- * Existing child attributes are appended to rather than overwritten.
- */
-function copyAttributes(pElem: HTMLElement, cElem: HTMLElement): void {
-  for (let ii = 0; ii < pElem.attributes.length; ii++) {
-    const attr = pElem.attributes[ii];
-    if (!cElem.getAttribute(attr.name)) {
-      cElem.setAttribute(attr.name, attr.value);
-    } else {
-      cElem.setAttribute(attr.name, cElem.getAttribute(attr.name) + ' ' + attr.value);
-    }
-  }
-}
-
-/**
  * Wire parent getters to component properties.
  */
 function wireProperties(
   component: BaseComponent,
-  pVDom: VDom,
-  cVDom: VDom,
+  hostVDom: VDom,
+  componentVDom: VDom,
   inject: any,
   directiveRegistry: Record<string, any>
 ): void {
-  Objects.forEach(pVDom.getters, (getter: Function, key: string | number) => {
+  Objects.forEach(hostVDom.getters, (getter: Function, key: string | number) => {
     const k = String(key);
-    cVDom.getters[k] = getter;
+    // Skip the 'component' getter itself
+    if (k === 'component') return;
+    
+    componentVDom.getters[k] = getter;
     if (k.indexOf('.') >= 0) {
       Objects.setPropertyByPath(component, k, getter(inject));
     } else {
@@ -61,15 +49,15 @@ function wireProperties(
  */
 function wireTwoWayBindings(
   component: BaseComponent,
-  pVDom: VDom,
-  cVDom: VDom,
+  hostVDom: VDom,
+  componentVDom: VDom,
   inject: any
 ): string[] {
   const dynamicEvents: string[] = [];
 
-  Objects.forEach(pVDom.setters, (setter: Function, key: string | number) => {
+  Objects.forEach(hostVDom.setters, (setter: Function, key: string | number) => {
     const k = String(key);
-    cVDom.setters[k] = setter;
+    componentVDom.setters[k] = setter;
     if (isFunction((component as any)[k + 'Change_2'])) {
       throw new Error(
         `Component can not have method ${k + 'Change_2'} it is used exclusively for 2-way data binding with ${k}`
@@ -77,7 +65,7 @@ function wireTwoWayBindings(
     }
     dynamicEvents.push(k + 'Change_2');
     (component as any)[k + 'Change_2'] = function (val: any) {
-      return ExpressionCompiler.invokeSetter(cVDom.setters[k], inject, val, k);
+      return ExpressionCompiler.invokeSetter(componentVDom.setters[k], inject, val, k);
     };
   });
 
@@ -89,11 +77,11 @@ function wireTwoWayBindings(
  */
 function wireEventCallers(
   component: BaseComponent,
-  pVDom: VDom,
-  cVDom: VDom,
+  hostVDom: VDom,
+  componentVDom: VDom,
   dynamicEvents: string[]
 ): void {
-  Objects.forEach(pVDom.callers, (caller: Function, key: string | number) => {
+  Objects.forEach(hostVDom.callers, (caller: Function, key: string | number) => {
     const k = String(key);
     if (dynamicEvents.indexOf(k) >= 0) {
       throw new Error(
@@ -103,21 +91,21 @@ function wireEventCallers(
     
     // Wrap the caller to inject $event from the first argument
     const wrappedCaller = function(...args: any[]) {
-      const eventInject = Object.assign({}, pVDom.INJECT || {}, { $event: args[0] });
+      const eventInject = Object.assign({}, hostVDom.INJECT || {}, { $event: args[0] });
       return caller(eventInject);
     };
     
-    cVDom.callers[k] = (component as any)[k] = wrappedCaller;
+    componentVDom.callers[k] = (component as any)[k] = wrappedCaller;
   });
 }
 
 /**
  * Set plain (non-reactive) attributes as properties on the component.
  */
-function setPlainAttributes(component: BaseComponent, pVDom: VDom): void {
-  Objects.forEach(pVDom.plainAttrs, (value: any, key: string | number) => {
+function setPlainAttributes(component: BaseComponent, hostVDom: VDom): void {
+  Objects.forEach(hostVDom.plainAttrs, (value: any, key: string | number) => {
     const k = String(key);
-    if (value !== null) {
+    if (value !== null && k !== 'component') {
       (component as any)[k] = value;
       component.attributes[k] = value;
     }
@@ -125,9 +113,95 @@ function setPlainAttributes(component: BaseComponent, pVDom: VDom): void {
 }
 
 /**
- * [component] directive — full component lifecycle management.
- * Instantiates BaseComponent subclasses, wires property/event bindings,
- * manages child templates, and handles content projection.
+ * Handle content projection: move projected children into <content> placeholder(s).
+ * 
+ * IMPORTANT: By the time this function is called, projected children are ALREADY BOUND
+ * to the parent page's context by BinderNew. This function only handles DOM placement.
+ * 
+ * @param hostElem The host element containing the component
+ * @param projectedChildren VDom nodes representing children (already bound to parent context)
+ * @returns Combined array of component items + projected children for tracking
+ */
+function handleContentProjection(
+  hostElem: HTMLElement,
+  componentItems: VDom[],
+  projectedChildren: VDom[]
+): VDom[] {
+  const contentPlaceholders = hostElem.querySelectorAll('content');
+  
+  if (contentPlaceholders.length === 0) {
+    // No <content> tags - just return component items
+    return componentItems;
+  }
+  
+  if (projectedChildren.length === 0) {
+    // No children to project - remove empty placeholders
+    for (let i = 0; i < contentPlaceholders.length; i++) {
+      const placeholder = contentPlaceholders[i];
+      if (placeholder.parentNode) {
+        placeholder.parentNode.removeChild(placeholder);
+      }
+    }
+    return componentItems;
+  }
+  
+  // Project children into the first <content> placeholder
+  const placeholder = contentPlaceholders[0];
+  const parent = placeholder.parentNode;
+  
+  if (parent) {
+    // Insert the actual VDom elements (not clones) to preserve reactivity
+    for (const childVDom of projectedChildren) {
+      if (childVDom.elem) {
+        const node = childVDom.fragment || childVDom.elem;
+        parent.insertBefore(node, placeholder);
+      }
+    }
+    
+    // Remove the placeholder
+    parent.removeChild(placeholder);
+    
+    // Remove any additional content placeholders
+    for (let i = 1; i < contentPlaceholders.length; i++) {
+      const extraPlaceholder = contentPlaceholders[i];
+      if (extraPlaceholder.parentNode) {
+        extraPlaceholder.parentNode.removeChild(extraPlaceholder);
+      }
+    }
+  }
+  
+  // Return combined items for change detection tracking
+  return componentItems.concat(projectedChildren);
+}
+
+/**
+ * Create a cloned DocumentFragment of projected children for special components
+ * that need access to the template (e.g., SwiperComponent, ItemList).
+ * 
+ * Note: This is separate from content projection and only needed by components
+ * that explicitly use templateFragment in their logic.
+ */
+function createTemplateFragment(projectedChildren: VDom[]): DocumentFragment {
+  const templateFrag = document.createDocumentFragment();
+  for (const childVDom of projectedChildren) {
+    if (childVDom.elem) {
+      const node = childVDom.fragment || childVDom.elem;
+      templateFrag.appendChild(node.cloneNode(true));
+    }
+  }
+  return templateFrag;
+}
+
+/**
+ * [component] directive — simplified component lifecycle management.
+ * Renders component template as children of the host element.
+ * 
+ * IMPORTANT: Projected children (the children of the host element) are ALREADY BOUND
+ * to the parent context by BinderNew before this directive runs. This directive only:
+ * - Instantiates/manages the component instance
+ * - Wires properties, events, and two-way bindings
+ * - Renders the component's own template
+ * - Handles DOM placement of projected content
  */
 export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext): EAttrResult | void {
   const key = 'component';
@@ -145,12 +219,12 @@ export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext)
   if (on.values[key] !== component) {
     // --- New or changed component ---
 
-    // Clear any previous component elements
-    ctx.removeVDomItems(on.items);
+    // Clear any previous component
     if (on.values[key] && on.values[key].binder) {
-      ctx.removeElement(on.values[key].binder.vdom.elem);
       ctx.removeVDomItems(on.values[key].binder.vdom.items);
+      on.values[key].binder.destroy();
     }
+    ctx.removeVDomItems(on.items);
 
     on.values[key] = component;
 
@@ -161,73 +235,85 @@ export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext)
     const inj = Object.assign({}, inject);
 
     if (component.template) {
-      on.values[key] = component;
-
-      // Build parent vDom in the parent scope, with component detection disabled to avoid infinite recursion
-      const pVDom = on.itemBuilder!(Object.assign({}, inject, { __skipComponentDetection: false }));
-      if (pVDom instanceof DocumentFragment) {
-        throw Error('Component container ' + JSON.stringify(on.elem) + ' can not be a fragment!');
-      }
-
       // Create a new Binder for the component's own template
-      // We use ctx.binder constructor to create a new Binder instance
       const BinderClass = ctx.binder.constructor;
-      component.binder = new BinderClass(component).setInjectVars(inj).bindElements(component.events, component.template);
-      const cVDom = component.binder!.vdom;
+      component.binder = new BinderClass(component)
+        .setInjectVars(inj)
+        .bindElements(component.events, component.template);
+      
+      const componentVDom = component.binder!.vdom;
 
       // Wire properties, two-way bindings, and event callers
-      wireProperties(component, pVDom, cVDom, inject, ctx.binder.getDirectiveRegistry());
-      const dynamicEvents = wireTwoWayBindings(component, pVDom, cVDom, inject);
-      wireEventCallers(component, pVDom, cVDom, dynamicEvents);
+      wireProperties(component, on, componentVDom, inject, ctx.binder.getDirectiveRegistry());
+      const dynamicEvents = wireTwoWayBindings(component, on, componentVDom, inject);
+      wireEventCallers(component, on, componentVDom, dynamicEvents);
+      setPlainAttributes(component, on);
 
-      // Copy HTML attributes from parent to child
-      if (!(cVDom.elem instanceof DocumentFragment) && !(cVDom.elem instanceof Comment)) {
-        copyAttributes(pVDom.elem as HTMLElement, cVDom.elem as HTMLElement);
-      }
-
-      // Set plain attributes as component properties
-      setPlainAttributes(component, pVDom);
-
-      // Content projection: move host children to a fragment
-      const pFrag = document.createDocumentFragment();
-      DOM(pFrag).append((pVDom.elem as HTMLElement).childNodes);
-
+      // IMPORTANT: on.items contains projected children that are ALREADY BOUND to parent context
+      const hostElem = on.elem as HTMLElement;
+      const projectedChildren: VDom[] = on.items.slice(); // Copy references
+      
+      // Create templateFragment for special components that need it (cloned copy)
+      component.templateFragment = createTemplateFragment(projectedChildren);
+      
+      // Set up component context and update callback
       component.parentPage = ctx.context;
-      component.templateFragment = pFrag;
       component.templateUpdate = function () {
         ctx.checkVDomNode(on, inject);
       };
 
-      on.items = [pVDom];
-
-      // Insert component vDom after the [component] anchor element
-      ctx.insertVDomElementAfter(cVDom, on.elem!);
-
-      // Call onInit
-      if (!(cVDom.elem instanceof DocumentFragment)) {
-        tryCall(component, component._onInit, cVDom.elem);
+      // Clear host element and append component's rendered DOM
+      hostElem.innerHTML = '';
+      
+      if (componentVDom.elem instanceof DocumentFragment) {
+        hostElem.appendChild(componentVDom.elem);
+        on.items = componentVDom.items;
+      } else if (componentVDom.fragment) {
+        hostElem.appendChild(componentVDom.fragment);
+        on.items = [componentVDom];
+      } else {
+        hostElem.appendChild(componentVDom.elem!);
+        on.items = [componentVDom];
       }
+      
+      // Store count of component's own items before adding projected children
+      const componentItemCount = on.items.length;
+      
+      // Handle content projection: move pre-bound children into <content> placeholders
+      on.items = handleContentProjection(hostElem, on.items, projectedChildren);
+      
+      // Store the projected children count for use during updates
+      on.values['__projectedStartIndex'] = componentItemCount;
+
+      // Call onInit with the host element
+      tryCall(component, component._onInit, hostElem);
+      
     } else {
-      // Component does not have own template — render host template
-      const pVDom = on.itemBuilder!(inject);
-      on.items[0] = pVDom;
-
-      // Insert parent vDom after the [component] anchor element
-      ctx.insertVDomElementAfter(pVDom, on.elem!);
-
-      tryCall(component, component._onInit, pVDom.elem);
+      // Component does not have own template — keeping for compatibility
+      const hostElem = on.elem as HTMLElement;
+      component.parentPage = ctx.context;
+      
+      on.items = [];
+      tryCall(component, component._onInit, hostElem);
     }
   } else {
     // --- Same component, just update ---
-    for (const i in on.items) {
-      if (!on.items.hasOwnProperty(i)) continue;
-      ctx.checkVDomNode(on.items[i], inject);
-    }
-    if (!component.container) {
-      tryCall(component, component._onInit, (on.elem as any)?.parentElement);
-    }
     if (component && component.binder) {
+      const componentVDom = component.binder.vdom;
+      
+      // Re-wire properties to pick up any changes from parent
+      wireProperties(component, on, componentVDom, inject, ctx.binder.getDirectiveRegistry());
+      
+      // Update the component
       tryCall(component, component.update);
+      
+      // IMPORTANT: Manually check projected children since we return SkipChildren
+      // Projected children are bound to parent context and need to be updated
+      // They're stored in on.items after the component's own items
+      const projectedStartIndex = on.values['__projectedStartIndex'] || 0;
+      for (let i = projectedStartIndex; i < on.items.length; i++) {
+        ctx.checkVDomNode(on.items[i], inject);
+      }
     }
   }
 

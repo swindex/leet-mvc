@@ -187,7 +187,7 @@ describe('Test Dirty Object change Detection',function(){
 		var changedKeys: string[] = [];
 
 		var result = objectCloneCompare(a,b, function(obj: any, k: string, value: any){
-			console.log("changed: "+k);
+			//console.log("changed: "+k);
 			changedKeys.push(k)
 			hasChanges1 = true;
 		}, []);

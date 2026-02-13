@@ -245,17 +245,7 @@ export class Binder {
     // Check if this tag is a registered component (but not if we're inside a component directive's itemBuilder)
     const tag = ir.tag!;
     const componentClass = this.tryGetComponent(tag);
-    if (componentClass && !(this.context instanceof componentClass) && !inject.__skipComponentDetection) {
-      // Convert this element into a component directive
-      const componentIR: IRNode = {
-        type: 'directive',
-        tag: 'component-tag-does-not-render',
-        attributes: { ...ir.attributes },
-        directive: { key: '[component]', expression: `Registered('${tag}')` },
-        children: ir.children,
-      };
-      return this.createDirectiveNode(componentIR, inject);
-    }
+    const isRegisteredComponent = componentClass && !(this.context instanceof componentClass) && !inject.__skipComponentDetection;
 
     let elem: HTMLElement | DocumentFragment = document.createElement(ir.tag!);
     const vdomItems: VDom[] = [];
@@ -351,6 +341,12 @@ export class Binder {
     // Bind DOM events to context
     if (plainAttrs['fragment'] === undefined && elem instanceof HTMLElement) {
       this.bindEventsToContext(elem, inject);
+    }
+
+    // If this is a registered component, initialize it after element is fully set up
+    if (isRegisteredComponent) {
+      vdom.getters['component'] = this.compiler.createGetter(`Registered('${tag}')`, inject, this.context, 'component');
+      this.executeAttribute('component', vdom, inject);
     }
 
     return vdom;
