@@ -336,7 +336,7 @@ CalendarPage.content = `
   <div [html] = "this._tabs">
     <ul class="tab-buttons" [show]="this._showClock || (this._showCalendar && this._showClock)">
       <li for="calendar" [show]="this._showCalendar && this._showClock">
-        <span bind="this._d_date"></span>
+        <span [text]="this._d_date"></span>
         <i class="far fa-calendar-alt"></i>
       </li>
       <li for="clock" [show]="this._showCalendar && this._showClock">
@@ -354,8 +354,8 @@ CalendarPage.content = `
             <i class="fas fa-chevron-left"></i>
           </button>
           <div class="month-year">
-            <button none class="month" bind="this._d_monthName" onclick="this.onMonthClicked()"></button>
-            <button none class="year" bind="this._d_year" onclick="this.onYearClicked()"></button>
+            <button none class="month" [text]="this._d_monthName" onclick="this.onMonthClicked()"></button>
+            <button none class="year" [text]="this._d_year" onclick="this.onYearClicked()"></button>
           </div>	
           <button none class="arrow" onclick="this.onNextMonthClicked()">
             <i class="fas fa-chevron-right"></i>
@@ -366,7 +366,7 @@ CalendarPage.content = `
             <thead>
               <tr>
                 <td [foreach] = "dayN in this._weekDayNames as day">
-                  <b bind="day"></b>
+                  <b [text]="day"></b>
                 </td>
               </tr>
             </thead>
@@ -374,7 +374,7 @@ CalendarPage.content = `
               <tr [foreach] = "this._weeks as weekN">
                 <td [foreach] = "this._weekDays(weekN) as day" [selected]="day.selected" [class]="day.class"  onclick="this.onSetDateClicked(day.date)">
                   <span>
-                    <b bind="day.day" [class]="day.apts.length>0 ? 'has-appt': null"></b>
+                    <b [text]="day.day" [class]="day.apts.length>0 ? 'has-appt': null"></b>
                     <b [foreach]="day.apts as apt" class="apt" [class]="apt" ></b>
                   </span>
                 </td>
@@ -387,10 +387,10 @@ CalendarPage.content = `
         <div class="circle_wrapper">
           <div class="circle">
             <div class="hours"  [selected]="!this._minutesSelected" onclick="this.onSelectHoursClicked()">
-              <div class="hour" [foreach]="this._hours as hours" onclick="this.onSetHourClicked(hours.value)" [selected]="this._d_hour==hours.title"><span bind="this._getHourTitle(hours)">0</span></div>
+              <div class="hour" [foreach]="this._hours as hours" onclick="this.onSetHourClicked(hours.value)" [selected]="this._d_hour==hours.title"><span [text]="this._getHourTitle(hours)">0</span></div>
             </div>
             <div class="minutes" [selected]="this._minutesSelected" onclick="this.onSelectMinutesClicked()">
-              <div class="hour" [foreach]="this._minutes as minutes" onclick="this.onSetMinuteClicked(minutes.value)" [selected]="this._d_minute==minutes.title"><span bind="minutes.title">12</span></div>
+              <div class="hour" [foreach]="this._minutes as minutes" onclick="this.onSetMinuteClicked(minutes.value)" [selected]="this._d_minute==minutes.title"><span [text]="minutes.title">12</span></div>
             </div>
             <div class="AMPM">
               <div class="AM" onclick="this.onSetAMClicked(true)" [selected]="this.isAM"><span>AM</span></div>

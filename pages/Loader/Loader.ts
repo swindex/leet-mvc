@@ -137,7 +137,7 @@ class LoaderPage extends BasePage {
     return `<div class="loader-screen" [style]="this.style" [attribute]="{root: this.isRoot, hidden:this.isHidden,visible:this.isVisible,showing:this.isShowing,hiding:this.isHiding,creating:this.isCreating,deleting:this.isDeleting}">
 <div class="loader-box">
 <div class="loader-spinner"></div>	
-<div class="loader-message" bind="Translate(this.text)">Loading ...</div>	
+<div class="loader-message" [text]="Translate(this.text)">Loading ...</div>
 </div>
 </div>`;
   }

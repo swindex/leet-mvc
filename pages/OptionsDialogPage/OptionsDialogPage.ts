@@ -17,10 +17,10 @@ export class OptionsDialogPage extends DialogPage{
 			<ul [class]="this.hideOverflow ? 'hideOverflow' : ''">
 				<li [foreach]="index in this.items as item" onclick="this._onItemClicked(item, index)" [selected] = "this.isSelectedItem(item)" [attribute]="{disabled:this.isDisabledItem(item) ? '' : null}">
 					<i [class] = "this.getIcon(item)" [if]="this.getIcon(item)"></i>
-					<img bind = "this.getImage(item)" [if]="this.getImage(item)" />
+					<img [text]="this.getImage(item)" [if]="this.getImage(item)" />
 					<div class="item">
-						<div [if] ="item.title"  class="item-title" bind = "item.title"></div>
-						<div [if] ="item.text" class="item-text" bind = "item.text"></div>
+						<div [if] ="item.title"  class="item-title" [text]="item.title"></div>
+						<div [if] ="item.text" class="item-text" [text]="item.text"></div>
 					</div>
 				</li>
 			</ul>

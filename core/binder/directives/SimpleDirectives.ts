@@ -130,3 +130,35 @@ export function innerhtmlDirective(on: VDom, inject: any, ctx: DirectiveContext)
     elem.innerHTML = newValue;
   }
 }
+
+/**
+ * [text] directive — one-way data binding for text content.
+ * Sets the element's innerText or textContent for display purposes only.
+ * For two-way binding with form elements, use [bind] instead.
+ */
+export function textDirective(on: VDom, inject: any, ctx: DirectiveContext): void {
+  const key = 'text';
+  const getter = on.getters[key];
+  
+  let newValue: any;
+  try {
+    newValue = getter(inject);
+  } catch (ex) {
+    // Swallow errors — leave value undefined
+  }
+
+  if (on.values[key] !== newValue && on.elem) {
+    on.values[key] = newValue;
+    
+    // Convert null/undefined to empty string for display
+    const displayValue = (newValue === null || newValue === undefined) ? '' : newValue;
+    
+    if (on.elem.nodeType === Node.TEXT_NODE) {
+      // Text node
+      on.elem.nodeValue = displayValue;
+    } else if (on.elem instanceof HTMLElement) {
+      // Element node
+      on.elem.innerText = displayValue;
+    }
+  }
+}

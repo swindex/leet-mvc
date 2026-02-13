@@ -171,11 +171,11 @@ var template =`
 			<i class="fas fa-compass"></i>
 			<span>{{ Translate('Directions') }}</span>
 		</li>
-		<li bind onclick="this.onMapSettingsButtonClicked()">
+		<li onclick="this.onMapSettingsButtonClicked()">
 			<i class="fas fa-cog"></i>
 			<span>{{ Translate('Settings') }}</span>
 		</li>
-		<li bind onclick="this.onNavigationButtonClicked()">
+		<li onclick="this.onNavigationButtonClicked()">
 			<i class="fas fa-location-arrow"></i>
 			<span>{{ Translate('Navigation') }}</span>
 		</li>

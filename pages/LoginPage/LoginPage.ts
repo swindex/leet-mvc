@@ -158,7 +158,7 @@ export class LoginPage extends HeaderPage {
 LoginPage.className = 'page-LoginPage';
 var template = `
 	<div id="logo" [style]="{backgroundSize:this.backgroundSize}">
-		<span bind="Translate('AppSlogan')"></span>
+		<span [text]="Translate('AppSlogan')"></span>
 		<div ion-fab right top [if]="this.showLanguage">
 			<button text-only onclick="this.onLanguageClicked()"><i class="fas fa-language"></i></button>
 		</div>
@@ -169,11 +169,11 @@ var template = `
 	<div id="login">
 		<form>
 			<div class="fieldgroup" [class]="this.error.user ? 'has-error' : null">
-				<span class="hint" [class]="this.error.user ? 'error' : null" bind="this.error.user"></span>
+				<span class="hint" [class]="this.error.user ? 'error' : null" [text]="this.error.user"></span>
 				<input autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" type="text" bind="this.form.user" name="user" [attribute]="{placeholder:Translate('User_Name')}" value="">
 			</div>
 			<div class="fieldgroup" [class]="this.error.pass ? 'has-error' : null">
-				<span class="hint" [class]="this.error.pass ? 'error' : null" bind="this.error.pass"></span>
+				<span class="hint" [class]="this.error.pass ? 'error' : null" [text]="this.error.pass"></span>
 				<input autocapitalize="off" autocorrect="off"  spellcheck="false" autocomplete="current-password" [attribute]="{type: this.passwordType,placeholder:Translate('Password')}" bind="this.form.pass" name="pass" value="">
 				<div class="icon" onclick="this.togglePasswordType($event)" onmousedown="$event.preventDefault()">
 					<i class="fas fa-eye" [if]="this.passwordType=='password'"></i>
@@ -182,16 +182,16 @@ var template = `
 			</div>
 			<div class="fieldgroup">
 				<label class="toggle">
-					<b bind = "Translate('Remember me')"></b>
+					<b [text]="Translate('Remember me')"></b>
 					<input type="checkbox" bind="this.form.remember">
 					<span class="slider round"></span>
 				</label>
 			</div>
 			<div class="fieldgroup">
-				<button type="button"  onclick="this.onLoginClicked()" class="btn_login"><b bind = "Translate('SIGN IN')"></b></button>
+				<button type="button"  onclick="this.onLoginClicked()" class="btn_login"><b [text]="Translate('SIGN IN')"></b></button>
 			</div>
 			<div class="fieldgroup" [if]="this.showRegister">
-				<button type="button"  onclick="this.onRegisterClicked()" class="btn_register"><b bind = "Translate('REGISTER NOW')"></b></button>
+				<button type="button"  onclick="this.onRegisterClicked()" class="btn_register"><b [text]="Translate('REGISTER NOW')"></b></button>
 			</div>
 			<div class="fieldgroup">
 				<label class="centered"><span onclick="this.onForgotClicked()">{{Translate('Forgot Password?')}}</span></label>

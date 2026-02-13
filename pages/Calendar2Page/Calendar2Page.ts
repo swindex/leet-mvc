@@ -1219,8 +1219,8 @@ var template = `
 						<i class="fas fa-chevron-left"></i>
 					</button>
 					<div>
-						<button bind="this._d_monthName" onclick="this._onCalendarMonthClicked()"></button>
-						<button bind="this._d_year" onclick="this._onCalendarYearClicked()"></button>
+						<button [text]="this._d_monthName" onclick="this._onCalendarMonthClicked()"></button>
+						<button [text]="this._d_year" onclick="this._onCalendarYearClicked()"></button>
 					</div>	
 					<button onclick="this._onNextMonthClicked()">
 						<i class="fas fa-chevron-right"></i>
@@ -1231,7 +1231,7 @@ var template = `
 						<thead>
 							<tr>
 								<td [foreach] = "dayN in this._weekDayNames as day">
-									<b bind="day"></b>
+									<b [text]="day"></b>
 								</td>
 							</tr>
 						</thead>
@@ -1259,7 +1259,7 @@ var template = `
 					</button>
 					<div>
 						<button bind="this._d_monthName" onclick="this._onCalendarMonthClicked()"></button>
-						<button bind="this._d_day" onclick="this._onMonthDayClicked()"></button>
+						<button [text]="this._d_day" onclick="this._onMonthDayClicked()"></button>
 					</div>	
 					<button onclick="this._onNextDayClicked()">
 						<i class="fas fa-chevron-right"></i>

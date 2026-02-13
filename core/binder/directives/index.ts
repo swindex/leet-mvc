@@ -13,6 +13,7 @@ import {
   showDirective,
   classDirective,
   innerhtmlDirective,
+  textDirective,
 } from './SimpleDirectives';
 
 /**
@@ -30,6 +31,7 @@ export const directiveRegistry: Record<string, DirectiveHandler> = {
   'if': ifDirective,
   'foreach': foreachDirective,
   'bind': bindDirective,
+  'text': textDirective,
   'transition': transitionDirective,
   'html': htmlDirective,
   'directive': deprecatedDirectiveDirective, // Deprecated - use [html] instead
