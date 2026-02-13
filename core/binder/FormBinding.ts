@@ -78,14 +78,22 @@ export class FormBinding {
     const formats = format.split(':');
 
     if (formats.length > 0 && (formats[0] === 'number' || formats[0] === 'localenumber')) {
-      if (v !== '' && v !== null) {
+      if (v !== '' && v !== null && v !== undefined) {
         v = v * 1;
         if (isNaN(v)) v = 0;
         if (formats.length === 2) {
           const ln = !isNaN(formats[1])
             ? formats[1]
             : (getFormatExpression ? getFormatExpression(elem, 'format', formats[1]) : formats[1]);
-          v = FormBinding.round(v, parseInt(ln));
+          const decimals = parseInt(ln);
+          v = FormBinding.round(v, decimals);
+          // Use toFixed to ensure trailing zeros for number format
+          if (formats[0] === 'number') {
+            v = v.toFixed(decimals);
+          }
+        } else if (formats[0] === 'number') {
+          // No decimal places specified, convert to integer
+          v = Math.round(v).toString();
         }
         if (formats[0] === 'localenumber' && elem.getAttribute('type') !== 'number' && Number(v).toLocaleString) {
           v = Number(v).toLocaleString();

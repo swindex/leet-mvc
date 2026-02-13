@@ -1,5 +1,6 @@
 import { empty } from '../../helpers';
 import { Objects } from '../../Objects';
+import { FormBinding } from '../FormBinding';
 import type { VDom, DirectiveContext } from '../types';
 
 /**
@@ -135,6 +136,7 @@ export function innerhtmlDirective(on: VDom, inject: any, ctx: DirectiveContext)
  * [text] directive — one-way data binding for text content.
  * Sets the element's innerText or textContent for display purposes only.
  * For two-way binding with form elements, use [bind] instead.
+ * Supports format attribute for number, date, boolean, and other value transformations.
  */
 export function textDirective(on: VDom, inject: any, ctx: DirectiveContext): void {
   const key = 'text';
@@ -147,11 +149,22 @@ export function textDirective(on: VDom, inject: any, ctx: DirectiveContext): voi
     // Swallow errors — leave value undefined
   }
 
-  if (on.values[key] !== newValue && on.elem) {
+  // Update if value changed, or if this is the first render (on.values[key] === undefined)
+  if ((on.values[key] !== newValue || !(key in on.values)) && on.elem) {
     on.values[key] = newValue;
     
-    // Convert null/undefined to empty string for display
-    const displayValue = (newValue === null || newValue === undefined) ? '' : newValue;
+    // Apply format transformation if format attribute is present
+    let displayValue = newValue;
+    if (on.elem instanceof HTMLElement) {
+      displayValue = FormBinding.formatValueForDisplay(on.elem, newValue, ctx.getFormatExpression);
+    }
+    
+    // Convert to string for display (handle all types including numbers, null, undefined)
+    if (displayValue === null || displayValue === undefined) {
+      displayValue = '';
+    } else if (typeof displayValue !== 'string') {
+      displayValue = String(displayValue);
+    }
     
     if (on.elem.nodeType === Node.TEXT_NODE) {
       // Text node

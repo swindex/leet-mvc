@@ -17,7 +17,8 @@ It is designed to solve internal needs for fast prototyping and building complex
 - **Custom Directives** - Extensible directive system for DOM manipulation
 
 ### Directives
-- `[bind]` - Two-way data binding for form inputs
+- `[bind]` or `bind` - Two-way data binding for form inputs (supports `format` attribute)
+- `[text]` - One-way data binding for text content (supports `format` attribute)
 - `[foreach]` - Array iteration and rendering
 - `[if]` - Conditional rendering (removes/adds from DOM)
 - `[show]` - Visibility control (toggles display: none)
@@ -141,12 +142,118 @@ nav.push(MyPage);
 <div [html]="this.message"></div>
 <div [innerhtml]="this.htmlContent"></div>
 
-<!-- Template expressions -->
+<!-- Display text content (one-way) -->
+<span [text]="this.username"></span>
+<div [text]="this.description"></div>
+
+<!-- Template expressions (mustache syntax) -->
 <div>{{this.user.name}} - {{this.user.email}}</div>
 
 <!-- Computed expressions -->
 <div>{{this.count * 2}}</div>
 <div>{{this.count > 5 ? 'High' : 'Low'}}</div>
+```
+
+### Value Formatting
+
+Both `bind` and `[text]` directives support the `format` attribute for displaying values in different formats:
+
+```html
+<!-- Number formatting with decimal places -->
+<input bind="this.price" format="number:2" />
+<span [text]="this.price" format="number:2"></span>
+<!-- Displays: 123.46 from value 123.456789 -->
+
+<!-- Locale-aware number formatting -->
+<input bind="this.amount" format="localenumber:2" type="text" />
+<span [text]="this.amount" format="localenumber:2"></span>
+<!-- Displays: 1,234.56 (in en-US locale) from value 1234.56 -->
+
+<!-- Boolean formatting with custom labels -->
+<input bind="this.isActive" format="boolean:Yes,No" />
+<span [text]="this.isActive" format="boolean:Active,Inactive"></span>
+<!-- Displays: "Yes" or "No" based on boolean value -->
+
+<!-- Date formatting -->
+<span [text]="this.createdAt" format="date"></span>
+<!-- Displays: human-readable date -->
+
+<!-- Time formatting -->
+<span [text]="this.timestamp" format="time"></span>
+<!-- Displays: human-readable time -->
+
+<!-- DateTime formatting -->
+<span [text]="this.lastLogin" format="dateTime"></span>
+<!-- Displays: human-readable date and time -->
+
+<!-- Dynamic format expressions -->
+<input bind="this.value" format="number:this.decimalPlaces" />
+<span [text]="this.value" format="number:this.precision"></span>
+<!-- Decimal places determined by context property -->
+```
+
+#### Supported Format Types
+
+**Number Formats:**
+- `format="number"` - Formats as number with no decimal places
+- `format="number:2"` - Formats as number with 2 decimal places
+- `format="localenumber"` - Formats as locale-aware number
+- `format="localenumber:2"` - Formats as locale-aware number with 2 decimals
+
+**Boolean Formats:**
+- `format="boolean"` - Converts true/false to "true"/"false"
+- `format="boolean:Yes,No"` - Custom labels (first for true, second for false)
+
+**Date/Time Formats:**
+- `format="date"` - Human-readable date
+- `format="time"` - Human-readable time
+- `format="dateTime"` - Human-readable date and time
+
+**Dynamic Formats:**
+- `format="number:this.myPrecision"` - Use context property for format parameter
+
+#### Format Behavior
+
+For **`bind` directive** (two-way binding):
+- **Display:** Formats value when displaying in form element
+- **Input:** Parses formatted value back to model when user edits
+
+For **`[text]` directive** (one-way binding):
+- **Display only:** Formats value for display, no parsing back
+
+```typescript
+export class ProductPage extends BasePage {
+  product = {
+    name: 'Widget',
+    price: 29.99,
+    quantity: 1000,
+    isAvailable: true,
+    createdAt: new Date()
+  };
+  
+  decimalPlaces = 2;
+
+  get template() {
+    return `
+      <div>
+        <h2>{{this.product.name}}</h2>
+        
+        <!-- Two-way binding with format -->
+        <label>Price:</label>
+        <input bind="this.product.price" format="number:2" />
+        
+        <!-- One-way binding with format -->
+        <p>Display Price: <span [text]="this.product.price" format="number:2"></span></p>
+        <p>Quantity: <span [text]="this.product.quantity" format="localenumber"></span></p>
+        <p>Status: <span [text]="this.product.isAvailable" format="boolean:In Stock,Out of Stock"></span></p>
+        <p>Created: <span [text]="this.product.createdAt" format="date"></span></p>
+        
+        <!-- Dynamic format -->
+        <input bind="this.product.price" format="number:this.decimalPlaces" />
+      </div>
+    `;
+  }
+}
 ```
 
 ## Directives

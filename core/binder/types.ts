@@ -117,6 +117,8 @@ export interface DirectiveContext {
   updateBoundContextProperty: (elem: any, skipUpdate?: boolean) => void;
   /** Parse a template and execute it, returning a VDom tree */
   parseAndExecute: (template: string, inject: any) => VDom;
+  /** Create and execute a getter for a dynamic attribute value on a specific element */
+  getFormatExpression: (elem: any, attrName: string, attrValue: string) => any;
   /** The context object (page or component instance) */
   context: any;
   /** Injected variables at the binder level */

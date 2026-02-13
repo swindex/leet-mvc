@@ -611,6 +611,7 @@ export class Binder {
       updateBoundElement: (elem, value) => this.updateBoundElement(elem, value),
       updateBoundContextProperty: (elem, skip) => this.updateBoundContextProperty(elem, skip),
       parseAndExecute: (template, inj) => this.parseAndExecute(template, inj),
+      getFormatExpression: (elem, attrName, attrValue) => this.createExecuteElemAttrGetter(elem, attrName, attrValue),
       context: this.context,
       injectVars: this.injectVars,
       eventCallbacks: this.eventCallbacks,
