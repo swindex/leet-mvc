@@ -14,8 +14,20 @@ export function htmlDirective(on: VDom, inject: any, ctx: DirectiveContext): EAt
 
   // If the directive value is a BaseComponent, delegate to the component handler
   if (html instanceof BaseComponent) {
-    on.getters['component'] = getter;
-    return ctx.executeAttribute('component', on, inject);
+    // Check if we've already delegated to component to avoid infinite loop
+    // Once delegated, the component directive handles everything
+    if (on.values['__htmlDelegatedToComponent'] !== true) {
+      on.values['__htmlDelegatedToComponent'] = true;
+      on.getters['component'] = getter;
+    }
+    // Let the component directive handle this - return SkipChildren to prevent further processing
+    return EAttrResult.SkipChildren;
+  }
+  
+  // If we previously delegated but now have non-component content, reset
+  if (on.values['__htmlDelegatedToComponent'] === true) {
+    on.values['__htmlDelegatedToComponent'] = false;
+    delete on.getters['component'];
   }
 
   if (on.values[key] !== html) {

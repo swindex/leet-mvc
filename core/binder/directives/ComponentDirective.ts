@@ -250,7 +250,6 @@ export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext)
       setPlainAttributes(component, on);
 
       // IMPORTANT: on.items contains projected children that are ALREADY BOUND to parent context
-      const hostElem = on.elem as HTMLElement;
       const projectedChildren: VDom[] = on.items.slice(); // Copy references
       
       // Create templateFragment for special components that need it (cloned copy)
@@ -262,34 +261,74 @@ export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext)
         ctx.checkVDomNode(on, inject);
       };
 
-      // Clear host element and append component's rendered DOM
-      hostElem.innerHTML = '';
-      
-      if (componentVDom.elem instanceof DocumentFragment) {
-        hostElem.appendChild(componentVDom.elem);
-        on.items = componentVDom.items;
-      } else if (componentVDom.fragment) {
-        hostElem.appendChild(componentVDom.fragment);
-        on.items = [componentVDom];
+      // Check if on.elem is a Comment (directive anchor) or HTMLElement (direct component)
+      if (on.elem instanceof Comment) {
+        // Component is inside a directive (e.g., [if], [foreach])
+        // Insert component's rendered DOM after the Comment anchor (like [html] directive)
+        
+        if (componentVDom.elem instanceof DocumentFragment) {
+          on.items = componentVDom.items;
+        } else if (componentVDom.fragment) {
+          on.items = [componentVDom];
+        } else {
+          on.items = [componentVDom];
+        }
+        
+        // Insert the component's rendered DOM after the anchor
+        ctx.insertVDomElementAfter(componentVDom, on.elem);
+        
+        // Handle content projection within the component
+        if (componentVDom.elem instanceof HTMLElement) {
+          const componentItemCount = on.items.length;
+          on.items = handleContentProjection(componentVDom.elem, on.items, projectedChildren);
+          on.values['__projectedStartIndex'] = componentItemCount;
+          tryCall(component, component._onInit, componentVDom.elem);
+        } else {
+          // DocumentFragment case - find first HTMLElement for onInit
+          const firstElem = componentVDom.items.find((item: VDom) => item.elem instanceof HTMLElement);
+          if (firstElem) {
+            tryCall(component, component._onInit, firstElem.elem);
+          }
+        }
+        
       } else {
-        hostElem.appendChild(componentVDom.elem!);
-        on.items = [componentVDom];
-      }
-      
-      // Store count of component's own items before adding projected children
-      const componentItemCount = on.items.length;
-      
-      // Handle content projection: move pre-bound children into <content> placeholders
-      on.items = handleContentProjection(hostElem, on.items, projectedChildren);
-      
-      // Store the projected children count for use during updates
-      on.values['__projectedStartIndex'] = componentItemCount;
+        // Direct component usage (on.elem is the host HTMLElement)
+        const hostElem = on.elem as HTMLElement;
+        
+        // Clear host element and append component's rendered DOM
+        hostElem.innerHTML = '';
+        
+        if (componentVDom.elem instanceof DocumentFragment) {
+          hostElem.appendChild(componentVDom.elem);
+          on.items = componentVDom.items;
+        } else if (componentVDom.fragment) {
+          hostElem.appendChild(componentVDom.fragment);
+          on.items = [componentVDom];
+        } else {
+          hostElem.appendChild(componentVDom.elem!);
+          on.items = [componentVDom];
+        }
+        
+        // Store count of component's own items before adding projected children
+        const componentItemCount = on.items.length;
+        
+        // Handle content projection: move pre-bound children into <content> placeholders
+        on.items = handleContentProjection(hostElem, on.items, projectedChildren);
+        
+        // Store the projected children count for use during updates
+        on.values['__projectedStartIndex'] = componentItemCount;
 
-      // Call onInit with the host element
-      tryCall(component, component._onInit, hostElem);
+        // Call onInit with the host element
+        tryCall(component, component._onInit, hostElem);
+      }
       
     } else {
       // Component does not have own template — keeping for compatibility
+      // Note: This path only works for direct component usage (not inside directives)
+      if (!(on.elem instanceof HTMLElement)) {
+        console.warn('Component without template used inside a directive - not supported');
+        return EAttrResult.SkipChildren;
+      }
       const hostElem = on.elem as HTMLElement;
       component.parentPage = ctx.context;
       
