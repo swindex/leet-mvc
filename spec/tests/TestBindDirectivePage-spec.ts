@@ -257,4 +257,36 @@ describe('Test TestBindDirectivePage - [bind] directive', function() {
       done();
     }, 100);
   });
+
+  // NOTE: Invalid bind expressions like "this.textInput + this.emailInput" 
+  // already fail at compile-time when createSetter() is called with new Function().
+  // This is the desired behavior - preventing invalid expressions from being used.
+  // The invokeSetter() method provides runtime error reporting for cases where
+  // a valid setter function fails during execution (e.g., accessing undefined properties).
+  
+  it("invokeSetter provides descriptive errors for runtime failures", function() {
+    const { ExpressionCompiler } = require('../../core/binder/ExpressionCompiler');
+    
+    // Create a context and a valid setter
+    const context = { obj: { prop: "test" } };
+    const compiler = new ExpressionCompiler();
+    const expression = "this.obj.prop";
+    const setter = compiler.createSetter(expression, {}, context);
+    
+    // Now break the context to cause a runtime error
+    context.obj = null;
+    
+    try {
+      // This should throw a descriptive error about bind directive
+      ExpressionCompiler.invokeSetter(setter, {}, "new value", expression);
+      fail("Should have thrown an error");
+    } catch (error) {
+      // Verify error message contains helpful information
+      const errorMsg = error.message;
+      expect(errorMsg).toContain("[bind] directive error");
+      expect(errorMsg).toContain("Cannot assign value");
+      expect(errorMsg).toContain("assignable expression");
+      expect(errorMsg).toContain("[text] directive");
+    }
+  });
 });

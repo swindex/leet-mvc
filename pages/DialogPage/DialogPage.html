@@ -8,7 +8,7 @@
 			<!--child-template-->
 		</div>
 		<div class = 'dialog-buttons' [if]="this.buttons">
-			<button [foreach]="button_title in this.buttons as button" onclick="this.onButtonClicked(button_title)" bind="Translate(button_title)" [attribute]="{id:'dialogButton'+button_title}"></button>
+			<button [foreach]="button_title in this.buttons as button" onclick="this.onButtonClicked(button_title)" [text]="Translate(button_title)" [attribute]="{id:'dialogButton'+button_title}"></button>
 		</div>
 	</div>
 </div>

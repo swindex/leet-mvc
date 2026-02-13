@@ -2,6 +2,7 @@ import { empty, isBoolean, numberFromLocaleString } from '../helpers';
 import { DateTime } from '../DateTime';
 import { DOM } from '../DOM';
 import { isSkipUpdate, Watcher } from '../Watcher';
+import { ExpressionCompiler } from './ExpressionCompiler';
 
 /**
  * Handles two-way data binding for form elements (INPUT, SELECT, TEXTAREA, etc.)
@@ -310,14 +311,16 @@ export class FormBinding {
     const vDomElVal = elem['VDOM'].values.bind;
 
     if (domElVal !== v || v !== vDomElVal) {
+      const expression = elem.getAttribute('bind') || elem.getAttribute('[bind]') || 'bind';
+      
       if (skipUpdate && context[isSkipUpdate] === false) {
         Watcher.noChange(() => {
-          elem['VDOM'].setters.bind(inj, v);
+          ExpressionCompiler.invokeSetter(elem['VDOM'].setters.bind, inj, v, expression, elem);
         });
       } else {
         // Set to dummy first to ensure the watcher triggers even if value is the same
-        elem['VDOM'].setters.bind(inj, Symbol('dummy'));
-        elem['VDOM'].setters.bind(inj, v);
+        ExpressionCompiler.invokeSetter(elem['VDOM'].setters.bind, inj, Symbol('dummy'), expression, elem);
+        ExpressionCompiler.invokeSetter(elem['VDOM'].setters.bind, inj, v, expression, elem);
       }
     }
   }

@@ -108,4 +108,38 @@ export class ExpressionCompiler {
   clearCache(): void {
     this.cache = {};
   }
+
+  /**
+   * Safely invoke a setter function with comprehensive error handling and reporting.
+   * @param setter - The setter function to invoke
+   * @param inject - The inject variables to pass to the setter
+   * @param value - The value to set
+   * @param expression - The expression string (for error reporting)
+   * @param elem - Optional DOM element (for error context)
+   * @throws Error with detailed message if setter fails
+   */
+  static invokeSetter(
+    setter: Function,
+    inject: any,
+    value: any,
+    expression: string,
+    elem?: HTMLElement
+  ): void {
+    try {
+      setter(inject, value);
+    } catch (ex: any) {
+      const errorContext = elem 
+        ? `Element: <${elem.tagName?.toLowerCase() || 'unknown'}${elem.id ? ' id="' + elem.id + '"' : ''}>`
+        : 'Component property binding';
+      
+      throw new Error(
+        `[bind] directive error: Cannot assign value to expression "${expression}"\n` +
+        `${errorContext}\n` +
+        `Error: ${ex.message}\n\n` +
+        `The [bind] directive requires an assignable expression (e.g., "this.property" or "this.obj.prop").\n` +
+        `Expressions with operators like "a + b", "this.x * 2", or function calls cannot be assigned to.\n` +
+        `For computed/display-only values, use the [text] directive instead.`
+      );
+    }
+  }
 }

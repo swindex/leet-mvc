@@ -5,6 +5,7 @@ import { Objects } from '../../Objects';
 import { DOM } from '../../DOM';
 import { EAttrResult } from '../types';
 import type { VDom, DirectiveContext } from '../types';
+import { ExpressionCompiler } from '../ExpressionCompiler';
 
 /**
  * Get a readable class name from an object
@@ -76,7 +77,7 @@ function wireTwoWayBindings(
     }
     dynamicEvents.push(k + 'Change_2');
     (component as any)[k + 'Change_2'] = function (val: any) {
-      return cVDom.setters[k](inject, val);
+      return ExpressionCompiler.invokeSetter(cVDom.setters[k], inject, val, k);
     };
   });
 
