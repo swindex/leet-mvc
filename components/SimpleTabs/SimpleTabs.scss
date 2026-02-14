@@ -1,71 +1,20 @@
-@import './../../scss/variables';
-
-/*Tabs*/
-.tabs{
-	position: relative;
-	background-color: #fff;
-	.tab{
-		height:100%;
-		width: 100%;
-		display:none;
-	}
-	.tab.active,.tab[selected]{
-		display:block;
-	}
-}
-
-.tab-buttons {
-	display: flex;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	justify-content: space-evenly;
-	li {
-		margin: 5px 0px; 
-		font-size: 14px;
-	
-		// width: 300px;
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		align-items: center;
-		position: relative;
-
+simple-tabs {
+	button{
 		i {
-			color: $color-tabbutton-fg;
+			color: var(--tm-color-tabbutton-fg);
 			font-size:20px;
-			width: auto;
+			display:block;
 		}
 		span {
-			color: $color-tabbutton-fg;
+			color: var(--tm-color-tabbutton-fg);
 			font-size:10px;
-			height: 50%;
-			line-height:10px;
-			padding-top: 2px;
-		}
-		div.counter{
-			background-color: red;
-			border-radius: 2px;
-			padding: 0 2px;
-			position: absolute;
-			top: 3px;
-			right: 11px;
+			display:block;
 		}
 		&.active, &[selected] {
-			//border-bottom: $size-tabbutton-border-active solid $color-tabbutton-border-active;
-			//border-bottom-color: $color-tabbutton-fg-active;
+			//border-bottom: var(--tm-size-tabbutton-border-active) solid var(--tm-color-tabbutton-border-active);
+			//border-bottom-color: var(--tm-color-tabbutton-fg-active);
 			i, span {
-				color: $color-tabbutton-fg-active !important;
-			}
-		}
-		.icon-wrapper{
-			position: relative;
-			height: 50%;
-			display: flex;
-			align-items: flex-end;
-			.counter{
-				top: 3px;
-				right: -15px;
+				color: var(--tm-color-tabbutton-fg-active) !important;
 			}
 		}
 	}

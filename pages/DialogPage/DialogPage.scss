@@ -1,5 +1,3 @@
-@import "../../scss/_variables.scss";
-
 .page-DialogPage {
 	position: absolute;
 	height: 100%;
@@ -23,7 +21,7 @@
 		h4,
 		h5,
 		p {
-			margin: $margin-md 0;
+			margin: var(--tm-margin-md) 0;
 		}
 	}
 
@@ -42,19 +40,20 @@
 		transition: opacity 0.3s ease;
 		align-items: center;
 		display: flex;
-		padding: 0 $margin-xl;
+		justify-content: center;
 
 
 		>.popup {
-			background-color: #fff;
-			right: 10px;
-			left: 10px;
-			margin-left: auto;
-			margin-right: auto;
-			min-width: 275px;
-			max-width: 550px;
+
+			background-color: var(--tm-dialog-background);
+			color: var(--tm-dialog-color);
+			border: var(--tm-dialog-border);
+			margin-left: 25px;
+			margin-right: 25px;
+			min-width: 325px;
 			border-radius: 10px;
 			overflow: hidden;
+			max-width: 540px;
 
 			>.title,
 			>.prompt {
@@ -68,11 +67,11 @@
 
 			>.title {
 				font-weight: bold;
-				border-bottom: 1px solid #e7e7e7;
+				border-bottom: var(--tm-dialog-border);
 			}
 
 			>.dialog-content {
-				padding: $margin-lg;
+				padding: var(--tm-margin-lg);
 		
 				.fieldgroup:last-child {
 					//last fieldgroup has no margin
@@ -91,8 +90,8 @@
 			>.dialog-buttons {
 				position: relative;
 
-				background-color: white;
-				border-top: 1px solid #e7e7e7;
+				border-top: var(--tm-dialog-border);
+
 				// color: #ccc;
 				display: flex;
 
@@ -101,9 +100,9 @@
 				white-space: nowrap;
 
 				button {
-					background-color: white;
-					border: 1px solid transparent;
-					color: #71BCE1;
+					background: var(--tm-dialog-button-background);
+					color: var(--tm-dialog-button-color);
+					border: none;
 					display: block;
 					margin: 0;
 					width: 100%;
@@ -112,7 +111,7 @@
 					font-size: 16px;
 					font-weight: bold;
 					box-shadow: none;
-					border-right: 1px solid #e7e7e7;
+					border-right: var(--tm-dialog-border);
 
 					&:last-child {
 						border-right: none;
@@ -136,8 +135,8 @@
 
 	.dialog-content {
 		.row {
-			margin-left: -$margin-md;
-			margin-right: -$margin-md;
+			margin-left: calc(var(--tm-margin-md) * -1);
+			margin-right: calc(var(--tm-margin-md) * -1);
 		}
 
 		.col,
@@ -212,8 +211,8 @@
 		.col-xl-auto {
 			position: relative;
 			width: 100%;
-			padding-right: $margin-md;
-			padding-left: $margin-md;
+			padding-right: var(--tm-margin-md);
+			padding-left: var(--tm-margin-md);
 		}
 	}
 }

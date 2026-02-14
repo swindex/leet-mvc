@@ -1,73 +1,90 @@
-$header-background-color: #039be5;
-$header-height: 4em;
+:root {
 
-$input-height: 2em;
-$checkbox-height: 2em;
-$select-height: 2em;
-$toggle-height: 2em;
-$button-height: 2em;
+	--tm-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
-$height-top-bar: 45px;
+	--tm-body-color:  #000;
+	--tm-body-background:  white;
 
-$shadow-b-up: 0 0 10px rgba(0, 0, 0, 0.5);
-$shadow-b-down: 0 0 1px rgba(0, 0, 0, 0.5);
+	--tm-header-background-color: #039be5;
+	--tm-header-height: 4em;
 
-//==== TOP BAR ================
-$color-top-bar: rgba(5,72,119,1);// p4
-$top-bar-title: rgba(255,255,255,1); // p4
+	--tm-dialog-background: #fff;
+	--tm-dialog-color: #333;
+	--tm-dialog-border: 1px solid #e7e7e7;
+
+	--tm-dialog-button-background: #fff;
+	--tm-dialog-button-color: #71BCE1;
+	
+
+	--tm-input-height: 2em;
+	--tm-checkbox-height: 2em;
+	--tm-select-height: 2em;
+	--tm-toggle-height: 2em;
+	--tm-button-height: 2em;
+
+	--tm-height-top-bar: 45px;
+
+	--tm-shadow-b-up: 0 0 10px rgba(0, 0, 0, 0.5);
+	--tm-shadow-b-down: 0 0 1px rgba(0, 0, 0, 0.5);
+
+	//==== TOP BAR ================
+	--tm-color-top-bar: rgba(5,72,119,1);// p4
+	--tm-top-bar-title: rgba(255,255,255,1); // p4
 
 
-$color-error: #F32332;
-$color-bg-error: #F32332;
-$color-border: #77a2c5;
-$color-border-active: #2196F3;
-$color-border-disabled: rgba(129, 142, 152, 0.6);
+	--tm-color-error: #F32332;
+	--tm-color-bg-error: #F32332;
+	--tm-color-border: #77a2c5;
+	--tm-color-border-active: #2196F3;
+	--tm-color-border-disabled: rgba(129, 142, 152, 0.6);
 
-$color-input-bg: #FFF;
-$color-input-fg: #333;
+	--tm-color-input-bg: #FFF;
+	--tm-color-input-fg: #333;
 
-$color-button-fg:#FFF;
-$color-button-bg:#2196F3;
+	--tm-color-button-fg:#FFF;
+	--tm-color-button-bg:#2196F3;
 
-$color-link:#2196F3;
-$color-link-active:rgb(243, 82, 33);
+	--tm-color-link:#2196F3;
+	--tm-color-link-active:rgb(243, 82, 33);
 
-$color-action: #2196F3;
-$color-action-active: #1d70b4; //button or label is clicked on
+	--tm-color-action: #2196F3;
+	--tm-color-action-active: #1d70b4; //button or label is clicked on
 
-$color-tabbutton-fg: #b2b2b2;
-$color-tabbutton-fg-active: #2196F3;
-$color-tabbutton-border-active: #2196F3;
-$size-tabbutton-border-active: 2px;
-$color-tabbutton-bg: transparent;
-$color-tabbutton-counter-fg: #FFF;
-$color-tabbutton-counter-bg: #F32332;
 
-$size-border: 1px;
-$size-border-active: 2px;
-$size-input-h-md: 30px;
-$size-input-i-md: 20px;
-$size-input-i-sm: 10px;
+	--tm-color-tabbutton-fg: #b2b2b2;
+	--tm-color-tabbutton-fg-active: #2196F3;
+	--tm-color-tabbutton-border-active: #2196F3;
+	--tm-size-tabbutton-border-active: 2px;
+	--tm-color-tabbutton-bg: transparent;
+	--tm-color-tabbutton-counter-fg: #FFF;
+	--tm-color-tabbutton-counter-bg: #F32332;
 
-$size-input-h-lg: 55px;
-$size-input-i-lg: 30px;
+	--tm-size-border: 1px;
+	--tm-size-border-active: 2px;
+	--tm-size-input-h-md: 30px;
+	--tm-size-input-i-md: 20px;
+	--tm-size-input-i-sm: 10px;
 
-$size-f-toplabel: 12px;
-$size-f-input: 16px;
-$margin-xs: 1px;
-$margin-sm: 3px;
-$margin-md: 6px;
-$margin-lg: 12px;
-$margin-xl: 24px;
+	--tm-size-input-h-lg: 55px;
+	--tm-size-input-i-lg: 30px;
 
-$color-list-item-fg:#1d1d1d;
-$color-list-item-active-fg:#2196F3;
+	--tm-size-f-toplabel: 12px;
+	--tm-size-f-input: 16px;
+	--tm-margin-xs: 1px;
+	--tm-margin-sm: 3px;
+	--tm-margin-md: 6px;
+	--tm-margin-lg: 12px;
+	--tm-margin-xl: 24px;
 
-$size-f-xl: 1.25em;
-$size-f-lg: 1.25em;
-$size-f-md: 1.125em;
-$size-f-sm: 1em;
-$size-f-xs: 0.75em;
+	--tm-color-list-item-fg:#1d1d1d;
+	--tm-color-list-item-active-fg:#2196F3;
+
+	--tm-size-f-xl: 1.25em;
+	--tm-size-f-lg: 1.25em;
+	--tm-size-f-md: 1.125em;
+	--tm-size-f-sm: 1em;
+	--tm-size-f-xs: 0.75em;
+}
 
 
 
@@ -82,12 +99,12 @@ $size-f-xs: 0.75em;
 
 @mixin button-primary{
 	width: auto;
-	color: $color-button-fg;
-	background-color: $color-button-bg;
+	color: var(--tm-color-button-fg);
+	background-color: var(--tm-color-button-bg);
 	border: none;
 	border-radius: 3px;
-	padding: $margin-lg $margin-lg;
-	font-size: $size-f-input;
+	padding: var(--tm-margin-lg) var(--tm-margin-lg);
+	font-size: var(--tm-size-f-input);
 	box-shadow: 0px 0px 3px 0px #000000ab;
 	-webkit-appearance: none;
 }

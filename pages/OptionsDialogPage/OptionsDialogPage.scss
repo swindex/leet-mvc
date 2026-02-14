@@ -1,14 +1,13 @@
-@import '../../scss/variables';
 #page-OptionsDialogPage{
 	.dialog-content.touch-scroll {
-		padding: $margin-lg;
+		padding: var(--tm-margin-lg);
 		padding-top: 0;
 		padding-bottom: 0;
 	}
 	ul {
 		padding: 0;
 		margin: 0;
-		color: $color-list-item-fg;
+		color: var(--tm-color-list-item-fg);
 		font-size: 1.15em;
 		&.hideOverflow{
 			div.item > div{
@@ -24,25 +23,25 @@
 		padding: 0;
 		display: flex;
 		align-items: center;
-		color: $color-list-item-fg;
+		color: var(--tm-color-list-item-fg);
 		&[selected] {
-			color: $color-list-item-active-fg;
+			color: var(--tm-color-list-item-active-fg);
 		}
 		i{
 			padding-top: 3px; //nudge to the v-center
-			margin-right: $margin-lg;
+			margin-right: var(--tm-margin-lg);
 		}
 		img{
-			//margin-right: $margin-lg;
+			//margin-right: var(--tm-margin-lg);
 			max-width: 2em;	
 			max-height:2em;	
 		}
 		div.item {
-			border-bottom: 1px solid #dedede;
+			border-bottom: var(--tm-dialog-border);
 			display: block;
 			margin-right: 0;
 			margin-left: 0;
-			padding: $margin-lg 0;
+			padding: var(--tm-margin-lg) 0;
 			width: 100%;
 			
 			.item-text{

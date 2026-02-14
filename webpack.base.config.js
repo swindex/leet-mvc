@@ -108,7 +108,10 @@ module.exports = (env) => {
               },
             },
             {
-              loader:"sass-loader"
+              loader:"sass-loader",
+              options: {
+                api: 'modern'  // Use modern Dart Sass API instead of legacy
+              }
             },
           ],
         },

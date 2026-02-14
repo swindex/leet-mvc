@@ -1,5 +1,3 @@
-@import '_variables';
-
 button[none],
 input[type=button][none] {
 	width: auto;
@@ -22,7 +20,7 @@ input[type=button] {
 	display: flex;
 	flex-direction: column;
 	position: relative;
-	margin-bottom: $margin-lg;
+	margin-bottom: var(--tm-margin-lg);
 
 	* {
 		box-sizing: border-box;
@@ -38,21 +36,21 @@ input[type=button] {
 	select,
 	select-multiple,
 	.input {
-		font-size: $size-f-input;
+		font-size: var(--tm-size-f-input);
 		border-collapse: collapse;
 		padding-left: 0;
 		border: none;
-		border-bottom: $size-border solid $color-border;
-		margin-bottom: $size-border-active - $size-border; //space for the border
+		border-bottom: var(--tm-size-border) solid var(--tm-color-border);
+		margin-bottom: calc(var(--tm-size-border-active) - var(--tm-size-border)); //space for the border
 		-webkit-appearance: none;
-		padding: $margin-sm 0;
-		//padding-right: $size-input-i-md; //this used for hiding text under icon	
+		padding: var(--tm-margin-sm) 0;
+		//padding-right: var(--tm-size-input-i-md); //this used for hiding text under icon	
 		background-color: transparent;
 		width: 100%;
 
 		&[disabled],
 		&[readonly] {
-			border-bottom: $size-border solid $color-border-disabled;
+			border-bottom: var(--tm-size-border) solid var(--tm-color-border-disabled);
 		}
 
 		&:focus,
@@ -60,7 +58,7 @@ input[type=button] {
 		&.focus-blink {
 			outline: none;
 			box-shadow: none;
-			border-bottom: $size-border-active solid $color-border-active;
+			border-bottom: var(--tm-size-border-active) solid var(--tm-color-border-active);
 			margin-bottom: 0;
 		}
 
@@ -88,16 +86,16 @@ input[type=button] {
 		select,
 		select-multiple,
 		.input {
-			padding-right: $size-input-i-md;
+			padding-right: var(--tm-size-input-i-md);
 		}
 	}
 
 	div.icon {
 		position: absolute;
 		top: 0;
-		right: $margin-sm;
+		right: var(--tm-margin-sm);
 		font-weight: bold;
-		font-size: $size-f-input;
+		font-size: var(--tm-size-f-input);
 		pointer-events: none;
 		height: 100%;
 		display: flex;
@@ -117,7 +115,7 @@ input[type=button] {
 		z-index: 5;
 		background-color: transparent;
 		padding-left: 0;
-		font-size: $size-f-toplabel;
+		font-size: var(--tm-size-f-toplabel);
 		text-align: left;
 		display: inline-block;
 		white-space: nowrap;
@@ -126,7 +124,7 @@ input[type=button] {
 
 		i {
 			color: #0874B7;
-			margin-left: $margin-sm;
+			margin-left: var(--tm-margin-sm);
 		}
 	}
 
@@ -149,7 +147,7 @@ input[type=button] {
 		font-size: 12px;
 
 		&.error {
-			color: $color-error;
+			color: var(--tm-color-error);
 			white-space: pre-wrap;
 		}
 	}
@@ -169,18 +167,18 @@ input[type=button] {
 
 	.split {
 		width: 50%;
-		padding-right: $margin-md;
+		padding-right: var(--tm-margin-md);
 		position: relative;
 
 		.icon {
-			right: $margin-sm + $margin-md;
+			right: calc(var(--tm-margin-sm) + var(--tm-margin-md));
 		}
 
 		&:last-child {
 			padding-right: 0px;
 
 			.icon {
-				right: $margin-sm;
+				right: var(--tm-margin-sm);
 			}
 		}
 	}
@@ -215,10 +213,6 @@ input[type=button] {
 		align-items: center;
 		flex-wrap: wrap; //allow 100% wide children to form column
 		overflow: hidden;
-
-		&.field>* {
-			//padding-bottom: $margin-md;
-		}
 	}
 
 	&.required {
@@ -235,7 +229,7 @@ input[type=button] {
 
 	@keyframes focus_blink {
 		50% {
-			border-bottom: $size-border-active solid $color-border;
+			border-bottom: var(--tm-size-border-active) solid var(--tm-color-border);
 		}
 	}
 }
@@ -255,26 +249,26 @@ select-multiple {
 .fieldgroup {
 	>div.label {
 		color: #333;
-		font-size: $size-f-input;
+		font-size: var(--tm-size-f-input);
 		width: 100%;
 		align-self: center;
-		//padding: $margin-sm 0;
-		padding-right: $size-input-i-md; //this used for hiding text under icon	
+		//padding: var(--tm-margin-sm) 0;
+		padding-right: var(--tm-size-input-i-md); //this used for hiding text under icon	
 
 		&.link {
 			text-decoration: underline;
-			color: $color-link;
+			color: var(--tm-color-link);
 		}
 	}
 
 	>div.link {
 		width: 100%;
-		font-size: $size-f-input;
+		font-size: var(--tm-size-f-input);
 		text-decoration: underline;
-		color: $color-link;
+		color: var(--tm-color-link);
 		align-self: center;
-		padding: $margin-sm 0;
-		padding-right: $size-input-i-md; //this used for hiding text under icon	
+		padding: var(--tm-margin-sm) 0;
+		padding-right: var(--tm-size-input-i-md); //this used for hiding text under icon	
 	}
 }
 
@@ -313,8 +307,8 @@ select-multiple {
 		display: flex;
 		align-items: center;
 		width: 100%;
-		font-size: $size-f-input;
-		padding: $margin-md 0 $margin-md 0;
+		font-size: var(--tm-size-f-input);
+		padding: var(--tm-margin-md) 0 var(--tm-margin-md) 0;
 		height: auto;
 
 		.text {
@@ -421,7 +415,7 @@ select-multiple {
 			border: 1px solid #333;
 
 			//
-			margin-right: $margin-md;
+			margin-right: var(--tm-margin-md);
 			padding: 4px;
 
 			&:before {
@@ -456,7 +450,7 @@ select-multiple {
 
 		i[onclick] {
 			color: #0874B7;
-			margin-left: $margin-sm;
+			margin-left: var(--tm-margin-sm);
 			cursor: pointer;
 		}
 
@@ -477,7 +471,7 @@ select-multiple {
 	&.flat {
 		label.toggle {
 			width: auto;
-			margin-right: $margin-lg;
+			margin-right: var(--tm-margin-lg);
 		}
 	}
 }
@@ -488,11 +482,11 @@ div[ion-fab] {
 	z-index: 10;
 
 	&[round] {
-		width: $size-input-h-lg;
-		height: $size-input-h-lg;
+		width: var(--tm-size-input-h-lg);
+		height: var(--tm-size-input-h-lg);
 
 		button {
-			border-radius: $size-input-h-lg;
+			border-radius: var(--tm-size-input-h-lg);
 
 			width: 100%;
 			height: 100%;
@@ -501,32 +495,32 @@ div[ion-fab] {
 	}
 
 	&[top] {
-		top: $margin-lg;
+		top: var(--tm-margin-lg);
 	}
 
 	&[right] {
-		right: $margin-lg;
+		right: var(--tm-margin-lg);
 	}
 
 	&[bottom] {
-		bottom: $margin-lg;
+		bottom: var(--tm-margin-lg);
 	}
 
 	&[left] {
-		left: $margin-lg;
+		left: var(--tm-margin-lg);
 	}
 
 	button {
 		position: relative;
-		font-size: $size-input-i-lg;
+		font-size: var(--tm-size-input-i-lg);
 		padding: 6px 12px;
-		background-color: $color-button-bg;
-		color: $color-button-fg;
+		background-color: var(--tm-color-button-bg);
+		color: var(--tm-color-button-fg);
 		border: none;
-		box-shadow: $shadow-b-up;
+		box-shadow: var(--tm-shadow-b-up);
 
 		&:active {
-			box-shadow: $shadow-b-down;
+			box-shadow: var(--tm-shadow-b-down);
 		}
 	}
 }
@@ -540,13 +534,13 @@ button {
 
 	&[outline] {
 		background-color: transparent !important;
-		border: $size-border solid $color-border !important;
-		color: $color-border !important;
+		border: var(--tm-size-border) solid var(--tm-color-border) !important;
+		color: var(--tm-color-border) !important;
 		box-shadow: none !important;
 	}
 
 	&[link] {
-		color: $color-link !important;
+		color: var(--tm-color-link) !important;
 	}
 }
 

@@ -1,4 +1,3 @@
-@import './../../scss/variables';
 div[page].page-Menu{
 		display:block;
 		width:100%;
@@ -17,7 +16,7 @@ div[page].page-Menu{
 
 	.backdrop{
 		position: absolute;
-		//top: $header-height;
+		//top: var(--tm-header-height);
 		bottom: 0px;
 		left: 0px;
 		right: 0px;
@@ -89,7 +88,7 @@ div[page].page-Menu{
 				align-items: center;
 				margin-left: 1em;
 				//@include effect-tap-ripple;
-				font-size: $size-f-md;
+				font-size: var(--tm-size-f-md);
 			}
 			li > span{
 				display: block;

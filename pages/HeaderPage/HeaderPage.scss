@@ -1,5 +1,3 @@
-@import '../../scss/variables';
-
 .page-HeaderPage{
 	position: absolute;
 	width: 100%;
@@ -17,9 +15,9 @@
 	>.header {
 		transform:translateZ(0);
 		
-		background-color: $color-top-bar;
-		height: $height-top-bar;
-		min-height: $height-top-bar;
+		background-color: var(--tm-color-top-bar);
+		height: var(--tm-height-top-bar);
+		min-height: var(--tm-height-top-bar);
 		padding: 0px;
 		position: relative;
 		width: 100%;
@@ -42,10 +40,10 @@
       justify-content: center;
       align-items: center;
 			padding: 0;
-			width: $height-top-bar;
-			height: $height-top-bar;
+			width: var(--tm-height-top-bar);
+			height: var(--tm-height-top-bar);
 			z-index: 10;
-			border-radius: calc($height-top-bar / 2);
+			border-radius: calc(var(--tm-height-top-bar) / 2);
 			background-color: transparent;
 			box-shadow: none;
 			border: none;
@@ -75,7 +73,7 @@
 			position: absolute;
 			
 			box-sizing: border-box;
-			color: $top-bar-title;
+			color: var(--tm-top-bar-title);
 			//cursor: pointer;
 			font-size: 16px;
 			font-weight: bold;
@@ -88,7 +86,7 @@
       display: flex;
     }
 		.logo{
-			margin: $margin-md 0;
+			margin: var(--tm-margin-md) 0;
 			//background-image: url(../../img/svg/cnx-logo.svg);
 			background-size: 170px;
 			background-repeat: no-repeat;
@@ -98,7 +96,7 @@
 
 	>.footer {
 		display: block;
-		background-color: $color-top-bar;
+		background-color: var(--tm-color-top-bar);
 		height: 55px;
 		max-width: none;
 		width: 100%;
@@ -126,7 +124,7 @@
 			flex-direction: row;
 			justify-content: space-around;
 			font-size:10px;
-			padding: 0 $margin-sm;
+			padding: 0 var(--tm-margin-sm);
 		}
 		li {
 			align-items: center;
@@ -134,7 +132,7 @@
 			flex-direction: column;
 			text-align: center;
 			flex: 1;
-			margin: 0 $margin-xs;
+			margin: 0 var(--tm-margin-xs);
 			font-size:10px;
 			height: 55px;
 			justify-content: center;

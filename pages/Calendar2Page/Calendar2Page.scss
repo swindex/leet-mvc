@@ -1,39 +1,29 @@
-@import "../../scss/_variables.scss";
-
 #page-Calendar2Page{
-	$c_bo_month :  1px solid #ededed;
+	--c-bo-month: 1px solid #ededed;
+	--c-f-extra: #2196F3;
+	--c-b-current: #178101;
+	--c-f-current: #fff;
+	--c-b-internal: #266eab;
+	--c-f-internal: #fff;
+	--c-b-external: #FCEE98;
+	--c-f-external: #000;
+	--c-f-tab: #656363;
+	--c-tab-border: #E91E63;
+	--c-bo-sel-day: 2px solid #E91E63;
+	--c-b-day-ev-allday: #d1e9ff;
+	--c-bo-day-ev-internal: 4px solid #266eab;
+	--c-bo-day-ev-external: 4px solid #FFC107;
+	--c-bo-day-ev-current: 4px solid #178101;
+	--c-b-day-ev: #f4f4f9;
+	--s-day-ev: 1px 1px 2px 0 rgba(41, 41, 41, 0.5);
+	--s-month-ev: 1px 1px 2px 0 rgba(41, 41, 41, 0.5);
+	--c-b-body: #fff;
+	--c-b-day-hour-even: #f5f5f5;
+	--c-b-day-hour-odd: #fff;
+	--c-b-day-border: #ededed;
+	--c-bo-nav: 1px solid #e2e2e2;
+	--c-b-nav: aliceblue;
 
-	$c_f_extra : #2196F3;
-
-	$c_b_current: #178101;
-	$c_f_current: #fff;
-	$c_b_internal: #266eab;
-	$c_f_internal: #fff;
-	$c_b_external: #FCEE98;
-	$c_f_external: #000;
-	$c_f_tab: #656363;
-	$c_tab_border: #E91E63;
-
-	$c_bo_sel_day: 2px solid #E91E63;
-
-	$c_b_day_ev_allday: #d1e9ff;
-	
-	$c_bo_day_ev_internal: 4px solid #266eab;
-	$c_bo_day_ev_external: 4px solid #FFC107;
-	$c_bo_day_ev_current: 4px solid #178101;
-	
-	$c_b_day_ev: #f4f4f9;
-	$s_day_ev: 1px 1px 2px 0 rgba(41, 41, 41, 0.5);
-	$s_month_ev: 1px 1px 2px 0 rgba(41, 41, 41, 0.5);
-
-	$c_b_body: #fff;
-	
-	$c_b_day_hour_even: #f5f5f5;
-	$c_b_day_hour_odd: #fff;
-	$c_b_day_border: #ededed;
-
-	$c_bo_nav:  1px solid #e2e2e2;
-	$c_b_nav: aliceblue;
 	*{
 		box-sizing: border-box;
 	}
@@ -76,16 +66,16 @@
 		line-height:20px;
 		margin: 0;
 		padding: 12px 0px;
-		color: $c_f_tab;
+		color: var(--c-f-tab);
 		&[selected]{
-			border-bottom: 3px solid $c_tab_border;
+			border-bottom: 3px solid var(--c-tab-border);
 		}
 	}
 	.allday-events{
 		padding-left: 50px;
 		.event {
 			padding: 5px;
-			background-color: $c_b_day_ev_allday;
+			background-color: var(--c-b-day-ev-allday);
 			margin-bottom: 2px;
 			box-shadow: 1px 1px 2px 0 rgba(0,0,255,.5);
 		}
@@ -122,13 +112,13 @@
 			table-layout: fixed;
 			tbody tr{
 				height: 60px;
-				background: $c_b_day_hour_odd
+				background: var(--c-b-day-hour-odd)
 			}
 			tr:nth-child(even) {
-				background: $c_b_day_hour_even;
+				background: var(--c-b-day-hour-even);
 			}
 			tbody td{
-				border: 1px solid $c_b_day_border;
+				border: 1px solid var(--c-b-day-border);
 				padding: 0;
 				&.eventColumn{
 					vertical-align: text-bottom;
@@ -147,15 +137,15 @@
 						overflow: hidden;
 						min-height: 20px;
 						width: 100%;
-						background-color: $c_b_day_ev;
-						border-left: $c_bo_day_ev_external;
+						background-color: var(--c-b-day-ev);
+						border-left: var(--c-bo-day-ev-external);
 						padding: 0 5px;
-						box-shadow: $s_day_ev;
+						box-shadow: var(--s-day-ev);
 						&.internal{
-							border-left: $c_bo_day_ev_internal;
+							border-left: var(--c-bo-day-ev-internal);
 						}
 						&.current{
-							border-left: $c_bo_day_ev_current;
+							border-left: var(--c-bo-day-ev-current);
 						}
 					}
 				}
@@ -169,7 +159,7 @@
 		table{
 			width: 100%;
 			height: 100%;
-			background-color: $c_b_body;
+			background-color: var(--c-b-body);
 
 			position: absolute;
 			
@@ -201,7 +191,7 @@
 			tbody td {
 				vertical-align: top;
 				width: 14.28%;
-				border: $c_bo_month;
+				border: var(--c-bo-month);
 				padding: 0;
 				//overflow-y: hidden;
 				position: relative;
@@ -213,7 +203,7 @@
 						padding-right: 3px;
 						b{ //extra events counter
 							float: left;
-							color: $c_f_extra;
+							color: var(--c-f-extra);
 							padding-left: 5px;
 						}
 					}
@@ -230,16 +220,16 @@
 						line-height: 12px;
 						height: 12px;
 						overflow: hidden;
-						background-color: $c_b_external;
+						background-color: var(--c-b-external);
 						word-break: break-all;
-						box-shadow: $s_month_ev;
+						box-shadow: var(--s-month-ev);
 						&.internal{
-							color: $c_f_internal;
-							background-color: $c_b_internal;
+							color: var(--c-f-internal);
+							background-color: var(--c-b-internal);
 						}
 						&.current{
-							color: $c_f_current;
-							background-color: $c_b_current;
+							color: var(--c-f-current);
+							background-color: var(--c-b-current);
 						}
 						&.empty {
 							background-color: initial !important;
@@ -289,7 +279,7 @@
 					>.frame { 
 						top: 0;
 						position: absolute;
-						border: $c_bo_sel_day;
+						border: var(--c-bo-sel-day);
 						height: 100%;
 						width: 100%;
 					}
@@ -299,10 +289,10 @@
 	}
 	.month-buttons{
 		display: flex;
-		background-color: $c_b_nav;
-		border-bottom: $c_bo_nav;
+		background-color: var(--c-b-nav);
+		border-bottom: var(--c-bo-nav);
 		button{
-			color: $c_f_tab;
+			color: var(--c-f-tab);
 			border-radius: 50%;
       background-color: transparent;
       border: none;
@@ -321,7 +311,7 @@
 			&>button{
         border: none;
 				width: auto;
-				border-radius: $margin-sm;
+				border-radius: var(--tm-margin-sm);
 			}
 			&:first-child{
 				margin-left: 0;

@@ -32,7 +32,10 @@
 // Generate all column classes
 @mixin make-grid-columns($columns: $grid-columns, $breakpoints: $grid-breakpoints) {
 	@each $breakpoint, $min-width in $breakpoints {
-		$infix: if($breakpoint == xs, '', '-#{$breakpoint}');
+		$infix: '';
+		@if $breakpoint != xs {
+			$infix: '-#{$breakpoint}';
+		}
 		
 		@include media-breakpoint-up($breakpoint) {
 			// Auto-width columns
@@ -56,7 +59,11 @@
 			// Offset classes
 			@for $i from 0 through ($columns - 1) {
 				.offset#{$infix}-#{$i} {
-					margin-left: if($i == 0, 0, math.percentage(math.div($i, $columns)));
+					@if $i == 0 {
+						margin-left: 0;
+					} @else {
+						margin-left: math.percentage(math.div($i, $columns));
+					}
 				}
 			}
 			
