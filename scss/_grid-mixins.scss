@@ -1,0 +1,93 @@
+@use 'sass:map';
+@use 'sass:math';
+@use 'grid-variables' as *;
+
+// Media query mixin for breakpoints
+@mixin media-breakpoint-up($name) {
+	$min: map.get($grid-breakpoints, $name);
+	@if $min and $min > 0 {
+		@media (min-width: $min) {
+			@content;
+		}
+	} @else {
+		@content;
+	}
+}
+
+// Generate container max-widths
+@mixin make-container-max-widths() {
+	@each $breakpoint, $max-width in $container-max-widths {
+		@include media-breakpoint-up($breakpoint) {
+			max-width: $max-width;
+		}
+	}
+}
+
+// Generate column classes for a breakpoint
+@mixin make-col($size, $columns: $grid-columns) {
+	flex: 0 0 auto;
+	width: math.percentage(math.div($size, $columns));
+}
+
+// Generate all column classes
+@mixin make-grid-columns($columns: $grid-columns, $breakpoints: $grid-breakpoints) {
+	@each $breakpoint, $min-width in $breakpoints {
+		$infix: if($breakpoint == xs, '', '-#{$breakpoint}');
+		
+		@include media-breakpoint-up($breakpoint) {
+			// Auto-width columns
+			.col#{$infix} {
+				flex: 1 0 0%;
+			}
+			
+			// Auto columns
+			.col#{$infix}-auto {
+				flex: 0 0 auto;
+				width: auto;
+			}
+			
+			// Sized columns
+			@for $i from 1 through $columns {
+				.col#{$infix}-#{$i} {
+					@include make-col($i, $columns);
+				}
+			}
+			
+			// Offset classes
+			@for $i from 0 through ($columns - 1) {
+				.offset#{$infix}-#{$i} {
+					margin-left: if($i == 0, 0, math.percentage(math.div($i, $columns)));
+				}
+			}
+			
+			// Order classes
+			.order#{$infix}-first {
+				order: -1;
+			}
+			.order#{$infix}-last {
+				order: $columns + 1;
+			}
+			@for $i from 0 through $columns {
+				.order#{$infix}-#{$i} {
+					order: $i;
+				}
+			}
+		}
+	}
+}
+
+// Generate gutter utility classes
+@mixin make-gutters($gutters: $gutters) {
+	@each $key, $value in $gutters {
+		.g-#{$key} {
+			--bs-gutter-x: #{$value};
+			--bs-gutter-y: #{$value};
+		}
+		.gx-#{$key} {
+			--bs-gutter-x: #{$value};
+		}
+		.gy-#{$key} {
+			--bs-gutter-y: #{$value};
+		}
+	}
+}

@@ -1,0 +1,68 @@
+// Bootstrap-style Grid System
+// ===========================
+// Modern implementation using CSS custom properties for runtime customization
+// Breakpoints use Sass variables (required for @media queries)
+
+@forward 'grid-variables';
+@use 'grid-variables' as *;
+@use 'grid-mixins' as mixins;
+
+// Root CSS custom properties for gutters (runtime customizable)
+:root {
+	--bs-gutter-x: #{$grid-gutter-width};
+	--bs-gutter-y: 0;
+}
+
+// Container
+.container,
+.container-fluid {
+	width: 100%;
+	padding-right: calc(var(--bs-gutter-x) * 0.5);
+	padding-left: calc(var(--bs-gutter-x) * 0.5);
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.container {
+	@include mixins.make-container-max-widths();
+}
+
+// Row
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: calc(var(--bs-gutter-y) * -1);
+	margin-right: calc(var(--bs-gutter-x) * -0.5);
+	margin-left: calc(var(--bs-gutter-x) * -0.5);
+	
+	> * {
+		flex-shrink: 0;
+		width: 100%;
+		max-width: 100%;
+		padding-right: calc(var(--bs-gutter-x) * 0.5);
+		padding-left: calc(var(--bs-gutter-x) * 0.5);
+		margin-top: var(--bs-gutter-y);
+	}
+}
+
+// Columns
+.col {
+	flex: 1 0 0%;
+}
+
+.col-auto {
+	flex: 0 0 auto;
+	width: auto;
+}
+
+// Generate all responsive column classes
+@include mixins.make-grid-columns();
+
+// Generate gutter utility classes
+@include mixins.make-gutters();
+
+// No gutters utility
+.no-gutters {
+	--bs-gutter-x: 0;
+	--bs-gutter-y: 0;
+}

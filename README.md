@@ -872,6 +872,46 @@ myObject.someProperty = 'new value';
 </table>
 ```
 
+## Grid System
+
+The framework includes a Bootstrap-style responsive grid system supporting rows, columns, responsive breakpoints, and configurable gutters/margins.
+
+Use it in root styles.scss:
+
+```scss
+@use 'leet-mvc/scss/grid';
+```
+
+### SCSS Customization (Compile-time)
+
+To customize breakpoints, container widths, or the number of columns, override SCSS variables **before** importing the grid:
+
+```scss
+// In your main SCSS file
+@use 'grid' with (
+  $grid-breakpoints: (
+    xs: 0,
+    sm: 576px,    // Override default 350px
+    md: 768px,    // Override default 600px
+    lg: 992px,
+    xl: 1200px,
+    xxl: 1400px   // Add new breakpoint
+  ),
+  $container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1320px
+  ),
+  $grid-columns: 12,           // Number of columns
+  $grid-gutter-width: 1.5rem   // Default gutter size
+);
+```
+
+**Note:** Breakpoints **must** be SCSS variables because CSS custom properties cannot be used in `@media` queries (media queries are evaluated at parse-time, not runtime). Gutters use CSS variables for runtime flexibility.
+
+
 ## Browser Support
 
 - Chrome (latest)
