@@ -16,7 +16,9 @@ let page: TestTransitionsPage;
 describe('Test TestTransitionsPage - [transition] directive', function() {
   beforeEach(function(done) {
     page = I.Nav.push(TestTransitionsPage);
-    done();
+    setTimeout(() => {
+      done();
+    }, 1);
   });
 
   afterEach(function(done) {

@@ -16,9 +16,8 @@ describe('Test TestHtmlContentPage - [html], [innerhtml], and template expressio
   beforeEach(function(done) {
     page = I.Nav.push(TestHtmlContentPage);
     setTimeout(() => {
-      page.update();
       done();
-    }, 50);
+    }, 1);
   });
 
   afterEach(function(done) {
@@ -288,5 +287,379 @@ describe('Test TestHtmlContentPage - [html], [innerhtml], and template expressio
   it("Dynamic HTML can be set to complex structures", function() {
     page.dynamicHtml = '<div><span>Test</span></div>';
     expect(page.dynamicHtml).toContain('<span>Test</span>');
+  });
+
+  // ===== Conditional HTML Rendering Tests =====
+
+  describe('Conditional HTML Rendering', function() {
+    it("Conditional HTML properties initialized correctly", function() {
+      expect(page.showConditionalHtml).toBe(true);
+      expect(page.viewMode).toBe('card');
+      expect(page.userRole).toBe('user');
+      expect(page.statusType).toBe('success');
+      expect(page.enableNestedCondition).toBe(true);
+    });
+
+    it("toggleConditionalHtml changes boolean state", function() {
+      const initial = page.showConditionalHtml;
+      page.toggleConditionalHtml();
+      expect(page.showConditionalHtml).toBe(!initial);
+      page.toggleConditionalHtml();
+      expect(page.showConditionalHtml).toBe(initial);
+    });
+
+    it("conditionalHtml getter returns HTML when enabled", function() {
+      page.showConditionalHtml = true;
+      const html = page.conditionalHtml;
+      expect(html).toContain('Conditional HTML is Active');
+      expect(html).toContain('showConditionalHtml');
+    });
+
+    it("conditionalHtml getter returns empty string when disabled", function() {
+      page.showConditionalHtml = false;
+      const html = page.conditionalHtml;
+      expect(html).toBe('');
+    });
+
+    it("conditionalHtml includes current counter and userName", function() {
+      page.showConditionalHtml = true;
+      page.counter = 42;
+      page.userName = "Test User";
+      const html = page.conditionalHtml;
+      expect(html).toContain('42');
+      expect(html).toContain('Test User');
+    });
+
+    it("setViewMode changes view mode", function() {
+      page.setViewMode('list');
+      expect(page.viewMode).toBe('list');
+      page.setViewMode('compact');
+      expect(page.viewMode).toBe('compact');
+      page.setViewMode('card');
+      expect(page.viewMode).toBe('card');
+    });
+
+    it("viewModeHtml returns card view HTML", function() {
+      page.setViewMode('card');
+      const html = page.viewModeHtml;
+      expect(html).toContain('Card View');
+      expect(html).toContain('📇');
+    });
+
+    it("viewModeHtml returns list view HTML", function() {
+      page.setViewMode('list');
+      const html = page.viewModeHtml;
+      expect(html).toContain('List View');
+      expect(html).toContain('📋');
+      expect(html).toContain('<ul');
+    });
+
+    it("viewModeHtml returns compact view HTML", function() {
+      page.setViewMode('compact');
+      const html = page.viewModeHtml;
+      expect(html).toContain('Compact:');
+      expect(html).toContain('🔹');
+    });
+
+    it("viewModeHtml includes live data", function() {
+      page.counter = 99;
+      page.userName = "Live User";
+      page.setViewMode('card');
+      const html = page.viewModeHtml;
+      expect(html).toContain('99');
+      expect(html).toContain('Live User');
+    });
+
+    it("setUserRole changes user role", function() {
+      page.setUserRole('admin');
+      expect(page.userRole).toBe('admin');
+      page.setUserRole('moderator');
+      expect(page.userRole).toBe('moderator');
+    });
+
+    it("userRoleHtml returns admin HTML", function() {
+      page.setUserRole('admin');
+      const html = page.userRoleHtml;
+      expect(html).toContain('Administrator Panel');
+      expect(html).toContain('👑');
+      expect(html).toContain('full access');
+    });
+
+    it("userRoleHtml returns moderator HTML", function() {
+      page.setUserRole('moderator');
+      const html = page.userRoleHtml;
+      expect(html).toContain('Moderator Dashboard');
+      expect(html).toContain('🛡️');
+    });
+
+    it("userRoleHtml returns user HTML", function() {
+      page.setUserRole('user');
+      const html = page.userRoleHtml;
+      expect(html).toContain('User Dashboard');
+      expect(html).toContain('👤');
+    });
+
+    it("userRoleHtml returns guest HTML for unknown role", function() {
+      page.setUserRole('guest');
+      const html = page.userRoleHtml;
+      expect(html).toContain('Guest Access');
+    });
+
+    it("setStatusType changes status type", function() {
+      page.setStatusType('error');
+      expect(page.statusType).toBe('error');
+      page.setStatusType('warning');
+      expect(page.statusType).toBe('warning');
+    });
+
+    it("statusHtml returns success status", function() {
+      page.setStatusType('success');
+      const html = page.statusHtml;
+      expect(html).toContain('Success');
+      expect(html).toContain('✓');
+      expect(html).toContain('completed successfully');
+    });
+
+    it("statusHtml returns warning status", function() {
+      page.setStatusType('warning');
+      const html = page.statusHtml;
+      expect(html).toContain('Warning');
+      expect(html).toContain('⚠');
+    });
+
+    it("statusHtml returns error status", function() {
+      page.setStatusType('error');
+      const html = page.statusHtml;
+      expect(html).toContain('Error');
+      expect(html).toContain('✗');
+      expect(html).toContain('error occurred');
+    });
+
+    it("statusHtml returns info status", function() {
+      page.setStatusType('info');
+      const html = page.statusHtml;
+      expect(html).toContain('Information');
+      expect(html).toContain('ℹ');
+    });
+
+    it("statusHtml includes current data", function() {
+      page.counter = 77;
+      page.userName = "Status User";
+      page.setStatusType('success');
+      const html = page.statusHtml;
+      expect(html).toContain('77');
+      expect(html).toContain('Status User');
+    });
+
+    it("toggleNestedCondition changes state", function() {
+      const initial = page.enableNestedCondition;
+      page.toggleNestedCondition();
+      expect(page.enableNestedCondition).toBe(!initial);
+    });
+
+    it("nestedConditionalHtml shows disabled message when false", function() {
+      page.enableNestedCondition = false;
+      const html = page.nestedConditionalHtml;
+      expect(html).toContain('Nested condition is disabled');
+    });
+
+    it("nestedConditionalHtml shows nested content when enabled", function() {
+      page.enableNestedCondition = true;
+      const html = page.nestedConditionalHtml;
+      expect(html).toContain('Nested Conditional Content');
+      expect(html).toContain('enableNestedCondition');
+    });
+
+    it("nestedConditionalHtml shows counter > 5 message", function() {
+      page.enableNestedCondition = true;
+      page.counter = 10;
+      const html = page.nestedConditionalHtml;
+      expect(html).toContain('Counter is greater than 5');
+      expect(html).toContain('10');
+    });
+
+    it("nestedConditionalHtml shows counter <= 5 message", function() {
+      page.enableNestedCondition = true;
+      page.counter = 3;
+      const html = page.nestedConditionalHtml;
+      expect(html).toContain('Counter is 5 or less');
+      expect(html).toContain('3');
+    });
+
+    it("Conditional HTML renders in DOM when enabled", function(done) {
+      page.showConditionalHtml = true;
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('Conditional HTML is Active');
+        done();
+      }, 100);
+    });
+
+    it("Conditional HTML is hidden when disabled", function(done) {
+      page.showConditionalHtml = false;
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('Conditional HTML is hidden');
+        done();
+      }, 100);
+    });
+
+    it("View mode HTML renders in DOM", function(done) {
+      page.setViewMode('list');
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('List View');
+        done();
+      }, 100);
+    });
+
+    it("User role HTML renders in DOM", function(done) {
+      page.setUserRole('admin');
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('Administrator Panel');
+        done();
+      }, 100);
+    });
+
+    it("Status HTML updates when status changes", function(done) {
+      page.setStatusType('error');
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('Error');
+        
+        page.setStatusType('success');
+        page.update();
+        
+        setTimeout(() => {
+          const content2 = page.page.innerHTML;
+          expect(content2).toContain('Success');
+          done();
+        }, 100);
+      }, 100);
+    });
+
+    it("Nested conditional HTML updates reactively", function(done) {
+      page.enableNestedCondition = true;
+      page.counter = 3;
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('Counter is 5 or less');
+        
+        page.counter = 8;
+        page.update();
+        
+        setTimeout(() => {
+          const content2 = page.page.innerHTML;
+          expect(content2).toContain('Counter is greater than 5');
+          done();
+        }, 100);
+      }, 100);
+    });
+
+    it("Multiple conditional HTML sections can coexist", function(done) {
+      page.showConditionalHtml = true;
+      page.setViewMode('card');
+      page.setUserRole('moderator');
+      page.setStatusType('warning');
+      page.enableNestedCondition = true;
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('Conditional HTML is Active');
+        expect(content).toContain('Card View');
+        expect(content).toContain('Moderator Dashboard');
+        expect(content).toContain('Warning');
+        expect(content).toContain('Nested Conditional Content');
+        done();
+      }, 150);
+    });
+
+    it("[if] and [html] on same element - renders when condition true", function(done) {
+      page.showConditionalHtml = true;
+      page.setStatusType('success');
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('Success');
+        expect(content).toContain('Operation completed successfully');
+        done();
+      }, 100);
+    });
+
+    it("[if] and [html] on same element - element removed when condition false", function(done) {
+      page.showConditionalHtml = false;
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('Element removed from DOM');
+        done();
+      }, 100);
+    });
+
+    it("[if] and [html] on same element - content updates when status changes", function(done) {
+      page.showConditionalHtml = true;
+      page.setStatusType('error');
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('error occurred');
+        
+        page.setStatusType('warning');
+        page.update();
+        
+        setTimeout(() => {
+          const content2 = page.page.innerHTML;
+          expect(content2).toContain('Warning');
+          expect(content2).toContain('Please review the following information');
+          expect(content2).not.toContain('error occurred');
+          done();
+        }, 100);
+      }, 100);
+    });
+
+    it("[if] and [html] on same element - toggles between showing and hiding", function(done) {
+      page.showConditionalHtml = true;
+      page.setStatusType('info');
+      page.update();
+      
+      setTimeout(() => {
+        const content = page.page.innerHTML;
+        expect(content).toContain('Information');
+        
+        page.toggleConditionalHtml();
+        page.update();
+        
+        setTimeout(() => {
+          const content2 = page.page.innerHTML;
+          expect(content2).toContain('Element removed from DOM');
+          
+          page.toggleConditionalHtml();
+          page.update();
+          
+          setTimeout(() => {
+            const content3 = page.page.innerHTML;
+            expect(content3).toContain('Information');
+            done();
+          }, 100);
+        }, 100);
+      }, 100);
+    });
   });
 });

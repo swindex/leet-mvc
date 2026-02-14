@@ -2,7 +2,7 @@
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { BaseComponent } from '../../components/BaseComponent';
 import { DOM } from "../../core/DOM";
-import { Binder } from './../../core/Binder';
+import { Binder } from '../../core/binder/Binder';
 import { Watcher } from "../../core/Watcher";
 
 

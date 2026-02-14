@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { Dialog } from "../../pages/DialogPage/DialogPage";
+import { OptionsDialogPage } from "../../pages/OptionsDialogPage/OptionsDialogPage";
+import { Injector } from "../../core/Injector";
 
 export class TestDialogPage extends HeaderPage {
   constructor() {
@@ -352,6 +354,210 @@ export class TestDialogPage extends HeaderPage {
       .addActionButton("OK", null);
   }
 
+  // ========== OptionsDialogPage Demos ==========
+
+  // Basic single selection (radio-style)
+  showOptionsDialogSingle() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Select Your Favorite";
+    page.multiple = false;
+    page.items = [
+      { title: "Apple", text: "A sweet red fruit", selected: false },
+      { title: "Banana", text: "A yellow tropical fruit", selected: true },
+      { title: "Orange", text: "A citrus fruit", selected: false },
+      { title: "Grape", text: "Small purple or green fruits", selected: false }
+    ];
+    page.onItemClicked = (item, index) => {
+      alert(`You selected: ${item.title}`);
+    };
+    page.update();
+  }
+
+  // Multiple selection with checkboxes
+  showOptionsDialogMultiple() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Select Multiple Items";
+    page.multiple = true;
+    page.items = [
+      { title: "JavaScript", text: "Programming language", selected: true },
+      { title: "TypeScript", text: "Typed superset of JavaScript", selected: true },
+      { title: "Python", text: "High-level programming language", selected: false },
+      { title: "Java", text: "Object-oriented language", selected: false },
+      { title: "C++", text: "Systems programming language", selected: false }
+    ];
+    page.onOkClicked = (selectedItems) => {
+      const names = selectedItems.map(item => item.title).join(", ");
+      alert(`Selected: ${names}`);
+    };
+    page.update();
+  }
+
+  // Options with custom icons
+  showOptionsDialogWithIcons() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Choose a Theme";
+    page.multiple = false;
+    page.items = [
+      { title: "Light Theme", text: "Default light theme", icon: "fas fa-sun", selected: false },
+      { title: "Dark Theme", text: "Easy on the eyes", icon: "fas fa-moon", selected: true },
+      { title: "Auto", text: "System preference", icon: "fas fa-adjust", selected: false }
+    ];
+    page.onItemClicked = (item, index) => {
+      alert(`Theme changed to: ${item.title}`);
+    };
+    page.update();
+  }
+
+  // Options with images
+  showOptionsDialogWithImages() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Select Avatar";
+    page.multiple = false;
+    page.items = [
+      { title: "Avatar 1", text: "Professional style", image: "https://via.placeholder.com/50/FF6B6B/FFFFFF?text=A1", selected: false },
+      { title: "Avatar 2", text: "Casual style", image: "https://via.placeholder.com/50/4ECDC4/FFFFFF?text=A2", selected: true },
+      { title: "Avatar 3", text: "Creative style", image: "https://via.placeholder.com/50/45B7D1/FFFFFF?text=A3", selected: false }
+    ];
+    page.onItemClicked = (item, index) => {
+      alert(`Selected: ${item.title}`);
+    };
+    page.update();
+  }
+
+  // Options with preselected items
+  showOptionsDialogPreselected() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Select Notifications";
+    page.multiple = true;
+    page.items = [
+      { title: "Email Notifications", text: "Receive updates via email", selected: true },
+      { title: "SMS Notifications", text: "Get text messages", selected: false },
+      { title: "Push Notifications", text: "Browser notifications", selected: true },
+      { title: "In-App Notifications", text: "Show inside the app", selected: true }
+    ];
+    page.onOkClicked = (selectedItems) => {
+      const count = selectedItems.length;
+      alert(`${count} notification type(s) enabled`);
+    };
+    page.update();
+  }
+
+  // Options with disabled items
+  showOptionsDialogDisabled() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Select Payment Method";
+    page.multiple = false;
+    page.items = [
+      { title: "Credit Card", text: "Visa, MasterCard, Amex", selected: true, disabled: false },
+      { title: "PayPal", text: "Digital wallet", selected: false, disabled: false },
+      { title: "Bitcoin", text: "Cryptocurrency", selected: false, disabled: true },
+      { title: "Bank Transfer", text: "Direct transfer", selected: false, disabled: true }
+    ];
+    page.onItemClicked = (item, index) => {
+      alert(`Payment method: ${item.title}`);
+    };
+    page.update();
+  }
+
+  // Options with custom callbacks
+  showOptionsDialogCallback() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Select Items with Callback";
+    page.multiple = true;
+    page.items = [
+      { title: "Item A", text: "First item", selected: false },
+      { title: "Item B", text: "Second item", selected: false },
+      { title: "Item C", text: "Third item", selected: false }
+    ];
+    
+    // Custom item clicked callback
+    page.onItemClicked = (item, index) => {
+      console.log(`Item clicked: ${item.title}, Index: ${index}, Selected: ${item.selected}`);
+      // Return false to prevent default behavior
+      // return false;
+    };
+    
+    // Custom OK button callback
+    page.onOkClicked = (selectedItems) => {
+      if (selectedItems.length === 0) {
+        alert("Please select at least one item!");
+        return false; // Don't close dialog
+      }
+      const titles = selectedItems.map(i => i.title).join(", ");
+      alert(`Selected items: ${titles}`);
+    };
+    
+    page.update();
+  }
+
+  // Options with custom selection icons
+  showOptionsDialogCustomIcons() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Custom Icon Style";
+    page.multiple = false;
+    page.items = [
+      { title: "Option 1", text: "First option", selected: false },
+      { title: "Option 2", text: "Second option", selected: true },
+      { title: "Option 3", text: "Third option", selected: false },
+      { title: "Disabled Option", text: "Cannot select", selected: false, disabled: true }
+    ];
+    
+    // Customize the selection icons
+    page.icons = {
+      selected: 'fas fa-check-circle',
+      deselected: 'far fa-circle',
+      disabled: 'fas fa-ban'
+    };
+    
+    page.onItemClicked = (item, index) => {
+      alert(`Selected: ${item.title}`);
+    };
+    
+    page.update();
+  }
+
+  // Options with no close on outside click
+  showOptionsDialogNoCloseOutside() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Select Language (Required)";
+    page.closeOnOutsideClick = false;
+    page.multiple = false;
+    page.items = [
+      { title: "English", text: "English (United States)", selected: true },
+      { title: "Español", text: "Spanish", selected: false },
+      { title: "Français", text: "French", selected: false },
+      { title: "Deutsch", text: "German", selected: false }
+    ];
+    page.onItemClicked = (item, index) => {
+      alert(`Language set to: ${item.title}`);
+    };
+    page.update();
+  }
+
+  // Options with hideOverflow
+  showOptionsDialogHideOverflow() {
+    const page = Injector.Nav.push(OptionsDialogPage);
+    page.title = "Long List of Options";
+    page.hideOverflow = true;
+    page.multiple = false;
+    
+    // Generate many items
+    page.items = [];
+    for (let i = 1; i <= 20; i++) {
+      page.items.push({
+        title: `Option ${i}`,
+        text: `Description for option ${i}`,
+        selected: i === 10
+      });
+    }
+    
+    page.onItemClicked = (item, index) => {
+      alert(`Selected: ${item.title}`);
+    };
+    
+    page.update();
+  }
+
   get template() {
     return super.extendTemplate(super.template, `
       <div class="fill scroll" style="padding: 20px;">
@@ -412,8 +618,30 @@ export class TestDialogPage extends HeaderPage {
         </div>
 
         <hr>
+        <h2>OptionsDialogPage - Single Selection</h2>
+        <div style="margin-bottom: 10px;">
+          <button onclick="this.showOptionsDialogSingle()" class="btn" style="background: #9C27B0; color: white;">Single Selection</button>
+          <button onclick="this.showOptionsDialogWithIcons()" class="btn" style="background: #9C27B0; color: white;">With Custom Icons</button>
+          <button onclick="this.showOptionsDialogWithImages()" class="btn" style="background: #9C27B0; color: white;">With Images</button>
+          <button onclick="this.showOptionsDialogDisabled()" class="btn" style="background: #9C27B0; color: white;">With Disabled Items</button>
+          <button onclick="this.showOptionsDialogCustomIcons()" class="btn" style="background: #9C27B0; color: white;">Custom Selection Icons</button>
+          <button onclick="this.showOptionsDialogNoCloseOutside()" class="btn" style="background: #9C27B0; color: white;">No Close Outside</button>
+        </div>
+
+        <hr>
+        <h2>OptionsDialogPage - Multiple Selection</h2>
+        <div style="margin-bottom: 10px;">
+          <button onclick="this.showOptionsDialogMultiple()" class="btn" style="background: #673AB7; color: white;">Multiple Selection</button>
+          <button onclick="this.showOptionsDialogPreselected()" class="btn" style="background: #673AB7; color: white;">With Preselected Items</button>
+          <button onclick="this.showOptionsDialogCallback()" class="btn" style="background: #673AB7; color: white;">Custom Callbacks</button>
+          <button onclick="this.showOptionsDialogHideOverflow()" class="btn" style="background: #673AB7; color: white;">Long List (Overflow)</button>
+        </div>
+
+        <hr>
         <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-left: 4px solid #007bff;">
           <h3>Test Coverage:</h3>
+          
+          <h4 style="margin-top: 15px; color: #007bff;">DialogPage:</h4>
           <ul>
             <li>✓ Basic dialog creation with title and buttons</li>
             <li>✓ Flexible and Large popup styles</li>
@@ -427,6 +655,23 @@ export class TestDialogPage extends HeaderPage {
             <li>✓ Nested dialogs</li>
             <li>✓ Custom field attributes</li>
             <li>✓ Dialog with prompt message</li>
+          </ul>
+
+          <h4 style="margin-top: 15px; color: #9C27B0;">OptionsDialogPage:</h4>
+          <ul>
+            <li>✓ Single selection mode (radio-style)</li>
+            <li>✓ Multiple selection mode (checkbox-style)</li>
+            <li>✓ Items with title and text description</li>
+            <li>✓ Items with custom icons</li>
+            <li>✓ Items with images</li>
+            <li>✓ Preselected items</li>
+            <li>✓ Disabled items</li>
+            <li>✓ Custom onItemClicked callback</li>
+            <li>✓ Custom onOkClicked callback (multiple mode)</li>
+            <li>✓ Custom selection icons (selected/deselected/disabled)</li>
+            <li>✓ closeOnOutsideClick configuration</li>
+            <li>✓ hideOverflow for long lists</li>
+            <li>✓ Auto-scroll to selected item</li>
           </ul>
         </div>
       </div>

@@ -17,9 +17,8 @@ describe('Test TestRegisterComponentPage - RegisterComponent and Custom Componen
   beforeEach(function(done) {
     page = I.Nav.push(TestRegisterComponentPage);
     setTimeout(() => {
-      page.update();
       done();
-    }, 50);
+    }, 1);
   });
 
   afterEach(function(done) {

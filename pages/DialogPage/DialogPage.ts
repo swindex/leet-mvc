@@ -8,6 +8,7 @@ import { Forms } from "../../components/Forms";
 import { Injector } from "../../core/Injector";
 import { NavController } from "../../core/NavController";
 import { Objects } from "../../core/Objects";
+import { BaseComponent } from "../../components/BaseComponent";
 
 /**
  * Create an instance of the dialog page
@@ -59,7 +60,17 @@ export class DialogPage extends BasePage{
   }
 
   render(){
-    this.content.updateTemplate(this.controls);
+    if (this.content && typeof this.content.updateTemplate === 'function') {
+      this.content.updateTemplate(this.controls);
+    }
+  }
+
+  showHTML(){
+    return typeof this.content === 'string';
+  }
+
+  showComponent(){
+    return this.content instanceof BaseComponent;
   }
 
   /**

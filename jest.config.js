@@ -6,7 +6,6 @@ module.exports = {
   moduleFileExtensions: ['ts', 'js', 'json'],
   transform: {
     '^.+\\.ts$': ['ts-jest', {
-      isolatedModules: true,
       tsconfig: {
         target: 'ES6',
         module: 'commonjs',

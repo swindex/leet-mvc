@@ -14,7 +14,9 @@ let page: TestAttributesPage;
 describe('Test TestAttributesPage - [attribute], [style], [class], [selected] directives', function() {
   beforeEach(function(done) {
     page = Nav.push(TestAttributesPage);
-    done();
+    setTimeout(() => {
+      done();
+    }, 1);
   });
 
   afterEach(function(done) {

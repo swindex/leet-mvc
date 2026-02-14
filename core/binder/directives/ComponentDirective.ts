@@ -91,8 +91,7 @@ function wireEventCallers(
     
     // Wrap the caller to inject $event from the first argument
     const wrappedCaller = function(...args: any[]) {
-      const eventInject = Object.assign({}, hostVDom.INJECT || {}, { $event: args[0] });
-      return caller(eventInject);
+      return caller(...args);
     };
     
     componentVDom.callers[k] = (component as any)[k] = wrappedCaller;

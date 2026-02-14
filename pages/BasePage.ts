@@ -1,4 +1,4 @@
-import { Binder } from '../core/Binder';
+import { Binder } from '../core/binder/Binder';
 import { NavController } from '../core/NavController';
 import { ChangeWatcher } from '../core/ChangeWatcher';
 import { tryCall } from '../core/helpers';
@@ -11,7 +11,7 @@ export class BasePage extends ChangeWatcher{
   Nav!: NavController;
   style: CSSStyleDeclaration | Record<string, any> = {};
   components: BaseComponent[] | null = null;
-  binder: any = null;
+  binder = new Binder(this);
   name: string | null = null;
   isDeleting: boolean | null = null;
   isCreating: boolean | null = null;
@@ -37,7 +37,7 @@ export class BasePage extends ChangeWatcher{
     // @ts-ignore
     this.style = {};
     this.components = null;
-    this.binder = new Binder(this);
+    //this.binder = new Binder(this);
 
     this.name = null;
 
@@ -131,7 +131,8 @@ export class BasePage extends ChangeWatcher{
  		//this.template = BasePage.template.replace('<!--child-template-->', this.template);
 
     this.binder!.bindElements(binderEvent, this.template);
-    this.page = this.binder!.vdom.elem as HTMLElement;
+
+    this.page = this.binder!.vdom!.elem as HTMLElement;
     super.startWatch();
   }
 

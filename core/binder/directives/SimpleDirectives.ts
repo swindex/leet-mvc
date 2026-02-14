@@ -171,6 +171,7 @@ export function textDirective(on: VDom, inject: any, ctx: DirectiveContext): voi
       on.elem.nodeValue = displayValue;
     } else if (on.elem instanceof HTMLElement) {
       // Element node
+      // Beware jstest doesnt relaibly see innerHTML of elements that have had their text set using innerText
       on.elem.innerText = displayValue;
     }
   }

@@ -17,9 +17,8 @@ describe('Test TestDirectivesPage - [if], [show], [display] directives', functio
   beforeEach(function(done) {
     page = I.Nav.push(TestDirectivesPage);
     setTimeout(() => {
-      page.update();
       done();
-    }, 50);
+    }, 1);
   });
 
   afterEach(function(done) {

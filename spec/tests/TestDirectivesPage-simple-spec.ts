@@ -14,10 +14,9 @@ let page: TestDirectivesPage;
 describe('Test TestDirectivesPage - Simple verification', function() {
   beforeEach(function(done) {
     page = I.Nav.push(TestDirectivesPage);
-    page.onLoaded = () => {
-      page.update();
+    setTimeout(() => {
       done();
-    };
+    }, 1);
   });
 
   afterEach(function(done) {

@@ -1,4 +1,4 @@
-import { Binder } from "../../core/binder/BinderNew";
+import { Binder } from "../../core/binder/Binder";
 
 describe('Format Attribute Tests', () => {
   let container: HTMLDivElement;

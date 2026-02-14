@@ -14,12 +14,9 @@ var page: DialogPage;
 describe('Test DialogPage',function(){
 	beforeEach(function(done){
 		page = Dialog("str_Title");
-		page.render();
-		page.onEnter = () => {
-			setTimeout(() => {
-				done();
-			}, 1500);
-		}
+		setTimeout(() => {
+			done();
+		}, 1);
 	})
 	afterEach(function(done){
 		page.destroy();

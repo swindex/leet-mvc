@@ -13,9 +13,9 @@ let page: TestNestedDirectivesPage;
 describe('Test TestNestedDirectivesPage - Nested and complex directive combinations', function() {
   beforeEach(function(done) {    
     page = Nav.push(TestNestedDirectivesPage);
-    page.onLoaded = () => {
+    setTimeout(() => {
       done();
-    }
+    }, 1);
   });
 
   afterEach(function(done) {

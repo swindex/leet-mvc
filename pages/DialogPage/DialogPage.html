@@ -4,8 +4,8 @@
 		<div class = 'prompt' [if]='this.prompt'>{{Translate(this.prompt)}}</div>
 		
 		<div class = 'dialog-content touch-scroll' [style]="{maxHeight:this.dialog_content_max_height}">
-			<div [if]="this.content && this.content.template" [component]="this.content"></div>
-			<div [if]="this.content && !this.content.template" [html]="this.content"></div>
+			<div [if]="this.showComponent()" [component]="this.content"></div>
+			<div [if]="this.showHTML()" [html]="this.content"></div>
 			<!--child-template-->
 		</div>
 		<div class = 'dialog-buttons' [if]="this.buttons">

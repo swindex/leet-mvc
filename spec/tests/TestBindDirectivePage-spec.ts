@@ -6,18 +6,23 @@ import { Injector } from "../../core/Injector";
 import { Override } from '../../core/helpers';
 import { DOM } from '../../core/DOM';
 import { TestBindDirectivePage } from '../../test/Pages/TestBindDirectivePage';
+import { ExpressionCompiler } from '../../core/binder/ExpressionCompiler';
 
 
 var Nav = new NavController();
 let page: TestBindDirectivePage;
 
 describe('Test TestBindDirectivePage - [bind] directive', function() {
-  beforeEach(function() {
+  beforeEach(function(done) {
     page = Nav.push(TestBindDirectivePage);
+    setTimeout(() => {
+      done();
+    }, 1);
   });
 
-  afterEach(function() {
+  afterEach(function(done) {
     page.destroy();
+    done();
   });
 
   it("Page defined and initialized with default values", function() {
@@ -265,7 +270,6 @@ describe('Test TestBindDirectivePage - [bind] directive', function() {
   // a valid setter function fails during execution (e.g., accessing undefined properties).
   
   it("invokeSetter provides descriptive errors for runtime failures", function() {
-    const { ExpressionCompiler } = require('../../core/binder/ExpressionCompiler');
     
     // Create a context and a valid setter
     const context = { obj: { prop: "test" } };

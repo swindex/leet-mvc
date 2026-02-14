@@ -17,9 +17,8 @@ describe('Test TestMultiRootComponentPage - Single vs Multi-Root Component Templ
   beforeEach(function(done) {
     page = I.Nav.push(TestMultiRootComponentPage);
     setTimeout(() => {
-      page.update();
       done();
-    }, 50);
+    }, 1);
   });
 
   afterEach(function(done) {
