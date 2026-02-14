@@ -14,6 +14,11 @@ export class SimpleTabs extends BaseComponent {
     this._currentTabLabel = null;
   }
 
+  get template() {
+    //Project the parent content inside this component. The parent content should contain the tab labels and the tab content elements with matching ids.
+    return `<content></content>`;
+  }
+
 	/**
 	 * ***Override*** Called when tab is changed
 	 * @param {string} tabLabel 

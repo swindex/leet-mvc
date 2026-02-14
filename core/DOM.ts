@@ -579,7 +579,7 @@ export function DOM(elemOrQuery: DOMQueryInput): DOMInstance {
   };
 
   if (elemOrQuery == null) {
-    throw new Error("elemOrQuery can not be empty!");
+    throw new Error("DOM(): elemOrQuery can not be empty!");
   }
 
   let elemArray: (HTMLElement)[] = [];

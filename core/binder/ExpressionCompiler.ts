@@ -67,7 +67,7 @@ export class ExpressionCompiler {
   createCaller(expression: string, inject: any, context: any): Function | null {
     const preamble = this.buildInjectPreamble(inject);
     // Always include $event for callers since they're primarily used for event handlers
-    const eventPreamble = preamble + (preamble.includes("$event") ? "" : "var $event = inject['$event'];\n");
+    const eventPreamble = preamble + (preamble.includes("$event") ? "" : "var $event=inject?.['$event'];\n");
     const cacheKey = eventPreamble + expression;
 
     if (this.cache.hasOwnProperty(cacheKey)) {
@@ -81,7 +81,8 @@ export class ExpressionCompiler {
       const bound = caller.bind(context);
       this.cache[cacheKey] = bound;
       return bound;
-    } catch (ex) {
+    } catch (ex: any) {
+      console.error(`Error creating caller for expression "${expression}": ${ex.message}`);
       return null;
     }
   }
@@ -94,9 +95,9 @@ export class ExpressionCompiler {
   buildInjectPreamble(vars: any): string {
     let preamble = '';
     if (!empty(vars)) {
-      for (const key in vars) {
+      for (const key in vars){
         if (!vars.hasOwnProperty(key)) continue;
-        preamble += `var ${key}= inject['${key}'];\n`;
+        preamble += `var ${key}=inject?.['${key}'];\n`;
       }
     }
     return preamble;
