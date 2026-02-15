@@ -20,9 +20,9 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "leet-mvc/*": ["./*"]
+      //"leet-mvc/*": ["./*"]
     },
-    "typeRoots": ["./node_modules/@types", "./typings"],
+    "typeRoots": ["./node_modules/@types"],
     "types": ["jest", "node"]
   },
   "include": [

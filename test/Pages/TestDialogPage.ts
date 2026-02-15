@@ -1,8 +1,8 @@
-// @ts-nocheck
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { Dialog } from "../../pages/DialogPage/DialogPage";
 import { OptionsDialogPage } from "../../pages/OptionsDialogPage/OptionsDialogPage";
 import { Injector } from "../../core/Injector";
+import { SelectOption } from "../../typings/FormTypes";
 
 export class TestDialogPage extends HeaderPage {
   constructor() {
@@ -151,12 +151,12 @@ export class TestDialogPage extends HeaderPage {
 
   // Dialog with select dropdown
   showSelectDialog() {
-    const countries = [
-      { text: "United States", value: "us" },
-      { text: "Canada", value: "ca" },
-      { text: "United Kingdom", value: "uk" },
-      { text: "Germany", value: "de" },
-      { text: "France", value: "fr" }
+    const countries: SelectOption[] = [
+      { title: "United States", value: "us" },
+      { title: "Canada", value: "ca" },
+      { title: "United Kingdom", value: "uk" },
+      { title: "Germany", value: "de" },
+      { title: "France", value: "fr" }
     ];
 
     Dialog("Select Country")
@@ -164,7 +164,7 @@ export class TestDialogPage extends HeaderPage {
       .addActionButton("Submit", (dialog) => {
         if (dialog.validate()) {
           const selected = countries.find(c => c.value === dialog.data.country);
-          alert(`Selected: ${selected.text}`);
+          alert(`Selected: ${selected?.title}`);
         } else {
           return false;
         }
@@ -175,10 +175,10 @@ export class TestDialogPage extends HeaderPage {
   // Dialog with radio buttons
   showRadioDialog() {
     const colors = [
-      { text: "Red", value: "red" },
-      { text: "Green", value: "green" },
-      { text: "Blue", value: "blue" },
-      { text: "Yellow", value: "yellow" }
+      { title: "Red", value: "red" },
+      { title: "Green", value: "green" },
+      { title: "Blue", value: "blue" },
+      { title: "Yellow", value: "yellow" }
     ];
 
     Dialog("Choose Color")
@@ -358,7 +358,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Basic single selection (radio-style)
   showOptionsDialogSingle() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Select Your Favorite";
     page.multiple = false;
     page.items = [
@@ -375,7 +375,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Multiple selection with checkboxes
   showOptionsDialogMultiple() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Select Multiple Items";
     page.multiple = true;
     page.items = [
@@ -394,7 +394,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Options with custom icons
   showOptionsDialogWithIcons() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Choose a Theme";
     page.multiple = false;
     page.items = [
@@ -410,7 +410,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Options with images
   showOptionsDialogWithImages() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Select Avatar";
     page.multiple = false;
     page.items = [
@@ -426,7 +426,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Options with preselected items
   showOptionsDialogPreselected() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Select Notifications";
     page.multiple = true;
     page.items = [
@@ -444,7 +444,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Options with disabled items
   showOptionsDialogDisabled() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Select Payment Method";
     page.multiple = false;
     page.items = [
@@ -461,7 +461,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Options with custom callbacks
   showOptionsDialogCallback() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Select Items with Callback";
     page.multiple = true;
     page.items = [
@@ -492,7 +492,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Options with custom selection icons
   showOptionsDialogCustomIcons() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Custom Icon Style";
     page.multiple = false;
     page.items = [
@@ -518,7 +518,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Options with no close on outside click
   showOptionsDialogNoCloseOutside() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Select Language (Required)";
     page.closeOnOutsideClick = false;
     page.multiple = false;
@@ -536,7 +536,7 @@ export class TestDialogPage extends HeaderPage {
 
   // Options with hideOverflow
   showOptionsDialogHideOverflow() {
-    const page = Injector.Nav.push(OptionsDialogPage);
+    const page = Injector.Nav.push(OptionsDialogPage) as OptionsDialogPage;
     page.title = "Long List of Options";
     page.hideOverflow = true;
     page.multiple = false;

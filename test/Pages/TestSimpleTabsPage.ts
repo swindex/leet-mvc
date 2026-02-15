@@ -161,7 +161,9 @@ export class TestSimpleTabsPage extends HeaderPage {
 
         <div style="padding: 15px; background: #f9f9f9; border-radius: 5px;">
           <h3>📘 Usage Example</h3>
-          <pre style="background: white; padding: 15px; border-radius: 3px; overflow-x: auto;"><code>&lt;simple-tabs [component]="'myTabs'"&gt;
+          <pre style="background: white; padding: 15px; border-radius: 3px; overflow-x: auto;"><code>RegisterComponent(SimpleTabs, 'simple-tabs');
+....
+&lt;simple-tabs&gt;
   &lt;ul&gt;
     &lt;li for="tab_1"&gt;{{Translate('input_tab')}}&lt;/li&gt;
     &lt;li for="tab_2"&gt;{{Translate('result_tab')}}&lt;/li&gt;
@@ -174,7 +176,24 @@ export class TestSimpleTabsPage extends HeaderPage {
       Tab 2 content here
     &lt;/div&gt;
   &lt;/div&gt;
-&lt;/simple-tabs&gt;</code></pre>
+&lt;/simple-tabs&gt;</code>
+OR
+<code>this.myTabs = new SimpleTabs();
+....
+&lt;div [component]="'myTabs' class="simple-tabs"&gt;
+  &lt;ul&gt;
+    &lt;li for="tab_1"&gt;{{Translate('input_tab')}}&lt;/li&gt;
+    &lt;li for="tab_2"&gt;{{Translate('result_tab')}}&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;div&gt;
+    &lt;div class="tab" id="tab_1"&gt;
+      Tab 1 content here
+    &lt;/div&gt;
+    &lt;div class="tab" id="tab_2"&gt;
+      Tab 2 content here
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
         </div>
 
       </div>

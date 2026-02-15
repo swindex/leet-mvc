@@ -10,16 +10,13 @@ import { tryCall, round } from '../core/helpers';
 import { Alert } from "../core/simple_confirm";
 import { DOM } from "../core/DOM";
 import { FileAccess } from "../core/FileAccess";
+import { FieldTemplate, KeyValuePair } from "../typings/FormTypes";
 
 export class Forms extends BaseComponent {
   /**
    * Forms Directive. Generate forms from JSON data
-   * @param {FieldTemplate[]} formTemplate 
-   * @param {*} [data]
-   * @param {*} [errors]
-   * @param {{nestedData?:boolean, formClass?:string, fieldClass?:string}} [options]
    */
-  constructor(formTemplate, data, errors, options) {
+  constructor(formTemplate:FieldTemplate[], data: KeyValuePair, errors:KeyValuePair, options?:{nestedData?:boolean, formClass?:string, fieldClass?:string}) {
     super(); 
     this.formTemplate = Objects.copy(formTemplate);
     this.data = data || {};

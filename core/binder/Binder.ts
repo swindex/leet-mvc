@@ -107,8 +107,8 @@ export class Binder {
       return this.createTextNode(ir, inject);
     }
 
-    if (ir.type === 'directive') {
-      return this.createDirectiveNode(ir, inject);
+    if (ir.type === 'managed') {
+      return this.createManagedNode(ir, inject);
     }
 
     // type === 'element'
@@ -140,7 +140,7 @@ export class Binder {
   /**
    * Create a vDom node for a directive IR node ([if], [foreach], [component], etc.)
    */
-  private createDirectiveNode(ir: IRNode, inject: any): VDom {
+  private createManagedNode(ir: IRNode, inject: any): VDom {
     const directiveFragment = document.createDocumentFragment();
     const dirKey = ir.directive!.key;
     const dirExpression = ir.directive!.expression;
@@ -166,22 +166,23 @@ export class Binder {
     const self = this;
     const itemBuilder = (inj: any): VDom => {
       // Check if the IR has directive attributes (for nested directives like [if] + [component])
-      const DIRECTIVE_ATTRS = new Set(['[foreach]', '[transition]', '[html]', '[component]', '[if]']);
-      let hasDirectiveAttr = false;
+      //const MANAGED_DIRECTIVE_NAMES = new Set(['[foreach]', '[transition]', '[html]', '[component]', '[if]']);
+      const MANAGED_DIRECTIVE_NAMES = new Set(['[if]','[foreach]','[transition]']);
+      let hasManagedDirective = false;
       for (const attrKey in ir.attributes) {
-        if (DIRECTIVE_ATTRS.has(attrKey)) {
-          hasDirectiveAttr = true;
+        if (MANAGED_DIRECTIVE_NAMES.has(attrKey)) {
+          hasManagedDirective = true;
           break;
         }
       }
 
       // If there are directive attributes, create a new IR node with the first directive
-      if (hasDirectiveAttr) {
+      if (hasManagedDirective) {
         const directives: Array<{ key: string; expression: string }> = [];
         const nonDirectiveAttrs: Record<string, string> = {};
         
         for (const attrKey in ir.attributes) {
-          if (DIRECTIVE_ATTRS.has(attrKey)) {
+          if (MANAGED_DIRECTIVE_NAMES.has(attrKey)) {
             directives.push({ key: attrKey, expression: ir.attributes[attrKey] });
           } else {
             nonDirectiveAttrs[attrKey] = ir.attributes[attrKey];
@@ -191,13 +192,13 @@ export class Binder {
         // Create a directive IR node for the first directive found
         if (directives.length > 0) {
           const directiveIR: IRNode = {
-            type: 'directive',
+            type: 'managed',
             tag: ir.tag,
             attributes: nonDirectiveAttrs,
             children: ir.children,
             directive: directives[0],
           };
-          return self.createDirectiveNode(directiveIR, inj);
+          return self.createManagedNode(directiveIR, inj);
         }
       }
 

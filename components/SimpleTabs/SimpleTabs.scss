@@ -1,4 +1,5 @@
-simple-tabs {
+simple-tabs,
+.simple-tabs {
 	button{
 		i {
 			color: var(--tm-color-tabbutton-fg);
@@ -16,6 +17,37 @@ simple-tabs {
 			i, span {
 				color: var(--tm-color-tabbutton-fg-active) !important;
 			}
+		}
+	}
+	>ul {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-start;
+		align-items: center;
+		gap: 8px;
+		padding: 0;
+		margin: 0;
+		list-style: none;
+		li {
+			color: var(--tm-color-tabbutton-fg);
+			background-color: var(--tm-color-tabbutton-bg);
+			border-bottom: var(--tm-size-tabbutton-border-active) solid transparent;
+
+			&[selected] {
+				border-bottom-color: var(--tm-color-tabbutton-border-active);
+				color: var(--tm-color-tabbutton-fg-active);
+				font-weight: 500;
+				//border-bottom: var(--tm-size-tabbutton-border-active) solid var(--tm-color-tabbutton-border-active);
+				//color: var(--tm-color-tabbutton-fg-active);
+				//font-weight: 500;
+				//border-bottom-color: var(--tm-color-tabbutton-fg-active);
+			}
+		}
+	}
+	div.tab {
+		display: none;
+		&[selected] {
+			display: block;
 		}
 	}
 }

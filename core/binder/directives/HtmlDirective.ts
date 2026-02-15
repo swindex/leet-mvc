@@ -33,38 +33,19 @@ export function htmlDirective(on: VDom, inject: any, ctx: DirectiveContext): EAt
     }
 
     if (cVDom) {
-      const pVDom = on.itemBuilder!(inject);
-
       if (!(cVDom.elem instanceof DocumentFragment)) {
-        // Copy getters from parent to child
-        Objects.forEach(pVDom.getters, (g: Function, k: string | number) => {
-          cVDom!.getters[String(k)] = g;
-        });
-
-        // Copy HTML attributes
-        if ((cVDom.elem as HTMLElement)?.attributes) {
-          const pElem = pVDom.elem as HTMLElement;
-          const cElem = cVDom.elem as HTMLElement;
-          for (let ii = 0; ii < pElem.attributes.length; ii++) {
-            const attr = pElem.attributes[ii];
-            if (!cElem.getAttribute(attr.name)) {
-              cElem.setAttribute(attr.name, attr.value);
-            } else {
-              cElem.setAttribute(attr.name, cElem.getAttribute(attr.name) + ' ' + attr.value);
-            }
-          }
-        }
         on.items = [cVDom];
       } else {
         on.items = cVDom.items;
       }
 
-      ctx.insertVDomElementAfter(cVDom, on.elem!);
+      on.elem!.appendChild(cVDom.fragment || cVDom.elem!);
 
-      for (const i in on.items) {
+      //Quite possibly we dont need to recheck because we just created the template!
+      /*for (const i in on.items) {
         if (!on.items.hasOwnProperty(i)) continue;
         ctx.checkVDomNode(on.items[i], inject);
-      }
+      }*/
     }
   } else {
     // Just update existing items

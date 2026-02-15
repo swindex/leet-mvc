@@ -18,6 +18,7 @@ import { TestNestedDirectivesPage } from "./TestNestedDirectivesPage";
 import { TestTransitionsPage } from "./TestTransitionsPage";
 import { TestDialogPage } from "./TestDialogPage";
 import { TestSimpleTabsPage } from "./TestSimpleTabsPage";
+import { TestProjectedContentPage } from "./TestProjectedContentPage";
 
 export class RootPage extends HeaderPage {
   pages: { page: any; name: string }[];
@@ -46,7 +47,8 @@ export class RootPage extends HeaderPage {
       { page: TestTransitionsPage, name: "Test [transition] Directive" },
       { page: TestNestedDirectivesPage, name: "Test Nested Directives" },
       { page: TestDialogPage, name: "Test Dialog Component" },
-      { page: TestSimpleTabsPage, name: "Test SimpleTabs Component" }
+      { page: TestSimpleTabsPage, name: "Test SimpleTabs Component" },
+      { page: TestProjectedContentPage, name: "Test Projected Content" }
     ];
 
   }

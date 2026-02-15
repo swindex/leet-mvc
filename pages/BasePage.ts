@@ -7,7 +7,7 @@ import { Objects } from '../core/Objects';
 
 export class BasePage extends ChangeWatcher{
   [key: string]: any;
-  page: HTMLElement | null = null;
+  page!: HTMLElement;
   Nav!: NavController;
   style: CSSStyleDeclaration | Record<string, any> = {};
   components: BaseComponent[] | null = null;
@@ -33,7 +33,6 @@ export class BasePage extends ChangeWatcher{
 
   constructor(){
     super();
-    this.page = null;
     // @ts-ignore
     this.style = {};
     this.components = null;

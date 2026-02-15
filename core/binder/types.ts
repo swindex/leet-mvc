@@ -75,7 +75,7 @@ export interface ForeachParts {
  * IR node - intermediate representation produced by the template parser
  */
 export interface IRNode {
-  type: 'element' | 'text' | 'directive';
+  type: 'element' | 'text' | 'managed';
   tag?: string;
   /** Reactive and plain attributes */
   attributes: Record<string, string>;

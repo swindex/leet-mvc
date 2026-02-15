@@ -1,18 +1,46 @@
-// @ts-nocheck
 import './OptionsDialogPage.scss';
 import { DialogPage } from "../DialogPage/DialogPage";
 import { Objects } from '../../core/Objects';
 import { DOM } from '../../core/DOM';
 import { isObject } from '../../core/helpers';
 
-export class OptionsDialogPage extends DialogPage{
-  constructor(){
-    super();
+export interface OptionDialogItem{
+  title: string;
+  text?: string;
+  icon?: string;
+  image?: string;
+  selected?: boolean;
+  disabled?: boolean;
+}
 
-    /**
-		 * List items 
-		 * @type {{[x: string]: any,image?:string,icon?:string,title:string,text?:string, selected?:boolean}[]} */
-    this.items=[];
+export interface OptionDialogIcon{
+  selected: string;
+  deselected: string;
+  disabled: string;
+}
+
+export class OptionsDialogPage extends DialogPage {
+  items: OptionDialogItem[] = [];
+
+  /** Default icons to use when no icons are supplide in items*/
+  icons: OptionDialogIcon = {
+    selected: 'fas fa-circle',
+    deselected: 'far fa-circle',
+    disabled: '',
+  };
+  radioIcons: OptionDialogIcon = {
+    selected: 'fas fa-circle',
+    deselected: 'far fa-circle',
+    disabled: '',
+  };
+  checkedIcons: OptionDialogIcon = {
+    selected: 'far fa-check-square',
+    deselected: 'far fa-square',
+    disabled: '',
+  };
+
+  constructor(title?: string){
+    super(title);
 
     this.content = null;
 
@@ -22,24 +50,6 @@ export class OptionsDialogPage extends DialogPage{
 
     this.buttons['Cancel']= ()=>{this.onCancelClicked();};
 		
-    /** Default icons to use when no icons are supplide in items*/
-    this.icons = {
-      selected: 'fas fa-circle',
-      deselected: 'far fa-circle',
-      disabled: '',
-    };
-		
-    this.radioIcons = {
-      selected: 'fas fa-circle',
-      deselected: 'far fa-circle',
-      disabled: '',
-    };
-
-    this.checkedIcons = {
-      selected: 'far fa-check-square',
-      deselected: 'far fa-square',
-      disabled: '',
-    };
     this.multiple = false;
     /** Should dialog close when outside of the window is clicked */
     this.closeOnOutsideClick = true;
@@ -103,7 +113,7 @@ export class OptionsDialogPage extends DialogPage{
   }
 
   /** ***Private*** Item click handler*/
-  _onItemClicked(item, index){
+  _onItemClicked(item: OptionDialogItem, index: number){
     if (item.disabled || this.isDeleting){
       return;
     }
@@ -135,7 +145,7 @@ export class OptionsDialogPage extends DialogPage{
 	 * ***Private***
 	 */
   _onOkClicked(){
-    return this.onOkClicked(Objects.filter(this.items, el => el.selected === true));
+    return this.onOkClicked(this.items.filter(el => el.selected === true));
   }
 
   getSelectedItems(){
@@ -145,30 +155,26 @@ export class OptionsDialogPage extends DialogPage{
   /**
 	 * ***Override***
 	 * Callback returns the array of selected items
-	 * @param {{[x: string]: any,image?:string,icon?:string,title:string}[]}} selectedItems
 	 * @return {void|false}
 	 */
-  onOkClicked(selectedItems){
+  onOkClicked(selectedItems: OptionDialogItem[]){
 		
   }
   /**
 	 * ***Overwrite***
 	 * Callback notifying an item was selected
 	 * Return false to cancel any automatic action
-	 * @param {{[x: string]: any,image?:string,icon?:string,title:string}} item 
-	 * @param {number} index 
 	 * @return {void|false}
 	 */
-  onItemClicked(item, index){
+  onItemClicked(item: OptionDialogItem, index: number): boolean | void{
     //throw new Error('Overwrite onItemClicked');
   }
 
   /**
 	 * Callback Returns true if the passed item is to be marker 'selected' in the list
-	 * @param {{[x: string]: any,image?:string,icon?:string,title:string}} item 
 	 * @return {string}
 	 */
-  getIcon(item){
+  getIcon(item: OptionDialogItem){
     if (item.icon){
       return item.icon;
     }
@@ -180,26 +186,20 @@ export class OptionsDialogPage extends DialogPage{
   }
   /**
 	 * Callback Returns true if the passed item is to be marker 'selected' in the list
-	 * @param {{[x: string]: any,image?:string,icon?:string,title:string}} item 
-	 * @return {string}
 	 */
-  getImage(item){
+  getImage(item: OptionDialogItem){
     return item.image;
   }
   /**
 	 * Callback Returns true if the passed item is to be marker 'selected' in the list
-	 * @param {{[x: string]: any,image?:string,icon?:string,title:string}} item 
-	 * @return {boolean}
 	 */
-  isSelectedItem(item){
+  isSelectedItem(item: OptionDialogItem){
     return item.selected;
   }
   /**
 	 * Callback Returns true if the passed item is to be marked 'disabled' in the list
-	 * @param {{[x: string]: any,image?:string,icon?:string,title:string}} item 
-	 * @return {boolean}
 	 */
-  isDisabledItem(item){
+  isDisabledItem(item: OptionDialogItem){
     return item.disabled;
   }
 }

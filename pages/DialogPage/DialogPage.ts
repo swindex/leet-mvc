@@ -1,41 +1,38 @@
-// @ts-nocheck
 import { BasePage } from "../BasePage";
-// @ts-ignore
 import template from './DialogPage.html';
 import './DialogPage.scss';
 import { isString, tryCall } from "../../core/helpers";
 import { Forms } from "../../components/Forms";
 import { Injector } from "../../core/Injector";
-import { NavController } from "../../core/NavController";
-import { Objects } from "../../core/Objects";
 import { BaseComponent } from "../../components/BaseComponent";
+import { FieldData, FieldTemplate, KeyValuePair, SelectOption } from "../../typings/FormTypes";
 
 /**
  * Create an instance of the dialog page
  * @param {string} title 
  * @param {'flexible'|'large'} [popupStyle]
  */
-export function Dialog(title, popupStyle = "flexible" ){
+export function Dialog(title: string, popupStyle = "flexible" ): DialogPage{
   var d = Injector.Nav.push(DialogPage);
   d.title = title;
   d.classNames.push(popupStyle)
-  return d;
+  return d as DialogPage;
 }
 
 export class DialogPage extends BasePage{
-  constructor(title){
+  controls: FieldTemplate[]=[];  
+  data:KeyValuePair = {};
+  errors:KeyValuePair = {};
+  buttons:KeyValuePair = {};
+
+  constructor(title?: string){
     super();
-    /** @type {KeyValuePair} */
-    this.buttons = {};
     this.title= title;
     this.prompt= null;
     this.dialog_content_max_height = "100%";
-    /** @type {FieldTemplate[]} */
-    this.controls=[];
-    /** @type {KeyValuePair} */
-    this.data = {};
-    /** @type {KeyValuePair} */
-    this.errors={};
+
+
+
 
     this.close_on_click_outside = true;
 
@@ -43,13 +40,13 @@ export class DialogPage extends BasePage{
     this.content= new Forms(this.controls,this.data,this.errors);
   }
 
-  onResize(windowSize){
+  onResize(windowSize:{width: number;height: number;}){
     super.onResize(windowSize);
-    var h = this.page.offsetHeight - 150;
+    var h = this.page!.offsetHeight - 150;
     this.dialog_content_max_height = h+"px";
   }
 
-  onButtonClicked(button_title){
+  onButtonClicked(button_title: string){
     if (tryCall(this, this.buttons[button_title], this) != false)
       this.destroy();
   }
@@ -73,21 +70,15 @@ export class DialogPage extends BasePage{
     return this.content instanceof BaseComponent;
   }
 
-  /**
-   * 
-   * @param {FieldTemplate} fieldTemplate 
-   * @param {any} value 
-   * @returns 
-   */
-  addField(fieldTemplate, value) {
+  addField(fieldTemplate:FieldTemplate, value: any) {
     this.controls.push(fieldTemplate);
-    this.data[fieldTemplate.name] = value;
+    this.data[fieldTemplate.name!] = value;
     this.render();
 		
     return this;	
   }
 
-  addCheck(name, title, value, required, attrs = null) {
+  addCheck(name:string, title:string, value:boolean, required:string|boolean, attrs?:FieldData) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type:'checkbox', title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -96,7 +87,7 @@ export class DialogPage extends BasePage{
 			
   }
 
-  addSelect(name, title, value, required, items, attrs=null) {
+  addSelect(name: string, title: string, value: string, required:string|boolean, items:SelectOption[], attrs?:FieldData) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "select", title: title, validateRule: valRule, items: items, attributes:attrs});
     this.data[name] = value;
@@ -105,7 +96,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addRadio(name, title, value, required, items, attrs=null) {
+  addRadio(name:string, title:string, value:string, required:string|boolean, items:SelectOption[], attrs?:FieldData) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "radio", title: title, validateRule: valRule, items: items, attributes:attrs});
     this.data[name] = value;
@@ -114,7 +105,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 	
-  addInput(name, title, type, value, required, attrs=null) {
+  addInput(name: string, title: string, type: string, value: any, required: string|boolean, attrs?: FieldData) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: type, title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -123,7 +114,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addDate(name, title, value, required, attrs=null) {
+  addDate(name: string, title: string, value: any, required: string|boolean, attrs?: FieldData) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "date", title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -132,7 +123,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addDateTime(name, title, value, required, attrs = null) {
+  addDateTime(name: string, title: string, value: any, required: string|boolean, attrs?: FieldData) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "datetime", title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -141,7 +132,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addTime(name, title, value, required, attrs = null) {
+  addTime(name: string, title: string, value: any, required: string|boolean, attrs?: FieldData) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "time", title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -150,7 +141,7 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addTextArea(name, title, value, required, attrs = null) {
+  addTextArea(name: string, title: string, value: any, required: string|boolean, attrs?: FieldData) {
     var valRule = (isString(required) ? required : (required ? "required" : null));
     this.controls.push({name: name, type: "textarea", title:title, validateRule: valRule, attributes:attrs});
     this.data[name] = value;
@@ -159,30 +150,30 @@ export class DialogPage extends BasePage{
     return this;	
   }
 
-  addText (name, title, value, required, attrs = null) {
+  addText (name: string, title: string, value: any, required: string|boolean, attrs?: FieldData) {
     return this.addInput(name, title,"text", value, required, attrs);
   }
 
-  addLabel (title, value, attrs = null) {
+  addLabel (title: string, value: any, attrs?: FieldData) {
     this.controls.push({type:'label', title:title, value:value, attributes:attrs});
     this.render();
 		
     return this;
   }
-  addLink (name, title, value, attrs = null) {
+  addLink (name: string, title: string, value: any, attrs?: FieldData) {
     this.controls.push({type:'link', name:name, title:title, value:value, attributes:attrs});
     this.render();
 		
     return this;
   }
 
-  addPassword (name, title, value, required, attrs = null) {
+  addPassword (name: string, title: string, value: any, required: string|boolean, attrs?: FieldData) {
     return this.addInput(name, title,"password", value, required, attrs);
   }
 
 
-  removeField(name){
-    this.controls = Objects.filter(this.controls, el => el.name != name );
+  removeField(name: string){
+    this.controls = this.controls.filter(el => el.name != name);
 
     if (this.data[name])
       delete this.data[name];
@@ -190,7 +181,7 @@ export class DialogPage extends BasePage{
     this.render();
   }
 	
-  addHtml (value, attrs = null) {
+  addHtml (value: any, attrs?: FieldData) {
     this.controls.push({type:'html',value:value, attributes:attrs});
     this.render();
 		
@@ -198,7 +189,7 @@ export class DialogPage extends BasePage{
   }
 
 	
-  addSplit (items) {
+  addSplit (items: any[]) {
     this.controls.push({name:"split", type:'split', title:null, value:null, items: items});
     this.render();
 		
@@ -218,7 +209,7 @@ export class DialogPage extends BasePage{
 	 * @param {string} title
 	 * @param {null|function(DialogPage):any} callback - fired when button is clicked. Return false to stop dialog from closing
 	 */
-  addActionButton(title, callback) {
+  addActionButton(title: string, callback: ((dialog: DialogPage) => any) | null) {
     callback = callback || null;
     this.buttons[title] = callback;
     return this;

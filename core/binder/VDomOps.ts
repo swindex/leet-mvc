@@ -134,13 +134,13 @@ export class VDomOps {
    */
   static vDomCreateItems(on: VDom, inject: any): void {
     const vdom = on.itemBuilder!(inject);
+
+    VDomOps.insertAfter(vdom.elem!, on.elem!);
+
     if (vdom.elem instanceof DocumentFragment) {
       on.items = vdom.items;
-      VDomOps.insertAfter(vdom.elem!, on.elem!);
     } else {
       on.items.push(vdom);
-      VDomOps.insertAfter(vdom.elem!, on.elem!);
-      
       // If the created vdom is a component directive, also insert the component's rendered template
       if (vdom.elem instanceof Comment && vdom.getters.component) {
         const component = vdom.values['component'];

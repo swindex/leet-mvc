@@ -219,12 +219,15 @@ export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext)
     // --- New or changed component ---
 
     // Clear any previous component
-    if (on.values[key] && on.values[key].binder) {
+    if (on.values[key]?.binder?.vdom.items) {
       ctx.removeVDomItems(on.values[key].binder.vdom.items);
       on.values[key].binder.destroy();
     }
-    ctx.removeVDomItems(on.items);
 
+    if (on.items?.length>0) {
+      ctx.removeVDomItems(on.items);
+    }
+    
     on.values[key] = component;
 
     if (!(component instanceof BaseComponent)) {
@@ -262,7 +265,7 @@ export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext)
 
       // Check if on.elem is a Comment (directive anchor) or HTMLElement (direct component)
       if (on.elem instanceof Comment) {
-        // Component is inside a directive (e.g., [if], [foreach])
+        // Component is inside a control directive (e.g., [if], [foreach])
         // Insert component's rendered DOM after the Comment anchor (like [html] directive)
         
         if (componentVDom.elem instanceof DocumentFragment) {
@@ -291,7 +294,7 @@ export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext)
         }
         
       } else {
-        // Direct component usage (on.elem is the host HTMLElement)
+        // Registered Component usage. Eg. <some-component> (on.elem is the host HTMLElement)
         const hostElem = on.elem as HTMLElement;
         
         // Clear host element and append component's rendered DOM

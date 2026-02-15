@@ -6,7 +6,8 @@ const htmlparser = require('htmlparser2');
 /**
  * Directive attribute names that create their own scope
  */
-const DIRECTIVE_ATTRS = new Set(['[foreach]', '[transition]', '[html]', '[component]', '[if]']);
+const MANAGED_DIRECTIVE_ATTRS = new Set(['[if]','[foreach]', '[transition]']);
+
 
 /**
  * Parses HTML template strings into an IR (Intermediate Representation) tree.
@@ -62,7 +63,7 @@ export class TemplateParser {
     if (obj.attribs) {
       Objects.forEach(obj.attribs, (value: string, key: string | number) => {
         const k = String(key);
-        if (DIRECTIVE_ATTRS.has(k)) {
+        if (MANAGED_DIRECTIVE_ATTRS.has(k)) {
           directives.push({ key: k, expression: value });
         } else {
           attributes[k] = value;
@@ -88,9 +89,7 @@ export class TemplateParser {
         const priority: Record<string, number> = {
           '[if]': 1,
           '[foreach]': 2,
-          '[component]': 3,
-          '[transition]': 4,
-          '[html]': 5,
+          '[transition]': 3,
         };
         return (priority[a.key] || 99) - (priority[b.key] || 99);
       });
@@ -107,7 +106,7 @@ export class TemplateParser {
 
       // Return outer directive node with inner directives in attributes
       return {
-        type: 'directive',
+        type: 'managed',
         tag,
         attributes: innerAttributes,
         children,
@@ -116,17 +115,17 @@ export class TemplateParser {
     }
 
     // Single directive or no directive
-    const directive = directives.length === 1 ? directives[0] : undefined;
+    const managed_directive = directives.length === 1 ? directives[0] : undefined;
 
     const irNode: IRNode = {
-      type: directive ? 'directive' : 'element',
+      type: managed_directive ? 'managed' : 'element',
       tag,
       attributes,
       children,
     };
 
-    if (directive) {
-      irNode.directive = directive;
+    if (managed_directive) {
+      irNode.directive = managed_directive;
     }
 
     return irNode;
