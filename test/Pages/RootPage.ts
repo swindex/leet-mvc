@@ -1,11 +1,9 @@
-// @ts-nocheck
 import { TestArrayPage } from "./TestArrayPage";
 import { TestFormsPage } from "./TestFormsPage";
 import { HeaderPage } from "../../pages/HeaderPage/HeaderPage";
 import { TestFileUploadPage } from "./TestFileUploadPage";
 import { TestChangeWatcher } from "./TestChangeWatcher";
 import { TestFormsVisiblePage } from "./TestFormsVisiblePage";
-import { TestComponentPage } from "./TestComponentPage";
 import { TestFormsSelectItemsPage } from "./TestFormsSelectItemsPage";
 import { RouterTestPage } from "./RouterTest";
 import { TestRegisterComponentPage } from "./TestRegisterComponentPage";
@@ -34,7 +32,6 @@ export class RootPage extends HeaderPage {
       { page: TestChangeWatcher, name: "Test Change Watcher" },
       { page: TestFormsVisiblePage, name: "Test Forms Visible" },
 
-      { page: TestComponentPage, name: "Test Component" },
       { page: TestFormsSelectItemsPage, name: "Test Forms Select Items" },
       { page: RouterTestPage, name: "Router Test" },
       { page: TestRegisterComponentPage, name: "Test RegisterComponent" },

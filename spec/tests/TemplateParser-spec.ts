@@ -215,7 +215,10 @@ describe('Template Parser - DOM Validity Test', function() {
 
       constructor() {
         super();
-        this.template = `
+      }
+
+      get template() {
+        return `
           <div class="component-wrapper" id="comp-wrapper">
             <h3>Component Content</h3>
             <div [html]="this.htmlContent" id="html-target"></div>

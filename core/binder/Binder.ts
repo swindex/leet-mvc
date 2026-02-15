@@ -26,7 +26,7 @@ import { parseForeachExpression } from './directives/ForeachDirective';
  * - Provide updateElements() for the change detection cycle
  */
 export class Binder {
-  vdom: VDom | null = null;
+  vdom!: VDom;
   context: any;
   injectVars: Record<string, any> = {};
   eventCallbacks: EventCallbacks = { change: null, focus: null, input: null, click: null };
@@ -86,7 +86,7 @@ export class Binder {
   destroy(): void {
     if (this.vdom) {
       VDomOps.removeVDOMElement(this.vdom);
-      this.vdom = null;
+      this.vdom = null as any;
     }
   }
 

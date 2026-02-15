@@ -34,9 +34,9 @@ export class SwiperForms extends Forms{
 
 		/*this html comes from the Forms class*/
 		var formsHTML = this.template;
-
-		this.template = `
-		<div class="swiper-container" id="generatedform">
+	}
+	get template() {
+		return `<div class="swiper-container" id="generatedform">
 			<div class="swiper-wrapper">
 				`+formsHTML+`
 			</div>
@@ -52,9 +52,7 @@ export class SwiperForms extends Forms{
 				<button [if]="this._isShowSubmitButton()" 
 					onclick="this.onSubmitClicked()" class="item-right" name="submit">Submit</button>
 			</div>
-			
-		</div>
-		`
+		</div>`;
 	}
 
 	_isShowSubmitButton(){

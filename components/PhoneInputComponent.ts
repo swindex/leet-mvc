@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BaseComponent } from './BaseComponent';
 import { Text } from '../core/text';
 import { DOM } from '../core/DOM';
@@ -6,36 +5,23 @@ import { RegisterComponent } from '../core/Register';
 import { Forms } from './Forms';
 import { empty } from '../core/helpers';
 export class PhoneInputComponent extends BaseComponent {
+  isValid?: boolean;
+  value: any = null;
+  _formattedValue:any = null;
+  placeholder:any = null;
+  attr:any = {};
+  _numberEl:any = null;
   constructor() {
     super();
-
-    this._numberEl = null;
-    this.value = null;
-    this.isValid = null;
-    this._formattedValue = null;
-
-    this.placeholder = null;
-
-    //dynamic attributes
-    this.attr = {}
-
-//oninput = "this._onInput($event)"
-    this.template = `
-    <div [attribute]="this.attr">
-      <input type="text" [attribute]="this.attr" bind = "this._formattedValue" onchange = "this._onChange($event)" oninput = "this._onInput($event)" [placeholder]="this.placeholder" />
-    </div>
-    `;
   }
 
-  /*get value() {
-    return empty(this._formattedValue) ? null : this._formattedValue.replace(/\D/g, '');
-  }*/
+  get template() {
+    return `<div [attribute]="this.attr">
+      <input type="text" [attribute]="this.attr" bind = "this._formattedValue" onchange = "this._onChange($event)" oninput = "this._onInput($event)" [placeholder]="this.placeholder" />
+    </div>`;
+  }
 
-  /**
-   * 
-   * @param {string|null} val 
-   */
-  valueChange(val) {
+  valueChange(val: string|null) {
     //remove the +1 part!
     if (typeof val == "string") {
       val = val.replace(/\+1/, '');
@@ -50,7 +36,7 @@ export class PhoneInputComponent extends BaseComponent {
     this._numberEl = DOM(this.container).find("input").first();
   }
 
-  _onInput(ev) {
+  _onInput(ev:InputEvent) {
     var el = this._numberEl;
     var selS = el.selectionStart;
     var selE = el.selectionEnd;
@@ -63,14 +49,9 @@ export class PhoneInputComponent extends BaseComponent {
       el.selectionStart = selS + dif;
       el.selectionEnd = selE + dif;
     }, 0);
-    if (document.documentMode || /Edge/.test(navigator.userAgent) || /Edg/.test(navigator.userAgent)) {
-      //in stupid IE/Edge onchange will ot fire if oninput changes the value. REALLY!
-      //so do it immediately
-      this._onChange(ev);
-    }
   }
 
-  _onChange(ev) {
+  _onChange(ev: InputEvent) {
     this._formatAsPhoneNumber();
 
     this.value = PhoneInputComponent.UnFormatPhoneNumber(this._formattedValue);
@@ -78,11 +59,11 @@ export class PhoneInputComponent extends BaseComponent {
   }
 
   /** @override */
-  onChange(ev) {
+  onChange(ev:InputEvent) {
 
   }
   /** @override */
-  onInput(ev) {
+  onInput(ev: InputEvent) {
 
   }
   // /** @override */
@@ -98,7 +79,7 @@ export class PhoneInputComponent extends BaseComponent {
    * Format phone number for display
    * @param {string} val 
    */
-  static FormatPhoneNumber(val) {
+  static FormatPhoneNumber(val: string) {
     return Text.formatPhone(val, { 0: "(", 3: ')', 6: '-', 10: 'x' });
   }
 
@@ -106,15 +87,14 @@ export class PhoneInputComponent extends BaseComponent {
    * Un-Format phone number for Data Transfer
    * @param {string} val 
    */
-  static UnFormatPhoneNumber(val) {
+  static UnFormatPhoneNumber(val: string) {
     return empty(val) ? null : "+1" + val.replace(/\D/g, '');
   }
 
   /**
    * Use PhoneInputComponent as input-phone for rendering in Forms for phone type field
-   * @param {object} [attributes]
    */
-  static Use(attributes) {
+  static Use(attributes: any) {
     attributes = attributes || {};
     RegisterComponent(PhoneInputComponent, 'input-phone');
     Forms.field_definitions.phone = (forms, el, parentPath) => {

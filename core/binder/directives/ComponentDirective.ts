@@ -307,7 +307,7 @@ export function componentDirective(on: VDom, inject: any, ctx: DirectiveContext)
           hostElem.appendChild(componentVDom.fragment);
           on.items = [componentVDom];
         } else {
-          hostElem.appendChild(componentVDom.elem!);
+          hostElem.appendChild(componentVDom.elem as HTMLElement);
           on.items = [componentVDom];
         }
         

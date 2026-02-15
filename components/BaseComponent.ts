@@ -1,24 +1,11 @@
+import { Binder } from "../core/binder/Binder";
 import { ChangeWatcher } from "../core/ChangeWatcher";
 import { Objects } from "../core/Objects";
 import { tryCall } from "../core/helpers";
 
-// Binder is still JS, will be properly typed when converted
-export interface IBinder {
-  updateElements(): void;
-  destroy(): void;
-  vdom: any;
-  bindElements(eventCallbacks: any, template: any): any;
-  setInjectVars(vars: any): any;
-  setContext(context: any): any;
-  context: any;
-  injectVars: any;
-  eventCallbacks: any;
-}
-
 export class BaseComponent extends ChangeWatcher {
   [key: string]: any;
-  binder: IBinder | null = null;
-  template?: string;
+  binder!: Binder;
   events: Record<string, (event: Event) => void> | null = null;
   /** fragment with children */
   templateFragment: DocumentFragment | null = null;
@@ -26,7 +13,7 @@ export class BaseComponent extends ChangeWatcher {
   templateUpdate: () => void = function () { };
   /** reference to the parent page */
   parentPage: any = null;
-  container: HTMLElement | null = null;
+  container!: HTMLElement;
   attributes: Record<string, any> = {};
   components: BaseComponent[] = [];
 
@@ -34,6 +21,15 @@ export class BaseComponent extends ChangeWatcher {
     super();
     Objects.bindMethods(this);
   }
+
+  /**
+   * The HTML template for this component. Can be overridden by subclass or instance
+   * By default, the template is just a content tag, which means the component will project its children in place
+   */
+  get template() {
+    return "<content></content>";
+  }
+
 
   /**
    * ***DO NOT OVERRIDE***

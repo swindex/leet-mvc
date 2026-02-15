@@ -27,7 +27,10 @@ export class ItemList extends BaseComponent {
     this.perPage = 20;
     this._displayFrom = 0;
     this._displayTo = 0;
-    this.template = `<div></div>`;
+  }
+
+  get template() {
+    return `<ul ${ItemList.iterator('this')}></ul>`;
   }
 
 	/**

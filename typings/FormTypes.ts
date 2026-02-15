@@ -49,3 +49,4 @@ export interface HTMLInputElementChangeEvent extends Event{
 export interface KeyValuePair{
 	[key:string]: any
 }
+

@@ -12,6 +12,12 @@ import { DOM } from "../core/DOM";
 import { FileAccess } from "../core/FileAccess";
 import { FieldTemplate, KeyValuePair } from "../typings/FormTypes";
 
+export type FormFieldDefinition = (form: Forms, ft:FieldTemplate, parentPath:string) => string
+
+export interface FormFieldDefinitions {
+  [field_name:string]: FormFieldDefinition;
+}
+
 export class Forms extends BaseComponent {
   /**
    * Forms Directive. Generate forms from JSON data
@@ -90,9 +96,11 @@ export class Forms extends BaseComponent {
     };
     this.field_definitions = Forms.field_definitions;
 
-    this.template = `<div [html]="this.formHTML"></div>`;
-
     this.updateTemplate(this.formTemplate);
+  }
+
+  get template() {
+    return `<div [html]="this.formHTML"></div>`;
   }
 
   setDataValuesFromFields() {
@@ -880,125 +888,116 @@ ${items.join('')}
     }
 
     Objects.setPropertyByPath(this.data, name, { name: file.name, type: file.type, /*dataURL: dataURL,*/ fileBlob: file, size: file.size });
+  }
 
-    /*FileAccess.ReadFile(fileFiled.files[0]).DataURL().then( dataURL =>{
-    Objects.setPropertyByPath(this.data, name, {name: file.name, type:file.type, dataURL: dataURL, fileBlob:file, size:file.size});
-    this.events.change(event);
-    }).catch(err=>{
-    console.warn(err);
-    Objects.setPropertyByPath(this.data, name, {name: null});
-    this.events.change(event);
-    });*/
+  static field_definitions: FormFieldDefinitions = {
+    form(forms, el, parentPath) {
+      return forms.addForm(el, parentPath /*? parentPath +'.' +el.name : el.name*/);
+    },
+    array(forms, el, parentPath) {
+      return forms.addArray(el, parentPath /*? parentPath +'.' +el.name : el.name*/);
+    },
+    email(forms, el, parentPath) {
+      forms.assertValidateRuleHas(el, "email");
+      return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'email', autocomplete:"false" })]);
+    },
+    file(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [forms.addFile(el)]);
+    },
+    text(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [forms.addInput(el, { autocomplete:"false" })]);
+    },
+    date(forms, el, parentPath) {
+      el.icon = "far fa-calendar-alt";
+      return forms.renderFieldGroupHTML(el, [forms.addInput(el, { date: '', format: 'date' })]);
+    },
+    datetime(forms, el, parentPath) {
+      el.icon = "far fa-calendar-alt";
+      return forms.renderFieldGroupHTML(el, [forms.addInput(el, { dateTime: '', format: 'dateTime' })]);
+    },
+    time(forms, el, parentPath) {
+      el.icon = "far fa-clock";
+      return forms.renderFieldGroupHTML(el, [forms.addInput(el, { time: '', format: 'time' })]);
+    },
+    split(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [
+        '<div class="split" style="width:50%">' + forms.addInput(el.items[0], { type: el.items[0].type }) + '</div>',
+        '<div class="split" style="width:50%">' + forms.addInput(el.items[1], { type: el.items[1].type }) + '</div>',
+      ]);
+    },
+    "date-time": function (forms, el, parentPath) {
+      var dateEl = Object.assign({}, el);
+      var timeEl = Object.assign({}, el);
+
+      dateEl._name += "_date";
+      dateEl.icon = "far fa-calendar-alt";
+      timeEl._name += "_time";
+      timeEl.icon = "far fa-clock";
+
+      var dateTime = Objects.getPropertyByPath(forms.data, el._name);
+      Objects.setPropertyByPath(forms.data, dateEl._name, dateTime);
+      Objects.setPropertyByPath(forms.data, timeEl._name, dateTime);
+
+      return forms.renderFieldGroupHTML(el, [
+        /*html*/`<div style="display:flex;flex-direction:row">`,
+        /*html*/`<div class="split" style="width:60%">` + forms.addInput(dateEl, { date: '', format: 'date', onchange: "this._formatSplitDateField($event,'" + el._name + "',false)" }) + '</div>',
+        /*html*/`<div class="split" style="width:40%">` + forms.addInput(timeEl, { time: '', format: 'time', onchange: "this._formatSplitDateField($event,'" + el._name + "',true)" }) + '</div>',
+        /*html*/`</div>`
+      ]);
+    },
+    number(forms, el, parentPath) {
+      forms.assertValidateRuleHas(el, "numeric");
+      var format = el.attributes && el.attributes.format ? undefined : "number:2";
+      return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'text', number: "", format: format, novalidate: true, autocomplete:"false" })]);
+    },
+    password(forms, el, parentPath) {
+      el.icon = true;
+      return forms.renderFieldGroupHTML(el, [forms.addPassword(el, {autocomplete:"false"})]);
+    },
+    phone(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'tel', oninput: "this._formatPhoneNumber($event)",autocomplete:"false" })]);
+    },
+    hidden(forms, el, parentPath) {
+      return forms.addInput(el, { type: 'hidden' });
+    },
+    textarea(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [forms.addTextArea(el, null)]);
+    },
+    "checkbox": function(forms, el, parentPath) {
+      var el_ch = Objects.copy(el);
+      el_ch.title = "";
+      return forms.renderFieldGroupHTML(el_ch, [forms.addCheckSquare(el, null)], true);
+    },
+    "checkbox-round": function(forms, el, parentPath) {
+      var el_ch = Objects.copy(el);
+      el_ch.title = "";
+      return forms.renderFieldGroupHTML(el_ch, [forms.addCheckRound(el, null)], true);
+    },
+    toggle(forms, el, parentPath) {
+      var el_ch = Objects.copy(el);
+      el_ch.title = "";
+      return forms.renderFieldGroupHTML(el_ch, [forms.addToggle(el, null)], true);
+    },
+    radio(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [forms.addRadio(el, null)]);
+    },
+    select(forms, el, parentPath) {
+      return forms.addSelect(el, null, parentPath);
+    },
+    label(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [forms.addLabel(el)], null, true);
+    },
+    link(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [forms.addLink(el)], null, true);
+    },
+    button(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [forms.addButton(el)]);
+    },
+    buttons(forms, el, parentPath) {
+      return forms.renderFieldGroupHTML(el, [forms.addButtons(el)]);
+    },
+    html(forms, el, parentPath) {
+      return forms.addHtml(el);
+    }
   }
 }
-/** @type {{[key:string]: function(Forms, FieldTemplate, string): string}} */
-Forms.field_definitions = {
-  form(forms, el, parentPath) {
-    return forms.addForm(el, parentPath /*? parentPath +'.' +el.name : el.name*/);
-  },
-  array(forms, el, parentPath) {
-    return forms.addArray(el, parentPath /*? parentPath +'.' +el.name : el.name*/);
-  },
-  email(forms, el, parentPath) {
-    forms.assertValidateRuleHas(el, "email");
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'email', autocomplete:"false" })]);
-  },
-  file(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addFile(el)]);
-  },
-  text(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { autocomplete:"false" })]);
-  },
-  date(forms, el, parentPath) {
-    el.icon = "far fa-calendar-alt";
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { date: '', format: 'date' })]);
-  },
-  datetime(forms, el, parentPath) {
-    el.icon = "far fa-calendar-alt";
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { dateTime: '', format: 'dateTime' })]);
-  },
-  time(forms, el, parentPath) {
-    el.icon = "far fa-clock";
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { time: '', format: 'time' })]);
-  },
-  split(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [
-      '<div class="split" style="width:50%">' + forms.addInput(el.items[0], { type: el.items[0].type }) + '</div>',
-      '<div class="split" style="width:50%">' + forms.addInput(el.items[1], { type: el.items[1].type }) + '</div>',
-    ]);
-  },
-  "date-time": function (forms, el, parentPath) {
-    var dateEl = Object.assign({}, el);
-    var timeEl = Object.assign({}, el);
-
-    dateEl._name += "_date";
-    dateEl.icon = "far fa-calendar-alt";
-    timeEl._name += "_time";
-    timeEl.icon = "far fa-clock";
-
-    var dateTime = Objects.getPropertyByPath(forms.data, el._name);
-    Objects.setPropertyByPath(forms.data, dateEl._name, dateTime);
-    Objects.setPropertyByPath(forms.data, timeEl._name, dateTime);
-
-    return forms.renderFieldGroupHTML(el, [
-      /*html*/`<div style="display:flex;flex-direction:row">`,
-      /*html*/`<div class="split" style="width:60%">` + forms.addInput(dateEl, { date: '', format: 'date', onchange: "this._formatSplitDateField($event,'" + el._name + "',false)" }) + '</div>',
-      /*html*/`<div class="split" style="width:40%">` + forms.addInput(timeEl, { time: '', format: 'time', onchange: "this._formatSplitDateField($event,'" + el._name + "',true)" }) + '</div>',
-      /*html*/`</div>`
-    ]);
-  },
-  number(forms, el, parentPath) {
-    forms.assertValidateRuleHas(el, "numeric");
-    var format = el.attributes && el.attributes.format ? undefined : "number:2";
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'text', number: "", format: format, novalidate: true, autocomplete:"false" })]);
-  },
-  password(forms, el, parentPath) {
-    el.icon = true;
-    return forms.renderFieldGroupHTML(el, [forms.addPassword(el, {autocomplete:"false"})]);
-  },
-  phone(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addInput(el, { type: 'tel', oninput: "this._formatPhoneNumber($event)",autocomplete:"false" })]);
-  },
-  hidden(forms, el, parentPath) {
-    return forms.addInput(el, { type: 'hidden' });
-  },
-  textarea(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addTextArea(el, null)]);
-  },
-  "checkbox": function(forms, el, parentPath) {
-    var el_ch = Objects.copy(el);
-    el_ch.title = "";
-    return forms.renderFieldGroupHTML(el_ch, [forms.addCheckSquare(el, null)], true);
-  },
-  "checkbox-round": function(forms, el, parentPath) {
-    var el_ch = Objects.copy(el);
-    el_ch.title = "";
-    return forms.renderFieldGroupHTML(el_ch, [forms.addCheckRound(el, null)], true);
-  },
-  toggle(forms, el, parentPath) {
-    var el_ch = Objects.copy(el);
-    el_ch.title = "";
-    return forms.renderFieldGroupHTML(el_ch, [forms.addToggle(el, null)], true);
-  },
-  radio(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addRadio(el, null)]);
-  },
-  select(forms, el, parentPath) {
-    return forms.addSelect(el, null, parentPath);
-  },
-  label(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addLabel(el)], null, true);
-  },
-  link(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addLink(el)], null, true);
-  },
-  button(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addButton(el)]);
-  },
-  buttons(forms, el, parentPath) {
-    return forms.renderFieldGroupHTML(el, [forms.addButtons(el)]);
-  },
-  html(forms, el, parentPath) {
-    return forms.addHtml(el);
-  }
-};
