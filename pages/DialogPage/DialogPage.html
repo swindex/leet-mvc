@@ -6,7 +6,7 @@
 		<div class = 'dialog-content touch-scroll' [style]="{maxHeight:this.dialog_content_max_height}">
 			<div [if]="this.showComponent()" [component]="this.content"></div>
 			<div [if]="this.showHTML()" [html]="this.content"></div>
-			<!--child-template-->
+			<content></content>
 		</div>
 		<div class = 'dialog-buttons' [if]="this.buttons">
 			<button [foreach]="button_title in this.buttons as button" onclick="this.onButtonClicked(button_title)" [text]="Translate(button_title)" [attribute]="{id:'dialogButton'+button_title}"></button>

@@ -74,7 +74,7 @@ var template = `
 		<!--default-template-begin-->
 		<div [html] = "this.content"></div>
 		<!--default-template-end-->
-		<!--child-template-->
+		<content></content>
 	</div>
 
 	<div class="footer" [if]="this.footer && this.showFooter">
