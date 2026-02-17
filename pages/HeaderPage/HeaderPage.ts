@@ -66,8 +66,7 @@ export class HeaderPage extends BasePage{
 }
 HeaderPage.className = 'page-HeaderPage';
 var template = `
-	<div class="header" [if]="this.header">
-		<div [html] = "this.header"></div>
+	<div class="header" [if]="this.header" [html] = "this.header">
 	</div>
 	
 	<div class="content">
@@ -77,7 +76,6 @@ var template = `
 		<content></content>
 	</div>
 
-	<div class="footer" [if]="this.footer && this.showFooter">
-		<div [html] = "this.footer"></div>
+	<div class="footer" [if]="this.footer && this.showFooter" [html] = "this.footer">
 	</div>
 `;
