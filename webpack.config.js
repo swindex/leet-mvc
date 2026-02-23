@@ -6,10 +6,12 @@ const path = require('path');
 module.exports = (env) => {
   var plugins = [];
 
-  plugins.push(new HtmlWebpackPlugin({ template: './test/index.html' }));
+  //plugins.push(new HtmlWebpackPlugin({ template: './test/index.html' }));
 
   var out = merge(
-    baseConfig(env),
+    baseConfig(env, {
+      indexHtmlTemplate: './test/index.html',
+    }),
     {
       entry: ['./test/index.test.ts'],
       output: {

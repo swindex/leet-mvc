@@ -1,9 +1,26 @@
 const TerserPlugin = require("terser-webpack-plugin");
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const path = require('path');
-
+/**
+ * Provides a base Webpack configuration for Leet MVC projects. Consumers can extend this configuration by merging it with their own custom settings.
+ * The base configuration includes common loaders for TypeScript, HTML, CSS/SCSS, and asset handling, as well as plugins for progress display and HTML template generation.
+ * Example:
+ * ```javascript
+ * return merge(baseConf(env, {
+    indexHtmlTemplate: './src/index.html', 
+    staticDirectory: { // Optional: allows consumer to specify a custom static directory
+      directory: './src/assets',
+      publicPath: '/assets'
+    }
+  }), conf);
+ * ```
+ * @param {*} env 
+ * @param {{indexHtmlTemplate: string, staticDirectory: {directory: string,publicPath:string} }} options 
+ * @returns 
+ */
 module.exports = (env, options = {}) => {
   var production = env.production
   
@@ -19,12 +36,17 @@ module.exports = (env, options = {}) => {
   var plugins = []
 
   plugins.push(new ProgressBarPlugin());
+
+  plugins.push(new HtmlWebpackPlugin({ template: options.indexHtmlTemplate || './src/index.html' }));
+  
   
   // Add CopyWebpackPlugin (runs in both dev and production)
   // Note: v5 API uses array directly instead of patterns object
-  plugins.push(new CopyWebpackPlugin([
-    { from: staticConfig.directory, to: 'static', noErrorOnMissing: true }
-  ]));
+  if (staticConfig && staticConfig.directory) {
+    plugins.push(new CopyWebpackPlugin([
+      { from: staticConfig.directory, to: 'static', noErrorOnMissing: true }
+    ]));
+  }
 
   var base = {
     mode: production ? "production":"development",
@@ -56,7 +78,6 @@ module.exports = (env, options = {}) => {
       path: path.resolve(__dirname, 'www'),
       filename: 'bundle.js',
       clean: true,
-      //devtoolModuleFilenameTemplate: info => `webpack:/leet-mvc/${info.resourcePath.replace(/^\.\//, "")}`,
     },
     resolve: {
       extensions: ['.ts', '.js', '.json']
@@ -65,7 +86,7 @@ module.exports = (env, options = {}) => {
       rules: [
         {
           test: /\.js$/,
-          exclude: /@babel(?:\/|\\{1,2})runtime|core-js/,
+          exclude: /node_modules/,
           loader: 'babel-loader',
         },
         {
@@ -99,7 +120,6 @@ module.exports = (env, options = {}) => {
         },
         {
           test: /\.html$/,
-          //exclude: /index\.html$/,  // Exclude index.html from html-loader
           use: [
             {
               loader: 'html-loader',

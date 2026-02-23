@@ -1,6 +1,6 @@
 {
   "name": "leet-mvc",
-  "version": "4.0.21",
+  "version": "4.0.22",
   "sideEffects": [
     "**/*.css",
     "**/*.scss",
