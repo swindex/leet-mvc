@@ -5,7 +5,7 @@ import { NavController } from "../../core/NavController";
 import { Injector } from "../../core/Injector";
 import { DOM } from '../../core/DOM';
 import { TestRegisterComponentPage } from '../../test/Pages/TestRegisterComponentPage';
-import { Registered } from '../../core/Register';
+import { RegisteredComponent } from '../../core/Register';
 
 const I = Injector;
 
@@ -44,22 +44,22 @@ describe('Test TestRegisterComponentPage - RegisterComponent and Custom Componen
     });
 
     it("InfoCard component is registered in LEET_REGISTER", function() {
-      const InfoCard = Registered('app-info-card');
+      const InfoCard = RegisteredComponent('app-info-card');
       expect(InfoCard).not.toBeNull();
       expect(InfoCard).toBeDefined();
       expect(typeof InfoCard).toBe('function');
     });
 
     it("CounterWidget component is registered in LEET_REGISTER", function() {
-      const CounterWidget = Registered('app-counter-widget');
+      const CounterWidget = RegisteredComponent('app-counter-widget');
       expect(CounterWidget).not.toBeNull();
       expect(CounterWidget).toBeDefined();
       expect(typeof CounterWidget).toBe('function');
     });
 
     it("Registered components can be instantiated", function() {
-      const InfoCard = Registered('app-info-card');
-      const CounterWidget = Registered('app-counter-widget');
+      const InfoCard = RegisteredComponent('app-info-card');
+      const CounterWidget = RegisteredComponent('app-counter-widget');
       
       const infoInstance = new InfoCard();
       const counterInstance = new CounterWidget();

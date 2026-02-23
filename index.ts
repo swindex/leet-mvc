@@ -25,7 +25,7 @@ import { Toast, ToastPage } from "./pages/Toast/Toast";
 import { EnableCustomElements } from "./core/EnableCustomElements";
 import { Forms } from "./components/Forms";
 import { ItemList } from "./components/ItemList";
-import { RegisterComponent } from './core/Register';
+import { ComponentRegistry, RegisterComponent, RegisteredComponent } from './core/Register';
 import { NumericKeyboard } from './pages/NumericKeyboard/NumericKeyboard';
 import { Override } from './core/Override';
 
@@ -75,7 +75,9 @@ export {
   EnableCustomElements,
   Forms,
   ItemList,
+  ComponentRegistry,
   RegisterComponent,
+  RegisteredComponent as Registered,
   NumericKeyboard,
   Override
 };

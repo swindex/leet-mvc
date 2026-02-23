@@ -5,7 +5,7 @@ import { NavController } from "../../core/NavController";
 import { Injector } from "../../core/Injector";
 import { DOM } from '../../core/DOM';
 import { TestMultiRootComponentPage } from '../../test/Pages/TestMultiRootComponentPage';
-import { Registered } from '../../core/Register';
+import { RegisteredComponent } from '../../core/Register';
 
 const I = Injector;
 
@@ -46,22 +46,22 @@ describe('Test TestMultiRootComponentPage - Single vs Multi-Root Component Templ
     });
 
     it("SingleRootComponent is registered in LEET_REGISTER", function() {
-      const SingleRootComponent = Registered('app-single-root');
+      const SingleRootComponent = RegisteredComponent('app-single-root');
       expect(SingleRootComponent).not.toBeNull();
       expect(SingleRootComponent).toBeDefined();
       expect(typeof SingleRootComponent).toBe('function');
     });
 
     it("MultiRootComponent is registered in LEET_REGISTER", function() {
-      const MultiRootComponent = Registered('app-multi-root');
+      const MultiRootComponent = RegisteredComponent('app-multi-root');
       expect(MultiRootComponent).not.toBeNull();
       expect(MultiRootComponent).toBeDefined();
       expect(typeof MultiRootComponent).toBe('function');
     });
 
     it("Registered components can be instantiated", function() {
-      const SingleRootComponent = Registered('app-single-root');
-      const MultiRootComponent = Registered('app-multi-root');
+      const SingleRootComponent = RegisteredComponent('app-single-root');
+      const MultiRootComponent = RegisteredComponent('app-multi-root');
       
       const singleInstance = new SingleRootComponent();
       const multiInstance = new MultiRootComponent();

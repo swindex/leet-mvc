@@ -34,7 +34,7 @@ function wireProperties(
     if (k.indexOf('.') >= 0) {
       Objects.setPropertyByPath(component, k, getter(inject));
     } else {
-      if ((component as any)[k] === undefined && !directiveRegistry[k]) {
+      if (!(k in component) && !directiveRegistry[k]) {
         console.warn(
           `Warning. Trying to set undefined property '${k}' in Component '${getClassName(component)}'. Please define property in component constructor!`
         );

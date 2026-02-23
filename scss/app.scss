@@ -5,9 +5,7 @@ html {
 }
 
 html, body { 
-    // touch-action: pan-x; this prevents scrolling!
-    user-select: none;
-	position: relative;
+    position: relative;
 	height: 100%;
 	font-family: var(--tm-font-family);
 	font-size: 14px;

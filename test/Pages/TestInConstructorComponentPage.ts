@@ -169,7 +169,7 @@ var template = `
 
   <h4>4. Event Callbacks</h4>
   <p>Component with event callback <code>(onCountChange)</code>:</p>
-  <div [component]="this.myComponent5" (onCountChange)="this.onCountChanged($event) ">
+  <div [component]="this.myComponent5" (onCountChange)="this.onCountChanged(arguments[0])">
   </div>
   <div style="margin-top:10px;">
     <strong>Event Log ({{ this.eventLog.length }} events):</strong>

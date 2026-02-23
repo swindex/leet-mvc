@@ -1,27 +1,53 @@
 const TerserPlugin = require("terser-webpack-plugin");
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const path = require('path');
 
-module.exports = (env) => {
+module.exports = (env, options = {}) => {
   var production = env.production
+  
+  // Default static directory relative to consumer's project
+  const defaultStaticConfig = {
+    directory: path.resolve(process.cwd(), './src/static'),
+    publicPath: '/static'
+  };
+  
+  // Allow consumers to override
+  const staticConfig = options.staticDirectory || defaultStaticConfig;
 
   var plugins = []
 
   plugins.push(new ProgressBarPlugin());
+  
+  // Add CopyWebpackPlugin (runs in both dev and production)
+  // Note: v5 API uses array directly instead of patterns object
+  plugins.push(new CopyWebpackPlugin([
+    { from: staticConfig.directory, to: 'static', noErrorOnMissing: true }
+  ]));
 
   var base = {
     mode: production ? "production":"development",
     devServer: {
+      host: '0.0.0.0',
+      historyApiFallback: true,
       compress: true,
       port: 9000,
+      client: {
+        overlay: false,
+      },
+      static: staticConfig
     },
     optimization: (production ? {
       minimize: true,
       minimizer: [new TerserPlugin({
         terserOptions: {
           keep_classnames: true,
-          keep_fnames: true
+          keep_fnames: true,
+          compress: {
+            drop_console: true, // Remove console.log statements
+          },
+          mangle: true, // Shorten variable names
         },
       })],
     } : {}),
@@ -73,14 +99,12 @@ module.exports = (env) => {
         },
         {
           test: /\.html$/,
-          exclude: /index\.html$/,  // Exclude index.html from html-loader
+          //exclude: /index\.html$/,  // Exclude index.html from html-loader
           use: [
             {
               loader: 'html-loader',
               options:{
                 esModule:true,
-                // Disables attributes processing
-                //sources: false,
               }
             },
           ],

@@ -1,8 +1,8 @@
-import { empty, tryCall, isObject, isString, isArray, isFunction } from '../helpers';
+import { empty, tryCall } from '../helpers';
 import { BaseComponent } from '../../components/BaseComponent';
 import { isSkipUpdate } from '../Watcher';
-import { Objects } from '../Objects';
 import { DOM } from '../DOM';
+import { RegisteredComponent } from '../Register';
 
 import type {
   VDom, EventCallbacks, ReactivityType, DirectiveContext, DirectiveHandler, IRNode,
@@ -36,6 +36,8 @@ export class Binder {
 
   constructor(context: object) {
     this.context = context || this;
+    // Add Registered to injectVars so it's available in expression evaluation
+    this.injectVars = { Registered: RegisteredComponent };
   }
 
   // --- Public API ---
@@ -578,8 +580,8 @@ export class Binder {
   /**
    * Try to get a registered component class by tag name.
    */
-  private tryGetComponent(tagName: string): any {
-    return (window as any)['LEET_REGISTER'] ? (window as any)['LEET_REGISTER'][tagName] : null;
+  private tryGetComponent(tagName: string): typeof BaseComponent {
+    return RegisteredComponent(tagName);
   }
 
   /**

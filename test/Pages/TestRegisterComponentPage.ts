@@ -27,9 +27,9 @@ class InfoCard extends BaseComponent {
 // ─── Counter Widget Component ────────────────────────────────────────────────
 
 class CounterWidget extends BaseComponent {
-  label: string;
-  count: number;
-  value: number;
+  label: string = '';
+  count: number = 0;
+  value: number = 0;
 
   constructor() {
     super();
@@ -41,13 +41,6 @@ class CounterWidget extends BaseComponent {
   onIncrement() {
     this.count++;
     this.value++;
-    /*if (typeof this.onCountChange === 'function') {
-      this.onCountChange(this.count);
-    }
-    // Trigger two-way binding update
-    if (typeof this.valueChange_2 === 'function') {
-      this.valueChange_2(this.value);
-    }*/
   }
 
   valueChange(newValue: number) {
@@ -57,12 +50,6 @@ class CounterWidget extends BaseComponent {
   onDecrement() {
     this.count--;
     this.value--;
-    /*if (typeof this.onCountChange === 'function') {
-      this.onCountChange(this.count);
-    }
-    if (typeof this.valueChange_2 === 'function') {
-      this.valueChange_2(this.value);
-    }*/
   }
 
   // Placeholder for event binding callback
@@ -78,7 +65,7 @@ class CounterWidget extends BaseComponent {
         <button onclick="this.onDecrement()" style="margin-left:8px;">-</button>
         <button onclick="this.onIncrement()">+</button>
       </div>
-      <diV>second root will break conditional component</diV>
+      <diV>secondary root element</diV>
     `;
   }
 }
@@ -173,7 +160,7 @@ var template = `
   <hr/>
   <h4>4. Event Binding (onCountChange)</h4>
   <div id="test-section-event-binding">
-    <app-counter-widget [label]="'With Events'" (onCountChange)="this.onCountChanged($event)"></app-counter-widget>
+    <app-counter-widget [label]="'With Events'" (onCountChange)="this.onCountChanged(arguments[0])"></app-counter-widget>
     <p>Event log ({{ this.eventLog.length }} events): <button onclick="this.onClearLog()">Clear</button></p>
     <div style="max-height:100px; overflow-y:auto; border:1px solid #ccc; padding:4px; font-size:12px;">
       <div [foreach]="i in this.eventLog as entry">
@@ -192,14 +179,6 @@ var template = `
       If directive on component template:
     </div>
     <app-counter-widget [if]="this.showWidget" [label]="'Conditional Label'"></app-counter-widget>
-
-    <!--<div>
-      If directive outside component template:
-    </div>
-    <div [if]="this.showWidget">
-      <app-counter-widget [label]="'Conditional Inside'" [count]="10">
-      </app-counter-widget>
-    </div>-->
   </div>
 
   <hr/>

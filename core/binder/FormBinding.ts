@@ -1,8 +1,10 @@
-import { empty, isBoolean, numberFromLocaleString } from '../helpers';
-import { DateTime } from '../DateTime';
+import { empty, isBoolean } from '../helpers';
 import { DOM } from '../DOM';
 import { isSkipUpdate, Watcher } from '../Watcher';
 import { ExpressionCompiler } from './ExpressionCompiler';
+import { FormatterRegistry } from './formatters/FormatterRegistry';
+// Import formatters to ensure they are registered
+import './formatters';
 
 /**
  * Handles two-way data binding for form elements (INPUT, SELECT, TEXTAREA, etc.)
@@ -60,125 +62,39 @@ export class FormBinding {
   }
 
   /**
-   * Round a number to the specified decimals
-   */
-  static round(num: number, decimals: number = 0): number {
-    const scale = Math.pow(10, decimals);
-    return Math.round(num * scale) / scale;
-  }
-
-  /**
    * Format a value for display in an element, applying the element's `format` attribute.
-   * Handles number, localenumber, boolean, dateTime, date, time formats.
+   * Uses the FormatterRegistry to delegate formatting to registered formatters.
+   * Supports extensible formatters: number, localenumber, boolean, dateTime, date, time, and custom formatters.
    */
   static formatValueForDisplay(elem: any, v: any, getFormatExpression?: (elem: any, attrName: string, attrValue: string) => any): any {
     const format = elem.getAttribute ? elem.getAttribute('format') : null;
     if (format === null) return v;
 
-    const formats = format.split(':');
+    const [formatName, ...params] = format.split(':');
+    const formatter = FormatterRegistry.get(formatName);
 
-    if (formats.length > 0 && (formats[0] === 'number' || formats[0] === 'localenumber')) {
-      if (v !== '' && v !== null && v !== undefined) {
-        v = v * 1;
-        if (isNaN(v)) v = 0;
-        if (formats.length === 2) {
-          const ln = !isNaN(formats[1])
-            ? formats[1]
-            : (getFormatExpression ? getFormatExpression(elem, 'format', formats[1]) : formats[1]);
-          const decimals = parseInt(ln);
-          v = FormBinding.round(v, decimals);
-          // Use toFixed to ensure trailing zeros for number format
-          if (formats[0] === 'number') {
-            v = v.toFixed(decimals);
-          }
-        } else if (formats[0] === 'number') {
-          // No decimal places specified, convert to integer
-          v = Math.round(v).toString();
-        }
-        if (formats[0] === 'localenumber' && elem.getAttribute('type') !== 'number' && Number(v).toLocaleString) {
-          v = Number(v).toLocaleString();
-        }
-      }
+    if (formatter) {
+      return formatter.format(v, params, elem, getFormatExpression);
     }
 
-    if (formats.length > 0 && formats[0] === 'boolean') {
-      if (formats.length === 2) {
-        const titles = formats[1].split(',');
-        v = titles[v === true ? 0 : 1];
-        if (v === undefined) throw Error("Value of bind is not part of format's boolean options");
-      }
-    }
-
-    if (formats.length > 0 && formats[0] === 'dateTime') {
-      v = DateTime.toHumanDateTime(v);
-    }
-    if (formats.length > 0 && formats[0] === 'date') {
-      v = DateTime.toHumanDate(v);
-    }
-    if (formats.length > 0 && formats[0] === 'time') {
-      v = DateTime.toHumanTime(v);
-    }
-
+    // Fallback: return value unchanged if no formatter found
     return v;
   }
 
   /**
    * Format a value from a form element back to the model type, applying format transformations.
+   * Uses the FormatterRegistry to delegate parsing to registered formatters.
    */
   static formatValueFromElement(elem: HTMLElement, value: any, getFormatExpression?: (elem: any, attrName: string, attrValue: string) => any): any {
     const format = elem.getAttribute('format');
     let v = value;
 
     if (!empty(format)) {
-      const formats = format!.split(':');
+      const [formatName, ...params] = format!.split(':');
+      const formatter = FormatterRegistry.get(formatName);
 
-      if (formats.length > 0 && (formats[0] === 'number' || formats[0] === 'localenumber')) {
-        if (value === '') {
-          v = null;
-        } else {
-          if (formats[0] === 'localenumber') {
-            v = numberFromLocaleString(value);
-          } else {
-            v = Number(value);
-          }
-          if (isNaN(v)) v = 0;
-          if (formats.length === 2) {
-            const ln = !isNaN(formats[1] as any)
-              ? formats[1]
-              : (getFormatExpression ? getFormatExpression(elem, 'format', formats[1]) : formats[1]);
-            v = FormBinding.round(v, parseInt(ln));
-          }
-        }
-      }
-
-      if (formats.length > 0 && formats[0] === 'boolean') {
-        if (formats.length === 2) {
-          const titles = formats[1].split(',');
-          if (titles.length >= 1)
-            v = value === titles[0];
-          else
-            v = parseInt(value) !== 0;
-        } else {
-          if (value === 'true') v = true;
-          else if (value === 'false') v = false;
-          else v = parseInt(value) !== 0;
-        }
-      }
-
-      if (formats.length > 0 && formats[0] === 'dateTime') {
-        if (formats.length === 1) {
-          v = DateTime.fromHumanDateTime(value);
-        }
-      }
-      if (formats.length > 0 && formats[0] === 'date') {
-        if (formats.length === 1) {
-          v = DateTime.fromHumanDate(value);
-        }
-      }
-      if (formats.length > 0 && formats[0] === 'time') {
-        if (formats.length === 1) {
-          v = DateTime.fromHumanTime(value);
-        }
+      if (formatter) {
+        return formatter.parse(value, params, elem, getFormatExpression);
       }
     }
 
