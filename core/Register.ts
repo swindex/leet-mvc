@@ -1,4 +1,4 @@
-import { BaseComponent } from "components/BaseComponent";
+import { BaseComponent } from "../components/BaseComponent";
 
 /**
  * Registry for components used by the binder.
