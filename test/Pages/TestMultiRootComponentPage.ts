@@ -18,10 +18,10 @@ class SingleRootComponent extends BaseComponent {
 
   get template() {
     return `
-      <div class="single-root" style="border:2px solid #2ecc71; padding:15px; margin:10px 0; border-radius:6px; background:#e8f8f5;">
+      <div class="single-root" style="border:2px solid #2ecc71; padding:1.5rem; margin:10px 0; border-radius:6px; background:#e8f8f5;">
         <h3 style="margin:0 0 10px 0; color:#27ae60;">{{ this.title }}</h3>
         <p style="margin:0 0 10px 0; color:#555;">{{ this.content }}</p>
-        <div class="children-container" style="padding:10px; background:#fff; border-radius:4px;">
+        <div class="children-container" style="padding:1.0rem; background:#fff; border-radius:4px;">
           <strong>Children:</strong>
           <div style="margin-top:5px;">
             <content></content>
@@ -49,19 +49,19 @@ class MultiRootComponent extends BaseComponent {
 
   get template() {
     return `
-      <div class="multi-root-header" style="border:2px solid #3498db; padding:10px; margin:5px 0; border-radius:6px 6px 0 0; background:#ebf5fb;">
+      <div class="multi-root-header" style="border:2px solid #3498db; padding:1.0rem; margin:5px 0; border-radius:6px 6px 0 0; background:#ebf5fb;">
         <strong style="color:#2980b9;">{{ this.header }}</strong>
       </div>
-      <div class="multi-root-body" style="border:2px solid #3498db; border-top:none; border-bottom:none; padding:10px; margin:0; background:#fff;">
+      <div class="multi-root-body" style="border:2px solid #3498db; border-top:none; border-bottom:none; padding:1.0rem; margin:0; background:#fff;">
         <p style="margin:0; color:#555;">{{ this.body }}</p>
-        <div class="children-container" style="margin-top:10px; padding:8px; background:#f8f9fa; border-radius:4px;">
+        <div class="children-container" style="margin-top:1.0rem; padding:8px; background:#f8f9fa; border-radius:4px;">
           <em>Children content:</em>
           <div style="margin-top:5px;">
             <content></content>
           </div>
         </div>
       </div>
-      <div class="multi-root-footer" style="border:2px solid #3498db; padding:10px; margin:5px 0 10px 0; border-radius:0 0 6px 6px; background:#ebf5fb;">
+      <div class="multi-root-footer" style="border:2px solid #3498db; padding:1.0rem; margin:5px 0 10px 0; border-radius:0 0 6px 6px; background:#ebf5fb;">
         <small style="color:#7f8c8d;">{{ this.footer }}</small>
       </div>
     `;
@@ -134,7 +134,7 @@ export class TestMultiRootComponentPage extends HeaderPage {
 }
 
 var template = `
-<div style="padding:10px;">
+<div style="padding:1.0rem;">
   <h3>Multi-Root vs Single-Root Component Template Test</h3>
   
   <hr/>
@@ -260,7 +260,7 @@ var template = `
     </p>
     <div id="mixed-nested-instance">
       <app-single-root [title]="this.singleTitle" [content]="this.singleContent">
-        <div style="padding:10px; border:1px dashed #636e72;">
+        <div style="padding:1.0rem; border:1px dashed #636e72;">
           <p style="margin:0;">Nested content with counter: {{ this.counter }}</p>
           <app-multi-root [header]="'Nested Multi Header'" [body]="'Nested inside single root'" [footer]="'Nested Footer'">
             <em>Deep nested child</em>

@@ -36,21 +36,20 @@ input[type=button] {
 	select,
 	select-multiple,
 	.input {
-		font-size: var(--tm-size-f-input);
+		font-size: var(--tm-input-font-size);
 		border-collapse: collapse;
 		padding-left: 0;
 		border: none;
-		border-bottom: var(--tm-size-border) solid var(--tm-color-border);
-		margin-bottom: calc(var(--tm-size-border-active) - var(--tm-size-border)); //space for the border
+		border-bottom: var(--tm-input-border);
+		margin-bottom: calc(var(--tm-border-size-active) - var(--tm-border-size)); //space for the border
 		-webkit-appearance: none;
 		padding: var(--tm-margin-sm) 0;
-		//padding-right: var(--tm-size-input-i-md); //this used for hiding text under icon	
 		background-color: transparent;
 		width: 100%;
 
 		&[disabled],
 		&[readonly] {
-			border-bottom: var(--tm-size-border) solid var(--tm-color-border-disabled);
+			border-bottom: var(--tm-input-border-disabled);
 		}
 
 		&:focus,
@@ -58,7 +57,7 @@ input[type=button] {
 		&.focus-blink {
 			outline: none;
 			box-shadow: none;
-			border-bottom: var(--tm-size-border-active) solid var(--tm-color-border-active);
+			border-bottom: var(--tm-border-size-active) solid var(--tm-border-active);
 			margin-bottom: 0;
 		}
 
@@ -70,7 +69,7 @@ input[type=button] {
 	}
 
 	textarea {
-		min-height: 4em;
+		min-height: 4rem;
 		width: 100% !important;
 	}
 
@@ -86,7 +85,7 @@ input[type=button] {
 		select,
 		select-multiple,
 		.input {
-			padding-right: var(--tm-size-input-i-md);
+			padding-right: var(--tm-input-icon-font-size);
 		}
 	}
 
@@ -95,7 +94,7 @@ input[type=button] {
 		top: 0;
 		right: var(--tm-margin-sm);
 		font-weight: bold;
-		font-size: var(--tm-size-f-input);
+		font-size: var(--tm-input-font-size);
 		pointer-events: none;
 		height: 100%;
 		display: flex;
@@ -115,12 +114,12 @@ input[type=button] {
 		z-index: 5;
 		background-color: transparent;
 		padding-left: 0;
-		font-size: var(--tm-size-f-toplabel);
+		font-size: var(--tm-input-top-label-font-size);
 		text-align: left;
 		display: inline-block;
 		white-space: nowrap;
-		height: 1.0em;
-		line-height: 1em;
+		height: 1.0rem;
+		line-height: 1rem;
 
 		i {
 			color: #0874B7;
@@ -136,7 +135,7 @@ input[type=button] {
 	}
 
 	&.short {
-		padding-bottom: 20px;
+		padding-bottom: 2.0rem;
 
 		.label {
 			margin-left: 5px;
@@ -144,17 +143,17 @@ input[type=button] {
 	}
 
 	.hint {
-		font-size: 12px;
+		font-size: var(--tm-font-size-sm);
 
 		&.error {
-			color: var(--tm-color-error);
+			color: var(--tm-input-error-color);
 			white-space: pre-wrap;
 		}
 	}
 
 	.message {
 		text-align: center;
-		font-size: 1.25em;
+		font-size: var(--tm-font-size-md);
 	}
 
 	.split-input {
@@ -165,11 +164,16 @@ input[type=button] {
 		}
 	}
 
+	&.split {
+		flex-direction: row;
+	}
+
+
 	.split {
-		width: 50%;
+		
 		padding-right: var(--tm-margin-md);
 		position: relative;
-
+		
 		.icon {
 			right: calc(var(--tm-margin-sm) + var(--tm-margin-md));
 		}
@@ -187,7 +191,7 @@ input[type=button] {
   &.active{
     label {
       top: 0;
-      font-size: 12px;
+      font-size: 1.2rem;
       pointer-events: all;
     }
   }*/
@@ -197,13 +201,13 @@ input[type=button] {
     z-index: 5;
     background-color: transparent;
     padding-left: 0;
-    font-size: 16px;
+    font-size: 1.6rem;
     text-align: left;
     display: inline-block;
-    height: 1em;
-    line-height: 1em;
+    height: 1rem;
+    line-height: 1rem;
     position: absolute;
-    top: 1em;
+    top: 1rem;
     transition: all 0.5s ease;
     pointer-events: none;
   }*/
@@ -229,7 +233,7 @@ input[type=button] {
 
 	@keyframes focus_blink {
 		50% {
-			border-bottom: var(--tm-size-border-active) solid var(--tm-color-border);
+			border-bottom: var(--tm-border-size-active) solid var(--tm-border);
 		}
 	}
 }
@@ -241,7 +245,7 @@ select-multiple {
 	>div {
 		height: 100%;
 		padding: 3px 0px;
-		margin-right: 1em;
+		margin-right: 1rem;
 	}
 }
 
@@ -249,11 +253,11 @@ select-multiple {
 .fieldgroup {
 	>div.label {
 		color: #333;
-		font-size: var(--tm-size-f-input);
+		font-size: var(--tm-input-font-size);
 		width: 100%;
 		align-self: center;
 		//padding: var(--tm-margin-sm) 0;
-		padding-right: var(--tm-size-input-i-md); //this used for hiding text under icon	
+		padding-right: var(--tm-input-icon-font-size); //this used for hiding text under icon	
 
 		&.link {
 			text-decoration: underline;
@@ -263,12 +267,12 @@ select-multiple {
 
 	>div.link {
 		width: 100%;
-		font-size: var(--tm-size-f-input);
+		font-size: var(--tm-input-font-size);
 		text-decoration: underline;
 		color: var(--tm-color-link);
 		align-self: center;
 		padding: var(--tm-margin-sm) 0;
-		padding-right: var(--tm-size-input-i-md); //this used for hiding text under icon	
+		padding-right: var(--tm-input-icon-font-size); //this used for hiding text under icon	
 	}
 }
 
@@ -307,7 +311,7 @@ select-multiple {
 		display: flex;
 		align-items: center;
 		width: 100%;
-		font-size: var(--tm-size-f-input);
+		font-size: var(--tm-input-font-size);
 		padding: var(--tm-margin-md) 0 var(--tm-margin-md) 0;
 		height: auto;
 
@@ -321,7 +325,7 @@ select-multiple {
 
 			&:checked {
 				&+.slider {
-					background-color: #2196F3;
+					background-color: var(--tm-selected-item-color);
 
 					&:before {
 						transform: translateX(1.75em);
@@ -330,10 +334,10 @@ select-multiple {
 
 				&+.radio {
 					//background-color: #2196F3;
-					border-color: #2196f3;
+					border-color: var(--tm-selected-item-color);
 
 					&:before {
-						background-color: #2196f3;
+						background-color: var(--tm-selected-item-color);
 						opacity: 1;
 					}
 
@@ -341,8 +345,8 @@ select-multiple {
 						&:before {
 							background-color: transparent;
 							content: '\2714';
-							color: #2196f3;
-							font-size: 1.25em;
+							color: var(--tm-selected-item-color);
+							font-size: var(--tm-input-font-size);
 							font-weight: bold;
 						}
 					}
@@ -352,7 +356,7 @@ select-multiple {
 
 			&:focus {
 				&+.slider {
-					box-shadow: 0 0 1px #2196F3;
+					box-shadow: 0 0 1px var(--tm-selected-item-color);
 				}
 
 				&+.radio {
@@ -365,27 +369,27 @@ select-multiple {
 		.slider {
 			position: relative;
 			cursor: pointer;
-			background-color: #ccc;
+			//background-color: #ccc;
 			transition: .4s;
-			width: 3em;
-			min-width: 3em;
-			height: 1.375em;
+			width: 3rem;
+			min-width: 3rem;
+			height: 1.375rem;
 			margin-left: auto;
 
 			&:before {
 				position: absolute;
 				content: "";
-				height: 1.5em;
-				width: 1.5em;
+				height: 1.5rem;
+				width: 1.5rem;
 				left: -1px;
-				top: -0.05em;
-				background-color: white;
+				top: -0.05rem;
+				//background-color: white;
 				transition: .2s;
 				box-shadow: 0 0px 2px #333;
 			}
 
 			&.round {
-				border-radius: 1em;
+				border-radius: 1rem;
 				margin-right: 4px;
 
 				&:before {
@@ -394,7 +398,7 @@ select-multiple {
 			}
 
 			&.square {
-				border-radius: 0em;
+				border-radius: 0rem;
 				margin-right: 4px;
 
 				&:before {
@@ -406,24 +410,27 @@ select-multiple {
 		.radio {
 			position: relative;
 			cursor: pointer;
-			background-color: #fff;
+			//background-color: #fff;
 			transition: .4s;
-			width: 26px;
-			min-width: 26px;
-			height: 26px;
+			width: calc(var(--tm-input-font-size) * 1.5);
+			min-width: calc(var(--tm-input-font-size) * 1.5);
+			height: calc(var(--tm-input-font-size) * 1.5);
 			margin-left: 0;
 			border: 1px solid #333;
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+
 
 			//
 			margin-right: var(--tm-margin-md);
-			padding: 4px;
 
 			&:before {
 				//position: absolute;
 				display: block;
 				content: "";
-				height: 100%;
-				width: 100%;
+				height: var(--tm-input-font-size);
+				width: var(--tm-input-font-size);
 				transition: 0.3s;
 				opacity: 0;
 				//border-radius: 50%;
@@ -482,11 +489,11 @@ div[ion-fab] {
 	z-index: 10;
 
 	&[round] {
-		width: var(--tm-size-input-h-lg);
-		height: var(--tm-size-input-h-lg);
+		width: 3rem;
+		height:  3rem;
 
 		button {
-			border-radius: var(--tm-size-input-h-lg);
+			border-radius:  3rem;
 
 			width: 100%;
 			height: 100%;
@@ -512,15 +519,13 @@ div[ion-fab] {
 
 	button {
 		position: relative;
-		font-size: var(--tm-size-input-i-lg);
-		padding: 6px 12px;
-		background-color: var(--tm-color-button-bg);
-		color: var(--tm-color-button-fg);
+		font-size: var(--tm-font-size-md);
+		padding: 6px 1.2rem;
+		background-color: var(--tm-button-background-color);
+		color: var(--tm-button-color);
 		border: none;
-		box-shadow: var(--tm-shadow-b-up);
 
 		&:active {
-			box-shadow: var(--tm-shadow-b-down);
 		}
 	}
 }
@@ -534,8 +539,8 @@ button {
 
 	&[outline] {
 		background-color: transparent !important;
-		border: var(--tm-size-border) solid var(--tm-color-border) !important;
-		color: var(--tm-color-border) !important;
+		border: var(--tm-border-size) solid var(--tm-border) !important;
+		color: var(--tm-border) !important;
 		box-shadow: none !important;
 	}
 

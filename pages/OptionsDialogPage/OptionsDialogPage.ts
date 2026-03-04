@@ -66,11 +66,11 @@ export class OptionsDialogPage extends DialogPage {
   set multiple (value){
     this._multiple = value;
     if (value==true){
-      this.buttons['Ok'] = ()=>{this._onOkClicked();};
+      this.buttons['OK'] = ()=>{this._onOkClicked();};
       this.icons = this.checkedIcons;
     }else{
-      if (this.buttons['Ok']){
-        delete this.buttons['Ok'];
+      if (this.buttons['OK']){
+        delete this.buttons['OK'];
       }
       this.icons = this.radioIcons;
     }

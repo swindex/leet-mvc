@@ -547,7 +547,7 @@ class NumericKeyboardPage extends BasePage {
       var cstyle = "";
       if (i == this.cursorPosition) {
         if (this.isPipeVisible) {
-          cstyle = `<span style="position:absolute;width:1px;height:1.25em;background-color: ${this.inputStyle['color']};top:0;left:0;"></span>`
+          cstyle = `<span style="position:absolute;width:1px;height:1.25rem;background-color: ${this.inputStyle['color']};top:0;left:0;"></span>`
         } else {
           cstyle = ``
         }

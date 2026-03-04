@@ -132,23 +132,23 @@ export class TestNestedDirectivesPage extends HeaderPage {
 
   get template() {
     return super.extendTemplate(super.template, `
-      <div class="fill scroll" style="padding: 20px;">
+      <div class="fill scroll" style="padding: 2.0rem;">
         <h2>Nested Directives - Complex Combinations</h2>
 
         <hr>
 
         <h3>1. [if] + [foreach] Combination</h3>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <button onclick="this.toggleSection()" class="btn btn-primary">
             Toggle Section ({{ this.showSection ? 'Hide' : 'Show' }})
           </button>
           <button onclick="this.addCategory()" class="btn btn-success">Add Category</button>
           
-          <div [if]="this.showSection" style="margin-top: 10px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd;">
+          <div [if]="this.showSection" style="margin-top: 1.0rem; padding: 1.5rem; background: #f8f9fa; border: 1px solid #ddd;">
             <strong>Categories List:</strong>
             
-            <div [foreach]="catIndex in this.categories as category" style="margin-top: 10px;">
-              <div style="padding: 10px; background: white; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
+            <div [foreach]="catIndex in this.categories as category" style="margin-top: 1.0rem;">
+              <div style="padding: 1.0rem; background: white; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 1.0rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <strong>{{ category.name }} (ID: {{ category.id }})</strong>
                   <div>
@@ -159,7 +159,7 @@ export class TestNestedDirectivesPage extends HeaderPage {
                   </div>
                 </div>
                 
-                <div [if]="category.visible" style="margin-top: 10px; padding-left: 20px;">
+                <div [if]="category.visible" style="margin-top: 1.0rem; padding-left: 2.0rem;">
                   <ul style="list-style: circle;">
                     <div [foreach]="itemIndex in category.items as item">
                       <li>{{ item }}</li>
@@ -174,10 +174,10 @@ export class TestNestedDirectivesPage extends HeaderPage {
         <hr>
 
         <h3>2. [foreach] + [class] + [style] + [if]</h3>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <button onclick="this.addUser()" class="btn btn-success">Add User</button>
           
-          <div style="margin-top: 10px;">
+          <div style="margin-top: 1.0rem;">
             <div [foreach]="userIndex in this.users as user">
               <div [if]="user.active"
                    [style]="{ 
@@ -191,10 +191,10 @@ export class TestNestedDirectivesPage extends HeaderPage {
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div>
                     <strong>{{ user.name }}</strong>
-                    <span style="margin-left: 10px; padding: 2px 8px; background: #007bff; color: white; border-radius: 3px; font-size: 12px;">
+                    <span style="margin-left: 1.0rem; padding: 2px 8px; background: #007bff; color: white; border-radius: 3px; font-size: 1.2rem;">
                       {{ user.role }}
                     </span>
-                    <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    <div style="font-size: 1.2rem; color: #666; margin-top: 5px;">
                       {{ user.email }}
                     </div>
                   </div>
@@ -206,7 +206,7 @@ export class TestNestedDirectivesPage extends HeaderPage {
             </div>
           </div>
 
-          <div [if]="this.selectedUserId" style="margin-top: 15px; padding: 15px; background: #e9ecef; border-radius: 5px;">
+          <div [if]="this.selectedUserId" style="margin-top: 1.5rem; padding: 1.5rem; background: #e9ecef; border-radius: 5px;">
             <h4>Selected User Details:</h4>
             <div [if]="this.selectedUser">
               <p><strong>ID:</strong> {{ this.selectedUser.id }}</p>
@@ -217,12 +217,12 @@ export class TestNestedDirectivesPage extends HeaderPage {
             </div>
           </div>
 
-          <div style="margin-top: 10px; padding: 10px; background: #fff3cd;">
+          <div style="margin-top: 1.0rem; padding: 1.0rem; background: #fff3cd;">
             <strong>Inactive Users:</strong>
             <div [foreach]="userIndex in this.users as user">
               <div [if]="!user.active" style="padding: 5px; border-bottom: 1px solid #ddd;">
                 {{ user.name }} - {{ user.email }}
-                <button onclick="this.toggleUserActive(userIndex)" class="btn btn-sm btn-success" style="margin-left: 10px;">
+                <button onclick="this.toggleUserActive(userIndex)" class="btn btn-sm btn-success" style="margin-left: 1.0rem;">
                   Activate
                 </button>
               </div>
@@ -233,12 +233,12 @@ export class TestNestedDirectivesPage extends HeaderPage {
         <hr>
 
         <h3>3. Three-Level Nested [foreach] + [if]</h3>
-        <div style="margin-bottom: 20px;">
-          <div [if]="this.nestedData.level1.visible" style="padding: 15px; background: #f0f0f0; border-left: 5px solid #007bff;">
+        <div style="margin-bottom: 2.0rem;">
+          <div [if]="this.nestedData.level1.visible" style="padding: 1.5rem; background: #f0f0f0; border-left: 5px solid #007bff;">
             <h4>{{ this.nestedData.level1.title }}</h4>
             
-            <div [foreach]="l2Index in this.nestedData.level1.level2 as level2Item" style="margin-left: 20px; margin-top: 10px;">
-              <div style="padding: 10px; background: white; border: 1px solid #ddd; margin-bottom: 10px;">
+            <div [foreach]="l2Index in this.nestedData.level1.level2 as level2Item" style="margin-left: 2.0rem; margin-top: 1.0rem;">
+              <div style="padding: 1.0rem; background: white; border: 1px solid #ddd; margin-bottom: 1.0rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <strong>{{ level2Item.title }}</strong>
                   <button onclick="this.toggleLevel2(l2Index)" class="btn btn-sm btn-primary">
@@ -246,7 +246,7 @@ export class TestNestedDirectivesPage extends HeaderPage {
                   </button>
                 </div>
                 
-                <div [if]="level2Item.visible" style="margin-left: 20px; margin-top: 10px;">
+                <div [if]="level2Item.visible" style="margin-left: 2.0rem; margin-top: 1.0rem;">
                   <ul>
                     <div [foreach]="l3Index in level2Item.level3 as level3Item">
                       <li>{{ level3Item }}</li>
@@ -261,12 +261,12 @@ export class TestNestedDirectivesPage extends HeaderPage {
         <hr>
 
         <h3>4. Data Table with Complex Directives</h3>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <button onclick="this.toggleAdvanced()" class="btn btn-primary">
             {{ this.showAdvanced ? 'Hide' : 'Show' }} Advanced View
           </button>
           
-          <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+          <table style="width: 100%; border-collapse: collapse; margin-top: 1.0rem;">
             <thead>
               <tr style="background: #007bff; color: white;">
                 <th style="padding: 8px; border: 1px solid #ddd;">ID</th>
@@ -307,7 +307,7 @@ export class TestNestedDirectivesPage extends HeaderPage {
         <hr>
 
         <h3>5. Dynamic Tab-Like Structure</h3>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <div style="display: flex; border-bottom: 2px solid #ddd;">
             <div [foreach]="tabIndex in this.categories as category">
               <button [style]="{
@@ -325,7 +325,7 @@ export class TestNestedDirectivesPage extends HeaderPage {
           </div>
           
           <div [foreach]="tabIndex in this.categories as category">
-            <div [if]="this.activeCategory === tabIndex" style="padding: 20px; background: #f8f9fa; margin-top: 10px;">
+            <div [if]="this.activeCategory === tabIndex" style="padding: 2.0rem; background: #f8f9fa; margin-top: 1.0rem;">
               <h4>{{ category.name }}</h4>
               <p>Category ID: {{ category.id }}</p>
               
@@ -341,8 +341,8 @@ export class TestNestedDirectivesPage extends HeaderPage {
         <hr>
 
         <h3>6. Conditional Rendering with Counters</h3>
-        <div style="margin-bottom: 20px;">
-          <div style="padding: 15px; background: #f8f9fa; border: 1px solid #ddd;">
+        <div style="margin-bottom: 2.0rem;">
+          <div style="padding: 1.5rem; background: #f8f9fa; border: 1px solid #ddd;">
             <p><strong>Total Categories:</strong> {{ this.categories.length }}</p>
             <p><strong>Visible Categories:</strong> {{ this.categories.filter(c => c.visible).length }}</p>
             <p><strong>Total Users:</strong> {{ this.users.length }}</p>
@@ -355,8 +355,8 @@ export class TestNestedDirectivesPage extends HeaderPage {
               <div [foreach]="catIndex in this.categories as category">
                 <div style="padding: 5px; border-bottom: 1px solid #ddd;">
                   <strong>{{ category.name }}:</strong> {{ category.items.length }} items
-                  <span [if]="category.visible" style="color: green; margin-left: 10px;">✓ Visible</span>
-                  <span [if]="!category.visible" style="color: red; margin-left: 10px;">✗ Hidden</span>
+                  <span [if]="category.visible" style="color: green; margin-left: 1.0rem;">✓ Visible</span>
+                  <span [if]="!category.visible" style="color: red; margin-left: 1.0rem;">✗ Hidden</span>
                 </div>
               </div>
             </div>

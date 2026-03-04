@@ -1,24 +1,5 @@
 simple-tabs,
 .simple-tabs {
-	button{
-		i {
-			color: var(--tm-color-tabbutton-fg);
-			font-size:20px;
-			display:block;
-		}
-		span {
-			color: var(--tm-color-tabbutton-fg);
-			font-size:10px;
-			display:block;
-		}
-		&.active, &[selected] {
-			//border-bottom: var(--tm-size-tabbutton-border-active) solid var(--tm-color-tabbutton-border-active);
-			//border-bottom-color: var(--tm-color-tabbutton-fg-active);
-			i, span {
-				color: var(--tm-color-tabbutton-fg-active) !important;
-			}
-		}
-	}
 	>ul {
 		display: flex;
 		flex-direction: row;
@@ -29,18 +10,15 @@ simple-tabs,
 		margin: 0;
 		list-style: none;
 		li {
-			color: var(--tm-color-tabbutton-fg);
-			background-color: var(--tm-color-tabbutton-bg);
-			border-bottom: var(--tm-size-tabbutton-border-active) solid transparent;
+  			cursor: pointer;
+			color: var(--tm-tab-button-color);
+			background-color: var(--tm-tab-button-background-color);
+			border-bottom: 2px solid transparent;
 
 			&[selected] {
-				border-bottom-color: var(--tm-color-tabbutton-border-active);
-				color: var(--tm-color-tabbutton-fg-active);
+				border-bottom-color: var(--tm-border-active);
+				color: var(--tm-tab-button-color-active);
 				font-weight: 500;
-				//border-bottom: var(--tm-size-tabbutton-border-active) solid var(--tm-color-tabbutton-border-active);
-				//color: var(--tm-color-tabbutton-fg-active);
-				//font-weight: 500;
-				//border-bottom-color: var(--tm-color-tabbutton-fg-active);
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 		overflow: visible !important;
 	}
 	.tabs{
-		height: 22em;
+		height: 22rem;
 		position: relative;
 		overflow: hidden;
 		&>div{
@@ -25,8 +25,8 @@
 
 	}
 	.tab-buttons li span{
-		font-size:20px;
-		line-height:20px;
+		font-size:2.0rem;
+		line-height:2.0rem;
 		padding-bottom: 5px;
 	}
 
@@ -42,9 +42,9 @@
 				span{
 					display: block;
 					position: relative;
-					height: 2.5em;
-					width: 2.5em;
-					line-height: 2.5em;
+					height: 2.5rem;
+					width: 2.5rem;
+					line-height: 2.5rem;
 					margin-left: auto;
 					margin-right: auto;
 				}
@@ -148,9 +148,9 @@
 	.month-buttons{
 		display: flex;
     background-color: aliceblue;
-    padding: .5em;
+    padding: .5rem;
     button {
-      font-size: 1.15em;
+      font-size: 1.15rem;
       color: var(--tm-color-action);
       &:active {
         color: var(--tm-color-action-active);
@@ -184,7 +184,7 @@
 
 	#clock{
 
-		//padding:2em 1em;
+		//padding:2em 1rem;
 		width:100%;
 		height: 100%;
 		position: relative;
@@ -196,7 +196,7 @@
 		// }
 		.circle_wrapper{
 			margin: auto;
-      padding: 2em;
+      padding: 2rem;
       box-sizing: content-box !important;
 		}	
 		.circle{
@@ -249,14 +249,14 @@
 		
 		.hour{
 			position: absolute;
-			width: 2em;
-			height: 2em;
+			width: 2rem;
+			height: 2rem;
 			//background-color: gray;
-			border-radius: 5em;
+			border-radius: 5rem;
 			display: flex;
 			justify-items: center;
 			align-items: center;
-			font-size: 1.5em;
+			font-size: 1.5rem;
 			span{
 				margin: auto;
 			}
@@ -266,14 +266,14 @@
 		}
 		.minute{
 			position: absolute;
-			width: 2em;
-			height: 2em;
+			width: 2rem;
+			height: 2rem;
 			//background-color: gray;
-			border-radius: 5em;
+			border-radius: 5rem;
 			display: flex;
 			justify-items: center;
 			align-items: center;
-			font-size: 1.5em;
+			font-size: 1.5rem;
 			span{
 				margin: auto;
 			}

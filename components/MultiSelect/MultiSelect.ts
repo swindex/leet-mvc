@@ -16,7 +16,7 @@ export class MultiSelect extends BaseComponent {
 		this.placeholder = "";
 
 		this.template=`<select-multiple class="select" onclick="this.onClick($event)">
-			<div style="margin-right:1em; overflow-x:auto;">
+			<div style="margin-right:1rem; overflow-x:auto;">
 				<span style="white-space:nowrap;display: inline-block;">{{ this.getDisplayText() }}</span>
 			</div>	
 		</select-multiple>`;

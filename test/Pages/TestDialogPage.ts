@@ -204,7 +204,7 @@ export class TestDialogPage extends HeaderPage {
   // Dialog with HTML content
   showHtmlContentDialog() {
     const htmlContent = `
-      <div style="padding: 10px; background: #f0f0f0; border-radius: 5px;">
+      <div style="padding: 1.0rem; background: #f0f0f0; border-radius: 5px;">
         <h3 style="color: #333; margin-top: 0;">Welcome!</h3>
         <p>This is <strong>custom HTML content</strong> rendered inside the dialog.</p>
         <ul>
@@ -560,13 +560,13 @@ export class TestDialogPage extends HeaderPage {
 
   get template() {
     return super.extendTemplate(super.template, `
-      <div class="fill scroll" style="padding: 20px;">
+      <div class="fill scroll" style="padding: 2.0rem;">
         <h1>Dialog Component Tests</h1>
         <p>Click buttons below to test various Dialog functionalities:</p>
 
         <hr>
         <h2>Basic Dialogs</h2>
-        <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 1.0rem;">
           <button onclick="this.showBasicDialog()" class="btn btn-primary">Basic Dialog</button>
           <button onclick="this.showFlexibleDialog()" class="btn btn-primary">Flexible Style</button>
           <button onclick="this.showLargeDialog()" class="btn btn-primary">Large Style</button>
@@ -576,7 +576,7 @@ export class TestDialogPage extends HeaderPage {
 
         <hr>
         <h2>Input Types</h2>
-        <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 1.0rem;">
           <button onclick="this.showTextInputDialog()" class="btn btn-success">Text Input</button>
           <button onclick="this.showPasswordDialog()" class="btn btn-success">Password</button>
           <button onclick="this.showTextAreaDialog()" class="btn btn-success">TextArea</button>
@@ -584,7 +584,7 @@ export class TestDialogPage extends HeaderPage {
 
         <hr>
         <h2>Date & Time Inputs</h2>
-        <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 1.0rem;">
           <button onclick="this.showDateDialog()" class="btn btn-info">Date Picker</button>
           <button onclick="this.showDateTimeDialog()" class="btn btn-info">DateTime Picker</button>
           <button onclick="this.showTimeDialog()" class="btn btn-info">Time Picker</button>
@@ -592,7 +592,7 @@ export class TestDialogPage extends HeaderPage {
 
         <hr>
         <h2>Selection Controls</h2>
-        <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 1.0rem;">
           <button onclick="this.showCheckboxDialog()" class="btn btn-warning">Checkbox</button>
           <button onclick="this.showSelectDialog()" class="btn btn-warning">Select Dropdown</button>
           <button onclick="this.showRadioDialog()" class="btn btn-warning">Radio Buttons</button>
@@ -600,7 +600,7 @@ export class TestDialogPage extends HeaderPage {
 
         <hr>
         <h2>Content Types</h2>
-        <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 1.0rem;">
           <button onclick="this.showLinkDialog()" class="btn btn-secondary">Link</button>
           <button onclick="this.showHtmlContentDialog()" class="btn btn-secondary">HTML Content</button>
           <button onclick="this.showSplitLayoutDialog()" class="btn btn-secondary">Split Layout</button>
@@ -608,7 +608,7 @@ export class TestDialogPage extends HeaderPage {
 
         <hr>
         <h2>Advanced Features</h2>
-        <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 1.0rem;">
           <button onclick="this.showMixedContentDialog()" class="btn btn-danger">Mixed Content</button>
           <button onclick="this.showMultipleButtonsDialog()" class="btn btn-danger">Multiple Buttons</button>
           <button onclick="this.showDynamicFieldsDialog()" class="btn btn-danger">Dynamic Fields</button>
@@ -619,7 +619,7 @@ export class TestDialogPage extends HeaderPage {
 
         <hr>
         <h2>OptionsDialogPage - Single Selection</h2>
-        <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 1.0rem;">
           <button onclick="this.showOptionsDialogSingle()" class="btn" style="background: #9C27B0; color: white;">Single Selection</button>
           <button onclick="this.showOptionsDialogWithIcons()" class="btn" style="background: #9C27B0; color: white;">With Custom Icons</button>
           <button onclick="this.showOptionsDialogWithImages()" class="btn" style="background: #9C27B0; color: white;">With Images</button>
@@ -630,7 +630,7 @@ export class TestDialogPage extends HeaderPage {
 
         <hr>
         <h2>OptionsDialogPage - Multiple Selection</h2>
-        <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 1.0rem;">
           <button onclick="this.showOptionsDialogMultiple()" class="btn" style="background: #673AB7; color: white;">Multiple Selection</button>
           <button onclick="this.showOptionsDialogPreselected()" class="btn" style="background: #673AB7; color: white;">With Preselected Items</button>
           <button onclick="this.showOptionsDialogCallback()" class="btn" style="background: #673AB7; color: white;">Custom Callbacks</button>
@@ -638,10 +638,10 @@ export class TestDialogPage extends HeaderPage {
         </div>
 
         <hr>
-        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-left: 4px solid #007bff;">
+        <div style="margin-top: 2.0rem; padding: 1.5rem; background: #f8f9fa; border-left: 4px solid #007bff;">
           <h3>Test Coverage:</h3>
           
-          <h4 style="margin-top: 15px; color: #007bff;">DialogPage:</h4>
+          <h4 style="margin-top: 1.5rem; color: #007bff;">DialogPage:</h4>
           <ul>
             <li>✓ Basic dialog creation with title and buttons</li>
             <li>✓ Flexible and Large popup styles</li>
@@ -657,7 +657,7 @@ export class TestDialogPage extends HeaderPage {
             <li>✓ Dialog with prompt message</li>
           </ul>
 
-          <h4 style="margin-top: 15px; color: #9C27B0;">OptionsDialogPage:</h4>
+          <h4 style="margin-top: 1.5rem; color: #9C27B0;">OptionsDialogPage:</h4>
           <ul>
             <li>✓ Single selection mode (radio-style)</li>
             <li>✓ Multiple selection mode (checkbox-style)</li>

@@ -3,8 +3,7 @@
   "version": "4.0.22",
   "sideEffects": [
     "**/*.css",
-    "**/*.scss",
-    "**/*.vue"
+    "**/*.scss"
   ],
   "description": "",
   "main": "index.ts",

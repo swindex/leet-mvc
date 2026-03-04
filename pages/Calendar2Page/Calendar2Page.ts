@@ -432,7 +432,7 @@ export class Calendar2Page extends HeaderPage {
       this.setDate(date);
       p.destroy();
     };
-    p.buttons.Ok = undefined;
+    p.buttons.OK = undefined;
   }
 
   setDate(date) {

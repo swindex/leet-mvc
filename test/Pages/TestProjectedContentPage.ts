@@ -16,10 +16,10 @@ class CardComponent extends BaseComponent {
 
   get template() {
     return `
-      <div style="border:2px solid #3498db; padding:15px; margin:10px 0; border-radius:6px; background:#ebf5fb;">
+      <div style="border:2px solid #3498db; padding:1.5rem; margin:10px 0; border-radius:6px; background:#ebf5fb;">
         <h3 style="margin:0 0 10px 0; color:#2980b9;">Card Title: {{ this.title }}</h3>
         <h3>Hosted Content:</h3>
-        <div style="padding:10px; background:#fff; border-radius:4px;">
+        <div style="padding:1.0rem; background:#fff; border-radius:4px;">
             <content></content>
         </div>
       </div>
@@ -54,7 +54,7 @@ export class TestProjectedContentPage extends BasePage {
 }
 
 var template_all = `
-    <div style="padding:10px;">
+    <div style="padding:1.0rem;">
         <h1>Content Projection Test</h1>
         
         <p>Counter: <strong>{{ this.counter }}</strong> <button onclick="this.onIncrement()">Increment</button></p>

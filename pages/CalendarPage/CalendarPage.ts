@@ -26,7 +26,7 @@ export class CalendarPage extends DialogPage {
 
     this.buttons = {
       Cancel: this.onCancelClicked.bind(this),
-      Ok: () => { return this.onDateTimeSelected(this._currDate.toDate()); },
+      OK: () => { return this.onDateTimeSelected(this._currDate.toDate()); },
     };
 
     this._showCalendar = true;

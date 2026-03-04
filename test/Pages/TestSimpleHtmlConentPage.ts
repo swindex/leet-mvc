@@ -54,7 +54,7 @@ var htmlTextWith2Children = `
 `
 
 var template_all = `
-    <div style="padding:10px;">
+    <div style="padding:1.0rem;">
         <h1>Content Projection Test</h1>
         
         <p>Counter: <strong>{{ this.counter }}</strong> <button onclick="this.onIncrement()">Increment</button></p>

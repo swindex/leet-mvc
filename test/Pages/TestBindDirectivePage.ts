@@ -50,8 +50,8 @@ export class TestBindDirectivePage extends HeaderPage {
 
   get template() {
     return super.extendTemplate(super.template, `
-      <div class="fill scroll" style="padding: 20px;">
-        <div style="margin-bottom: 20px;">
+      <div class="fill scroll" style="padding: 2.0rem;">
+        <div style="margin-bottom: 2.0rem;">
           <button onclick="this.resetAll()" class="btn btn-danger">Reset All</button>
           <button onclick="this.setDefaults()" class="btn btn-primary">Set Defaults</button>
         </div>
@@ -59,13 +59,13 @@ export class TestBindDirectivePage extends HeaderPage {
         <hr>
 
         <h2>[bind] Text Input</h2>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <label style="display: block; margin-bottom: 5px;">
             <strong>Text Input:</strong>
           </label>
-          <input type="text" bind="this.textInput" style="width: 100%; padding: 8px; font-size: 14px;" />
+          <input type="text" bind="this.textInput" style="width: 100%; padding: 8px; font-size: 1.4rem;" />
           
-          <div style="margin-top: 10px; padding: 10px; background: #f0f0f0;">
+          <div style="margin-top: 1.0rem; padding: 1.0rem; background: #f0f0f0;">
             <strong>Bound Value:</strong> "{{ this.textInput }}"
             <br>
             <strong>Length:</strong> {{ this.textInput ? this.textInput.length : 0 }}
@@ -75,13 +75,13 @@ export class TestBindDirectivePage extends HeaderPage {
         <hr>
 
         <h2>[bind] Textarea</h2>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <label style="display: block; margin-bottom: 5px;">
             <strong>Textarea:</strong>
           </label>
-          <textarea [bind]="this.textareaInput" rows="4" style="width: 100%; padding: 8px; font-size: 14px;"></textarea>
+          <textarea [bind]="this.textareaInput" rows="4" style="width: 100%; padding: 8px; font-size: 1.4rem;"></textarea>
           
-          <div style="margin-top: 10px; padding: 10px; background: #f0f0f0; white-space: pre-wrap;">
+          <div style="margin-top: 1.0rem; padding: 1.0rem; background: #f0f0f0; white-space: pre-wrap;">
             <strong>Bound Value:</strong>
             <pre style="margin: 5px 0;">{{ this.textareaInput }}</pre>
           </div>
@@ -90,11 +90,11 @@ export class TestBindDirectivePage extends HeaderPage {
         <hr>
 
         <h2>[bind] Select Dropdown</h2>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <label style="display: block; margin-bottom: 5px;">
             <strong>Select:</strong>
           </label>
-          <select [bind]="this.selectValue" style="width: 100%; padding: 8px; font-size: 14px;">
+          <select [bind]="this.selectValue" style="width: 100%; padding: 8px; font-size: 1.4rem;">
             <option value="">-- Select an option --</option>
             <option value="option1">Option 1</option>
             <option value="option2">Option 2</option>
@@ -102,7 +102,7 @@ export class TestBindDirectivePage extends HeaderPage {
             <option value="option4">Option 4</option>
           </select>
           
-          <div style="margin-top: 10px; padding: 10px; background: #f0f0f0;">
+          <div style="margin-top: 1.0rem; padding: 1.0rem; background: #f0f0f0;">
             <strong>Selected Value:</strong> "{{ this.selectValue }}"
           </div>
         </div>
@@ -110,12 +110,12 @@ export class TestBindDirectivePage extends HeaderPage {
         <hr>
 
         <h2>[bind] Radio Buttons</h2>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <label style="display: block; margin-bottom: 5px;">
             <strong>Radio Group:</strong>
           </label>
           
-          <div style="margin-bottom: 10px;">
+          <div style="margin-bottom: 1.0rem;">
             <label style="display: block; margin-bottom: 5px;">
               <input type="radio" name="radioGroup" value="radio1" [bind]="this.radioValue" />
               Radio Option 1
@@ -130,7 +130,7 @@ export class TestBindDirectivePage extends HeaderPage {
             </label>
           </div>
           
-          <div style="margin-top: 10px; padding: 10px; background: #f0f0f0;">
+          <div style="margin-top: 1.0rem; padding: 1.0rem; background: #f0f0f0;">
             <strong>Selected Radio:</strong> "{{ this.radioValue }}"
           </div>
         </div>
@@ -138,13 +138,13 @@ export class TestBindDirectivePage extends HeaderPage {
         <hr>
 
         <h2>[bind] Checkbox</h2>
-        <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 10px;">
+        <div style="margin-bottom: 2.0rem;">
+          <label style="display: block; margin-bottom: 1.0rem;">
             <input type="checkbox" [bind]="this.checkboxValue" />
             <strong>Checkbox Option</strong>
           </label>
           
-          <div style="margin-top: 10px; padding: 10px; background: #f0f0f0;">
+          <div style="margin-top: 1.0rem; padding: 1.0rem; background: #f0f0f0;">
             <strong>Checked:</strong> {{ this.checkboxValue ? '✓ Yes' : '✗ No' }}
             <br>
             <strong>Boolean Value:</strong> {{ this.checkboxValue }}
@@ -154,13 +154,13 @@ export class TestBindDirectivePage extends HeaderPage {
         <hr>
 
         <h2>[bind] Number Input</h2>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <label style="display: block; margin-bottom: 5px;">
             <strong>Number Input:</strong>
           </label>
-          <input type="number" [bind]="this.numberInput" style="width: 100%; padding: 8px; font-size: 14px;" />
+          <input type="number" [bind]="this.numberInput" style="width: 100%; padding: 8px; font-size: 1.4rem;" />
           
-          <div style="margin-top: 10px; padding: 10px; background: #f0f0f0;">
+          <div style="margin-top: 1.0rem; padding: 1.0rem; background: #f0f0f0;">
             <strong>Bound Value:</strong> {{ this.numberInput }}
             <br>
             <strong>Type:</strong> {{ typeof this.numberInput }}
@@ -172,14 +172,14 @@ export class TestBindDirectivePage extends HeaderPage {
         <hr>
 
         <h2>[bind] Email Input</h2>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <label style="display: block; margin-bottom: 5px;">
             <strong>Email Input:</strong>
           </label>
-          <input type="email" [bind]="this.emailInput" style="width: 100%; padding: 8px; font-size: 14px;" 
+          <input type="email" [bind]="this.emailInput" style="width: 100%; padding: 8px; font-size: 1.4rem;" 
                  placeholder="email@example.com" />
           
-          <div style="margin-top: 10px; padding: 10px; background: #f0f0f0;">
+          <div style="margin-top: 1.0rem; padding: 1.0rem; background: #f0f0f0;">
             <strong>Bound Value:</strong> "{{ this.emailInput }}"
             <br>
             <strong>Valid Format:</strong> {{ this.emailInput && this.emailInput.includes('@') ? '✓' : '✗' }}
@@ -189,13 +189,13 @@ export class TestBindDirectivePage extends HeaderPage {
         <hr>
 
         <h2>[bind] Date Input</h2>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <label style="display: block; margin-bottom: 5px;">
             <strong>Date Input:</strong>
           </label>
-          <input type="date" [bind]="this.dateInput" style="width: 100%; padding: 8px; font-size: 14px;" />
+          <input type="date" [bind]="this.dateInput" style="width: 100%; padding: 8px; font-size: 1.4rem;" />
           
-          <div style="margin-top: 10px; padding: 10px; background: #f0f0f0;">
+          <div style="margin-top: 1.0rem; padding: 1.0rem; background: #f0f0f0;">
             <strong>Bound Value:</strong> "{{ this.dateInput }}"
           </div>
         </div>
@@ -203,26 +203,26 @@ export class TestBindDirectivePage extends HeaderPage {
         <hr>
 
         <h2>Combined Form Example</h2>
-        <div style="margin-bottom: 20px;">
-          <div style="border: 2px solid #007bff; padding: 15px; border-radius: 5px;">
+        <div style="margin-bottom: 2.0rem;">
+          <div style="border: 2px solid #007bff; padding: 1.5rem; border-radius: 5px;">
             <h3>User Profile Form</h3>
             
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 1.0rem;">
               <label style="display: block; margin-bottom: 5px;">Name:</label>
               <input type="text" [bind]="this.textInput" style="width: 100%; padding: 8px;" />
             </div>
             
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 1.0rem;">
               <label style="display: block; margin-bottom: 5px;">Email:</label>
               <input type="email" [bind]="this.emailInput" style="width: 100%; padding: 8px;" />
             </div>
             
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 1.0rem;">
               <label style="display: block; margin-bottom: 5px;">Age:</label>
               <input type="number" [bind]="this.numberInput" style="width: 100%; padding: 8px;" />
             </div>
             
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 1.0rem;">
               <label style="display: block; margin-bottom: 5px;">Country:</label>
               <select [bind]="this.selectValue" style="width: 100%; padding: 8px;">
                 <option value="">Select...</option>
@@ -233,14 +233,14 @@ export class TestBindDirectivePage extends HeaderPage {
               </select>
             </div>
             
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 1.0rem;">
               <label style="display: block;">
                 <input type="checkbox" [bind]="this.checkboxValue" />
                 I agree to terms and conditions
               </label>
             </div>
 
-            <div style="margin-top: 15px; padding: 15px; background: #e9ecef; border-radius: 5px;">
+            <div style="margin-top: 1.5rem; padding: 1.5rem; background: #e9ecef; border-radius: 5px;">
               <h4>Form Summary:</h4>
               <p><strong>Name:</strong> {{ this.textInput }}</p>
               <p><strong>Email:</strong> {{ this.emailInput }}</p>

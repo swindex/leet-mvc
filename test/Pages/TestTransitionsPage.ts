@@ -83,10 +83,12 @@ export class TestTransitionsPage extends HeaderPage {
         .slide-leave {
           transform: translateX(0);
           opacity: 1;
+          position: absolute;
         }
         .slide-leave_to {
           transform: translateX(-100%);
           opacity: 0;
+          position: absolute;
         }
 
         /* Scale Transition */
@@ -190,24 +192,24 @@ export class TestTransitionsPage extends HeaderPage {
 
         /* Content boxes */
         .transition-box {
-          padding: 20px;
+          padding: 2.0rem;
           margin: 10px 0;
           border-radius: 8px;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          font-size: 18px;
+          font-size: 1.8rem;
           text-align: center;
         }
 
         .view-box {
-          padding: 30px;
+          padding: 3.0rem;
           margin: 10px 0;
           border-radius: 8px;
-          min-height: 150px;
+          min-height: 15.0rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 24px;
+          font-size: 2.4rem;
           font-weight: bold;
         }
 
@@ -219,7 +221,7 @@ export class TestTransitionsPage extends HeaderPage {
         .image-container {
           position: relative;
           width: 100%;
-          height: 300px;
+          height: 30.0rem;
           background: #f0f0f0;
           border-radius: 8px;
           overflow: hidden;
@@ -235,7 +237,7 @@ export class TestTransitionsPage extends HeaderPage {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 48px;
+          font-size: 4.8rem;
           font-weight: bold;
           color: white;
         }
@@ -245,14 +247,14 @@ export class TestTransitionsPage extends HeaderPage {
         .image-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
       </style>
 
-      <div class="fill scroll" style="padding: 20px;">
+      <div class="fill scroll" style="padding: 2.0rem;">
         <h2>[transition] Directive Tests</h2>
         <p><em>The [transition] directive provides smooth enter/leave animations using CSS transitions</em></p>
 
         <hr>
 
         <h3>1. Fade Transition</h3>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <button onclick="this.nextFade()" class="btn btn-primary">
             Next Content ({{ this.fadeCounter }})
           </button>
@@ -278,7 +280,7 @@ export class TestTransitionsPage extends HeaderPage {
         <hr>
 
         <h3>2. Slide Transition</h3>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <button onclick="this.nextSlide()" class="btn btn-primary">
             Next Slide ({{ this.slideCounter }})
           </button>
@@ -306,7 +308,7 @@ export class TestTransitionsPage extends HeaderPage {
         <hr>
 
         <h3>3. Scale Transition</h3>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <button onclick="this.nextScale()" class="btn btn-primary">
             Next Scale ({{ this.scaleCounter }})
           </button>
@@ -332,7 +334,7 @@ export class TestTransitionsPage extends HeaderPage {
         <hr>
 
         <h3>4. Rotate Transition</h3>
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 2.0rem;">
           <button onclick="this.nextRotate()" class="btn btn-primary">
             Next Rotate ({{ this.rotateCounter }})
           </button>
@@ -358,8 +360,8 @@ export class TestTransitionsPage extends HeaderPage {
         <hr>
 
         <h3>5. View Switcher with Transitions</h3>
-        <div style="margin-bottom: 20px;">
-          <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 2.0rem;">
+          <div style="margin-bottom: 1.0rem;">
             <button onclick="this.switchView(1)" class="btn btn-primary">View 1</button>
             <button onclick="this.switchView(2)" class="btn btn-primary">View 2</button>
             <button onclick="this.switchView(3)" class="btn btn-primary">View 3</button>
@@ -394,11 +396,11 @@ export class TestTransitionsPage extends HeaderPage {
         <hr>
 
         <h3>6. Image Carousel with Transitions</h3>
-        <div style="margin-bottom: 20px;">
-          <div style="margin-bottom: 10px;">
+        <div style="margin-bottom: 2.0rem;">
+          <div style="margin-bottom: 1.0rem;">
             <button onclick="this.previousImage()" class="btn btn-secondary">← Previous</button>
             <button onclick="this.nextImage()" class="btn btn-primary">Next →</button>
-            <span style="margin-left: 10px;">Image {{ this.imageIndex + 1 }} of 3</span>
+            <span style="margin-left: 1.0rem;">Image {{ this.imageIndex + 1 }} of 3</span>
           </div>
 
           <div class="image-container">
@@ -428,10 +430,10 @@ export class TestTransitionsPage extends HeaderPage {
         <hr>
 
         <h3>7. Transition Configuration Reference</h3>
-        <div style="margin-bottom: 20px;">
-          <div style="padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px;">
+        <div style="margin-bottom: 2.0rem;">
+          <div style="padding: 1.5rem; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px;">
             <h4>Transition Options:</h4>
-            <pre style="margin: 10px 0; padding: 10px; background: #282c34; color: #abb2bf; border-radius: 3px; overflow-x: auto;">
+            <pre style="margin: 10px 0; padding: 1.0rem; background: #282c34; color: #abb2bf; border-radius: 3px; overflow-x: auto;">
 [transition]="{
   trigger: value,           // When this changes, transition occurs
   duration: 500,           // Duration in milliseconds
@@ -443,7 +445,7 @@ export class TestTransitionsPage extends HeaderPage {
   leave_to: 'leave_to'     // Final leave class
 }"</pre>
 
-            <h4 style="margin-top: 20px;">How it works:</h4>
+            <h4 style="margin-top: 2.0rem;">How it works:</h4>
             <ol style="line-height: 1.8;">
               <li><strong>Trigger:</strong> When the trigger value changes, the transition starts</li>
               <li><strong>Enter Phase:</strong> New content gets enter + enter_active classes</li>
@@ -452,8 +454,8 @@ export class TestTransitionsPage extends HeaderPage {
               <li><strong>After duration:</strong> Old element removed, all classes cleaned up</li>
             </ol>
 
-            <h4 style="margin-top: 20px;">CSS Pattern:</h4>
-            <pre style="margin: 10px 0; padding: 10px; background: #282c34; color: #abb2bf; border-radius: 3px; overflow-x: auto;">
+            <h4 style="margin-top: 2.0rem;">CSS Pattern:</h4>
+            <pre style="margin: 10px 0; padding: 1.0rem; background: #282c34; color: #abb2bf; border-radius: 3px; overflow-x: auto;">
 .fade-enter_active, .fade-leave_active {
   transition: opacity 500ms ease;
 }
@@ -469,8 +471,8 @@ export class TestTransitionsPage extends HeaderPage {
         <hr>
 
         <h3>8. Performance Note</h3>
-        <div style="margin-bottom: 20px;">
-          <div style="padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px;">
+        <div style="margin-bottom: 2.0rem;">
+          <div style="padding: 1.5rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px;">
             <p><strong>⚡ Performance Tips:</strong></p>
             <ul>
               <li>Use transform and opacity for smoothest animations (GPU accelerated)</li>

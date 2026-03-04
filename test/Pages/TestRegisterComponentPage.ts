@@ -17,7 +17,7 @@ class InfoCard extends BaseComponent {
 
   get template() {
     return `
-      <div class="info-card" style="border:1px solid #999; padding:10px; margin:5px 0; border-radius:4px; background:#f9f9f9;">
+      <div class="info-card" style="border:1px solid #999; padding:1.0rem; margin:5px 0; border-radius:4px; background:#f9f9f9;">
         <h4 style="margin:0 0 5px 0;">{{ this.title }}</h4>
         <p style="margin:0; color:#555;">{{ this.description }}</p>
       </div>
@@ -60,7 +60,7 @@ class CounterWidget extends BaseComponent {
 
   get template() {
     return `
-      <div style="border:2px solid #4a90d9; padding:10px; margin:5px 0; border-radius:6px; background:#eef5ff; display:inline-block;">
+      <div style="border:2px solid #4a90d9; padding:1.0rem; margin:5px 0; border-radius:6px; background:#eef5ff; display:inline-block;">
         <strong>{{ this.label }}</strong>: <span>{{ this.count }}</span> (value: <span>{{ this.value }}</span>)
         <button onclick="this.onDecrement()" style="margin-left:8px;">-</button>
         <button onclick="this.onIncrement()">+</button>
@@ -125,7 +125,7 @@ export class TestRegisterComponentPage extends HeaderPage {
 }
 
 var template = `
-<div style="padding:10px;">
+<div style="padding:1.0rem;">
   <h3>RegisterComponent Custom Element Tag Test</h3>
 
   <hr/>
@@ -162,7 +162,7 @@ var template = `
   <div id="test-section-event-binding">
     <app-counter-widget [label]="'With Events'" (onCountChange)="this.onCountChanged(arguments[0])"></app-counter-widget>
     <p>Event log ({{ this.eventLog.length }} events): <button onclick="this.onClearLog()">Clear</button></p>
-    <div style="max-height:100px; overflow-y:auto; border:1px solid #ccc; padding:4px; font-size:12px;">
+    <div style="max-height:10.0rem; overflow-y:auto; border:1px solid #ccc; padding:4px; font-size:1.2rem;">
       <div [foreach]="i in this.eventLog as entry">
         <div>{{ entry }}</div>
       </div>

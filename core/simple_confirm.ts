@@ -72,7 +72,7 @@ export const Prompt = function (
   p.addLabel(null, Text.escapeHTML(prompt, true));
   p.addInput('input', '', type, value, validateRule);
   p.addActionButton('Cancel', () => { });
-  p.addActionButton('Ok', () => {
+  p.addActionButton('OK', () => {
     if (p.content.validator.validate()) {
       tryCall(null, onConfirm, p.data.input);
     } else {
@@ -91,7 +91,7 @@ export const Alert = function (
 ): void {
   const p: any = Dialog(title || '');
   p.addHtml(Text.escapeHTML(prompt, true), { class: "align-block-center" });
-  p.addActionButton('Ok', onConfirm);
+  p.addActionButton('OK', onConfirm);
   // back navigation also means confirm!
   p.onBackNavigate = onConfirm;
 };

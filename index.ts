@@ -37,7 +37,7 @@ declare global {
 
 window['Translate'] = Translate;
 
-import './scss/app.scss';
+import './scss/styles.scss';
 import './scss/grid.scss';
 
 export {

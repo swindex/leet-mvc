@@ -37,17 +37,17 @@ class CounterComponent extends BaseComponent {
 
   get template() {
     return `
-      <div style="border:2px solid #4a90d9; padding:15px; margin:10px 0; border-radius:6px; background:#eef5ff;">
-        <div style="margin-bottom:10px;">
-          <strong style="font-size:16px;">{{ this.label }}</strong>
+      <div style="border:2px solid #4a90d9; padding:1.5rem; margin:10px 0; border-radius:6px; background:#eef5ff;">
+        <div style="margin-bottom:1.0rem;">
+          <strong style="font-size:1.6rem;">{{ this.label }}</strong>
         </div>
-        <div style="margin-bottom:10px;">
+        <div style="margin-bottom:1.0rem;">
           Count: <span style="font-weight:bold; color:#0066cc;">{{ this.count }}</span> | 
           Value: <span style="font-weight:bold; color:#0066cc;">{{ this.value }}</span>
         </div>
         <div>
-          <button onclick="this.onDecrement()" style="padding:5px 15px; margin-right:5px;">-</button>
-          <button onclick="this.onIncrement()" style="padding:5px 15px;">+</button>
+          <button onclick="this.onDecrement()" style="padding:5px 1.5rem; margin-right:5px;">-</button>
+          <button onclick="this.onIncrement()" style="padding:5px 1.5rem;">+</button>
         </div>
       </div>
     `;
@@ -131,9 +131,9 @@ export class TestInConstructorComponentPage extends HeaderPage {
 }
 
 var template = `
-<div style="padding:20px; max-width:900px;">
+<div style="padding:2.0rem; max-width:90.0rem;">
   <h3>In-Constructor Component Instantiation Test</h3>
-  <p style="color:#555; margin-bottom:20px;">
+  <p style="color:#555; margin-bottom:2.0rem;">
     This page tests using <code>[component]</code> directive with a component 
     that was instantiated in the constructor (<code>this.myComponent = new CounterComponent()</code>).
   </p>
@@ -149,9 +149,9 @@ var template = `
   <h4>2. One-Way Property Binding</h4>
   <p>Parent counter value: <strong style="color:#0066cc;">{{ this.parentCounter }}</strong></p>
   <div style="margin:10px 0;">
-    <button onclick="this.onDecrementParent()" style="padding:5px 15px; margin-right:5px;">- Parent</button>
-    <button onclick="this.onIncrementParent()" style="padding:5px 15px; margin-right:5px;">+ Parent</button>
-    <button onclick="this.onResetParent()" style="padding:5px 15px;">Reset</button>
+    <button onclick="this.onDecrementParent()" style="padding:5px 1.5rem; margin-right:5px;">- Parent</button>
+    <button onclick="this.onIncrementParent()" style="padding:5px 1.5rem; margin-right:5px;">+ Parent</button>
+    <button onclick="this.onResetParent()" style="padding:5px 1.5rem;">Reset</button>
   </div>
   <p>Component with bound <code>[count]</code> property:</p>
   <div [component]="this.myComponent2" [label]="'One-Way Bound'" [count]="this.parentCounter">
@@ -171,11 +171,11 @@ var template = `
   <p>Component with event callback <code>(onCountChange)</code>:</p>
   <div [component]="this.myComponent5" (onCountChange)="this.onCountChanged(arguments[0])">
   </div>
-  <div style="margin-top:10px;">
+  <div style="margin-top:1.0rem;">
     <strong>Event Log ({{ this.eventLog.length }} events):</strong>
-    <button onclick="this.onClearLog()" style="margin-left:10px; padding:3px 10px;">Clear</button>
+    <button onclick="this.onClearLog()" style="margin-left:1.0rem; padding:3px 1.0rem;">Clear</button>
   </div>
-  <div style="max-height:120px; overflow-y:auto; border:1px solid #ccc; padding:8px; margin-top:5px; background:#f9f9f9; font-size:12px; font-family:monospace;">
+  <div style="max-height:12.0rem; overflow-y:auto; border:1px solid #ccc; padding:8px; margin-top:5px; background:#f9f9f9; font-size:1.2rem; font-family:monospace;">
     <div [foreach]="i in this.eventLog as entry">
       <div style="padding:2px 0;">{{ entry }}</div>
     </div>
@@ -186,7 +186,7 @@ var template = `
 
   <h4>5. Dynamic Label Binding</h4>
   <p>Current label: <strong style="color:#0066cc;">{{ this.componentLabel }}</strong></p>
-  <button onclick="this.onChangeLabel()" style="padding:5px 15px; margin-bottom:10px;">Toggle Label</button>
+  <button onclick="this.onChangeLabel()" style="padding:5px 1.5rem; margin-bottom:1.0rem;">Toggle Label</button>
   <div [component]="this.myComponent6" [label]="this.componentLabel" [count]="10">
   </div>
 
@@ -194,7 +194,7 @@ var template = `
 
   <h4>6. Conditional Rendering with [if]</h4>
   <p>
-    <button onclick="this.onToggleComponent()" style="padding:5px 15px;">
+    <button onclick="this.onToggleComponent()" style="padding:5px 1.5rem;">
       Toggle Component ({{ this.showComponent ? 'visible' : 'hidden' }})
     </button>
   </p>
@@ -204,7 +204,7 @@ var template = `
   <hr style="margin:20px 0;"/>
 
   <h4>Summary</h4>
-  <div style="background:#fffbea; border:1px solid #e6db74; padding:15px; border-radius:4px;">
+  <div style="background:#fffbea; border:1px solid #e6db74; padding:1.5rem; border-radius:4px;">
     <p style="margin:0 0 10px 0;"><strong>✓ Component created in constructor</strong></p>
     <p style="margin:0 0 10px 0;">✓ Bound to DOM with [component] directive</p>
     <p style="margin:0 0 10px 0;">✓ Property bindings work (one-way and two-way)</p>

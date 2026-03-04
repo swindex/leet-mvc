@@ -54,15 +54,15 @@ describe('Test OptionsDialogPage', function () {
         items[0].dispatchEvent(new Event("click"));
     });
 
-    it("Multiple selection: toggles items and shows Ok button", function (done) {
+    it("Multiple selection: toggles items and shows OK button", function (done) {
         page.multiple = true;
         // page.update() is called inside setter of multiple if it triggers changes, 
-        // but here we might need it to ensure Ok button is rendered
+        // but here we might need it to ensure OK button is rendered
         page.update();
 
         setTimeout(() => {
             const html = page.page.innerHTML;
-            expect(html).toContain("Ok");
+            expect(html).toContain("OK");
 
             const items = DOM(page.page).find('li');
             
@@ -82,7 +82,7 @@ describe('Test OptionsDialogPage', function () {
         }, 100);
     });
 
-    it("Multiple selection: Ok button returns selected items", function (done) {
+    it("Multiple selection: OK button returns selected items", function (done) {
         page.multiple = true;
         page.update();
 
@@ -93,11 +93,12 @@ describe('Test OptionsDialogPage', function () {
         };
 
         setTimeout(() => {
-            const okButton = DOM(page.page).find("#dialogButtonOk")[0];
+            
+            const okButton = DOM(page.page).find("#dialogButtonOK")[0];
             if (okButton) {
                 okButton.dispatchEvent(new Event("click"));
             } else {
-                done.fail("Ok button not found");
+                done.fail("OK button not found");
             }
         }, 100);
     });

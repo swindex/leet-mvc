@@ -62,8 +62,8 @@
 
 	}
 	.tab-buttons li{
-		font-size:20px;
-		line-height:20px;
+		font-size:2.0rem;
+		line-height:2.0rem;
 		margin: 0;
 		padding: 12px 0px;
 		color: var(--c-f-tab);
@@ -72,7 +72,7 @@
 		}
 	}
 	.allday-events{
-		padding-left: 50px;
+		padding-left: 5.0rem;
 		.event {
 			padding: 5px;
 			background-color: var(--c-b-day-ev-allday);
@@ -111,7 +111,7 @@
 			border-collapse: collapse;
 			table-layout: fixed;
 			tbody tr{
-				height: 60px;
+				height: 6.0rem;
 				background: var(--c-b-day-hour-odd)
 			}
 			tr:nth-child(even) {
@@ -124,10 +124,10 @@
 					vertical-align: text-bottom;
 				}
 				&.hourColumn{
-					font-size: 1em;
+					font-size: 1rem;
 					padding: 0 5px;
 					.amLabel{
-						font-size: 0.75em;
+						font-size: 0.75rem;
 					}
 				}
 				.slots {
@@ -135,7 +135,7 @@
 					.event{
 						position: absolute;
 						overflow: hidden;
-						min-height: 20px;
+						min-height: 2.0rem;
 						width: 100%;
 						background-color: var(--c-b-day-ev);
 						border-left: var(--c-bo-day-ev-external);
@@ -197,8 +197,8 @@
 				position: relative;
 
 					.date {
-						font-size: 14px;
-						height: 19px;
+						font-size: 1.4rem;
+						height: 1.9rem;
 						text-align: right;
 						padding-right: 3px;
 						b{ //extra events counter
@@ -216,9 +216,9 @@
 					.apt{
 						padding: 0 2px;
 						min-width: 100%;
-						font-size: 10px;
-						line-height: 12px;
-						height: 12px;
+						font-size: 1.0rem;
+						line-height: 1.2rem;
+						height: 1.2rem;
 						overflow: hidden;
 						background-color: var(--c-b-external);
 						word-break: break-all;
@@ -256,22 +256,22 @@
 							top:0px;
 						}
 						&.slot-1{
-							top:15px;
+							top:1.5rem;
 						}
 						&.slot-2{
-							top:30px;
+							top:3.0rem;
 						}
 						&.slot-3{
-							top:45px;
+							top:4.5rem;
 						}
 						&.slot-4{
-							top:60px;
+							top:6.0rem;
 						}
 						&.slot-5{
-							top:75px;
+							top:7.5rem;
 						}
 						&.slot-6{
-							top:90px;
+							top:9.0rem;
 						}
 					}
 
@@ -296,10 +296,10 @@
 			border-radius: 50%;
       background-color: transparent;
       border: none;
-			width: 2.5em;
-			height: 2.5em;
-			padding: .5em;
-			line-height: 1em;
+			width: 2.5rem;
+			height: 2.5rem;
+			padding: .5rem;
+			line-height: 1rem;
 			&:active{
 				transition: background-color 0.1s ease;
 				background-color: rgba(147, 145, 145, 0.5);
@@ -307,7 +307,7 @@
 		}
 		&>div{
 			margin:auto;
-			//padding:1em;
+			//padding:1rem;
 			&>button{
         border: none;
 				width: auto;
