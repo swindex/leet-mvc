@@ -81,7 +81,7 @@ export class TestChangeWatcher extends HeaderPage{
     }
 }
 var template = `
-<div class="fill scroll">
+<div class="">
 <div><button onclick="this.hookWatchers()">Hook Watchers</button> <button onclick="this.unHookWatchers()">Un-Hook Watchers</button> <button onclick="this.memTest()">Test for Memory Leaks</button></div>
 <div><button onclick="this.mutate()">Mutate State</button></div>
 <div><button onclick="this.onNewWindow()">New Window</button></div>

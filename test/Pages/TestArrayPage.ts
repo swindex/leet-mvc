@@ -56,7 +56,7 @@ export class TestArrayPage extends HeaderPage {
 }
 
 var template = `
-<div class="fill scroll">
+<div class="">
 	<!-- <div>
 		<button onclick = "this.onAddClicked()" class="btn btn-primary">Add Item</button>
 	</div>

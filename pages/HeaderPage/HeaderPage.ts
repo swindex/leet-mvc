@@ -69,9 +69,9 @@ var template = `
 	<div class="header" [if]="this.header" [html] = "this.header">
 	</div>
 	
-	<div class="content">
+	<div class="content scroll">
 		<!--default-template-begin-->
-		<div [html] = "this.content"></div>
+		<div [if]="this.content" [html] = "this.content"></div>
 		<!--default-template-end-->
 		<content></content>
 	</div>

@@ -93,7 +93,7 @@ export class TestAttributesPage extends HeaderPage {
 
   get template() {
     return super.extendTemplate(super.template, `
-      <div class="fill scroll" style="padding: 2.0rem;">
+      <div class="" style="padding: 2.0rem;">
         <h2>[attribute] Directive Tests</h2>
         
         <div style="margin-bottom: 2.0rem;">

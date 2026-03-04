@@ -151,9 +151,17 @@ class NumericKeyboardPage extends BasePage {
 
     /** @type {HTMLDivElement} */
     this.curr_input = document.createElement('div');
-    var st = DOM(elem).css(['display', 'padding', 'padding-top', 'padding-bottom', 'border', 'border-top', 'border-bottom', 'border-left', 'border-right', 'border-radius', 'font', 'font-size', 'color', 'top', 'left', 'bottom', 'right', 'width', 'height', 'position', 'background', 'box-shadow']);
+    var st = DOM(elem).css([
+      'display',
+      'margin', 'margin-top', 'margin-bottom', 'margin-left', 'margin-right',
+      'padding', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right',
+      'border', 'border-top', 'border-bottom', 'border-left', 'border-right',
+      'border-radius',
+      'font-family', 'font-size',
+      'color', 'top', 'left', 'bottom', 'right', 'width', 'height','line-height', 'text-align',
+      'position', 'background', 'box-shadow']);
     var p = getPxNumber(st['height']) - (getPxNumber(st['padding-top']) + getPxNumber(st['padding-bottom']));
-    st['line-height'] = p + 'px';
+    //st['line-height'] = p + 'px';
     st['overflow'] = 'hidden';
     this.inputStyle = st;
     DOM(this.curr_input).css(st);
@@ -533,7 +541,11 @@ class NumericKeyboardPage extends BasePage {
     t = this.sanitizePlainTextValue(t);
 
     this.value = t;
-    this.old_input.value = t;
+    try {
+      this.old_input.value = t;
+    } catch(e) {
+      this.old_input.value = "";
+    }
 
     var style = "";
     if (this.isTextSelected) {

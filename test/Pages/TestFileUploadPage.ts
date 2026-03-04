@@ -106,7 +106,7 @@ export class TestFileUploadPage extends HeaderPage {
 }
 
 var template = `
-<div class="fill scroll">
+<div class="">
 	<h3>Plain File Field</h3>
 	<div class = "fieldgroup">
 		<img [src] = "this.fileFieldImage" width ="100px"/>

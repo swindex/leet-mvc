@@ -50,7 +50,7 @@ export class TestBindDirectivePage extends HeaderPage {
 
   get template() {
     return super.extendTemplate(super.template, `
-      <div class="fill scroll" style="padding: 2.0rem;">
+      <div class="" style="padding: 2.0rem;">
         <div style="margin-bottom: 2.0rem;">
           <button onclick="this.resetAll()" class="btn btn-danger">Reset All</button>
           <button onclick="this.setDefaults()" class="btn btn-primary">Set Defaults</button>

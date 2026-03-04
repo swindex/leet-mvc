@@ -247,7 +247,7 @@ export class TestTransitionsPage extends HeaderPage {
         .image-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
       </style>
 
-      <div class="fill scroll" style="padding: 2.0rem;">
+      <div class="" style="padding: 2.0rem;">
         <h2>[transition] Directive Tests</h2>
         <p><em>The [transition] directive provides smooth enter/leave animations using CSS transitions</em></p>
 

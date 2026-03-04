@@ -51,7 +51,7 @@ export class TestSimpleTabsPage extends HeaderPage {
 
   get template() {
     return super.extendTemplate(super.template, `
-      <div class="fill scroll" style="padding: 2.0rem;">
+      <div class="" style="padding: 2.0rem;">
         <h2>SimpleTabs Component Demo</h2>
         
         <p>Current active tab: <strong>{{ this.currentTab }}</strong></p>

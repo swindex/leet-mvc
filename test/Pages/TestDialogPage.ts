@@ -560,7 +560,7 @@ export class TestDialogPage extends HeaderPage {
 
   get template() {
     return super.extendTemplate(super.template, `
-      <div class="fill scroll" style="padding: 2.0rem;">
+      <div class="" style="padding: 2.0rem;">
         <h1>Dialog Component Tests</h1>
         <p>Click buttons below to test various Dialog functionalities:</p>
 
