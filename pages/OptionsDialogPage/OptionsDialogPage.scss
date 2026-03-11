@@ -1,13 +1,12 @@
 #page-OptionsDialogPage{
 	.dialog-content.touch-scroll {
-		padding: var(--tm-margin-lg);
+		padding: var(--tm-margin-md);
 		padding-top: 0;
 		padding-bottom: 0;
 	}
 	ul {
 		padding: 0;
 		margin: 0;
-		font-size: 1.15rem;
 		&.hideOverflow{
 			div.item > div{
 				overflow: hidden;
@@ -28,7 +27,7 @@
 		}
 		i{
 			padding-top: 3px; //nudge to the v-center
-			margin-right: var(--tm-margin-lg);
+			margin-right: var(--tm-margin-md);
 		}
 		img{
 			//margin-right: var(--tm-margin-lg);
@@ -40,7 +39,7 @@
 			display: block;
 			margin-right: 0;
 			margin-left: 0;
-			padding: var(--tm-margin-lg) 0;
+			padding: var(--tm-margin-md) 0;
 			width: 100%;
 			
 			.item-text{
