@@ -74,6 +74,31 @@ function getPxNumber(val) {
   val = val + "";
   return Number(val.split('px')[0]);
 }
+
+/**
+ * Detects the font scaling factor applied by Android (or other systems)
+ * by creating a test element and measuring its actual rendered size
+ * @returns {number} The font scale factor (1.0 = no scaling, 1.5 = 150% scaling, etc.)
+ */
+function detectFontScaleFactor() {
+  // Create a temporary hidden element with a known font-size
+  const testEl = document.createElement('span');
+  testEl.style.cssText = 'position:absolute; visibility:hidden; font-size:100px; line-height:1; padding:0; margin:0; border:0;';
+  testEl.textContent = 'M';
+  document.body.appendChild(testEl);
+
+  // Measure the actual rendered height
+  const actualHeight = testEl.offsetHeight;
+  
+  // Clean up
+  document.body.removeChild(testEl);
+
+  // Calculate scale factor (expected 100px)
+  const scaleFactor = actualHeight / 100;
+  
+  return scaleFactor;
+}
+
 class NumericKeyboardPage extends BasePage {
   constructor(options) {
     super();
@@ -160,11 +185,21 @@ class NumericKeyboardPage extends BasePage {
       'font-family', 'font-size',
       'color', 'top', 'left', 'bottom', 'right', 'width', 'height','line-height', 'text-align',
       'position', 'background', 'box-shadow']);
+    
+    // Detect and compensate for Android font scaling
+    var fontScaleFactor = detectFontScaleFactor();
+    if (fontScaleFactor > 1.0) {
+      // Android is scaling up the font, so we need to scale down to compensate
+      var originalFontSize = getPxNumber(st['font-size']);
+      var compensatedFontSize = originalFontSize / fontScaleFactor;
+      st['font-size'] = compensatedFontSize + 'px';
+    }
+    
     var p = getPxNumber(st['height']) - (getPxNumber(st['padding-top']) + getPxNumber(st['padding-bottom']));
     //st['line-height'] = p + 'px';
     st['overflow'] = 'hidden';
     st['align-content'] = 'center';
-    
+
     this.inputStyle = st;
     DOM(this.curr_input).css(st);
 

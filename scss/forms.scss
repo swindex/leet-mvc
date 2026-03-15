@@ -44,7 +44,7 @@ input[type=button] {
 		margin-bottom: calc(var(--tm-border-size-active) - var(--tm-border-size)); //space for the border
 		-webkit-appearance: none;
 		padding: var(--tm-margin-sm) 0;
-		background-color: transparent;
+		color:var(--tm-input-color);
 		width: 100%;
 
 		&[disabled],
@@ -95,6 +95,7 @@ input[type=button] {
 		right: var(--tm-margin-sm);
 		font-weight: bold;
 		font-size: var(--tm-input-font-size);
+		color:var(--tm-input-color);
 		pointer-events: none;
 		height: 100%;
 		display: flex;
@@ -106,24 +107,6 @@ input[type=button] {
 
 		&[onclick] {
 			pointer-events: all;
-		}
-	}
-
-	>label {
-		color: #333;
-		z-index: 5;
-		background-color: transparent;
-		padding-left: 0;
-		font-size: var(--tm-input-top-label-font-size);
-		text-align: left;
-		display: inline-block;
-		white-space: nowrap;
-		height: 1.0rem;
-		line-height: 1rem;
-
-		i {
-			color: #0874B7;
-			margin-left: var(--tm-margin-sm);
 		}
 	}
 
@@ -212,11 +195,30 @@ input[type=button] {
     pointer-events: none;
   }*/
 	.fieldrow {
+		background-color: var(--tm-input-background);
 		position: relative;
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap; //allow 100% wide children to form column
 		overflow: hidden;
+
+		>label {
+			color: var(--tm-input-label-color);
+			z-index: 5;
+			background-color: transparent;
+			padding-left: 0;
+			font-size: var(--tm-input-top-label-font-size);
+			text-align: left;
+			display: inline-block;
+			white-space: nowrap;
+			height: 1.0rem;
+			line-height: 1rem;
+
+			i {
+				color: #0874B7;
+				margin-left: var(--tm-margin-sm);
+			}
+		}
 	}
 
 	&.required {
