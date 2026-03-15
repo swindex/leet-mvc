@@ -163,6 +163,8 @@ class NumericKeyboardPage extends BasePage {
     var p = getPxNumber(st['height']) - (getPxNumber(st['padding-top']) + getPxNumber(st['padding-bottom']));
     //st['line-height'] = p + 'px';
     st['overflow'] = 'hidden';
+    st['align-content'] = 'center';
+    
     this.inputStyle = st;
     DOM(this.curr_input).css(st);
 
