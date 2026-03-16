@@ -26,6 +26,34 @@ input[type=button] {
 		box-sizing: border-box;
 	}
 
+	.fieldrow {
+		background-color: var(--tm-input-background);
+		position: relative;
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap; //allow 100% wide children to form column
+		overflow: hidden;
+
+		>label {
+			color: var(--tm-input-label-color);
+			z-index: 5;
+			background-color: transparent;
+			padding-left: 0;
+			font-size: var(--tm-input-top-label-font-size);
+			text-align: left;
+			display: inline-block;
+			white-space: nowrap;
+			height: 1.0rem;
+			line-height: 1rem;
+
+			i {
+				color: #0874B7;
+				margin-left: var(--tm-margin-sm);
+			}
+		}
+	}
+
+
 	input[type=text],
 	input[type=email],
 	input[type=password],
@@ -45,6 +73,7 @@ input[type=button] {
 		-webkit-appearance: none;
 		padding: var(--tm-margin-sm) 0;
 		color:var(--tm-input-color);
+		background-color: transparent;
 		width: 100%;
 
 		&[disabled],
@@ -169,58 +198,7 @@ input[type=button] {
 			}
 		}
 	}
-
-	/*&.filled,
-  &.active{
-    label {
-      top: 0;
-      font-size: 1.2rem;
-      pointer-events: all;
-    }
-  }*/
-
-	/*.label {
-    color: #333;
-    z-index: 5;
-    background-color: transparent;
-    padding-left: 0;
-    font-size: 1.6rem;
-    text-align: left;
-    display: inline-block;
-    height: 1rem;
-    line-height: 1rem;
-    position: absolute;
-    top: 1rem;
-    transition: all 0.5s ease;
-    pointer-events: none;
-  }*/
-	.fieldrow {
-		background-color: var(--tm-input-background);
-		position: relative;
-		display: flex;
-		align-items: center;
-		flex-wrap: wrap; //allow 100% wide children to form column
-		overflow: hidden;
-
-		>label {
-			color: var(--tm-input-label-color);
-			z-index: 5;
-			background-color: transparent;
-			padding-left: 0;
-			font-size: var(--tm-input-top-label-font-size);
-			text-align: left;
-			display: inline-block;
-			white-space: nowrap;
-			height: 1.0rem;
-			line-height: 1rem;
-
-			i {
-				color: #0874B7;
-				margin-left: var(--tm-margin-sm);
-			}
-		}
-	}
-
+	
 	&.required {
 		>label:first-child:after {
 			content: '*';
