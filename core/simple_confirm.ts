@@ -1,6 +1,6 @@
 // This module wraps some simple notifications
 import { tryCall } from "./helpers";
-import { Dialog } from "../pages/DialogPage/DialogPage";
+import { Dialog, DialogPage } from "../pages/DialogPage/DialogPage";
 import { Text } from "./text";
 import { Objects } from "./Objects";
 
@@ -10,11 +10,11 @@ import { Objects } from "./Objects";
 export const ConfirmButtons = function (
   prompt: string,
   title?: string,
-  buttons?: { [button_name: string]: () => any }
+  buttons?: { [button_name: string]: (dialog: DialogPage) => any }
 ): void {
-  const p: any = Dialog(title || '');
+  const p = Dialog(title || '');
   p.addLabel(null, Text.escapeHTML(prompt, true));
-  Objects.forEach(buttons, (button: () => any, name: string | number) => {
+  Objects.forEach(buttons, (button: (dialog: DialogPage) => any, name: string | number) => {
     p.addActionButton(String(name), button);
   });
   p.onBackNavigate = () => false;
@@ -25,10 +25,10 @@ export const ConfirmButtons = function (
  */
 export const Confirm = function (
   prompt: string,
-  onConfirm?: () => void,
+  onConfirm?: (dialog: DialogPage) => any,
   title?: string
 ): void {
-  const p: any = Dialog(title || '');
+  const p = Dialog(title || '');
 
   p.addLabel(null, Text.escapeHTML(prompt, true));
   p.addActionButton('No', () => { });
@@ -40,10 +40,10 @@ export const Confirm = function (
  */
 export const ConfirmDanger = function (
   prompt: string,
-  onConfirm?: () => void,
+  onConfirm?: (dialog: DialogPage) => any,
   title?: string
 ): void {
-  const p: any = Dialog(title || '');
+  const p = Dialog(title || '');
 
   p.addLabel(null, Text.escapeHTML(prompt, true));
   p.addActionButton('Yes', onConfirm);
@@ -61,20 +61,20 @@ export const ConfirmDanger = function (
  */
 export const Prompt = function (
   prompt: string,
-  onConfirm?: (value: string | number) => void,
+  onConfirm?: (dialog: DialogPage) => void,
   title?: string,
   value?: string,
-  validateRule?: true | string,
+  validateRule?: boolean | string,
   type?: string
 ): void {
   type = type || 'text';
-  const p: any = Dialog(title || '');
+  const p = Dialog(title || '');
   p.addLabel(null, Text.escapeHTML(prompt, true));
   p.addInput('input', '', type, value, validateRule);
   p.addActionButton('Cancel', () => { });
   p.addActionButton('OK', () => {
     if (p.content.validator.validate()) {
-      tryCall(null, onConfirm, p.data.input);
+      tryCall(null, onConfirm, p);
     } else {
       return false;
     }
@@ -86,12 +86,13 @@ export const Prompt = function (
  */
 export const Alert = function (
   prompt: string,
-  onConfirm?: () => boolean | void,
+  onConfirm?: (dialog: DialogPage) => boolean | void,
   title?: string
 ): void {
-  const p: any = Dialog(title || '');
+  const p = Dialog(title || '');
   p.addHtml(Text.escapeHTML(prompt, true), { class: "align-block-center" });
   p.addActionButton('OK', onConfirm);
   // back navigation also means confirm!
-  p.onBackNavigate = onConfirm;
+  if (onConfirm)
+    p.onBackNavigate = () => {return onConfirm(p)||false;};
 };

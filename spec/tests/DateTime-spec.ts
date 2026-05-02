@@ -23,8 +23,8 @@ describe('test DateTime methods', function() {
     });
 
     it('should format dates within the same week with day name', function() {
-      const now = dayjs();
-      const yesterday = dayjs().subtract(1, 'day');
+      const now = dayjs("2026-05-07T14:30:00");
+      const yesterday = dayjs("2026-07-02T14:30:00").subtract(2, 'day');
       if ((now as any).week() === (yesterday as any).week()) {
         const result = DateTime.smartFormat(yesterday.toDate());
         expect(result).toMatch(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)/);
