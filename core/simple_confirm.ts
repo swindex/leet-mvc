@@ -61,7 +61,7 @@ export const ConfirmDanger = function (
  */
 export const Prompt = function (
   prompt: string,
-  onConfirm?: (dialog: DialogPage) => void,
+  onConfirm?: (value: string | number) => void,
   title?: string,
   value?: string,
   validateRule?: boolean | string,
@@ -74,7 +74,7 @@ export const Prompt = function (
   p.addActionButton('Cancel', () => { });
   p.addActionButton('OK', () => {
     if (p.content.validator.validate()) {
-      tryCall(null, onConfirm, p);
+      tryCall(null, onConfirm, p.data.input);
     } else {
       return false;
     }
