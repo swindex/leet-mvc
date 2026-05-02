@@ -18,9 +18,11 @@ import { TestDialogPage } from "./TestDialogPage";
 import { TestSimpleTabsPage } from "./TestSimpleTabsPage";
 import { TestProjectedContentPage } from "./TestProjectedContentPage";
 import { TestNumericKeyboardPage } from "./TestNumericKeyboardPage";
+import { TestGridPage } from "./TestGridPage";
 
 export class RootPage extends HeaderPage {
   pages: { page: any; name: string }[];
+  private isLoadingFromUrl: boolean = false;
 
   constructor() {
     super();
@@ -47,15 +49,91 @@ export class RootPage extends HeaderPage {
       { page: TestDialogPage, name: "Test Dialog Component" },
       { page: TestSimpleTabsPage, name: "Test SimpleTabs Component" },
       { page: TestProjectedContentPage, name: "Test Projected Content" },
-      { page: TestNumericKeyboardPage, name: "Test Numeric Keyboard" }
+      { page: TestNumericKeyboardPage, name: "Test Numeric Keyboard" },
+      { page: TestGridPage, name: "Test Grid Layout" }
+
     ];
 
+    // Bind the popstate handler to this instance
+    this.onPopStateHandler = this.onPopStateHandler.bind(this);
+  }
+
+  onInit(): void {
+  
+    // Listen for browser back/forward navigation
+    window.addEventListener('popstate', this.onPopStateHandler);
+    
+    // Check if URL has a page parameter and load it
+    this.loadPageFromUrl();
+  }
+
+  onDestroy(): void {
+    // Clean up event listener
+    window.removeEventListener('popstate', this.onPopStateHandler);
+    super.onDestroy();
+  }
+
+  private onPopStateHandler(): void {
+    // Load page from URL when browser back/forward is used
+    this.loadPageFromUrl();
+  }
+
+  private loadPageFromUrl(): void {
+    const hash = window.location.hash;
+    
+    if (!hash) {
+      return;
+    }
+
+    // Parse hash: #page=0 or #page=TestArrayPage
+    const match = hash.match(/#page=(.+)/);
+    if (!match) {
+      return;
+    }
+
+    const pageParam = match[1];
+    
+    // Try to parse as index number
+    const pageIndex = parseInt(pageParam, 10);
+    
+    if (!isNaN(pageIndex) && pageIndex >= 0 && pageIndex < this.pages.length) {
+      // Load by index
+      this.isLoadingFromUrl = true;
+      this.loadPage(pageIndex);
+      this.isLoadingFromUrl = false;
+    } else {
+      // Try to find by name
+      const pageIndexByName = this.pages.findIndex(p => 
+        p.name.toLowerCase().replace(/\s+/g, '-') === pageParam.toLowerCase() ||
+        p.page.name === pageParam
+      );
+      
+      if (pageIndexByName !== -1) {
+        this.isLoadingFromUrl = true;
+        this.loadPage(pageIndexByName);
+        this.isLoadingFromUrl = false;
+      }
+    }
   }
 
   loadPage(index: number): void {
+    if (index < 0 || index >= this.pages.length) {
+      console.warn('Invalid page index:', index);
+      return;
+    }
 
     var p = this.Nav.push(this.pages[index].page);
     p.backButton = true;
+
+    // Update URL only if not already loading from URL
+    if (!this.isLoadingFromUrl) {
+      const pageHash = `#page=${index}`;
+      
+      // Update URL without triggering popstate
+      if (window.location.hash !== pageHash) {
+        window.history.pushState({ pageIndex: index }, '', pageHash);
+      }
+    }
   }
 
   get template(): string {

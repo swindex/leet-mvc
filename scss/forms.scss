@@ -328,6 +328,8 @@ select-multiple {
 							color: var(--tm-selected-item-color);
 							font-size: var(--tm-input-font-size);
 							font-weight: bold;
+							line-height: var(--tm-input-font-size);
+    						text-align: center;
 						}
 					}
 				}
