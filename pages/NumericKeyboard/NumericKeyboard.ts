@@ -10,6 +10,7 @@ import { DeBouncer } from '../../core/DeBouncer';
 
 export var NumericKeyboard = {
   isEnabled: false,
+  isOpen: false,
   /** @type {NumericKeyboardPage} */
   _page: null,
   options: {
@@ -61,9 +62,11 @@ function focusEventHandler(event) {
       //}
     } else {
       NumericKeyboard._page = Injector.Nav.push(NumericKeyboardPage, NumericKeyboard.options);
+      NumericKeyboard.isOpen = true;
       NumericKeyboard._page.focusElement(elem);
       NumericKeyboard._page.onDestroy = () => {
         NumericKeyboard._page = null;
+        NumericKeyboard.isOpen = false;
       };
       NumericKeyboard._page.onClick = NumericKeyboard.onClick;
     }
