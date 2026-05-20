@@ -16,9 +16,10 @@
 // Container
 .container,
 .container-fluid {
+	box-sizing: border-box;
 	width: 100%;
-	padding-right: calc(var(--bs-gutter-x) * 0.5);
-	padding-left: calc(var(--bs-gutter-x) * 0.5);
+	//padding-right: calc(var(--bs-gutter-x) * 0.5);
+	//padding-left: calc(var(--bs-gutter-x) * 0.5);
 	margin-right: auto;
 	margin-left: auto;
 }
@@ -34,7 +35,7 @@
 	margin-top: calc(var(--bs-gutter-y) * -1);
 	margin-right: calc(var(--bs-gutter-x) * -0.5);
 	margin-left: calc(var(--bs-gutter-x) * -0.5);
-	
+	box-sizing: border-box;
 	> * {
 		box-sizing: border-box;
 		flex-shrink: 0;
