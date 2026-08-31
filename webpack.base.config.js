@@ -87,7 +87,7 @@ module.exports = (env, options = {}) => {
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          loader: 'babel-loader',
+          loader: require.resolve('babel-loader'),
         },
         {
           test: /\.ts$/,
@@ -95,9 +95,9 @@ module.exports = (env, options = {}) => {
             {
               include: /node_modules[\/\\]leet-mvc/,
               use: [
-                { loader: "babel-loader", options: { sourceMaps: true } },
+                { loader: require.resolve("babel-loader"), options: { sourceMaps: true } },
                 {
-                  loader: "ts-loader",
+                  loader: require.resolve("ts-loader"),
                   options: {
                     transpileOnly: true,
                     configFile: path.resolve(__dirname, "../../tsconfig.json"),
@@ -109,9 +109,9 @@ module.exports = (env, options = {}) => {
             {
               exclude: /node_modules/,
               use: [
-                { loader: "babel-loader", options: { sourceMaps: true } },
+                { loader: require.resolve("babel-loader"), options: { sourceMaps: true } },
                 {
-                  loader: "ts-loader",
+                  loader: require.resolve("ts-loader"),
                   options: { compilerOptions: { sourceMap: true, inlineSources: true } },
                 },
               ],
@@ -122,7 +122,7 @@ module.exports = (env, options = {}) => {
           test: /\.html$/,
           use: [
             {
-              loader: 'html-loader',
+              loader: require.resolve('html-loader'),
               options:{
                 esModule:true,
               }
@@ -132,15 +132,15 @@ module.exports = (env, options = {}) => {
         {
           test: /\.(scss|css)$/i,
           use: [
-            "style-loader",
+            require.resolve("style-loader"),
             { 
-              loader:"css-loader", 
+              loader:require.resolve("css-loader"), 
               options: {
                 modules:"global"
               }
             },
             {
-              loader:"postcss-loader",
+              loader:require.resolve("postcss-loader"),
               options: {
                 postcssOptions: {
                   plugins: [
@@ -152,7 +152,7 @@ module.exports = (env, options = {}) => {
               },
             },
             {
-              loader:"sass-loader",
+              loader:require.resolve("sass-loader"),
               options: {
                 api: 'modern'  // Use modern Dart Sass API instead of legacy
               }

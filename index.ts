@@ -1,3 +1,6 @@
+import "core-js/stable";
+import './core/polyfill';
+
 import { BasePage } from "./pages/BasePage";
 import { Objects } from "./core/Objects";
 import { NavController } from "./core/NavController";
