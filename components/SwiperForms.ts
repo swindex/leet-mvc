@@ -2,7 +2,7 @@
 import { Objects } from "./../core/Objects";
 import Swiper from 'swiper';
 import { Forms } from "./Forms";
-import 'swiper/dist/css/swiper.css';
+import 'swiper/css';
 import { tryCall } from "./../core/helpers";
 
 
@@ -36,7 +36,7 @@ export class SwiperForms extends Forms{
 		var formsHTML = this.template;
 	}
 	get template() {
-		return `<div class="swiper-container" id="generatedform">
+		return `<div class="swiper" id="generatedform">
 			<div class="swiper-wrapper">
 				`+formsHTML+`
 			</div>
@@ -116,7 +116,6 @@ export class SwiperForms extends Forms{
 				threshold:50,
 				//initialSlide:this.index,
 				noSwiping: true,
-				iOSEdgeSwipeDetection: true,
 				pagination: Object.assign({},this.options.pagination ?
 					{
 						el: '.swiper-pagination'

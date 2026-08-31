@@ -4,7 +4,16 @@ module.exports = {
   roots: ['<rootDir>/spec/tests'],
   testMatch: ['**/*-spec.ts'],
   moduleFileExtensions: ['ts', 'js', 'json'],
+  // htmlparser2 v12 and its dependency tree are ESM-only; let babel-jest transpile them for the CJS Jest runtime
+  transformIgnorePatterns: [
+    '/node_modules/(?!htmlparser2/|entities/|domhandler/|domutils/|domelementtype/|dom-serializer/)',
+  ],
   transform: {
+    '^.+\\.js$': ['babel-jest', {
+      configFile: false,
+      babelrc: false,
+      presets: [['@babel/preset-env', { targets: { node: 'current' } }]],
+    }],
     '^.+\\.ts$': ['ts-jest', {
       tsconfig: {
         target: 'ES6',

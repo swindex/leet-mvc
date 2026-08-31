@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { Objects } from '../core/Objects';
-import Swiper from 'swiper/bundle';
-import 'swiper/swiper-bundle.css';
+import Swiper from 'swiper';
+import 'swiper/css';
 
 import { BaseComponent } from "./BaseComponent";
 
@@ -21,7 +21,6 @@ export class SwiperComponent extends BaseComponent{
       threshold: 50,
       //initialSlide:this.index,
       noSwiping: true,
-      iOSEdgeSwipeDetection: true,
       slidesPerView: 1,
       calculateHeight: false,
 			navigation: true,
@@ -33,10 +32,8 @@ export class SwiperComponent extends BaseComponent{
 		},options);
 
 		this.template = `
-		<div class="swiper-container">
-			<div class="swiper-wrapper">
-				<div class="swiper-wrapper" [html]="this.templateFragment">
-				</div>
+		<div class="swiper">
+			<div class="swiper-wrapper" [html]="this.templateFragment">
 			</div>
       <div [if]="this.options.navigation" class="swiper-navigation">
         <div>

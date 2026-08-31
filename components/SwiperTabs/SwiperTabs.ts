@@ -6,7 +6,7 @@ import { BasePage } from "./../../pages/BasePage";
 import { argumentsToArray, Override } from "./../../core/helpers";
 import { DeBouncer } from "./../../core/DeBouncer";
 import './SwiperTabs.scss';
-import 'swiper/swiper.scss';
+import 'swiper/css';
 import { Objects } from "./../../core/Objects";
 import { DOM } from "../../core/DOM";
 
@@ -26,7 +26,7 @@ export class SwiperTabs extends BaseComponent{
 		/** @type {Swiper} */
 		this.swiper = null;
 		this.template=`
-			<div class="swiper-container SwiperTabs" style="height:100%;" id="generatedpage">
+			<div class="swiper SwiperTabs" style="height:100%;" id="generatedpage">
 				<div class="swiper-wrapper">
 				</div>
 			</div>	
@@ -137,7 +137,6 @@ export class SwiperTabs extends BaseComponent{
 		this.swiper = new Swiper(container,{
 			threshold:50,
 			noSwiping: true,
-			iOSEdgeSwipeDetection: true,
 		});
 
 		this.swiper.on('slideChange',()=>{

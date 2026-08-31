@@ -41,11 +41,13 @@ module.exports = (env, options = {}) => {
   
   
   // Add CopyWebpackPlugin (runs in both dev and production)
-  // Note: v5 API uses array directly instead of patterns object
+  // Note: v6+ API uses a patterns array inside an options object
   if (staticConfig && staticConfig.directory) {
-    plugins.push(new CopyWebpackPlugin([
-      { from: staticConfig.directory, to: 'static', noErrorOnMissing: true }
-    ]));
+    plugins.push(new CopyWebpackPlugin({
+      patterns: [
+        { from: staticConfig.directory, to: 'static', noErrorOnMissing: true }
+      ]
+    }));
   }
 
   var base = {
