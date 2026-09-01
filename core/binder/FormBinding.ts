@@ -2,10 +2,10 @@ import { empty, isBoolean } from '../helpers';
 import { DOM } from '../DOM';
 import { isSkipUpdate, Watcher } from '../Watcher';
 import { ExpressionCompiler } from './ExpressionCompiler';
-import { FormatterRegistry } from './formatters/FormatterRegistry';
 // Import formatters to ensure they are registered
-import './formatters';
+import { FormatterRegistry, registerBuiltInFormatters } from './formatters';
 
+registerBuiltInFormatters();
 /**
  * Handles two-way data binding for form elements (INPUT, SELECT, TEXTAREA, etc.)
  * including value formatting, display updates, and reading values back from the DOM.

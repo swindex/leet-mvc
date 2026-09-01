@@ -80,7 +80,7 @@ export class TestNumericKeyboardPage extends HeaderPage {
               style="width: 100%; max-width: 300px; padding: 0.5rem; font-size: 1rem;"
             />
             <div style="margin-top: 0.25rem; color: #666;">
-              Current value: {{ this.number1 }}
+              Current value: <b [text]="this.number1" format="number:2"></b>
             </div>
           </div>
 

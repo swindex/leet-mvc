@@ -21,6 +21,12 @@
  * ```
  */
 
+import { FormatterRegistry } from './FormatterRegistry';
+import { NumberFormatter } from './NumberFormatter';
+import { LocaleNumberFormatter } from './LocaleNumberFormatter';
+import { BooleanFormatter } from './BooleanFormatter';
+import { DateTimeFormatter } from './DateTimeFormatter';
+
 export type { IFormatter } from './IFormatter';
 export { FormatterRegistry } from './FormatterRegistry';
 export { NumberFormatter } from './NumberFormatter';
@@ -28,16 +34,12 @@ export { LocaleNumberFormatter } from './LocaleNumberFormatter';
 export { BooleanFormatter } from './BooleanFormatter';
 export { DateTimeFormatter } from './DateTimeFormatter';
 
-// Auto-register built-in formatters
-import { FormatterRegistry } from './FormatterRegistry';
-import { NumberFormatter } from './NumberFormatter';
-import { LocaleNumberFormatter } from './LocaleNumberFormatter';
-import { BooleanFormatter } from './BooleanFormatter';
-import { DateTimeFormatter } from './DateTimeFormatter';
+export function registerBuiltInFormatters(){
+    FormatterRegistry.register('number', new NumberFormatter());
+    FormatterRegistry.register('localenumber', new LocaleNumberFormatter());
+    FormatterRegistry.register('boolean', new BooleanFormatter());
+    FormatterRegistry.register('dateTime', new DateTimeFormatter('dateTime'));
+    FormatterRegistry.register('date', new DateTimeFormatter('date'));
+    FormatterRegistry.register('time', new DateTimeFormatter('time'));
+}
 
-FormatterRegistry.register('number', new NumberFormatter());
-FormatterRegistry.register('localenumber', new LocaleNumberFormatter());
-FormatterRegistry.register('boolean', new BooleanFormatter());
-FormatterRegistry.register('dateTime', new DateTimeFormatter('dateTime'));
-FormatterRegistry.register('date', new DateTimeFormatter('date'));
-FormatterRegistry.register('time', new DateTimeFormatter('time'));
