@@ -1,4 +1,3 @@
-import "core-js/stable";
 import './core/polyfill';
 
 import { BasePage } from "./pages/BasePage";
