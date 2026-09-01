@@ -1,19 +1,25 @@
+/**
+ * Extend with: 
+ * //babel.config.js
+ * module.exports = {
+ *   extends: require.resolve("leet-mvc/babel.config.js")
+ * };
+ */
 module.exports = {
 	"presets": [
 		[
 			"@babel/preset-env",
 			{
-				"modules": false ,
-				"useBuiltIns": 'usage',
-                "corejs": 3,
+				"modules": false,
+				"corejs": 3,
 				"targets": {
-					"browsers": ["Android >= 4", "iOS >=4", "Chrome >= 30" ,"IE >= 11"]
+					"browsers": ["Android >= 8", "iOS >=11"]
 				}
 			}
 		],
-	], 
+	],
 	"plugins": [
-    "@babel/plugin-proposal-class-properties",
-		"@babel/plugin-syntax-dynamic-import"
+		["polyfill-corejs3", { "method": "usage-global", "version": "3.50.0" }],
+		"@babel/plugin-transform-class-properties"
 	]
 }

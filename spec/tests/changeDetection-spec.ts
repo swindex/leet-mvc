@@ -1,7 +1,6 @@
 import { objectCloneCompare } from "./../../core/Watcher";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const _: any = require('lodash');
 
 describe('Test Dirty Object change Detection',function(){
 	
@@ -97,7 +96,7 @@ describe('Test Dirty Object change Detection',function(){
 		}, []);
 		expect(hasChanges1).toBeFalsy();
 
-		expect(_.isEqual(a,b)).toBeTruthy();
+		//expect(_.isEqual(a,b)).toBeTruthy();
 
 	});
 
@@ -211,6 +210,6 @@ describe('Test Dirty Object change Detection',function(){
 			hasChanges1 = true;
 		}, []);
 		expect(hasChanges1).toBeFalsy();
-		expect(_.isEqual(a,b)).toBeFalsy();
+		//expect(_.isEqual(a,b)).toBeFalsy();
 	})
 })

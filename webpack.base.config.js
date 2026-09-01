@@ -52,6 +52,7 @@ module.exports = (env, options = {}) => {
 
   var base = {
     mode: production ? "production":"development",
+    experiments: { css: true },
     devServer: {
       host: '0.0.0.0',
       historyApiFallback: true,
@@ -133,15 +134,7 @@ module.exports = (env, options = {}) => {
         },
         {
           test: /\.(scss|css)$/i,
-          use: [
-            require.resolve("style-loader"),
-            { 
-              loader:require.resolve("css-loader"), 
-              options: {
-                modules:"global"
-              }
-            },
-            {
+          use: [{
               loader:require.resolve("postcss-loader"),
               options: {
                 postcssOptions: {
@@ -152,14 +145,13 @@ module.exports = (env, options = {}) => {
                   ],
                 },
               },
-            },
-            {
+            }, {
               loader:require.resolve("sass-loader"),
               options: {
                 api: 'modern'  // Use modern Dart Sass API instead of legacy
               }
-            },
-          ],
+            }],
+          type: "css/auto",
         },
         { 
           test: /\.(jpg|png|gif)$/, 

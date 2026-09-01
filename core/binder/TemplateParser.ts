@@ -1,7 +1,7 @@
 import { Objects } from '../Objects';
 import type { IRNode } from './types';
 
-const htmlparser = require('htmlparser2');
+import * as htmlparser from 'htmlparser2';
 
 /**
  * Directive attribute names that create their own scope

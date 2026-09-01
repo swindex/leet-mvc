@@ -2,7 +2,6 @@
 import { Objects } from "./Objects";
 import { empty, tryCall, round, isArray, isObject, isString, isDate, isBoolean } from "./helpers";
 import { Translate } from "./Translate";
-import { Parser } from 'expr-eval';
 import { Text } from "./text";
 
 const dynamicIndexSymbol = Symbol("dynamicIndexSymbol");
@@ -373,16 +372,7 @@ export function FormValidator(data, template, errors, options) {
         return;
       }
 
-      switch (action) {
-        case 'math':
-          var p = new Parser();
-          var res = p.evaluate(expr, _data);
-          setValue(_data, fieldName, res);
-          break;
-        default:
-          setValue(_data, fieldName, expr);
-
-      }
+      setValue(_data, fieldName, expr);
     } catch (ex) {
       console.log("Error evaluating " + wholerule, ex);
     }
