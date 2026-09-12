@@ -6,20 +6,26 @@
  * };
  */
 module.exports = {
-	"presets": [
-		[
-			"@babel/preset-env",
-			{
-				"modules": false,
-				"corejs": 3,
-				"targets": {
-					"browsers": ["Android >= 8", "iOS >=11"]
-				}
-			}
-		],
-	],
-	"plugins": [
-		["polyfill-corejs3", { "method": "usage-global", "version": "3.50.0" }],
-		"@babel/plugin-transform-class-properties"
-	]
-}
+  presets: [
+    [
+      "@babel/preset-env",
+      {
+        modules: false,
+        targets: {
+          browsers: ["Android >= 8", "iOS >= 11"]
+        }
+      }
+    ]
+  ],
+
+  plugins: [
+    [
+      "polyfill-corejs3",
+      {
+        method: "usage-global",
+        version: "3.50.0"
+      }
+    ],
+    "@babel/plugin-transform-class-properties"
+  ]
+};

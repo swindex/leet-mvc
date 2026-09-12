@@ -390,7 +390,7 @@ export class Binder {
         }
       }
     } catch (ex: any) {
-      throw new Error(`${ex.message} executing attribute '${attribute}'`);
+      throw new Error(`${ex.message}\n on elem ${(on?.elem as HTMLElement)?.outerHTML} executing attribute '${attribute}'`);
     }
 
     if (old !== on.values[attribute] && ret !== EAttrResult.SkipChildren) {
